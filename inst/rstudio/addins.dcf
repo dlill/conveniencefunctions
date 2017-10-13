@@ -2,3 +2,9 @@ Name: Insert %T>%
 Description: Inserts `%T>%` at the cursor position.
 Binding: insert_tee_operator
 Interactive: false
+
+
+Name: Insert %T>% print
+Description: Inserts `%T>% print` at the cursor position.
+Binding: insert_tee_print
+Interactive: false
