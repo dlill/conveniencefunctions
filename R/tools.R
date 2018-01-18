@@ -52,6 +52,8 @@ is_in_between <- function(x, lower_lim, upper_lim) {
 
 #' magrittr-Style Apply an expression that's more complicated
 #'
+#' Old, I use {.} now...
+#'
 #' @param x
 #' @param expr
 #'
@@ -81,7 +83,29 @@ set_attributes <- function(x, attribute, value) {
 }
 
 
+#' Append a time-stamp before
+#'
+#' @param mystring
+#'
+#' @return
+#' @export
+#'
+#' @examples
+tpaste0 <- function(...) {
+  paste0(format(Sys.time(), "%Y-%m-%d %H-%M")
+         , " " , ...)
+}
 
+
+#' List the elements of .GlobalEnv without elements with matching naes
+#'
+#' @param reg A vector of regex to be matched
+#'
+#' @return
+#' @export
+#'
+#' @examples
+global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(reg) %>% any))]
 
 
 #' The runtime of some code
