@@ -17,6 +17,8 @@ insert_tee_operator <- function ()
 #' @examples
 insert_tee_print <- function ()
 {
-  rstudioapi::insertText(" %T>% print ")
+  rstudioapi::insertText(" %T>%
+  print %>%
+  {.}")
 }
 
