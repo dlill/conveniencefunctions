@@ -97,6 +97,20 @@ cf_sort_by_name <- sort_by_name <- function(x) {
   }
 
 
+#' Pipe-friendly assigning of vectors when their names are known first
+#'
+#' @param char_vec
+#' @param value
+#'
+#' @return
+#' @export
+#'
+#' @examples
+are_names_of <- cf_are_names_of <- function(char_vec, value) {
+  if(length(value == 1 )) {value <- rep(value, length(char_vec))}
+  structure(value, names = char_vec)
+}
+
 
 #' Load the default values of formals of a function into the Global environment
 #'
@@ -153,15 +167,6 @@ cf_print_r.named_vector <- print_r.named_vector <- function(myvec) {myvec %>%
     cat}
 
 
-#' Print pars so that you can copy paste it in your script and directly modify them
-#'
-#' @param pars
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cf_printpars <- printpars <- function(pars) {pars %>% paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>% paste0(collapse = "\t,\n") %>% paste("c(\n",.,"\n)") %>% cat}
 
 
 #' Append a time-stamp before

@@ -54,13 +54,13 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
 #' @export
 #'
 #' @examples
-prepare_argpath <- function(fit) {
+prepare_argpath <- function(fit, ncluster = 1) {
   chisquare_values <- data.frame(iteration = 1:length(fit[["valpath"]]), parameter = "-2LogLikelihood", value = log(abs(fit[["valpath"]])), cluster = 0)
 
   fit %>%
     .$argpath %>%
     { myargpath <- .
-    myclustering <- myargpath %>% t %>% kmeans(8) %>% .$cluster
+    myclustering <- myargpath %>% t %>% kmeans(ncluster) %>% .$cluster
     myargpath <- myargpath %>%
       as.data.frame() %>%
       set_names(names(fit$argument))%>%
@@ -139,3 +139,27 @@ wait_for_runbg <- function(job, delta_t=5) {
 #   saveRDS(pSS, paste0(Pimpl_arglist[["modelname"]] , ".rda"))
 # }
 
+#' Get the nice plot of fitErrormodel
+#'
+#' @param data
+#' @details This function is mainly to print the plotting function and to copy/paste it for manipulating it in a script
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fitErrorModel_plot <- function(data) {
+  fitErrorModel(data, factors = c("study"), blather = T, plotting = F,
+                errorModel = "exp(s0) +exp(srel)*x", par = c(s0 = -4, srel = 0)) %T>% print %>%
+    ggplot(aes(x=value)) +
+    geom_point(aes(y=sigmaLS^2*(n), color = log(time))) +
+    geom_line(aes(y=sigma^2*n)) +
+    geom_ribbon(aes(ymin=cbLower95, ymax=cbUpper95), alpha=.3) +
+    geom_ribbon(aes(ymin=cbLower68, ymax=cbUpper68), alpha=.3) +
+    ylab("variance") +
+    facet_wrap(~condidnt, scales = "free") +
+    scale_y_log10() +
+    theme_dMod() +
+    scale_color_continuous( low = "#98f5ff", high = "#4c4cdb")
+
+}
