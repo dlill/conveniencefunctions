@@ -178,8 +178,8 @@ cf_print_r.named_vector <- print_r.named_vector <- function(myvec) {myvec %>%
 #'
 #' @examples
 cf_tpaste0 <- tpaste0 <- function(...) {
-  paste0(format(Sys.time(), "%Y-%m-%d %H-%M")
-         , " " , ...)
+  paste0(format(Sys.time(), "%Y_%m_%d_%H_%M")
+         , "_" , ...)
 }
 
 
