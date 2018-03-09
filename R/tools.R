@@ -107,7 +107,7 @@ cf_sort_by_name <- sort_by_name <- function(x) {
 #'
 #' @examples
 are_names_of <- cf_are_names_of <- function(char_vec, value) {
-  if(length(value == 1 )) {value <- rep(value, length(char_vec))}
+  if(length(value)==1) {value <- rep(value, length(char_vec))}
   structure(value, names = char_vec)
 }
 
