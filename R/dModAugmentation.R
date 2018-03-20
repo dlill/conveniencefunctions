@@ -108,37 +108,6 @@ wait_for_runbg <- function(job, delta_t=5) {
 
 }
 
-
-# odemodel_arglist <- formals(odemodel)
-# odemodel_arglist <- odemodel_arglist[!(names(odemodel_arglist) %in% c("..."))]
-# odemodel_arglist[["f"]] <- f
-# odemodel_arglist[["events"]] <- events
-# odemodel_arglist[["modelname"]] <- paste0("odemodel_", digest::digest(odemodel_arglist[!(names(odemodel_arglist) %in% c("modelname"))]))
-#
-# file_exists <- file.exists(paste0(odemodel_arglist[["modelname"]], ".rda"))
-# if (file_exists) {
-#   myodemodel <- force(readRDS(paste0(odemodel_arglist[["modelname"]] , ".rda")))
-# } else {
-#   myodemodel <-  do.call(odemodel, odemodel_arglist)
-#   saveRDS(myodemodel, paste0(odemodel_arglist[["modelname"]] , ".rda"))
-# }
-
-# Pimpl_arglist <- formals(Pimpl)
-# Pimpl_arglist <- Pimpl_arglist[!(names(Pimpl_arglist) %in% c("..."))]
-# Pimpl_arglist[["trafo"]] <- reactions %>% as.eqnvec()
-# Pimpl_arglist[["parameters"]] <- c("S2", "S3", "S4", "TGFb", "Rec")
-# Pimpl_arglist[["compile"]] <- T
-# Pimpl_arglist[["modelname"]] <- paste0("pSS_", digest::digest(Pimpl_arglist[!(names(Pimpl_arglist) %in% c("modelname"))]))
-#
-# file_exists <- file.exists(paste0(Pimpl_arglist[["modelname"]], ".rda"))
-# if (file_exists) {
-#   pSS <- force(readRDS(paste0(Pimpl_arglist[["modelname"]] , ".rda")))
-#   loadDLL(pSS)
-# } else {
-#   pSS <-  do.call(Pimpl, Pimpl_arglist)
-#   saveRDS(pSS, paste0(Pimpl_arglist[["modelname"]] , ".rda"))
-# }
-
 #' Get the nice plot of fitErrormodel
 #'
 #' @param data
@@ -163,3 +132,182 @@ fitErrorModel_plot <- function(data) {
     scale_color_continuous( low = "#98f5ff", high = "#4c4cdb")
 
 }
+
+#' dMod.frame -----
+#'
+#' Example of a dMod.frame pipe
+#'
+#' dMod.frame <- tibble(hypothesis = c("cell specific pars with prior", "no cell specifc pars, no prior"),
+#' x = list(x,x),
+#' g = list(g,g),
+#' p = list(p_1, p_2),
+#' pars = list(pars_1, pars2),
+#' data = list(mydatalist, mydatalist)) %>%
+#'   mutate(prd = list((g*x*p_1), (g*x*p_2))) %>%
+#'   mutate(prior = list(constraintL2(mu1, sigma1), NULL)) %>%
+#'   mutate(obj = lapply(seq_along(x), function(i) normL2(data[[i]], prd[[i]]) + prior[[i]])) %>%
+#'   mutate(machine = list(c("knecht1", "knecht2"), c("knecht3"))) %>%
+#'   mutate(fits = lapply(seq_along(x), function(i) runbg(mstrust(obj[[i]], pars[[i]]), machine = machine[[i]]) ))
+#' # wait a little
+#' dMod.frame <- dMod.frame %>%
+#'   mutate(fits = lapply(seq_along(x), function(i) fits[[i]][["get"]]()[[machine[[i]]]] )) %>%
+#'   mutate(fits = lapply(fits, as.parframe)) %>%
+#'   mutate(plots = lapply(seq_along(x), function(i) plotCombined(prd(mytimes, as.parvec(fits[[i]]), data = data[[i]])) ))
+#'
+#'
+dMod.frame0 <- tibble::tibble(
+  hypothesis = vector("character"),
+  g = list(),
+  x = list(),
+  p = list(),
+  prd = list(),
+  data = list(),
+  obj = list(),
+  pars = list(),
+  fits = list(),
+  profiles = list()
+  )
+
+
+
+#' Insert parameter values from a given table of covariates
+#'
+#' @param trafo
+#' @param pars_to_insert
+#'
+#' @return
+#' @export
+#'
+#' @examples
+minsert <- function (trafo, pars_to_insert)
+{
+
+  # Best would be to have this option in insert, basically a check, if either expr or pars_to_insert has been supplied
+
+  if (missing(trafo))
+    trafo <- NULL
+  lookuptable <- attr(trafo, "tree")
+  if (is.list(trafo) & is.null(names(trafo)))
+    stop("If trafo is a list, elements must be named.")
+  if (is.list(trafo) & !all(names(trafo) %in% rownames(lookuptable)))
+    stop("If trafo is a list and contains a lookuptable (is branched from a tree), the list names must be contained in the rownames of the tree.")
+  if (!is.list(trafo)) {
+    mytrafo <- list(trafo)
+  }
+  else {
+    mytrafo <- trafo
+  }
+  out <- lapply(1:length(mytrafo), function(i) {
+    if (is.list(trafo)) {
+      mytable <- lookuptable[names(mytrafo)[i], , drop = FALSE]
+    }
+    else {
+      mytable <- lookuptable[1, , drop = FALSE]
+    }
+    with(mytable, {
+      args <- c(list(expr = "name ~ value", trafo = mytrafo[[i]]),
+                list(value = unlist(mget(pars_to_insert)), name = pars_to_insert))
+      # print(args)
+      do.call(repar, args)
+    })
+  })
+  names(out) <- names(mytrafo)
+  if (!is.list(trafo))
+    out <- out[[1]]
+  attr(out, "tree") <- lookuptable
+  return(out)
+}
+
+
+#' As.datalist method for NULL
+#'
+#' @param ... NULL
+#'
+#' @return
+#' @export
+#'
+#' @examples
+as.datalist.NULL <- function( ... ) {
+  NULL
+}
+
+
+#' *.fn in functional form for safe evaluation and allowing for p1 or p2 to be NULL
+#'
+#' @param p1
+#' @param p2
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cfn <- function(p1,p2) {
+  if(is.null(p1)|is.null(p2)) {
+    return(NULL)
+    } else {
+  dMod:::`*.fn`(p1,p2)
+    }
+}
+
+
+
+#' normL2 with NULL allowed for data or x
+#'
+#' @param data
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_normL2 <- function(data, x, ...) {
+  if(is.null(data)|is.null(x)) {
+    return(NULL)
+  } else {
+    dMod::normL2(data, x, ...)
+  }
+}
+
+
+
+
+
+#' Load one row of a dMod.frame into the .GlobalEnv
+#'
+#' @param dMod.frame
+#' @param hypothesis character. specifying the name of the hypothesis
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' a <- 3
+#' myfun <- function(x) {a * x^2}
+#' testframe <- tibble(hypothesis = c("apap", "penner"),
+#'                     schwurbel = list(qplot(1:10,1:10), "Penis"),
+#'                     wupwup = list("moep", faithful),
+#'                     myfun = list(function(x) {a * x^2}, myfun),
+#'                     a = c(1:2))
+#'
+#' checkout_hypothesis(testframe, "penner")
+#' myfun
+#' schwurbel
+#' wupwup
+#' hypothesis
+checkout_hypothesis <- function(dMod.frame, hypothesis) {
+  mydMod.frame <- dMod.frame[dMod.frame[["hypothesis"]]==hypothesis,]
+  map(seq_along(mydMod.frame), function(i)  {
+    value <- mydMod.frame[[i]]
+    if(is.list(value)&length(value)==1) value = value[[1]]
+    assign(x = names(mydMod.frame)[i],
+           value = value,
+           pos = .GlobalEnv)})
+}
+
+
+
+
+
+
+
