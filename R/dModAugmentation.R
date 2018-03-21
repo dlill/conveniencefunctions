@@ -276,7 +276,7 @@ cf_normL2 <- function(data, x, ...) {
 #' Load one row of a dMod.frame into the .GlobalEnv
 #'
 #' @param dMod.frame
-#' @param hypothesis character. specifying the name of the hypothesis
+#' @param hypothesis character or numeric. specifying the name  or the index of the hypothesis
 #'
 #' @return
 #' @export
@@ -296,18 +296,65 @@ cf_normL2 <- function(data, x, ...) {
 #' wupwup
 #' hypothesis
 checkout_hypothesis <- function(dMod.frame, hypothesis) {
-  mydMod.frame <- dMod.frame[dMod.frame[["hypothesis"]]==hypothesis,]
+
+  if(is.numeric(hypothesis)) {
+    mydMod.frame <- dMod.frame[hypothesis,]
+  } else {
+    mydMod.frame <- dMod.frame[dMod.frame[["hypothesis"]]==hypothesis,]
+  }
   map(seq_along(mydMod.frame), function(i)  {
     value <- mydMod.frame[[i]]
     if(is.list(value)&length(value)==1) value = value[[1]]
     assign(x = names(mydMod.frame)[i],
            value = value,
            pos = .GlobalEnv)})
+
+
+  message("Objects in .GlobalEnv are updated")
+
+  return(NULL)
 }
 
 
 
+#' Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
+#'
+#' @param dMod.frame the dMod.frame
+#' @param exclude not yet implemented
+#' @param include
+#'
+#' @return the dMod.frame augmented by the new row
+#' @export
+#'
+#' @examples
+#'
+#' remove("doedel")
+#' testframe2 <- tibble(doedel = "blabal")
+#' checkin_hypothesis(testframe2)
+#'
+#' doedel <- "yay"
+#' checkin_hypothesis(testframe2)
+#'
+#' doedel <- function(x) x^2
+#' checkin_hypothesis(testframe2)
+#'
+checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL) {
 
+  # possible future feature: set those of variables in exclude to list(NULL)
+  # another way could be to specify include...
+
+  mynames <- names(dMod.frame)
+
+  new_hypothesis <- lapply(mynames, function(n)  {
+
+    myobject <- mget(n, envir = .GlobalEnv, ifnotfound = list(NULL))[[1]]
+    if (!is.atomic(myobject) | is.null(myobject)) {myobject <- list(myobject)}
+    return(myobject)
+  })
+  names(new_hypothesis) <- mynames
+
+  return(rbind(dMod.frame, as.tibble(new_hypothesis)))
+}
 
 
 
