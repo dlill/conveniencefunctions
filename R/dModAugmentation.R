@@ -133,40 +133,7 @@ fitErrorModel_plot <- function(data) {
 
 }
 
-#' dMod.frame -----
-#'
-#' Example of a dMod.frame pipe
-#'
-#' dMod.frame <- tibble(hypothesis = c("cell specific pars with prior", "no cell specifc pars, no prior"),
-#' x = list(x,x),
-#' g = list(g,g),
-#' p = list(p_1, p_2),
-#' pars = list(pars_1, pars2),
-#' data = list(mydatalist, mydatalist)) %>%
-#'   mutate(prd = list((g*x*p_1), (g*x*p_2))) %>%
-#'   mutate(prior = list(constraintL2(mu1, sigma1), NULL)) %>%
-#'   mutate(obj = lapply(seq_along(x), function(i) normL2(data[[i]], prd[[i]]) + prior[[i]])) %>%
-#'   mutate(machine = list(c("knecht1", "knecht2"), c("knecht3"))) %>%
-#'   mutate(fits = lapply(seq_along(x), function(i) runbg(mstrust(obj[[i]], pars[[i]]), machine = machine[[i]]) ))
-#' # wait a little
-#' dMod.frame <- dMod.frame %>%
-#'   mutate(fits = lapply(seq_along(x), function(i) fits[[i]][["get"]]()[[machine[[i]]]] )) %>%
-#'   mutate(fits = lapply(fits, as.parframe)) %>%
-#'   mutate(plots = lapply(seq_along(x), function(i) plotCombined(prd(mytimes, as.parvec(fits[[i]]), data = data[[i]])) ))
-#'
-#'
-dMod.frame0 <- tibble::tibble(
-  hypothesis = vector("character"),
-  g = list(),
-  x = list(),
-  p = list(),
-  prd = list(),
-  data = list(),
-  obj = list(),
-  pars = list(),
-  fits = list(),
-  profiles = list()
-  )
+
 
 
 
@@ -219,6 +186,47 @@ minsert <- function (trafo, pars_to_insert)
   attr(out, "tree") <- lookuptable
   return(out)
 }
+
+insert2 <- function (trafo, expr, condition_sub = NULL, ...)
+{
+  if (missing(trafo))
+    trafo <- NULL
+  lookuptable <- attr(trafo, "tree")
+  if (is.list(trafo) & is.null(names(trafo)))
+    stop("If trafo is a list, elements must be named.")
+  if (is.list(trafo) & !all(names(trafo) %in% rownames(lookuptable)))
+    stop("If trafo is a list and contains a lookuptable (is branched from a tree), the list names must be contained in the rownames of the tree.")
+  if (!is.list(trafo)) {
+    mytrafo <- list(trafo)
+  }
+  else {
+    mytrafo <- trafo
+  }
+  dots <- substitute(alist(...))
+  out <- lapply(1:length(mytrafo), function(i) {
+    if (is.list(trafo)) {
+      mytable <- lookuptable[names(mytrafo)[i], , drop = FALSE]
+    }
+    else {
+      mytable <- lookuptable[1, , drop = FALSE]
+    }
+
+    if((!is.null(condition_sub)) & (!str_detect(rownames(mytable)[i], condition_sub))) {return(mytrafo[[i]])}
+
+    with(mytable, {
+      args <- c(list(expr = expr, trafo = mytrafo[[i]]),
+                eval(dots))
+      do.call(repar, args)
+    })
+  })
+  names(out) <- names(mytrafo)
+  if (!is.list(trafo))
+    out <- out[[1]]
+  attr(out, "tree") <- lookuptable
+  return(out)
+}
+
+
 
 
 #' As.datalist method for NULL
@@ -285,89 +293,6 @@ cf_normL2 <- function(data, x, ...) {
 
 
 
-
-#' Load one row of a dMod.frame into the .GlobalEnv
-#'
-#' @param dMod.frame
-#' @param hypothesis character or numeric. specifying the name  or the index of the hypothesis
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' a <- 3
-#' myfun <- function(x) {a * x^2}
-#' testframe <- tibble(hypothesis = c("apap", "penner"),
-#'                     schwurbel = list(qplot(1:10,1:10), "Penis"),
-#'                     wupwup = list("moep", faithful),
-#'                     myfun = list(function(x) {a * x^2}, myfun),
-#'                     a = c(1:2))
-#'
-#' checkout_hypothesis(testframe, "penner")
-#' myfun
-#' schwurbel
-#' wupwup
-#' hypothesis
-checkout_hypothesis <- function(dMod.frame, hypothesis, prefix = "") {
-
-  if(is.numeric(hypothesis)) {
-    mydMod.frame <- dMod.frame[hypothesis,]
-  } else {
-    mydMod.frame <- dMod.frame[dMod.frame[["hypothesis"]]==hypothesis,]
-  }
-  lapply(seq_along(mydMod.frame), function(i)  {
-    value <- mydMod.frame[[i]]
-    if(is.list(value)&length(value)==1) value = value[[1]]
-    try(assign(x = paste0(prefix,names(mydMod.frame)[i]),
-               value = value,
-               pos = .GlobalEnv),
-        silent = T)
-  })
-
-  message("Objects in .GlobalEnv are updated")
-
-}
-
-
-
-#' Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
-#'
-#' @param dMod.frame the dMod.frame
-#' @param exclude not yet implemented
-#' @param include
-#'
-#' @return the dMod.frame augmented by the new row
-#' @export
-#'
-#' @examples
-#'
-#' remove("doedel")
-#' testframe2 <- tibble(doedel = "blabal")
-#' checkin_hypothesis(testframe2)
-#'
-#' doedel <- "yay"
-#' checkin_hypothesis(testframe2)
-#'
-#' doedel <- function(x) x^2
-#' checkin_hypothesis(testframe2)
-#'
-checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL) {
-
-  # possible future feature: set those of variables in exclude to list(NULL)
-  # another way could be to specify include...
-
-  mynames <- names(dMod.frame)
-
-  new_hypothesis <- lapply(mynames, function(n)  {
-
-    myobject <- mget(n, envir = .GlobalEnv, ifnotfound = list(NULL))[[1]]
-    if (!is.atomic(myobject) | is.null(myobject)) {myobject <- list(myobject)}
-    return(myobject)
-  })
-  names(new_hypothesis) <- mynames
-
-  return(rbind(dMod.frame, as.tibble(new_hypothesis)))
-}
 
 
 

@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-str0 <- cf_str0 <- function(...) {
+str0 <- function(...) {
   str(..., max.level = 0)
 }
 
@@ -18,7 +18,7 @@ str0 <- cf_str0 <- function(...) {
 #' @export
 #'
 #' @examples
-str1 <- cf_str1 <- function(...) {
+str1 <- function(...) {
   str(..., max.level = 1)
 }
 
@@ -30,9 +30,12 @@ str1 <- cf_str1 <- function(...) {
 #' @export
 #'
 #' @examples
-str2 <- cf_str2 <- function(...) {
+str2 <- function(...) {
   str(..., max.level = 2)
 }
+
+
+
 
 
 #' magrittr-style two sided comparison
@@ -75,7 +78,7 @@ cf_apply_expression <- function(x, ...) {
 #' @export
 #'
 #' @examples
-cf_set_attributes <- set_attributes <- function(x, attribute, value) {
+set_attributes <- function(x, attribute, value) {
   for(i in 1:length(attribute)) {
     attr(x, attribute[i]) <- value[i]
   }
@@ -92,7 +95,7 @@ cf_set_attributes <- set_attributes <- function(x, attribute, value) {
 #' @export
 #'
 #' @examples
-cf_sort_by_name <- sort_by_name <- function(x) {
+sort_by_name <- function(x) {
   x[order(names(x))]
   }
 
@@ -106,7 +109,7 @@ cf_sort_by_name <- sort_by_name <- function(x) {
 #' @export
 #'
 #' @examples
-are_names_of <- cf_are_names_of <- function(char_vec, value) {
+are_names_of <- function(char_vec, value) {
   if(length(value)==1) {value <- rep(value, length(char_vec))}
   structure(value, names = char_vec)
 }
@@ -123,7 +126,7 @@ are_names_of <- cf_are_names_of <- function(char_vec, value) {
 #'
 #' @examples
 #' evaluate_formals(lm, indices = 1:5)
-cf_evaluate_formals <- evaluate_formals <- function(..., indices = 1:length(formals(...))) {
+evaluate_formals <- function(..., indices = 1:length(formals(...))) {
   indices %>% lapply(. %>% {assign(x = names(formals(...))[[.]],
                                    value = formals(...)[[.]],
                                    envir = .GlobalEnv)})
@@ -141,15 +144,26 @@ cf_evaluate_formals <- evaluate_formals <- function(..., indices = 1:length(form
 #' @export
 #'
 #' @examples
-cf_str_subset_name <- str_subset_name <- function(vec, pattern) {
+str_subset_name <- function(vec, pattern) {
   vec %>% .[str_detect(names(.), pattern)]}
-
 
 #' @export
 #' @rdname str_subset_name
-"cf_str_subset_name<-" <-  "str_subset_name<-" <-  function(vec, pattern,value) {
+"str_subset_name<-" <-  function(vec, pattern,value) {
   vec[str_detect(names(vec), pattern)] <- value
   vec}
+
+#' str_subset that preserves names
+#'
+#' @param vec
+#' @param pattern
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str_subset_keep_names <- function(vec, pattern) {
+  vec %>% .[str_detect(., pattern)]}
 
 
 
@@ -161,7 +175,7 @@ cf_str_subset_name <- str_subset_name <- function(vec, pattern) {
 #' @export
 #'
 #' @examples
-cf_print_r.named_vector <- print_r.named_vector <- function(myvec) {myvec %>%
+print_r.named_vector <- function(myvec) {myvec %>%
     paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
     paste0(collapse = "\t,\n") %>% paste("c(\n",.,"\n)") %>%
     cat}
@@ -177,7 +191,7 @@ cf_print_r.named_vector <- print_r.named_vector <- function(myvec) {myvec %>%
 #' @export
 #'
 #' @examples
-cf_tpaste0 <- tpaste0 <- function(...) {
+tpaste0 <- function(...) {
   paste0(format(Sys.time(), "%Y_%m_%d_%H_%M")
          , "_" , ...)
 }
@@ -191,7 +205,7 @@ cf_tpaste0 <- tpaste0 <- function(...) {
 #' @export
 #'
 #' @examples
-cf_global_env_without <- global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(reg) %>% any))]
+global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(reg) %>% any))]
 
 
 #' The runtime of some code
@@ -203,7 +217,7 @@ cf_global_env_without <- global_env_without <- function(reg) ls(.GlobalEnv)[!(ls
 #' @export
 #'
 #' @examples
-cf_runtime <- runtime <- function( ... ) {
+runtime <- function( ... ) {
   pt <- proc.time()
   myenv <- environment()
   out <- eval(as.expression(substitute(...)), envir = myenv)

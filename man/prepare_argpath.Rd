@@ -5,7 +5,7 @@
 \alias{plot_argpath}
 \title{Look at the argpath of a fit}
 \usage{
-prepare_argpath(fit)
+prepare_argpath(fit, ncluster = 1)
 
 plot_argpath(argpath)
 }
