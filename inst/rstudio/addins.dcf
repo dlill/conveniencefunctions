@@ -8,3 +8,9 @@ Name: Insert %T>% print
 Description: Inserts `%T>% print` at the cursor position.
 Binding: insert_tee_print
 Interactive: false
+
+
+Name: Insert seq_along(x) function(i)
+Description: Inserts `seq_along(x) function(i)` at the cursor position.
+Binding: insert_seq_along_x_function_i
+Interactive: false
