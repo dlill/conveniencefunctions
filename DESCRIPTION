@@ -13,5 +13,6 @@ Depends:
   tidyverse
 Imports: 
   tidyverse,
-  magrittr
+  magrittr,
+  plotly::ggplotly
 RoxygenNote: 6.0.1
