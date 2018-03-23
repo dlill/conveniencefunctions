@@ -22,3 +22,14 @@ insert_tee_print <- function ()
   {.}")
 }
 
+
+#' Addin to insert map(seq_along(x), function(i))
+#'
+#' @return
+#' @export
+#'
+#' @examples
+insert_seq_along_x_function_i <- function ()
+{
+  rstudioapi::insertText("seq_along(x), function(i) ")
+}
