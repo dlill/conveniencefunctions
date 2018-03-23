@@ -172,6 +172,8 @@ dMod.frame0 <- tibble::tibble(
 
 #' Insert parameter values from a given table of covariates
 #'
+#' @description Why "m"insert? - multiple-insert
+#'
 #' @param trafo
 #' @param pars_to_insert
 #'
@@ -251,6 +253,9 @@ cfn <- function(p1,p2) {
 
 
 
+
+
+
 #' normL2 with NULL allowed for data or x
 #'
 #' @param data
@@ -261,6 +266,14 @@ cfn <- function(p1,p2) {
 #' @export
 #'
 #' @examples
+#' obj_apap <- cf_normL2(data_apap %>% as.datalist, (g_apap*x_apap*p_apap))
+#' obj_apap <- cf_normL2(NULL, (g_apap*x_apap*p_apap))
+#' obj_apap <- cf_normL2(data_apap %>% as.datalist, NULL)
+#' obj_apap(pars_apap)
+#'
+#' # why is this?
+#' NULL + obj_apap
+#' obj_apap + NULL
 cf_normL2 <- function(data, x, ...) {
   if(is.null(data)|is.null(x)) {
     return(NULL)
@@ -295,24 +308,24 @@ cf_normL2 <- function(data, x, ...) {
 #' schwurbel
 #' wupwup
 #' hypothesis
-checkout_hypothesis <- function(dMod.frame, hypothesis) {
+checkout_hypothesis <- function(dMod.frame, hypothesis, prefix = "") {
 
   if(is.numeric(hypothesis)) {
     mydMod.frame <- dMod.frame[hypothesis,]
   } else {
     mydMod.frame <- dMod.frame[dMod.frame[["hypothesis"]]==hypothesis,]
   }
-  map(seq_along(mydMod.frame), function(i)  {
+  lapply(seq_along(mydMod.frame), function(i)  {
     value <- mydMod.frame[[i]]
     if(is.list(value)&length(value)==1) value = value[[1]]
-    assign(x = names(mydMod.frame)[i],
-           value = value,
-           pos = .GlobalEnv)})
-
+    try(assign(x = paste0(prefix,names(mydMod.frame)[i]),
+               value = value,
+               pos = .GlobalEnv),
+        silent = T)
+  })
 
   message("Objects in .GlobalEnv are updated")
 
-  return(NULL)
 }
 
 
