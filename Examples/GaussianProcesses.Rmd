@@ -1,0 +1,75 @@
+---
+title: "Gaussian Processes"
+author: "Daniel Lill"
+date: "16 March 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(conveniencefunctions)
+library(dMod)
+```
+
+Basically, I want to understand Gaussian Processes, and maybe also geometric brownian motion by programming it once on my own.
+
+I will reprogram this: https://github.com/keyonvafa/gp-predictit-blog
+
+# From the blog
+```{r}
+params = c(0,0,0)
+rq = function(params,i,j) {
+  h = exp(params[1])
+  alpha = exp(params[2])
+  l = exp(params[3])
+  return(h^2 * (1 + (i-j)^2/(2*alpha*l^2))^(-alpha))
+}
+
+cov_matrix = function(params,x1,x2) {
+  K = matrix(0, nrow = length(x1), ncol = length(x2))
+  for (i in 1:length(x1)) {
+    for (j in 1:length(x2)) {
+      K[i,j] = rq(params,x1[i],x2[j])
+    }
+  }
+  return(K)
+}
+
+```
+
+
+
+
+
+# Set up mean and kernel function
+The mean function will be just a constant, so I don't even need a function
+For the kernel function, I will just take the kernel function given by the tutorial
+```{r}
+k <- function(x,y=x, pars) {
+  pars["h"]^2*(1+(outer(x,y,"-"))^2/(2*pars["alpha"]*pars["l"]^2))^(-pars["alpha"])
+}
+
+pars <- c(alpha = 1, h = 1, l = 51)
+
+k(1:5, 1:5, pars)
+
+
+x = 0:100
+
+pred <- mvtnorm::rmvnorm(10, mean = 0:100/10 ,sigma =  k(x, pars = pars))
+
+pred %>% as.tibble() %>% add_column(index = 1:10) %>% gather(x, value, contains("V")) %>% mutate(x = str_replace_all(x, "V","") %>% as.numeric()) %>% 
+  mutate(index = as.character(index)) %>% 
+  ggplot(aes(x, value, color = index))+geom_line()
+
+```
+
+
+
+
+
+
+
+

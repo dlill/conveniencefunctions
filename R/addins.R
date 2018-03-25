@@ -33,3 +33,42 @@ insert_seq_along_x_function_i <- function ()
 {
   rstudioapi::insertText("seq_along(x), function(i) ")
 }
+
+
+
+
+#' Addin
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @examples
+describe_plotValue <- function(dMod.frame = NULL) {
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": There are good bad steps"), collapse = "\n"))
+}
+
+#' Addin
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @examples
+describe_plotCombined <- function(dMod.frame = NULL) {
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best."), collapse = "\n"))
+}
+
+#' Addin
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @examples
+describe_plotPars <- function(dMod.frame = NULL) {
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range."), collapse = "\n"))
+}

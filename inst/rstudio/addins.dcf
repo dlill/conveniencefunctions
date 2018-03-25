@@ -14,3 +14,22 @@ Name: Insert seq_along(x) function(i)
 Description: Inserts `seq_along(x) function(i)` at the cursor position.
 Binding: insert_seq_along_x_function_i
 Interactive: false
+
+
+Name: Describe plotValue
+Description: Inserts a description of the plot at the cursor position.
+Binding: describe_plotValue
+Interactive: true
+
+Name: Describe plotCombined
+Description: Inserts a description of the plot at the cursor position.
+Binding: describe_plotCombined
+Interactive: true
+
+Name: Describe plotPars
+Description: Inserts a description of the plot at the cursor position.
+Binding: describe_plotPars
+Interactive: true
+
+
+
