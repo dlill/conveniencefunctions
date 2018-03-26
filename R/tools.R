@@ -166,6 +166,23 @@ str_subset_keep_names <- function(vec, pattern) {
   vec %>% .[str_detect(., pattern)]}
 
 
+#' the opposite of str_subset.
+#'
+#' Preserves names
+#'
+#' @param vec
+#' @param pattern
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str_subset_not <- function(vec, pattern) {
+  vec %>% .[!str_detect(.,pattern)]}
+
+
+
+
 
 #' nicely formatted dput for named vectors
 #'
