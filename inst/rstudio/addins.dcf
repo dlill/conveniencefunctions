@@ -19,17 +19,21 @@ Interactive: false
 Name: Describe plotValue
 Description: Inserts a description of the plot at the cursor position.
 Binding: describe_plotValue
-Interactive: true
+Interactive: false
 
 Name: Describe plotCombined
 Description: Inserts a description of the plot at the cursor position.
 Binding: describe_plotCombined
-Interactive: true
+Interactive: false
 
 Name: Describe plotPars
 Description: Inserts a description of the plot at the cursor position.
 Binding: describe_plotPars
-Interactive: true
+Interactive: false
 
+Name: Describe plotProfile
+Description: Inserts a description of the plot at the cursor position.
+Binding: describe_plotProfile
+Interactive: false
 
 

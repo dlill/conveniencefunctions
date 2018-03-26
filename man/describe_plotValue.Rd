@@ -2,7 +2,7 @@
 % Please edit documentation in R/addins.R
 \name{describe_plotValue}
 \alias{describe_plotValue}
-\title{Addin}
+\title{Describe plot}
 \usage{
 describe_plotValue(dMod.frame = NULL)
 }
@@ -10,5 +10,5 @@ describe_plotValue(dMod.frame = NULL)
 \item{dMod.frame}{}
 }
 \description{
-Addin
+Here are some templates to motivate you to describe the plots.
 }

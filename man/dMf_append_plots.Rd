@@ -4,7 +4,7 @@
 \alias{dMf_append_plots}
 \title{Add plots to the dMod.frame}
 \usage{
-dMf_append_plots(dMod.frame)
+dMf_append_plots(dMod.frame, tol = 1)
 }
 \arguments{
 \item{dMod.frame}{with cols x, parframes, data, best_prediction, hypothesis, best_value, conditions (optional)}

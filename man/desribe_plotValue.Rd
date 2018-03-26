@@ -2,9 +2,18 @@
 % Please edit documentation in R/addins.R
 \name{describe_plotCombined}
 \alias{describe_plotCombined}
+\alias{describe_plotPars}
+\alias{describe_plotPars}
+\alias{describe_plotProfile}
 \title{Addin}
 \usage{
 describe_plotCombined(dMod.frame = NULL)
+
+describe_plotPars(dMod.frame = NULL)
+
+describe_plotPars(dMod.frame = NULL)
+
+describe_plotProfile(dMod.frame = NULL)
 }
 \arguments{
 \item{dMod.frame}{}

@@ -37,7 +37,9 @@ insert_seq_along_x_function_i <- function ()
 
 
 
-#' Addin
+#' Describe plot
+#'
+#' Here are some templates to motivate you to describe the plots.
 #'
 #' @param dMod.frame
 #'
@@ -55,20 +57,28 @@ describe_plotValue <- function(dMod.frame = NULL) {
 #'
 #' @return
 #' @export
-#'
+#' @rdname desribe_plotValue
 #' @examples
 describe_plotCombined <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best.\n")))
 }
 
-#' Addin
-#'
-#' @param dMod.frame
-#'
-#' @return
 #' @export
-#'
-#' @examples
+#' @rdname desribe_plotValue
 describe_plotPars <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
+}
+
+
+
+#' @export
+#' @rdname desribe_plotValue
+describe_plotPars <- function(dMod.frame = NULL) {
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
+}
+
+#' @export
+#' @rdname desribe_plotValue
+describe_plotProfile <- function(dMod.frame = NULL) {
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars  are structurally non-identifiable.\n  The pars  are practically non-identifiable")))
 }
