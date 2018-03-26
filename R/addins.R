@@ -46,7 +46,7 @@ insert_seq_along_x_function_i <- function ()
 #'
 #' @examples
 describe_plotValue <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": There are good bad steps"), collapse = "\n"))
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": There are good bad steps\n")))
 }
 
 #' Addin
@@ -58,7 +58,7 @@ describe_plotValue <- function(dMod.frame = NULL) {
 #'
 #' @examples
 describe_plotCombined <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best."), collapse = "\n"))
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best.\n")))
 }
 
 #' Addin
@@ -70,5 +70,5 @@ describe_plotCombined <- function(dMod.frame = NULL) {
 #'
 #' @examples
 describe_plotPars <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range."), collapse = "\n"))
+  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
 }

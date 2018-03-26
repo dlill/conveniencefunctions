@@ -295,4 +295,3 @@ cf_normL2 <- function(data, x, ...) {
 
 
 
-

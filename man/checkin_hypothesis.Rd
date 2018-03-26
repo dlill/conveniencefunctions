@@ -4,7 +4,8 @@
 \alias{checkin_hypothesis}
 \title{Get elements from the .GlobalEnv and turn it into a row of the dMod.frame}
 \usage{
-checkin_hypothesis(dMod.frame, exclude = NULL, include = NULL)
+checkin_hypothesis(dMod.frame, exclude = NULL, include = NULL,
+  prefix = "", suffix = "")
 }
 \arguments{
 \item{dMod.frame}{the dMod.frame}
@@ -22,13 +23,13 @@ Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
 \examples{
 
 remove("doedel")
-testframe2 <- tibble(doedel = "blabal")
-checkin_hypothesis(testframe2)
+dMod.frame <- tibble(doedel = "blabal")
+checkin_hypothesis(dMod.frame)
 
 doedel <- "yay"
-checkin_hypothesis(testframe2)
+checkin_hypothesis(dMod.frame)
 
 doedel <- function(x) x^2
-checkin_hypothesis(testframe2)
+checkin_hypothesis(dMod.frame)
 
 }

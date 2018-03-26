@@ -33,14 +33,14 @@ dMf_expand_fits <- function(dMod.frame) {
 #' @export
 #'
 #' @examples
-dMf_append_plots <- function(dMod.frame) {
+dMf_append_plots <- function(dMod.frame, tol = 1) {
 
   message("Please write down what you see")
 
   # Append waterfall, pars, and prediction of the best fit
   dMod.frame <- dMod.frame %>%
-    mutate(plot_value = map(parframes, plotValues),
-           plot_pars = map(parframes, plotPars),
+    mutate(plot_value = map(parframes, plotValues, tol = tol),
+           plot_pars = map(parframes, plotPars, tol = tol),
            plot_combined = map(seq_along(x), function(i) plotCombined(best_prediction[[i]], data[[i]]))) %>%
     mutate(plot_value = map(seq_along(x), function(i) plot_value[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))),
            plot_pars = map(seq_along(x), function(i) plot_pars[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))),

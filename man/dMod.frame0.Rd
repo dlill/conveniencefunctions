@@ -4,7 +4,7 @@
 \name{dMod.frame0}
 \alias{dMod.frame0}
 \title{dMod.frame -----}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 0 rows and 10 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 0 rows and 9 columns.}
 \usage{
 dMod.frame0
 }

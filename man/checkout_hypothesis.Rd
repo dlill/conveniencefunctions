@@ -4,7 +4,7 @@
 \alias{checkout_hypothesis}
 \title{Load one row of a dMod.frame into the .GlobalEnv}
 \usage{
-checkout_hypothesis(dMod.frame, hypothesis, prefix = "")
+checkout_hypothesis(dMod.frame, hypothesis, prefix = "", suffix = "")
 }
 \arguments{
 \item{hypothesis}{character or numeric. specifying the name  or the index of the hypothesis}
