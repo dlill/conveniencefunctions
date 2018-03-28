@@ -1,5 +1,35 @@
 # Ideas
-# Plotting functions
+# Plotting functions as methods, eg plotCombined.dMod.frame
+# Combining dMod.frames should be easy as well
+#
+# Ideas for dMod
+# in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
+# in norml2, compute the predictions with times individual
+
+
+
+plotCombined.dMod.frame <- function(plot_bicmet_frame, hypothesis = 1, index = 1, ... ) {
+  if(hypothesis %>% is.character) hypothesis <- which(plot_bicmet_frame$hypothesis == hypothesis)
+  i <- hypothesis #so i can copy other code
+
+  myparvec <- plot_bicmet_frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% as.parvec(index = index)
+
+  mypred <- plot_bicmet_frame$prd[[i]](times = seq(0, max(as.data.frame(plot_bicmet_frame$data[[i]])$time),length.out = 100),
+                                       pars = myparvec,
+                                       deriv = F)
+
+  myvalue <- plot_bicmet_frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% .[i, "value"]
+
+  plotCombined(mypred,  plot_bicmet_frame$data[[i]], ...) + ggtitle(label = paste(plot_bicmet_frame$hypothesis[[i]], ",\t", myvalue))
+
+}
+
+
+# dMod.frame <- function(...) {
+#   mydMod.frame <- tibble(...)
+#   class(mydMod.frame) <- c("dMod.frame", "tbl_df", "tbl", "data.frame")
+# }
+
 
 
 #' Expand a dMod.frame with parlist by columns derived from these fits
