@@ -1,13 +1,28 @@
 # Ideas
 # Plotting functions as methods, eg plotCombined.dMod.frame
+# In plotCombined.dMod.frame, when accessing the index, the ggtitle should be updated: "hypothesis, -2LL[index], index"
 # Combining dMod.frames should be easy as well
 #
 # Ideas for dMod
 # in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
-# in norml2, compute the predictions with times individual
+# in norml2, compute the predictions with times individually -> ask Marcus
+# in +.objfn fix the condition-wise thing
+# in objfn make a condition_value attribute?
+#
 
 
 
+#' First way to OO plotting
+#'
+#' @param plot_bicmet_frame
+#' @param hypothesis
+#' @param index
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 plotCombined.dMod.frame <- function(plot_bicmet_frame, hypothesis = 1, index = 1, ... ) {
   if(hypothesis %>% is.character) hypothesis <- which(plot_bicmet_frame$hypothesis == hypothesis)
   i <- hypothesis #so i can copy other code
@@ -25,11 +40,6 @@ plotCombined.dMod.frame <- function(plot_bicmet_frame, hypothesis = 1, index = 1
 }
 
 
-# dMod.frame <- function(...) {
-#   mydMod.frame <- tibble(...)
-#   class(mydMod.frame) <- c("dMod.frame", "tbl_df", "tbl", "data.frame")
-# }
-
 
 
 #' Expand a dMod.frame with parlist by columns derived from these fits
@@ -42,8 +52,8 @@ plotCombined.dMod.frame <- function(plot_bicmet_frame, hypothesis = 1, index = 1
 #' @export
 #'
 #' @examples
-dMf_expand_fits <- function(dMod.frame) {
-  dMod.frame %>%
+dMf_expand_fits <- function(mydMod.frame) {
+  mydMod.frame %>%
     mutate(parframes = map(fits, as.parframe)) %>%
     mutate(best_parvec = map(parframes, as.parvec)) %>%
     mutate(best_value = map(parframes, function(pf) min(pf$value))) %>%
@@ -63,12 +73,12 @@ dMf_expand_fits <- function(dMod.frame) {
 #' @export
 #'
 #' @examples
-dMf_append_plots <- function(dMod.frame, tol = 1) {
+dMf_append_plots <- function(mydMod.frame, tol = 1) {
 
   message("Please write down what you see")
 
   # Append waterfall, pars, and prediction of the best fit
-  dMod.frame <- dMod.frame %>%
+  mydMod.frame <- mydMod.frame %>%
     mutate(plot_value = map(parframes, plotValues, tol = tol),
            plot_pars = map(parframes, plotPars, tol = tol),
            plot_combined = map(seq_along(x), function(i) plotCombined(best_prediction[[i]], data[[i]]))) %>%
@@ -77,12 +87,12 @@ dMf_append_plots <- function(dMod.frame, tol = 1) {
            plot_combined = map(seq_along(x), function(i) plot_combined[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))))
 
   # Adjust labels
-  if ("conditions" %in% names(dMod.frame)) {
-    dMod.frame <- dMod.frame %>%
+  if ("conditions" %in% names(mydMod.frame)) {
+    mydMod.frame <- mydMod.frame %>%
       mutate(plot_combined = map(seq_along(x), function(i) plot_combined[[i]] + scale_color_dMod(labels = conditions[[i]])))
   }
 
-  return(dMod.frame)
+  return(mydMod.frame)
 }
 
 
@@ -111,17 +121,17 @@ dMf_append_plots <- function(dMod.frame, tol = 1) {
 #'   mutate(plots = lapply(seq_along(x), function(i) plotCombined(prd(mytimes, as.parvec(fits[[i]]), data = data[[i]])) ))
 #'
 #'
-dMod.frame0 <- tibble::tibble(
-  hypothesis = vector("character"),
-  g = list(),
-  x = list(),
-  p = list(),
-  prd = list(),
-  data = list(),
-  obj = list(),
-  pars = list(),
-  fits = list()
-)
+# dMod.frame0 <- tibble::tibble(
+#   hypothesis = vector("character"),
+#   g = list(),
+#   x = list(),
+#   p = list(),
+#   prd = list(),
+#   data = list(),
+#   obj = list(),
+#   pars = list(),
+#   fits = list()
+# )
 
 
 
