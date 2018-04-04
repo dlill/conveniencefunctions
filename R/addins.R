@@ -82,3 +82,24 @@ describe_plotPars <- function(dMod.frame = NULL) {
 describe_plotProfile <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars  are structurally non-identifiable.\n  The pars  are practically non-identifiable")))
 }
+
+
+#' @export
+#' @rdname insert runbg()
+insert_runbg <- function(job_name) {
+  filename <- tpaste0(job_name)
+  rstudioapi::insertText(paste0(paste0('
+', job_name, ' <- runbg({
+
+  },  machine = paste0("knecht", 1), input = ls(pos=.GlobalEnv) )
+saveRDS(', job_name, ', filename = "', filename, '")
+#',job_name,' <- readRDS("', filename, '")
+#',job_name,'$check()
+#',job_name,'_results <- ',job_name,'$get()
+#saveRDS(', job_name, '_results, filename = tpaste0("', job_name, '_results"))
+#', job_name, '$purge()
+')))
+}
+
+
+

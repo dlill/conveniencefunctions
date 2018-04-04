@@ -36,4 +36,8 @@ Description: Inserts a description of the plot at the cursor position.
 Binding: describe_plotProfile
 Interactive: false
 
+Name: Insert runbg() with skeleton
+Description: Inserts a runbg at the cursor position
+Binding: insert_runbg
+Interactive: false
 
