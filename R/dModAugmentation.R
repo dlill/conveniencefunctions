@@ -40,6 +40,39 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
 
 
 
+#' Evaluate an objective function condition-wise
+#'
+#' @param obj
+#' @param pouter
+#'
+#' @return
+#' @export
+#'
+#' @examples
+obj_condition_wise <- function(obj, pars, ...) {
+  myconditions <- getConditions(obj)
+
+  lapply(myconditions, function(cond) {
+    myvalues <- obj(pars = pars, conditions = cond, ...)
+
+    ndata <- get("data", environment(obj))
+    if(is.function(ndata)) ndata <- NULL
+      else ndata <- ndata[[cond]] %>% nrow
+    if(!is.null(ndata)) reduced_value <- myvalues[["value"]]/ndata
+      else reduced_value <- NULL
+
+    attrib <- myvalues %>% attributes()
+
+    mylist <- c(condition = cond,
+                myvalues[names(myvalues)!="hessian"],
+                ndata = ndata,
+                reduced_value = reduced_value,
+                attrib[!names(attrib)%in%c("env", "class")]) %>%
+      lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }}) #make tibble-compatible
+
+    return(as_tibble(mylist))
+  }) #%>% do.call(rbind,.)
+}
 
 
 
