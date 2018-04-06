@@ -223,7 +223,18 @@ minsert <- function (trafo, pars_to_insert)
   return(out)
 }
 
-insert2 <- function (trafo, expr, condition_sub = NULL, ...)
+#' Insert only for a subset of conditions
+#'
+#' @param trafo
+#' @param expr
+#' @param condition_sub
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+insert2 <- insert_sub <- function (trafo, expr, condition_sub = NULL, ...)
 {
   if (missing(trafo))
     trafo <- NULL

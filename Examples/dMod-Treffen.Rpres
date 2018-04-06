@@ -1,0 +1,130 @@
+```{r setup, include=FALSE}
+library(dMod)
+library(conveniencefunctions)
+```
+
+
+dMod-Treffen
+========================================================
+author: Daniel Lill
+date: 10.4.2018
+autosize: true
+
+dMod.frame - Why
+========================================================
+
+* Keep related objects together
+* No fear of overwriting any functions
+* runbg(..., input = "dMod.frame")
+* Better housekeeping of multiple hypotheses
+
+Expand and shrink
+========================================================
+
+* My workflow:
+    * Build basic frame
+    * Expand by objects such as prd, obj
+    * Calculate Fits
+    * Expand fitlist into parframe, best_parvec, best_value, plot_value, plot_pars, plotCombined, ...
+    * Save Fits
+    * Calculate Profiles
+    * Expand by plot_profiles
+* For saving with less space:
+    * Shrink dMod.frame into a frame of basic objects again
+    * No need to keep plots
+
+
+Interaction with .GlobalEnv
+========================================================
+
+* Sometimes you just want it quick and dirty and not handle all the subsetting operators all the time
+```{r}
+# checkout_hypothesis(dMod.frame)
+```
+
+
+Plans
+========================================================
+
+* Nice interface to easily access single objects
+* Object oriented plotting
+    * `plotCombined(dMod.frame, hypothesis, index, ...)`
+    * `plotValue(dModframe, hypothesis, tol, index, ...)`
+* Combining dMod.frames, which don't have the same columns yet should be easy
+* use rownames
+
+Tweaking RStudio
+========================================================
+
+```{r, eval=FALSE}
+conveniencefunctions::insert_runbg(job_name = "my_amazing_fit_job", job_type = "mstrust", dMod.frame = "my.frame")
+
+my_amazing_fit_job <- runbg({
+    # Template for mstrust()
+  },  machine = c(paste0("knecht", 1)), input =  "my.frame")
+saveRDS(my_amazing_fit_job, filename = "2018_04_06_22_43_my_amazing_fit_job.rds")
+#my_amazing_fit_job <- readRDS("2018_04_06_22_43_my_amazing_fit_job.rds")
+#my_amazing_fit_job$check()
+#my_amazing_fit_job_results <- my_amazing_fit_job$get()
+#saveRDS(my_amazing_fit_job_results, filename = tpaste0("my_amazing_fit_job_results.rds"))
+#my_amazing_fit_job$purge()
+#my_amazing_fit <- readRDS(tpaste0("my_amazing_fit_job_results.rds")
+```
+* Standard sentences to describe plots: `describe_plotCombined` $\rightarrow$ less results get lost or need to be reproduced again.
+* When calling `dMf_append_plots()`, you are prompted to "describe what you see"
+
+
+Problems (haven't tried to solve them yet)
+========================================================
+
+* Redundancy
+    * When saving, lots of redundancy (haven't yet figured it out completely)
+        * Saving compiled functions helps a lot!
+* Compiled code not included, so a dMod.frame isn't 100% isolated
+* `*.fn` didn't work
+
+
+Other ideas for dMod (some of them implemented already)
+========================================================
+* Make plotting functions also available as a two-step pipe
+    * Sometimes I'd like to have access to the data.frame(s) directly before they go into the plot
+* `names(datalist)<-` should automatically rename row_names of covariates() ("condition.grid")
+* `define() insert() branch()`:
+    * insert_covariates (`minsert`): from table with data, insert parameter values
+    * insert_condition_sub: Only apply the insertion at a subset of conditions
+* obj_condition_wise()
+* wait_for_runbg()
+* Make `*.fn`, `+.fn`, `prd` better compatible with `NULL`?
+
+
+Conclusion
+========================================================
+
+```{r eval=FALSE}
+devtools::install_github("dlill/conveniencefunctions")
+```
+
+```{r}
+# (g*x) %>% getParameters %>% are_names_of(0)
+#
+# (g*x) %>% getParameters %>% are_names_of(0) %>% as.parvec %>% str1
+```
+
+
+Standard column names
+========================================================
+
+* hypothesis, g,x,p,e,data
+    * For adding functions: append _1, _2 , .... ?
+    * prd, obj
+* pars (not necessarily needed, but convenient for sampling center)
+* mu, sigma
+    * constr
+* fits
+    * parframes, best_parvec, best_prediction
+* plot\*
+    * _combined, _values, ...
+* profiles
+
+
+

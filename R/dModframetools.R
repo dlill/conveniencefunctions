@@ -1,22 +1,39 @@
-#' Ideas
+# Ideas ----
+#'
 #' Plotting functions as methods, eg plotCombined.dMod.frame
-#' In plotCombined.dMod.frame, when accessing the index, the ggtitle should be updated: "hypothesis, -2LL[index], index"
+#'
 #' Combining dMod.frames should be easy as well
-#' dMf_append_plots mit subset-möglichkeit, best_prediction erst hire, nicht in dMf_expand_fits
+#'
+#' dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
+#'
+#' rownames for dMod.frames
+#'
+#' for each expand/append function, write a shrink function which removes the respective columns for saving fits and so on.
+#'
+#'
+#'
 #'
 #' Ideas for dMod
+#'
 #' in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
-#' in norml2, compute the predictions with times individually -> ask Marcus
+#'
+#' in norml2, compute the predictions with times individually -> ask Marcus, hat bei mir nicht so viel gebracht.
+#'
 #' in +.objfn fix the condition-wise thing
+#'
 #' in objfn make a condition_value attribute?
+#'
 #' in normL2, when passing an errmodel with conditions, evalute only those conditions with errmodel and the rest without errmodel
 #'
+#'
 #' plotting_functions: split them into a two-step pipe ("prepare_plotCombined" %>% "render_plotcombined") so that it can be more easily customizable?
+#'
 #' str_detect_any
+#'
 #' look at reticulate package
 
 
-
+# Plotting ----
 
 #' First way to OO plotting
 #'
@@ -29,46 +46,22 @@
 #' @export
 #'
 #' @examples
-plotCombined.dMod.frame <- function(plot_bicmet_frame, hypothesis = 1, index = 1, ... ) {
-  if(hypothesis %>% is.character) hypothesis <- which(plot_bicmet_frame$hypothesis == hypothesis)
+plotCombined.dMod.frame <- function(dMod.frame, hypothesis = 1, index = 1, ... ) {
+  if(hypothesis %>% is.character) hypothesis <- which(dMod.frame$hypothesis == hypothesis)
   i <- hypothesis #so i can copy other code
 
-  myparvec <- plot_bicmet_frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% as.parvec(index = index)
+  myparvec <- dMod.frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% as.parvec(index = index)
 
-  mypred <- plot_bicmet_frame$prd[[i]](times = seq(0, max(as.data.frame(plot_bicmet_frame$data[[i]])$time),length.out = 100),
+  mypred <- dMod.frame$prd[[i]](times = seq(0, max(as.data.frame(dMod.frame$data[[i]])$time),length.out = 100),
                                        pars = myparvec,
                                        deriv = F)
 
-  myvalue <- plot_bicmet_frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% .[i, "value"]
+  myvalue <- dMod.frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% .[i, "value"]
 
-  plotCombined(mypred,  plot_bicmet_frame$data[[i]], ...) + ggtitle(label = paste(plot_bicmet_frame$hypothesis[[i]], ",\t", myvalue))
+  plotCombined(mypred,  dMod.frame$data[[i]], ...) + ggtitle(label = paste(dMod.frame$hypothesis[[i]], ",\t", myvalue))
 
 }
 
-
-
-
-#' Expand a dMod.frame with parlist by columns derived from these fits
-#'
-#' @description
-#'
-#' @param dMod.frame with columns x, data (list of datalists), prd
-#'
-#' @return dMod.frame augmented by columns parframes, best_parvec_best_value, best_prediction
-#' @export
-#'
-#' @examples
-dMf_expand_fits <- function(mydMod.frame) {
-  mydMod.frame %>%
-    mutate(parframes = map(fits, as.parframe)) %>%
-    mutate(best_parvec = map(parframes, as.parvec)) %>%
-    mutate(best_value = map(parframes, function(pf) min(pf$value))) %>%
-    mutate(best_prediction = map(seq_along(x), function(i) {
-      prd[[i]](times = seq(0, max(as.data.frame(data[[i]])$time),length.out = 100),
-               pars = best_parvec[[i]],
-               deriv = F)
-      }))
-}
 
 
 #' Add plots to the dMod.frame
@@ -79,18 +72,29 @@ dMf_expand_fits <- function(mydMod.frame) {
 #' @export
 #'
 #' @examples
-dMf_append_plots <- function(mydMod.frame, tol = 1) {
+dMf_append_plots <- function(mydMod.frame, tol = 1, index = 1, ...) {
 
   message("Please write down what you see")
 
   # Append waterfall, pars, and prediction of the best fit
   mydMod.frame <- mydMod.frame %>%
+
+    mutate(best_prediction = map(seq_along(x), function(i) {
+      prd[[i]](times = seq(0, max(as.data.frame(data[[i]])$time),length.out = 100),
+               pars = parframes[[i]] %>% as.parvec(index),
+               deriv = F)
+    })) %>%
+
     mutate(plot_value = map(parframes, plotValues, tol = tol),
            plot_pars = map(parframes, plotPars, tol = tol),
-           plot_combined = map(seq_along(x), function(i) plotCombined(best_prediction[[i]], data[[i]]))) %>%
+           plot_combined = map(seq_along(x), function(i) plotCombined(best_prediction[[i]], data[[i]],...))) %>%
     mutate(plot_value = map(seq_along(x), function(i) plot_value[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))),
            plot_pars = map(seq_along(x), function(i) plot_pars[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))),
-           plot_combined = map(seq_along(x), function(i) plot_combined[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))))
+           plot_combined = map(seq_along(x), function(i) plot_combined[[i]] + ggtitle(label = paste(hypothesis[[i]],
+                                                                                                    ",\t fit_index:",
+                                                                                                    index,
+                                                                                                    "\t value:",
+                                                                                                    parframes[[i]][index, "value"]))))
 
   # Adjust labels
   if ("conditions" %in% names(mydMod.frame)) {
@@ -104,8 +108,63 @@ dMf_append_plots <- function(mydMod.frame, tol = 1) {
 
 
 
+# Expand fits ----
 
-#' dMod.frame -----
+#' Expand a dMod.frame with parlist by columns derived from these fits
+#'
+#' @description
+#'
+#' @param dMod.frame with columns x, data (list of datalists), prd
+#'
+#' @return dMod.frame augmented by columns parframes, best_parvec_best_value, best_prediction
+#' @export
+#'
+#' @examples
+dMf_expand_fits <- function(dMod.frame) {
+
+  if(!any(c("parframes", "fits") %in% names(dMod.frame)))
+    stop("either fits or parframes have to be present in dMod.frame")
+
+  if(! "parframes" %in% names(dMod.frame)) {
+    dMod.frame <- dMod.frame %>%
+      mutate(parframes = map(fits, as.parframe))
+  }
+
+   dMod.frame %>%
+    mutate(best_parvec = map(parframes, as.parvec)) %>%
+    mutate(best_value = map(parframes, function(pf) min(pf$value))) %>%
+    mutate(best_prediction = map(seq_along(x), function(i) {
+      prd[[i]](times = seq(0, max(as.data.frame(data[[i]])$time),length.out = 100),
+               pars = best_parvec[[i]],
+               deriv = F)
+    }))
+}
+
+# Shrink functions ----
+
+#' Remove cols from dMod.frame
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @examples
+shrink_fits <- function(dMod.frame) {
+  indices <- which(names(dMod.frame) %in% c("fits", "best_parvec", "best_value", "best_prediction"))
+  dMod.frame[-indices]
+}
+
+
+#' @export
+#' @rdname shrink_fits
+shrink_plots <- function(dMod.frame) {
+  indices <- which(names(dMod.frame) %in% c("plot_value", "plot_combined", "plot_pars", "plot_profile"))
+  dMod.frame[-indices]
+}
+
+
+# dMod.frame Example? -----
 #'
 #' Example of a dMod.frame pipe
 #'
@@ -141,6 +200,7 @@ dMf_append_plots <- function(mydMod.frame, tol = 1) {
 
 
 
+# Interaction with .GlobalEnv ----
 
 #' Load one row of a dMod.frame into the .GlobalEnv
 #'
