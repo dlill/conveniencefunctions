@@ -1,14 +1,20 @@
-# Ideas
-# Plotting functions as methods, eg plotCombined.dMod.frame
-# In plotCombined.dMod.frame, when accessing the index, the ggtitle should be updated: "hypothesis, -2LL[index], index"
-# Combining dMod.frames should be easy as well
-#
-# Ideas for dMod
-# in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
-# in norml2, compute the predictions with times individually -> ask Marcus
-# in +.objfn fix the condition-wise thing
-# in objfn make a condition_value attribute?
-#
+#' Ideas
+#' Plotting functions as methods, eg plotCombined.dMod.frame
+#' In plotCombined.dMod.frame, when accessing the index, the ggtitle should be updated: "hypothesis, -2LL[index], index"
+#' Combining dMod.frames should be easy as well
+#' dMf_append_plots mit subset-möglichkeit, best_prediction erst hire, nicht in dMf_expand_fits
+#'
+#' Ideas for dMod
+#' in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
+#' in norml2, compute the predictions with times individually -> ask Marcus
+#' in +.objfn fix the condition-wise thing
+#' in objfn make a condition_value attribute?
+#' in normL2, when passing an errmodel with conditions, evalute only those conditions with errmodel and the rest without errmodel
+#'
+#' plotting_functions: split them into a two-step pipe ("prepare_plotCombined" %>% "render_plotcombined") so that it can be more easily customizable?
+#' str_detect_any
+#' look at reticulate package
+
 
 
 

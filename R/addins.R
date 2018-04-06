@@ -86,12 +86,12 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 
 #' @export
 #' @rdname insert runbg()
-insert_runbg <- function(job_name) {
+insert_runbg <- function(job_name = "runbg_job") {
   filename <- tpaste0(job_name)
   rstudioapi::insertText(paste0(paste0('
 ', job_name, ' <- runbg({
 
-  },  machine = paste0("knecht", 1), input = ls(pos=.GlobalEnv) )
+  },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv) )
 saveRDS(', job_name, ', filename = "', filename, '")
 #',job_name,' <- readRDS("', filename, '")
 #',job_name,'$check()

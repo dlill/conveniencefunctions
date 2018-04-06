@@ -42,13 +42,16 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
 
 #' Evaluate an objective function condition-wise
 #'
+#' Easily see which condition contributes how much.
+#' Be careful to use this in an actual calculation, as in adding the results back together, because then the prior is evaluated multiple times
+#'
 #' @param obj
 #' @param pouter
 #'
 #' @return
 #' @export
 #'
-#' @examples
+#' @example Examples/obj_condition_wise.R
 obj_condition_wise <- function(obj, pars, ...) {
   myconditions <- getConditions(obj)
 

@@ -4,7 +4,7 @@
 \alias{dMf_expand_fits}
 \title{Expand a dMod.frame with parlist by columns derived from these fits}
 \usage{
-dMf_expand_fits(dMod.frame)
+dMf_expand_fits(mydMod.frame)
 }
 \arguments{
 \item{dMod.frame}{with columns x, data (list of datalists), prd}

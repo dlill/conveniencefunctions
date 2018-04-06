@@ -181,7 +181,7 @@ str_subset_not <- function(vec, pattern) {
   vec %>% .[!str_detect(.,pattern)]}
 
 
-#' str_subset that preserves names
+#' str_subset_name
 #'
 #' @param vec
 #' @param pattern
