@@ -91,7 +91,7 @@ insert_runbg <- function(job_name = "runbg_job") {
   rstudioapi::insertText(paste0(paste0('
 ', job_name, ' <- runbg({
 
-  },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv), filename = ', filename,'_runbg")
+  },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv), filename = "', filename,'_runbg")
 saveRDS(', job_name, ', file = "', filename, '.rds")
 # ',job_name,' <- readRDS("', filename, '.rds")
 # ',job_name,'$check()
