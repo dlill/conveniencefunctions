@@ -87,20 +87,20 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 #' @export
 #' @rdname insert runbg()
 insert_runbg <- function(job_name = "runbg_job") {
-  filename <- tpaste0(job_name, ".rds")
+  filename <- tpaste0(job_name)
   rstudioapi::insertText(paste0(paste0('
 ', job_name, ' <- runbg({
 
-  },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv) )
-saveRDS(', job_name, ', filename = "', filename, '")
-#',job_name,' <- readRDS("', filename, '")
-#',job_name,'$check()
-#',job_name,'_results <- ',job_name,'$get()
-#saveRDS(', job_name, '_results, filename = tpaste0("', job_name, '_results.rds"))
-#', job_name, '$purge()
-#', str_replace(job_name, "_job", ""), ' <- readRDS(tpaste0("', job_name, '_results.rds")
+  },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv), filename = tpaste0("', filename,'_runbg"))
+saveRDS(', job_name, ', file = "', filename, '.rds")
+# ',job_name,' <- readRDS("', filename, '.rds")
+# ',job_name,'$check()
+# wait_for_runbg(',job_name,')
+# ',job_name,'_results <- ',job_name,'$get()
+# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
+# ', job_name, '$purge()
+# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
 ')))
 }
-
 
 

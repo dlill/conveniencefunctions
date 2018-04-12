@@ -2,28 +2,41 @@
 % Please edit documentation in R/dModframetools.R
 \name{plotCombined.dMod.frame}
 \alias{plotCombined.dMod.frame}
-\title{Ideas
-Plotting functions as methods, eg plotCombined.dMod.frame
-In plotCombined.dMod.frame, when accessing the index, the ggtitle should be updated: "hypothesis, -2LL[index], index"
-Combining dMod.frames should be easy as well
-dMf_append_plots mit subset-möglichkeit, best_prediction erst hire, nicht in dMf_expand_fits}
+\title{Plotting functions as methods, eg plotCombined.dMod.frame}
 \usage{
-plotCombined.dMod.frame(plot_bicmet_frame, hypothesis = 1, index = 1, ...)
+plotCombined.dMod.frame(dMod.frame, hypothesis = 1, index = 1, ...)
 }
 \arguments{
 \item{...}{}
 }
 \description{
-Ideas for dMod
-in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
-in norml2, compute the predictions with times individually -> ask Marcus
-in +.objfn fix the condition-wise thing
-in objfn make a condition_value attribute?
-in normL2, when passing an errmodel with conditions, evalute only those conditions with errmodel and the rest without errmodel
+Combining dMod.frames should be easy as well
 }
 \details{
+dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
+
+rownames for dMod.frames
+
+for each expand/append function, write a shrink function which removes the respective columns for saving fits and so on.
+
+
+
+Ideas for dMod
+
+in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
+
+in norml2, compute the predictions with times individually -> ask Marcus, hat bei mir nicht so viel gebracht.
+
+in +.objfn fix the condition-wise thing
+
+in objfn make a condition_value attribute?
+
+in normL2, when passing an errmodel with conditions, evalute only those conditions with errmodel and the rest without errmodel
+
 plotting_functions: split them into a two-step pipe ("prepare_plotCombined" %>% "render_plotcombined") so that it can be more easily customizable?
+
 str_detect_any
+
 look at reticulate package
 First way to OO plotting
 }

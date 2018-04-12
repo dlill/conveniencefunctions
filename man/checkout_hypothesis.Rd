@@ -2,7 +2,7 @@
 % Please edit documentation in R/dModframetools.R
 \name{checkout_hypothesis}
 \alias{checkout_hypothesis}
-\title{dMod.frame -----}
+\title{Example of a dMod.frame pipe}
 \usage{
 checkout_hypothesis(dMod.frame, hypothesis, prefix = "", suffix = "")
 }
@@ -10,9 +10,6 @@ checkout_hypothesis(dMod.frame, hypothesis, prefix = "", suffix = "")
 \item{hypothesis}{character or numeric. specifying the name  or the index of the hypothesis}
 }
 \description{
-Example of a dMod.frame pipe
-}
-\details{
 dMod.frame <- tibble(hypothesis = c("cell specific pars with prior", "no cell specifc pars, no prior"),
 x = list(x,x),
 g = list(g,g),
@@ -29,7 +26,8 @@ dMod.frame <- dMod.frame %>%
   mutate(fits = lapply(seq_along(x), function(i) fits[[i]][["get"]]()[[machine[[i]]]] )) %>%
   mutate(fits = lapply(fits, as.parframe)) %>%
   mutate(plots = lapply(seq_along(x), function(i) plotCombined(prd(mytimes, as.parvec(fits[[i]]), data = data[[i]])) ))
-
+}
+\details{
 Load one row of a dMod.frame into the .GlobalEnv
 }
 \examples{

@@ -234,7 +234,7 @@ minsert <- function (trafo, pars_to_insert)
 #' @export
 #'
 #' @examples
-insert2 <- insert_sub <- function (trafo, expr, condition_sub = NULL, ...)
+insert2 <- insert_sub <- function (trafo, expr, conditions = NULL, ...)
 {
   if (missing(trafo))
     trafo <- NULL
@@ -258,7 +258,7 @@ insert2 <- insert_sub <- function (trafo, expr, condition_sub = NULL, ...)
       mytable <- lookuptable[1, , drop = FALSE]
     }
 
-    if((!is.null(condition_sub)) & (!str_detect(rownames(mytable)[i], condition_sub))) {return(mytrafo[[i]])}
+    if((!is.null(conditions)) & (!str_detect(rownames(mytable), conditions))) {return(mytrafo[[i]])}
 
     with(mytable, {
       args <- c(list(expr = expr, trafo = mytrafo[[i]]),
