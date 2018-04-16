@@ -12,3 +12,6 @@ print_mathematica.character(mycharacter)
 \description{
 Print a character in mathematica format
 }
+\examples{
+ print_mathematica.character(paste0(letters, "_", letters))
+}
