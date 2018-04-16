@@ -36,6 +36,7 @@ print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
 #' @export
 #'
 #' @examples
+#'  print_mathematica.character(paste0(letters, "_", letters))
 print_mathematica.character <- cf_print_mathematica.character <- function(mycharacter) {
   list(
   mycharacter %>%
@@ -44,8 +45,8 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
     paste0("x={",.,"};")
   ,
   structure(mycharacter,
-    names = mycharacter %>%
-              str_replace_all(c("_" = "")))
+    names = paste0("\\b", mycharacter %>%
+              str_replace_all(c("_" = "")), "\\b"))
   )
   }
 
