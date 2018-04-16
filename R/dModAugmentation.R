@@ -19,8 +19,11 @@ print_mathematica.eqnlist <- cf_print_mathematica.eqnlist <- function(myeqnlist)
 #' @export
 #'
 #' @examples
-print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {myeqnvec %>%
-{structure(as.character(.), names = names(.))} %>% .[order(names(.))] %>% paste(collapse = ", ")  %>%
+print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
+  myeqnvec %>%
+{structure(as.character(.), names = names(.))} %>%
+    .[order(names(.))] %>%
+    paste(collapse = ", ")  %>%
     str_replace_all(c("_" = "")) %>%
     paste0("f={",.,"};")}
 
@@ -33,8 +36,18 @@ print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {m
 #' @export
 #'
 #' @examples
-print_mathematica.character <- cf_print_mathematica.character <- function(mycharacter) {mycharacter %>%
-    paste(collapse = ", ")  %>% str_replace_all(c("_" = "")) %>% paste0("x={",.,"};")}
+print_mathematica.character <- cf_print_mathematica.character <- function(mycharacter) {
+  list(
+  mycharacter %>%
+    paste(collapse = ", ")  %>%
+    str_replace_all(c("_" = "")) %>%
+    paste0("x={",.,"};")
+  ,
+  structure(mycharacter,
+    names = mycharacter %>%
+              str_replace_all(c("_" = "")))
+  )
+  }
 
 
 
