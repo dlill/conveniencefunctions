@@ -19,10 +19,10 @@ is.datalist <- function(x) {
 #'
 #'
 #' @param hypothesis
-#' @param g1
-#' @param x1
-#' @param p1
-#' @param data1
+#' @param g
+#' @param x
+#' @param p
+#' @param data
 #' @param ...
 #'
 #' @return Object of class \code{dMod.frame}.
@@ -38,7 +38,7 @@ is.datalist <- function(x) {
 
 # example("mstrust", run.dontrun = T, ask = F)
 
-dMod.frame <- function(hypothesis, g1, x1, p1, data1, e1 = NULL,...) {
+dMod.frame <- function(hypothesis, g, x, p, data, e = NULL,...) {
 
   enlist <- function(x) {
     if (is.list(x) & (!(is.data.frame(x)|is.datalist(x))) ) return(x)
@@ -46,11 +46,11 @@ dMod.frame <- function(hypothesis, g1, x1, p1, data1, e1 = NULL,...) {
   }
 
   out <- tibble(hypothesis = hypothesis,
-         g1 = enlist(g1),
-         x1 = enlist(x1),
-         p1 = enlist(p1),
-         data1 = enlist(data1),
-         e1 = enlist(e1),
+         g = enlist(g),
+         x = enlist(x),
+         p = enlist(p),
+         data = enlist(data),
+         e = enlist(e),
          ...)
   class(out) <- c("dMod.frame", class(out))
 
@@ -63,20 +63,20 @@ as.dMod.frame <- function(x) {
 
 as.dMod.frame.tbl_df <- function(x) {
 
-  if (any(!(c("hypothesis", "g1", "x1", "p1", "data1", "e1") %in% names(x)))) warning("This frame does not contain all basic columns")
+  if (any(!(c("hypothesis", "g", "x", "p", "data", "e") %in% names(x)))) warning("This frame does not contain all basic columns")
 
   class(x) <- c("dMod.frame", class(x))
   return(x)
 }
 
 as.dMod.frame.data.frame <- function(x) {
-  if (any(!(c("hypothesis", "g1", "x1", "p1", "data1", "e1") %in% names(x)))) warning("This frame does not contain all basic columns")
+  if (any(!(c("hypothesis", "g", "x", "p", "data", "e") %in% names(x)))) warning("This frame does not contain all basic columns")
 
   return(as.dMod.frame.tbl_df(as.tibble(x)))
 }
 
 
-myframe <- dMod.frame(hypothesis = "hyp1", g, x, p, data)
+myframe <- dMod.frame(hypothesis = "hyp", g, x, p, data)
 
 # frm <- rbind(myframe, myframe)
 # frm$hypothesis[2] <- "hyp2"
@@ -100,17 +100,21 @@ myframe <- dMod.frame(hypothesis = "hyp1", g, x, p, data)
 mutateListCols <- function(dMod.frame, ...) {
   # capture dotted expressions, transform them into index-wise expression
   dots <- quos(...)
-  dots <- lapply(dots, function(i) {
+  # dots <- lapply(dots, function(i) {
+  #
+  #   myexpr <- quo_text(UQ(i))
+  #   mysymbols <- getSymbols(myexpr)
+  #   mysymbols <- mysymbols[mysymbols %in% names(dMod.frame)]
+  #
+  #   # myexpr <- replaceSymbols(mysymbols,paste0(mysymbols, "[[i]]"), myexpr) # version 1
+  #   # myexpr <- replaceSymbols(mysymbols,paste0(".$", mysymbols), myexpr)    # version 2
+  #   myexpr <- paste0("list(", myexpr, ")")                                   # version 3
+  #   parse_quosure(myexpr)
+  # })
 
-    myexpr <- quo_text(UQ(i))
-    mysymbols <- getSymbols(myexpr)
-    mysymbols <- mysymbols[mysymbols %in% names(dMod.frame)]
+  dots <-lapply(dots, function(i) quo(list(UQ(i))))                         # version 3.1
 
-    # myexpr <- replaceSymbols(mysymbols,paste0(mysymbols, "[[i]]"), myexpr) # version 1
-    myexpr <- replaceSymbols(mysymbols,paste0(".$", mysymbols), myexpr)     # version 2
-    parse_quosure(myexpr)
-  })
-
+  print(dots)
   # dots <- lapply(dots, function(j) {                                      # version 1
   #   environment(j) <- pos.to.env(-1)                                      # version 1
   # nrow <- force(seq_len(nrow(dMod.frame)))                                # version 1
@@ -118,8 +122,12 @@ mutateListCols <- function(dMod.frame, ...) {
   # })                                                                      # version 1
     # mutate(dMod.frame, UQS(dots))                                         # version 1
 
-   out <- as.dMod.frame(cbind(dMod.frame, do(rowwise(dMod.frame), UQS(dots))))
-   return(out)
+
+
+   # out <- as.dMod.frame(cbind(dMod.frame, do(rowwise(dMod.frame), UQS(dots)))) # not the best solution with cbind?  # version 2
+   # return(out)
+  dMod.frame %>% rowwise %>% mutate(UQS(dots)) %>% as.dMod.frame() # version 3
+
 }
 
 
@@ -128,58 +136,19 @@ mutateListCols(frm, sm = a+b, dif = a-b) #%>% str2
 
 mutateListCols(dMod.frame = myframe,
                # wupwup= g*x*p,
-               prd1 = g1*x1*p1) #%>% str2
-
-# frm %>% rowwise %>% do(prd1 = cfn(.$g1,cfn(.$x1,.$p1)))
-frm %>% rowwise %>% do(prd1 = .$g1*.$x1*.$p1)
+               prd = g*x*p) #%>% str2
 
 
+# frm %>% rowwise %>% do(prd = cfn(.$g,cfn(.$x,.$p)))
+frm %>% rowwise %>% do(prd = .$g*.$x*.$p)
+
+myframe %>% rowwise %>% mutate(prd = list(g1*x1*p1))
+
+appendObj <- function(dMod.frame, prd = g*x*p, ...) {
 
 
-frm %>%
-  rowwise %>%
-  mutate(mysum = a+b)
-
-appendObj <- function(dMod.frame, prd1 = g1*x1*p1, ...) {
-
-  # prd1 <- enquo(prd1)
-  # prd1 <- quo_text(UQ(prd1))
-  # prd1 <- replaceSymbols(getSymbols(prd1),paste0(getSymbols(prd1), "[[i]]"), prd1)
-
-  # prd1 <- parse_quosure(prd1)
-
-
-
-
-  # build the expression to evaluate in "mutate"
-  # prd1 <- deparse(substitute(prd1))
-  # prd1 <- replaceSymbols(getSymbols(prd1),paste0(getSymbols(prd1), "[[i]]"), prd1)
-  # prd1 <- parse(text = prd1)
-
-  # prd1
-
-  # do this for the other expressions supplied by ...
-  # ideal would be to have something like
-  # ... is turned into named list, e.g. list(prd2 = x2*p2*p2SS)
-  # then, generate an expression as in prd1, which accesses [[i]]th elements
-  # put that expression automatically into mutate via unquote splicing
-  # this could be a job for rlang
-
-  # substitute(alist(...))
-
-
-#
-#   mutate(.data = dMod.frame,
-#          data1 = lapply(data1, as.datalist),
-#          prd1  = lapply(seq_along(x), function(i) {eval(prd1)})
-#          )
-
-
-  # prd1 <- substitute(prd1)
-  #
-  # do(rowwise(dMod.frame), prd1 = prd1)
 
 }
 
-appendObj(myframe, wupwup= g*x*p, prd2 = g1*x1*p1) %>% str2
+appendObj(myframe, wupwup= g*x*p, prd2 = g*x*p) %>% str2
 
