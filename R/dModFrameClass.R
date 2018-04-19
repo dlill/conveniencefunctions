@@ -17,27 +17,27 @@ is.datalist <- function(x) {
 #' Each row corresponds to a distinct hypothesis, e.g. one would have two distinct rows
 #' for fitting with and without a prior.
 #'
+#' Since the dMod.frame is also designed for scripting, the class will not be called
+#' "dMod.frame" as I initially planned, but will be c("tbl_df", "tbl", "data.frame").
+#' This way, I don't have to copy all the dplyr-verbs.
 #'
-#' @param hypothesis
-#' @param g
-#' @param x
-#' @param p
-#' @param data
+#'
+#' @param hypothesis Character. Description of the hypothesis
+#' @param g fn
+#' @param x fn
+#' @param p fn
+#' @param data data.frame or datalist, will be coerced to datalist
+#' @param e fn
 #' @param ...
 #'
-#' @return Object of class \code{dMod.frame}.
+#' @return Object of class \code{tbl_df}.
 #'
 #' @importFrom dplyr tibble
 #'
 #' @export
 #'
 #' @example
-#'
-#'
-#'
-
-# example("mstrust", run.dontrun = T, ask = F)
-
+#' \dontrun{example("mstrust", run.dontrun = T, ask = F)}
 dMod.frame <- function(hypothesis, g, x, p, data, e = NULL,...) {
 
   enlist <- function(x) {
@@ -49,7 +49,7 @@ dMod.frame <- function(hypothesis, g, x, p, data, e = NULL,...) {
          g = enlist(g),
          x = enlist(x),
          p = enlist(p),
-         data = enlist(data),
+         data = enlist(as.datalist(data)),
          e = enlist(e),
          ...)
   class(out) <- c("dMod.frame", class(out))
@@ -76,7 +76,7 @@ as.dMod.frame.data.frame <- function(x) {
 }
 
 
-myframe <- dMod.frame(hypothesis = "hyp", g, x, p, data)
+# myframe <- dMod.frame(hypothesis = "hyp", g, x, p0, data)
 
 # frm <- rbind(myframe, myframe)
 # frm$hypothesis[2] <- "hyp2"
@@ -97,58 +97,225 @@ myframe <- dMod.frame(hypothesis = "hyp", g, x, p, data)
 #
 
 
-mutateListCols <- function(dMod.frame, ...) {
-  # capture dotted expressions, transform them into index-wise expression
+#' Mutate List-Columns in a dMod.frame
+#'
+#' @description This function serves two purposes:
+#' 1. Provide a mutate()-like function for processing list-columns.
+#' Instead of having to do mutate(newcol = lapply(1:nrow(.), function(i) x[[i]]))
+#' or, which already feels a bit better . %>% rowwise %>% mutate (but here you
+#' might not always want to wrap your call in list())
+#' 2. Automatically append a column which keeps track of the calls that were used
+#' to create new columns.
+#'
+#' I'm not sure if I have implemented it in the best possible way, even though
+#' it has gone through three major iterations already.
+#' Main questions are:
+#' 1. Would it have been possible to do it neatly in base R?
+#' 2. Are quosures the best framework to use or would rlang::exprs() have been a
+#' better choice?
+#'
+#' @param dMod.frame A dMod.frame (also takes a tibble)
+#' @param appendExprs Logical. Should the calls be recorded or not?
+#' @param ... Expressions passed to mutate
+#'
+#' @return A dMod.frame with new list-columns added
+#' @export
+#'
+#' @importFrom rlang quos quo UQ UQS
+#' @importFrom dplyr mutate rowwise
+#' @examples
+#' myframe <- readRDS("myframe.rds")
+#' mutateListCols(dMod.frame = rbind(myframe, myframe), prd = g*x*p) %>%
+#'   mutateListCols(prd2 = g*prd) %>%
+#'   mutateListCols(prd3 = prd + prd2) %>%
+#'   str2 %>%
+#'   {.}
+mutateListCols <- function(dMod.frame, ..., appendCalls = T) {
   dots <- quos(...)
-  # dots <- lapply(dots, function(i) {
-  #
-  #   myexpr <- quo_text(UQ(i))
-  #   mysymbols <- getSymbols(myexpr)
-  #   mysymbols <- mysymbols[mysymbols %in% names(dMod.frame)]
-  #
-  #   # myexpr <- replaceSymbols(mysymbols,paste0(mysymbols, "[[i]]"), myexpr) # version 1
-  #   # myexpr <- replaceSymbols(mysymbols,paste0(".$", mysymbols), myexpr)    # version 2
-  #   myexpr <- paste0("list(", myexpr, ")")                                   # version 3
-  #   parse_quosure(myexpr)
-  # })
+  dots <-lapply(dots, function(i) quo(list(UQ(i))))
 
-  dots <-lapply(dots, function(i) quo(list(UQ(i))))                         # version 3.1
-
-  print(dots)
-  # dots <- lapply(dots, function(j) {                                      # version 1
-  #   environment(j) <- pos.to.env(-1)                                      # version 1
-  # nrow <- force(seq_len(nrow(dMod.frame)))                                # version 1
-  #   quo(lapply(UQ(nrow), function(i) {UQ(j)}))                            # version 1
-  # })                                                                      # version 1
-    # mutate(dMod.frame, UQS(dots))                                         # version 1
-
-
-
-   # out <- as.dMod.frame(cbind(dMod.frame, do(rowwise(dMod.frame), UQS(dots)))) # not the best solution with cbind?  # version 2
-   # return(out)
-  dMod.frame %>% rowwise %>% mutate(UQS(dots)) %>% as.dMod.frame() # version 3
-
+  if (appendCalls) {
+    if (is.null(dMod.frame[[".calls"]])) dMod.frame <- mutate(dMod.frame, .calls = list(NULL))
+    return(as.dMod.frame(mutate(rowwise(dMod.frame), UQS(dots), .calls = list(c(.calls, list(dots))))))
+  } else {
+    return(as.dMod.frame(mutate(rowwise(dMod.frame), UQS(dots))))
+  }
 }
 
 
-frm <- tibble(a = list(1,2,3), b = list(1,2,3))
-mutateListCols(frm, sm = a+b, dif = a-b) #%>% str2
+#' Append an objective function to a basic dMod.frame
+#'
+#' @param dMod.frame
+#' @param prd
+#' @param obj_data
+#' @param obj
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' appendObj(myframe) %>%
+#' .[[".calls"]] %>%
+#'   # str2 %>%
+#' {.}
+appendObj <- function(dMod.frame, prd = (g*x*p), obj_data = normL2(data, prd, e), obj = obj_data, ...) {
+  args <- c(list(prd = enquo(prd), obj_data = enquo(obj_data), obj = enquo(obj)), quos(...))
+  mutateListCols(dMod.frame, UQS(args))
+}
+#
 
-mutateListCols(dMod.frame = myframe,
-               # wupwup= g*x*p,
-               prd = g*x*p) #%>% str2
+#' Redo calls that are saved in the .calls - column
+#'
+#' @description This guy doesn't work because the calls get wrapped into lists again
+#'
+#' I think it would be best to discard mutateListCols and use . %>% rowwise %>% mutate(list())
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @examples
+reMutateCalls <- function(frm2, whichCalls) {
+  if (missing(whichCalls)) whichCalls <- unique(names(unlist(frm2[[".calls"]])))
 
-
-# frm %>% rowwise %>% do(prd = cfn(.$g,cfn(.$x,.$p)))
-frm %>% rowwise %>% do(prd = .$g*.$x*.$p)
-
-myframe %>% rowwise %>% mutate(prd = list(g1*x1*p1))
-
-appendObj <- function(dMod.frame, prd = g*x*p, ...) {
-
-
+  lapply(1:nrow(frm2), function(i) {
+    calls <- frm2[[".calls"]][[i]][[1]]
+    calls <- calls[names(calls)%in%whichCalls]
+    # mutateListCols(frm2[i,], UQS(calls), appendCalls = F) #doesnt work
+    mutate(rowwise(frm2[i,]), UQS(calls)) # works
+  })
 
 }
+reMutateCalls(frm2) %>% print()
 
-appendObj(myframe, wupwup= g*x*p, prd2 = g*x*p) %>% str2
+
+frm2 <- rbind(myframe, myframe) %>% appendObj
+frm2[[".calls"]][[1]][[1]] %>% names
+
+
+
+
+
+a <- 1
+d <- 2
+myfun <- function(a) {
+  # The quosure quo(a) has environment .GlobalEnv
+  quoa <- enquo(a)
+  print(environment(quoa))
+  a <- 2
+  print(quoa)
+  eval_tidy(quoa) %>% print %>% cat(.,"quoa\n")
+  # expr/enexpr is everything without environments
+  expra <- enexpr(a)
+  print(expra)
+  eval_tidy(expra) %>% cat(.,"expra\n")
+  # The quosure quob has the environment created by the function, but tidy_eval evaluates each quosure IN this quosure in their respective environments?
+  quob <- quo(paste("a", UQ(quoa)))
+  print(environment(quob))
+  eval_tidy(quob) %>% print
+
+  eval_bare(quob) %>% print
+
+  # Except for when it is called in mutate (and probably other dplyr verbs)
+  df <- tibble(a = 3)
+  mutate(df, UQ(quob), d=d)
+
+  # return(NULL)
+}
+myfun(a)
+
+# dplyr:::mutate.tbl_df
+# dplyr:::named_quos
+# dplyr:::mutate_impl
+# dplyr:::`_dplyr_mutate_impl`
+
+# myfun2 <- function(a = 1, b = 2, ...) {
+#   match.call()
+#   # match.call()$a
+# }
+# myfun2(a = 2, c = 3)
+#
+# mymatch <- function (FUN, descend = TRUE)
+# {
+#   eval.parent(substitute(substitute(FUN)))
+#   # if (is.function(FUN))
+#   #   return(FUN)
+#   # if (!(is.character(FUN) && length(FUN) == 1L || is.symbol(FUN))) {
+#   #   FUN <- eval.parent(substitute(substitute(FUN)))
+#   #   if (!is.symbol(FUN))
+#   #     stop(gettextf("'%s' is not a function, character or symbol",
+#   #                   deparse(FUN)), domain = NA)
+#   # }
+#   # envir <- parent.frame(2)
+#   # if (descend)
+#   #   FUN <- get(as.character(FUN), mode = "function", envir = envir)
+#   # else {
+#   #   FUN <- get(as.character(FUN), mode = "any", envir = envir)
+#   #   if (!is.function(FUN))
+#   #     stop(gettextf("found non-function '%s'", FUN), domain = NA)
+#   # }
+#   # return(FUN)
+# }
+# mymatch(myfun)
+#
+
+
+
+# mypage <- function (x, method = c("dput", "print"), ...)
+# {
+#   local.file.show <- function(file, title = subx, delete.file = TRUE,
+#                               pager = getOption("pager"), ...) file.show(file, title = title,
+#                                                                          delete.file = delete.file, pager = pager)
+#   local.dput <- function(x, file, title, delete.file, pager,
+#                          ...) dput(x, file, ...)
+#   local.print <- function(x, title, delete.file, pager, ...) print(x,
+#                                                                    ...)
+#   if (is.character(x) && length(x) == 1L) {
+#     subx <- x
+#     parent <- parent.frame()
+#     if (exists(subx, envir = parent))
+#       x <- get(subx, envir = parent)
+#     else stop(gettextf("no object named '%s' to show", x),
+#               domain = NA)
+#   }
+#   else {
+#     subx <- deparse(substitute(x))
+#   }
+#   file <- tempfile("Rpage.")
+#   if (match.arg(method) == "dput")
+#     local.dput(x, file, ...)
+#   else {
+#     print(subx)
+#
+#     sink(file)
+#     local.print(x, ...)
+#     sink()
+#   }
+#   local.file.show(file, ...)
+# }
+
+
+
+
+
+#
+#
+# mutateListCols(myframe,
+#                prd = g*x*p,
+#                obj_data = normL2(data,prd,e),
+#                obj = obj_data)
+#
+#
+
+
+
+
+
+
+
+
+
+
 
