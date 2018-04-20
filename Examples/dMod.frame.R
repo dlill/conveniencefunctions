@@ -100,19 +100,15 @@ myframe6 <- myframe5 %>%
 myframe6$profiles[[1]] %>% plotProfile()
 
 
-# Compute profiles of the fit
-profile <- profile(normL2(data, g*x*p) + constr,
-                   bestfit, "k1", limits = c(-5, 5))
-plotProfile(profile)
+# Validation
 
-# Add a validation objective function
-vali <- datapointL2("A", 2, "mypoint", .1, condition = "a")
-# Get validation point parameters
-mypoint <- trust(normL2(data, g*x*p) + constr + vali,
-                 c(mypoint = 0), rinit = 1, rmax = 10,
-                 fixed = bestfit)$argument
-# Compoute profile and plot
-profile <- profile(normL2(data, g*x*p) + constr + vali,
-                   c(bestfit, mypoint), "mypoint")
-plotProfile(profile)
+myframe7 <- myframe6 %>%
+  mutate(vali = list(datapointL2("A", 2, "mypoint", .1, condition = "a")),
+         obj_vali = list(obj_data + constr + vali),
+         par_vali = list(c(dMod:::sanitizePars(as.parvec(parframes))$pars, "mypoint" = 0.1 )),
+         fits_vali = list(mstrust(obj_vali, par_vali)),
+         profile_vali = list(profile(obj_vali, fits_vali %>% as.parframe %>% as.parvec, "mypoint")))
+
+myframe7$profile_vali %>% plotProfile()
+
 
