@@ -1,12 +1,3 @@
-# datalist class
-
-#' @param x
-#' @export
-#' @rdname datalist
-is.datalist <- function(x) {
-  "datalist" %in% class(x)
-}
-
 
 # dMod.frame class ----------------------------------------------------------------
 
@@ -32,7 +23,7 @@ is.datalist <- function(x) {
 #'
 #' @return Object of class \code{tbl_df}.
 #'
-#' @importFrom dplyr tibble
+#' @importFrom dplyr tibble rowwise
 #'
 #' @export
 #'
@@ -52,7 +43,7 @@ dMod.frame <- function(hypothesis, g, x, p, data, e = NULL,...) {
          data = enlist(as.datalist(data)),
          e = enlist(e),
          ...)
-  class(out) <- c("dMod.frame", class(out))
+  out <- rowwise(out)
 
   return(out)
 }
@@ -82,64 +73,30 @@ as.dMod.frame.data.frame <- function(x) {
 # frm$hypothesis[2] <- "hyp2"
 
 
-#
-# dMod.frame %>%
-#   mutate(data_0 = map(data_0, as.datalist),
-#          data_sig = map(data_sig, as.datalist)) %>%
-#   mutate(prd_0 = map(seq_along(x), function(i) cfn(g[[i]], cfn(x[[i]],p_0[[i]]))),
-#          prd_sig = map(seq_along(x), function(i) cfn(g[[i]], cfn(x[[i]],p_sig[[i]])))) %>%
-#   mutate(obj_0 = map(seq_along(x), function(i) normL2(data_0[[i]], prd_0[[i]])),
-#          obj_sig = map(seq_along(x), function(i) cf_normL2(data = data_sig[[i]], prd_sig[[i]], e = e[[i]]))) %>%
-#
-#   mutate(obj = map(seq_along(x), function(i) obj_sig[[i]]+obj_0[[i]])) %>%
-#   mutate(prd = map(seq_along(x), function(i) prd_sig[[i]]+prd_0[[i]])) %>%
-#   mutate(data= map(seq_along(x), function(i) data_sig[[i]]+data_0[[i]]))
-#
 
-
-#' Mutate List-Columns in a dMod.frame
+#' Title
 #'
-#' @description This function serves two purposes:
-#' 1. Provide a mutate()-like function for processing list-columns.
-#' Instead of having to do mutate(newcol = lapply(1:nrow(.), function(i) x[[i]]))
-#' or, which already feels a bit better . %>% rowwise %>% mutate (but here you
-#' might not always want to wrap your call in list())
-#' 2. Automatically append a column which keeps track of the calls that were used
-#' to create new columns.
+#' @param dMod.frame
+#' @param ...
+#' @param keepCalls
 #'
-#' I'm not sure if I have implemented it in the best possible way, even though
-#' it has gone through three major iterations already.
-#' Main questions are:
-#' 1. Would it have been possible to do it neatly in base R?
-#' 2. Are quosures the best framework to use or would rlang::exprs() have been a
-#' better choice?
-#'
-#' @param dMod.frame A dMod.frame (also takes a tibble)
-#' @param appendExprs Logical. Should the calls be recorded or not?
-#' @param ... Expressions passed to mutate
-#'
-#' @return A dMod.frame with new list-columns added
+#' @return
 #' @export
 #'
-#' @importFrom rlang quos quo UQ UQS
-#' @importFrom dplyr mutate rowwise
 #' @examples
-#' myframe <- readRDS("myframe.rds")
-#' mutateListCols(dMod.frame = rbind(myframe, myframe), prd = g*x*p) %>%
-#'   mutateListCols(prd2 = g*prd) %>%
-#'   mutateListCols(prd3 = prd + prd2) %>%
-#'   str2 %>%
-#'   {.}
-mutateListCols <- function(dMod.frame, ..., appendCalls = T) {
-  dots <- quos(...)
-  dots <-lapply(dots, function(i) quo(list(UQ(i))))
+mutatedMod.frame <- function(dMod.frame,
+                             ...,
+                             keepCalls = F) {
 
-  if (appendCalls) {
+  args <- quos(...)
+
+  if (keepCalls) {
     if (is.null(dMod.frame[[".calls"]])) dMod.frame <- mutate(dMod.frame, .calls = list(NULL))
-    return(as.dMod.frame(mutate(rowwise(dMod.frame), UQS(dots), .calls = list(c(.calls, list(dots))))))
+    return(mutate(rowwise(dMod.frame), UQS(args), .calls = list(c(.calls, list(args)))))
   } else {
-    return(as.dMod.frame(mutate(rowwise(dMod.frame), UQS(dots))))
+    return(mutate(rowwise(dMod.frame), UQS(args)))
   }
+
 }
 
 
@@ -150,81 +107,133 @@ mutateListCols <- function(dMod.frame, ..., appendCalls = T) {
 #' @param obj_data
 #' @param obj
 #' @param ...
+#' @param keepCalls
+#'
+#' @importFrom rlang quos enquo UQS
+#' @importFrom dplyr mutate rowwise
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' appendObj(myframe) %>%
 #' .[[".calls"]] %>%
 #'   # str2 %>%
 #' {.}
-appendObj <- function(dMod.frame, prd = (g*x*p), obj_data = normL2(data, prd, e), obj = obj_data, ...) {
-  args <- c(list(prd = enquo(prd), obj_data = enquo(obj_data), obj = enquo(obj)), quos(...))
-  mutateListCols(dMod.frame, UQS(args))
-}
-#
+#' }
+appendObj <- function(dMod.frame,
+                      prd = list(g*x*p),
+                      obj_data = list(normL2(data, prd, e)),
+                      obj = list(obj_data),
+                      pars = list(structure(rnorm(length(getParameters(obj))), names = getParameters(obj))),
+                      times = list(seq(min(as.data.frame(data)[["time"]]), max(as.data.frame(data)[["time"]])*1.1, length.out = 100)),
+                      ...,
+                      keepCalls = F) {
 
-#' Redo calls that are saved in the .calls - column
-#'
-#' @description This guy doesn't work because the calls get wrapped into lists again
-#'
-#' I think it would be best to discard mutateListCols and use . %>% rowwise %>% mutate(list())
+  args <- c(list(prd = enquo(prd),
+                 obj_data = enquo(obj_data),
+                 obj = enquo(obj),
+                 pars = enquo(pars),
+                 times = enquo(times)
+                 ),
+            quos(...))
+
+  mutatedMod.frame(dMod.frame, UQS(args), keepCalls = keepCalls)
+
+}
+
+
+
+
+#' Title
 #'
 #' @param dMod.frame
+#' @param parframes
+#' @param ...
+#' @param keepCalls
 #'
 #' @return
 #' @export
 #'
 #' @examples
-reMutateCalls <- function(frm2, whichCalls) {
-  if (missing(whichCalls)) whichCalls <- unique(names(unlist(frm2[[".calls"]])))
+appendParframes <- function(dMod.frame,
+                            parframes = list(as.parframe(fits)),
+                            ...,
+                            keepCalls = F) {
 
-  lapply(1:nrow(frm2), function(i) {
-    calls <- frm2[[".calls"]][[i]][[1]]
-    calls <- calls[names(calls)%in%whichCalls]
-    # mutateListCols(frm2[i,], UQS(calls), appendCalls = F) #doesnt work
-    mutate(rowwise(frm2[i,]), UQS(calls)) # works
-  })
+  args <- c(list(parframes = enquo(parframes)), quos(...))
+
+  mutatedMod.frame(dMod.frame, UQS(args), keepCalls = keepCalls)
 
 }
-reMutateCalls(frm2) %>% print()
-
-
-frm2 <- rbind(myframe, myframe) %>% appendObj
-frm2[[".calls"]][[1]][[1]] %>% names
 
 
 
 
 
-a <- 1
-d <- 2
-myfun <- function(a) {
-  # The quosure quo(a) has environment .GlobalEnv
-  quoa <- enquo(a)
-  print(environment(quoa))
-  a <- 2
-  print(quoa)
-  eval_tidy(quoa) %>% print %>% cat(.,"quoa\n")
-  # expr/enexpr is everything without environments
-  expra <- enexpr(a)
-  print(expra)
-  eval_tidy(expra) %>% cat(.,"expra\n")
-  # The quosure quob has the environment created by the function, but tidy_eval evaluates each quosure IN this quosure in their respective environments?
-  quob <- quo(paste("a", UQ(quoa)))
-  print(environment(quob))
-  eval_tidy(quob) %>% print
+#' Redo calls that are saved in the .calls - column
+#'
+#' @param dMod.frame A dMod.frame with a record of the calls
+#' @param whichCalls Numeric indices or character to subset .calls by name
+#'
+#' @description This guy doesn't work because the calls get wrapped into lists again
+#'
+#' @return
+#' @export
+#'
+#' @importFrom rlang UQS
+#' @importFrom dplyr mutate rowwise
+#'
+#' @examples
+reMutateCalls <- function(dMod.frame, whichCalls) {
+  if (missing(whichCalls)) whichCalls <- unique(names(unlist(dMod.frame[[".calls"]])))
 
-  eval_bare(quob) %>% print
-
-  # Except for when it is called in mutate (and probably other dplyr verbs)
-  df <- tibble(a = 3)
-  mutate(df, UQ(quob), d=d)
-
-  # return(NULL)
+  do.call(rbind,
+          lapply(1:nrow(dMod.frame), function(i) {
+            calls <- dMod.frame[[".calls"]][[i]][[1]]
+            calls <- calls[whichCalls]
+            mutate(rowwise(dMod.frame[i,]), UQS(calls)) # works
+          })
+  )
 }
-myfun(a)
+# reMutateCalls(frm2) %>% print()
+
+
+# frm2 <- rbind(myframe, myframe) %>% appendObj
+# frm2[[".calls"]][[1]][[1]] %>% names
+
+
+
+
+#
+# a <- 1
+# d <- 2
+# myfun <- function(a) {
+#   # The quosure quo(a) has environment .GlobalEnv
+#   quoa <- enquo(a)
+#   print(environment(quoa))
+#   a <- 2
+#   print(quoa)
+#   eval_tidy(quoa) %>% print %>% cat(.,"quoa\n")
+#   # expr/enexpr is everything without environments
+#   expra <- enexpr(a)
+#   print(expra)
+#   eval_tidy(expra) %>% cat(.,"expra\n")
+#   # The quosure quob has the environment created by the function, but tidy_eval evaluates each quosure IN this quosure in their respective environments?
+#   quob <- quo(paste("a", UQ(quoa)))
+#   print(environment(quob))
+#   eval_tidy(quob) %>% print
+#
+#   eval_bare(quob) %>% print
+#
+#   # Except for when it is called in mutate (and probably other dplyr verbs)
+#   df <- tibble(a = 3)
+#   mutate(df, UQ(quob), d=d)
+#
+#   # return(NULL)
+# }
+# myfun(a)
 
 # dplyr:::mutate.tbl_df
 # dplyr:::named_quos
