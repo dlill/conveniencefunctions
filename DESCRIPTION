@@ -14,5 +14,7 @@ Depends:
 Imports: 
   tidyverse,
   magrittr,
-  plotly
+  plotly,
+  rlang,
+  dplyr
 RoxygenNote: 6.0.1

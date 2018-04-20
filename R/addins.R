@@ -86,9 +86,16 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 
 #' @export
 #' @rdname insert runbg()
-insert_runbg <- function(job_name = "runbg_job") {
+insert_runbg <- function(job_name = "runbg_job", job_type = NULL, dMod.frame = NULL) {
+
   filename <- tpaste0(job_name)
-  rstudioapi::insertText(paste0(paste0('
+
+  if(!is.null(job_type)&is.null(dMod.frame)) stop("supplying job_type works only when supplying a dMod.frame")
+
+  if (is.null(job_type)) {
+
+
+    rstudioapi::insertText(paste0('
 ', job_name, ' <- runbg({
 
   },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv), filename = "', filename,'_runbg")
@@ -100,7 +107,68 @@ saveRDS(', job_name, ', file = "', filename, '.rds")
 # saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
 # ', job_name, '$purge()
 # ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
-')))
+'))
+
+
+    } else {
+
+
+    if(job_type == "fit") {
+
+
+rstudioapi::insertText(paste0('
+', job_name, ' <- runbg({
+    ncores <- detectFreeCores()
+    assign("ncores", ncores, pos = .GlobalEnv)
+
+   ', dMod.frame,' %>%
+    mutate(profiles = map(seq_along(x), function(i) {
+      assign("fit_obj", obj[[i]], pos = .GlobalEnv)
+      assign("fit_pars", pars[[i]], pos = .GlobalEnv)
+      assign("fit_studyname", paste0("fits", hypothesis[[i]]), pos = .GlobalEnv)
+      mstrust(objfun = fit_obj, center = fit_pars, studyname = fit_studyname, sd = 3,
+             blather = F, cores = ncores, fits = 10*ncores) }))
+
+  },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
+saveRDS(', job_name, ', file = "', filename, '.rds")
+# ',job_name,' <- readRDS("', filename, '.rds")
+# ',job_name,'$check()
+# wait_for_runbg(',job_name,')
+# ',job_name,'_results <- ',job_name,'$get()
+# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
+# ', job_name, '$purge()
+# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
+'))
+
+
+      } else if (job_type == "profiles") {
+
+rstudioapi::insertText(paste0('
+', job_name, ' <- runbg({
+    ncores <- detectFreeCores()
+    assign("ncores", ncores, pos = .GlobalEnv)
+
+   ', dMod.frame,' %>%
+    mutate(profiles = map(seq_along(x), function(i) {
+      assign("fit_obj", obj[[i]], pos = .GlobalEnv)
+      assign("fit_pars", best_parvec[[i]], pos = .GlobalEnv)
+      profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) }))
+
+  },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
+saveRDS(', job_name, ', file = "', filename, '.rds")
+# ',job_name,' <- readRDS("', filename, '.rds")
+# ',job_name,'$check()
+# wait_for_runbg(',job_name,')
+# ',job_name,'_results <- ',job_name,'$get()
+# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
+# ', job_name, '$purge()
+# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
+'))
+
+
+      }
+  }
+
 }
 
 
