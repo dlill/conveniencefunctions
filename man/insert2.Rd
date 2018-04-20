@@ -4,7 +4,7 @@
 \alias{insert2}
 \title{Insert only for a subset of conditions}
 \usage{
-insert2(trafo, expr, condition_sub = NULL, ...)
+insert2(trafo, expr, conditions = NULL, ...)
 }
 \arguments{
 \item{...}{}

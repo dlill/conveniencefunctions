@@ -4,22 +4,17 @@
 \alias{plotCombined.dMod.frame}
 \title{Plotting functions as methods, eg plotCombined.dMod.frame}
 \usage{
-plotCombined.dMod.frame(dMod.frame, hypothesis = 1, index = 1, ...)
+\method{plotCombined}{dMod.frame}(dMod.frame, hypothesis = 1, index = 1,
+  ...)
 }
 \arguments{
 \item{...}{}
 }
 \description{
-Combining dMod.frames should be easy as well
+dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
 }
 \details{
-dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
-
-rownames for dMod.frames
-
 for each expand/append function, write a shrink function which removes the respective columns for saving fits and so on.
-
-
 
 Ideas for dMod
 
