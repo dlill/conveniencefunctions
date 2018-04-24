@@ -2,15 +2,9 @@
 #'
 #' Plotting functions as methods, eg plotCombined.dMod.frame
 #'
-#' Combining dMod.frames should be easy as well
-#'
 #' dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
 #'
-#' rownames for dMod.frames
-#'
 #' for each expand/append function, write a shrink function which removes the respective columns for saving fits and so on.
-#'
-#'
 #'
 #'
 #' Ideas for dMod
@@ -58,7 +52,7 @@ plotCombined.dMod.frame <- function(dMod.frame, hypothesis = 1, index = 1, ... )
 
   myvalue <- dMod.frame[i, "parframes"] %>% .[[1]] %>% .[[1]] %>% .[i, "value"]
 
-  plotCombined(mypred,  dMod.frame$data[[i]], ...) + ggtitle(label = paste(dMod.frame$hypothesis[[i]], ",\t", myvalue))
+  plotCombined.prdlist(mypred,  dMod.frame$data[[i]], ...) + ggtitle(label = paste(dMod.frame$hypothesis[[i]], ",\t", myvalue))
 
 }
 

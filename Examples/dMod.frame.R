@@ -97,7 +97,7 @@ plotValues(myframe5, 1, tol =0.0000000001, value >1)
 myframe6 <- myframe5 %>%
   mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = "k1")))
 
-myframe6$profiles[[1]] %>% plotProfile()
+myframe6$profiles %>% plotProfile()
 
 
 # Validation

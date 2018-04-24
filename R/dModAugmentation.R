@@ -66,10 +66,10 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
 #' @export
 #'
 #' @example Examples/obj_condition_wise.R
-obj_condition_wise <- function(obj, pars, ...) {
+obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
   myconditions <- getConditions(obj)
 
-  lapply(myconditions, function(cond) {
+  out <- lapply(myconditions, function(cond) {
     myvalues <- obj(pars = pars, conditions = cond, ...)
 
     ndata <- get("data", environment(obj))
@@ -88,7 +88,15 @@ obj_condition_wise <- function(obj, pars, ...) {
       lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }}) #make tibble-compatible
 
     return(as_tibble(mylist))
-  }) #%>% do.call(rbind,.)
+  }) %>% do.call(rbind,.)
+  out1 <- out2 <- NULL
+  if(!is.null(constr1)) out1 <- c(condition = "Constraint 1", constr1(pars = pars, ...) %>% .[names(.)!="hessian"]) %>%
+    lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
+  # if(!is.null(constr2)) out2 <- c(condition = "Constraint 2", constr2(pars = pars, ...) %>% .[names(.)!="hessian"]) %>%
+  #   lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
+
+ out <- bind_rows(out, out1)#, out2)
+
 }
 
 

@@ -11,6 +11,7 @@ plotCombined <- function(x,...) {
   UseMethod("plotCombined", x)
 }
 
+#' @export
 plotCombined.prdlist <- dMod::plotCombined
 
 #' @rdname plotCombined
@@ -83,6 +84,7 @@ plotData  <- function(x,...) {
   UseMethod("plotData", x)
 }
 
+#' @export
 plotData.datalist <- dMod::plotData
 
 #' Title
@@ -98,6 +100,7 @@ plotData.data.frame <- function(data, ...) {
   plotData.datalist(as.datalist(data))
 }
 
+#' @export
 plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
 
   dots <- substitute(alist(...))
@@ -105,13 +108,13 @@ plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
   if(is.character(hypothesis)) hypothesis <- which(dMod.frame$hypothesis == hypothesis)
   # i <- hypothesis #so i can copy other code
 
-  myparvec <- as.parvec(dMod.frame[["parframes"]][[hypothesis]], index = index)
+  # myparvec <- as.parvec(dMod.frame[["parframes"]][[hypothesis]], index = index)
 
-  myprediction <- dMod.frame[["prd"]][[hypothesis]](times = seq(0, max(as.data.frame(dMod.frame[["data"]][[hypothesis]])$time),length.out = 100),
-                                                    pars = myparvec,
-                                                    deriv = F)
+  # myprediction <- dMod.frame[["prd"]][[hypothesis]](times = seq(0, max(as.data.frame(dMod.frame[["data"]][[hypothesis]])$time),length.out = 100),
+  #                                                   pars = myparvec,
+  #                                                   deriv = F)
 
-  myvalue <- dMod.frame[["parframes"]][[hypothesis]][index, "value"]
+  # myvalue <- dMod.frame[["parframes"]][[hypothesis]][1, "value"]
 
   plotData.datalist(myprediction,  dMod.frame[["data"]][[hypothesis]], ...) +
     ggtitle(label = paste0(dMod.frame[["hypothesis"]][[hypothesis]], "\n",
@@ -141,8 +144,10 @@ plotPars <- function(x,...) {
   UseMethod("plotPars", x)
 }
 
+#' @export
 plotPars.parframe <- dMod::plotPars
 
+#' @export
 plotPars.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
 
   dots <- substitute(alist(...))
@@ -189,8 +194,13 @@ plotProfile <- function(x,...) {
   UseMethod("plotProfile", x)
 }
 
+#' @export
+plotProfile.parframe <- dMod::plotProfile
+
+#' @export
 plotProfile.list <- dMod::plotProfile
 
+#' @export
 plotProfile.tbl_df <- function(dMod.frame, hypothesis = 1, ...) {
   dots <- substitute(alist(...))
 
@@ -219,6 +229,7 @@ plotValues <- function(x,...) {
   UseMethod("plotValues", x)
 }
 
+#' @export
 plotValues.parframe <- dMod::plotValues
 
 #' Title

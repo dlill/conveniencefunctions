@@ -252,3 +252,36 @@ runtime <- function( ... ) {
   attr(out, "runtime") <- pt
   return(out)
 }
+
+
+
+# move this to ./data/
+cf_tibble <- tibble::tibble(a = 1:4, b = c(1,1,2,2), c = letters[1:4])
+
+
+
+
+
+
+#' Unnest a list-column into a key-value pair, if the list entries are named vectors
+#'
+#' @param myframe
+#' @param unique
+#' @param unnest_var
+#'
+#' @return
+#' @export
+#'
+#' @examples
+unnest_name <- function(myframe, unique = "condition", unnest_var = "gradient") {
+  myframe_2 <- myframe %>% .[c(unique, unnest_var)]
+  myframe_2 <- myframe_2 %>% apply(1, function(i) {
+    tibble(condition = i[[unique]], grad_value = unlist(i[[unnest_var]]), grad_name = unlist(names(i[[unnest_var]])))
+  }) %>% do.call(rbind,.)
+
+  left_join(myframe, myframe_2)
+
+}
+
+
+

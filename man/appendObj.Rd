@@ -7,8 +7,8 @@
 appendObj(dMod.frame, prd = list(g * x * p), obj_data = list(normL2(data,
   prd, e)), obj = list(obj_data),
   pars = list(structure(rnorm(length(getParameters(obj))), names =
-  getParameters(obj))), times = list(seq(min(as.data.frame(data)[["time"]]) *
-  0.9, max(as.data.frame(data)[["time"]]) * 1.1, length.out = 100)), ...,
+  getParameters(obj))), times = list(seq(min(as.data.frame(data)[["time"]]),
+  max(as.data.frame(data)[["time"]]) * 1.1, length.out = 100)), ...,
   keepCalls = F)
 }
 \arguments{
