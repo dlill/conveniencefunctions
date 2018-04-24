@@ -330,7 +330,7 @@ update_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix
 
 #' Stage a dMod.frame and all of its DLLs
 #'
-#' @param dMod.frame
+#' @param dMod.frame the dMod.frame or a character vector specifying a RDS-file
 #'
 #' @return
 #' @export
