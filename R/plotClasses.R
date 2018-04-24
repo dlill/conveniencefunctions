@@ -116,7 +116,7 @@ plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
 
   # myvalue <- dMod.frame[["parframes"]][[hypothesis]][1, "value"]
 
-  plotData.datalist(myprediction,  dMod.frame[["data"]][[hypothesis]], ...) +
+  plotData.datalist(dMod.frame[["data"]][[hypothesis]], ...) +
     ggtitle(label = paste0(dMod.frame[["hypothesis"]][[hypothesis]], "\n",
                            "best value = ", round(dMod.frame[["parframes"]][[hypothesis]][1,"value", drop = T],1), "\n",
                            paste0(paste(names(dots), "=", dots )[-1], collapse = "\n")) )

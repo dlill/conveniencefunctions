@@ -325,3 +325,96 @@ update_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix
 
 
 
+
+
+
+#' Stage a dMod.frame and all of its DLLs
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @importFrom git2r add repository
+#'
+#' @examples
+git_add_dMod.frame <- function(dMod.frame) {
+  frame_quo <- enquo(dMod.frame)
+
+  if(is_tibble(dMod.frame)) {
+    filename <- tpaste0(quo_name(frame_quo), ".rds")
+    saveRDS(dMod.frame, filename)
+  } else if(is.character(dMod.frame)) {
+    filename <- dMod.frame
+    dMod.frame <- readRDS(filename)
+  } else stop("dMod.frame is neither a file nor a tibble")
+
+  models <- unlist(dMod.frame) %>%
+    map(function(i) {
+    mymodelname <- try(modelname(i), silent = T)
+    if (!inherits(mymodelname, "try-error")) return(mymodelname)
+    else return(NULL)
+    }) %>%
+    do.call(c,.) %>%
+    unique()
+  .so <- .Platform$dynlib.ext
+  files <- paste0(outer(models, c("", "_s", "_sdcv", "_deriv"), paste0), .so)
+  files <- files[file.exists(files)]
+
+  # for compatibility with Rmd which sets its own workdir
+  mywd <- getwd()
+  mygitrep <- git2r::repository() %>% workdir()
+  subfolder <- str_replace(mywd, mygitrep, "")
+
+  allfiles <- paste0(subfolder, "/", c(files, filename))
+
+  walk(allfiles , function(i) git2r::add(git2r::repository(), i))
+
+  NULL
+}
+
+
+#' Zip a dMod.frame and its DLLs
+#'
+#' This is a project
+#'
+#' @param dMod.frame
+#'
+#' @return
+#' @export
+#'
+#' @examples
+# zip_dMod.frame <- function(dMod.frame) {
+#   frame_quo <- enquo(dMod.frame)
+#
+#   if(is_tibble(dMod.frame)) {
+#     filename <- tpaste0(quo_name(frame_quo), ".rds")
+#     saveRDS(dMod.frame, filename)
+#   } else if(is.character(dMod.frame)) {
+#     filename <- dMod.frame
+#     dMod.frame <- readRDS(filename)
+#   } else stop("dMod.frame is neither a file nor a tibble")
+#
+#   models <- unlist(dMod.frame) %>%
+#     map(function(i) {
+#       mymodelname <- try(modelname(i), silent = T)
+#       if (!inherits(mymodelname, "try-error")) return(mymodelname)
+#       else return(NULL)
+#     }) %>%
+#     do.call(c,.) %>%
+#     unique()
+#   .so <- .Platform$dynlib.ext
+#   files <- paste0(outer(models, c("", "_s", "_sdcv", "_deriv"), paste0), .so)
+#   files <- files[file.exists(files)]
+#
+#
+#
+#   walk(c(files, filename) , function(i) git2r::add(repository(getwd()), i))
+#
+#   NULL
+# }
+
+
+
+
+
