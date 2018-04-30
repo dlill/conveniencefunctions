@@ -2,7 +2,7 @@
 % Please edit documentation in R/dModframetools.R
 \name{checkout_hypothesis}
 \alias{checkout_hypothesis}
-\title{Example of a dMod.frame pipe}
+\title{Load one row of a dMod.frame into the .GlobalEnv}
 \usage{
 checkout_hypothesis(dMod.frame, hypothesis, prefix = "", suffix = "")
 }
@@ -10,24 +10,6 @@ checkout_hypothesis(dMod.frame, hypothesis, prefix = "", suffix = "")
 \item{hypothesis}{character or numeric. specifying the name  or the index of the hypothesis}
 }
 \description{
-dMod.frame <- tibble(hypothesis = c("cell specific pars with prior", "no cell specifc pars, no prior"),
-x = list(x,x),
-g = list(g,g),
-p = list(p_1, p_2),
-pars = list(pars_1, pars2),
-data = list(mydatalist, mydatalist)) %>%
-  mutate(prd = list((g*x*p_1), (g*x*p_2))) %>%
-  mutate(prior = list(constraintL2(mu1, sigma1), NULL)) %>%
-  mutate(obj = lapply(seq_along(x), function(i) normL2(data[[i]], prd[[i]]) + prior[[i]])) %>%
-  mutate(machine = list(c("knecht1", "knecht2"), c("knecht3"))) %>%
-  mutate(fits = lapply(seq_along(x), function(i) runbg(mstrust(obj[[i]], pars[[i]]), machine = machine[[i]]) ))
-# wait a little
-dMod.frame <- dMod.frame %>%
-  mutate(fits = lapply(seq_along(x), function(i) fits[[i]][["get"]]()[[machine[[i]]]] )) %>%
-  mutate(fits = lapply(fits, as.parframe)) %>%
-  mutate(plots = lapply(seq_along(x), function(i) plotCombined(prd(mytimes, as.parvec(fits[[i]]), data = data[[i]])) ))
-}
-\details{
 Load one row of a dMod.frame into the .GlobalEnv
 }
 \examples{

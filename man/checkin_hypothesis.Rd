@@ -12,24 +12,13 @@ checkin_hypothesis(dMod.frame, exclude = NULL, include = NULL,
 
 \item{exclude}{not yet implemented}
 
-\item{include}{}
+\item{include}{not yet implemented}
+
+\item{suffix}{}
 }
 \value{
 the dMod.frame augmented by the new row
 }
 \description{
-Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
-}
-\examples{
-
-remove("doedel")
-dMod.frame <- tibble(doedel = "blabal")
-checkin_hypothesis(dMod.frame)
-
-doedel <- "yay"
-checkin_hypothesis(dMod.frame)
-
-doedel <- function(x) x^2
-checkin_hypothesis(dMod.frame)
-
+I don't really use this function, so it might not be worth it to keep working on it.
 }

@@ -7,8 +7,14 @@
 str_subset_keep_names(vec, pattern)
 }
 \arguments{
-\item{pattern}{}
+\item{vec}{named vector}
+
+\item{pattern}{regex as in str_subset}
 }
 \description{
 str_subset that preserves names
+}
+\examples{
+myvec <- c("a", "b", "ab", "ba") \%>\% are_names_of(.,.)
+myvec \%>\% str_subset_keep_names("^a")
 }

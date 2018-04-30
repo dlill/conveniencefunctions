@@ -1,3 +1,5 @@
+\dontrun{
+
 # ---- Example
 library(dMod)
 library(conveniencefunctions)
@@ -74,7 +76,7 @@ myframe3 <- myframe2 %>%
          obj = list(obj_data + constr))
 
 myframe4 <- myframe3 %>%
-  mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4)))
+  mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T)))
 
 
 # Inspect Fits
@@ -112,3 +114,9 @@ myframe7 <- myframe6 %>%
 myframe7$profile_vali %>% plotProfile()
 
 
+# stage for commit
+git_add_dMod.frame(myframe7)
+
+
+
+}

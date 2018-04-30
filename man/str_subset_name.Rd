@@ -10,8 +10,14 @@ str_subset_name(vec, pattern)
 str_subset_name(vec, pattern) <- value
 }
 \arguments{
-\item{pattern}{}
+\item{vec}{named vector}
+
+\item{pattern}{regex as in \link{str_subset}}
 }
 \description{
 This function is inspired by str_subset from stringr
+}
+\examples{
+myvec <- c("a", "b", "ab", "ba") \%>\% are_names_of(runif)
+myvec \%>\% str_subset_name("^a")
 }

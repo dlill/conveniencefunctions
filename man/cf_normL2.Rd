@@ -7,12 +7,23 @@
 cf_normL2(data, x, ...)
 }
 \arguments{
-\item{...}{}
+\item{data}{datalist}
+
+\item{x}{prd}
+
+\item{...}{other stuff for normL2}
+}
+\value{
+either NULL or the output of dMod::normL2
 }
 \description{
 normL2 with NULL allowed for data or x
 }
+\details{
+Not sure if I still need it, it was mainly for the convenient use in methatcetin_fitting.
+}
 \examples{
+\dontrun{
 obj_apap <- cf_normL2(data_apap \%>\% as.datalist, (g_apap*x_apap*p_apap))
 obj_apap <- cf_normL2(NULL, (g_apap*x_apap*p_apap))
 obj_apap <- cf_normL2(data_apap \%>\% as.datalist, NULL)
@@ -21,4 +32,5 @@ obj_apap(pars_apap)
 # why is this?
 NULL + obj_apap
 obj_apap + NULL
+}
 }

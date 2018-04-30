@@ -9,6 +9,9 @@ print_mathematica.character(mycharacter)
 \arguments{
 \item{mycharacter}{}
 }
+\value{
+
+}
 \description{
 Print a character in mathematica format
 }

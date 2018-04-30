@@ -12,3 +12,6 @@ sort_by_name(x)
 \description{
 Sort a vector by names in ascending order
 }
+\examples{
+c(b = 1, a = 2) \%>\% sort_by_name
+}

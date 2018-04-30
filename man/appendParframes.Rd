@@ -2,14 +2,23 @@
 % Please edit documentation in R/dModFrameClass.R
 \name{appendParframes}
 \alias{appendParframes}
-\title{Title}
+\title{Make a column "parframes" out of "fits"}
 \usage{
 appendParframes(dMod.frame, parframes = list(as.parframe(fits)), ...,
   keepCalls = F)
 }
 \arguments{
-\item{keepCalls}{}
+\item{dMod.frame}{A dmod.frame, preferably with a column \code{fits}.}
+
+\item{parframes}{Expression to turn a column containing a parlist (e.g. fits) into a column of parframess}
+
+\item{...}{Other columns you want to mutate.}
+
+\item{keepCalls}{Store a record of the calls in a new colun? See \link{mutatedMod.frame}.}
+}
+\value{
+The dMod.frame containing the column "parframes"
 }
 \description{
-Title
+Most plotting functions rely on a column "parframes" to be existent in the dMod.frame
 }

@@ -12,3 +12,9 @@ print_mathematica.eqnlist(myeqnlist)
 \description{
 Print ode vector in mathematica format
 }
+\examples{
+NULL \%>\%
+  addReaction("A", "B", "k1*A", "conversion A to B") \%>\%
+  addReaction("B", "", "k2*B*A", "dedradation of B induced by A") \%>\%
+  print_mathematica.eqnlist
+}

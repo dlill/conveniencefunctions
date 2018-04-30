@@ -2,12 +2,17 @@
 % Please edit documentation in R/tools.R
 \name{str_subset_not}
 \alias{str_subset_not}
-\title{the opposite of str_subset.}
+\alias{str_subset_keep_names_not}
+\title{The "opposite" of str_subset.}
 \usage{
 str_subset_not(vec, pattern)
+
+str_subset_keep_names_not(vec, pattern)
 }
 \arguments{
-\item{pattern}{}
+\item{vec}{named vector}
+
+\item{pattern}{regex as in str_subset}
 }
 \description{
 Preserves names

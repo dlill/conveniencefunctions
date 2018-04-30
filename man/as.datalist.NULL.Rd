@@ -12,3 +12,6 @@ as.datalist.NULL(...)
 \description{
 As.datalist method for NULL
 }
+\details{
+Not sure if I still need it, it was mainly for the convenient use in methatcetin_fitting.
+}

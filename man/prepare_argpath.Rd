@@ -10,15 +10,16 @@ prepare_argpath(fit, ncluster = 1)
 plot_argpath(argpath)
 }
 \arguments{
-\item{fit}{a fit returned from dMod::trust()}
+\item{fit}{a fit returned from dMod::trust(..., blather = T)}
 
 \item{argpath}{result from \link{prepare_argpath}}
 }
 \value{
-a data.frame for plotting
-
-a plot
+a data.frame for plotting with plot_argpath
 }
 \description{
-Requires the fit to be run with blather = T
+Requires the fit to be run with blather = T.
+The same functionality was actually already implemented by Malenka in dMod::plot.parlist(..., path = T)
+Both are nice and you see different things.
+Maybe it would be cool to implement a clustering-option into Malenkas plot.parlist()
 }

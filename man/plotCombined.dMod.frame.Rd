@@ -2,7 +2,7 @@
 % Please edit documentation in R/dModframetools.R
 \name{plotCombined.dMod.frame}
 \alias{plotCombined.dMod.frame}
-\title{Plotting functions as methods, eg plotCombined.dMod.frame}
+\title{Ideas for dMod}
 \usage{
 \method{plotCombined}{dMod.frame}(dMod.frame, hypothesis = 1, index = 1,
   ...)
@@ -11,21 +11,9 @@
 \item{...}{}
 }
 \description{
-dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
+in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
 }
 \details{
-for each expand/append function, write a shrink function which removes the respective columns for saving fits and so on.
-
-Ideas for dMod
-
-in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
-
-in norml2, compute the predictions with times individually -> ask Marcus, hat bei mir nicht so viel gebracht.
-
-in +.objfn fix the condition-wise thing
-
-in objfn make a condition_value attribute?
-
 in normL2, when passing an errmodel with conditions, evalute only those conditions with errmodel and the rest without errmodel
 
 plotting_functions: split them into a two-step pipe ("prepare_plotCombined" %>% "render_plotcombined") so that it can be more easily customizable?

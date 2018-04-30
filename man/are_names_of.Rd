@@ -4,11 +4,18 @@
 \alias{are_names_of}
 \title{Pipe-friendly assigning of vectors when their names are known first}
 \usage{
-are_names_of(char_vec, value)
+are_names_of(char_vec, value, ...)
 }
 \arguments{
-\item{value}{}
+\item{char_vec}{Character}
+
+\item{...}{Arguments ging to value if value is a function}
 }
 \description{
 Pipe-friendly assigning of vectors when their names are known first
+}
+\examples{
+letters \%>\% are_names_of(rnorm)
+letters \%>\% are_names_of(1)
+letters \%>\% are_names_of(1:26)
 }

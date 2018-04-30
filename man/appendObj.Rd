@@ -8,11 +8,24 @@ appendObj(dMod.frame, prd = list(g * x * p), obj_data = list(normL2(data,
   prd, e)), obj = list(obj_data),
   pars = list(structure(rnorm(length(getParameters(obj))), names =
   getParameters(obj))), times = list(seq(min(as.data.frame(data)[["time"]]),
-  max(as.data.frame(data)[["time"]]) * 1.1, length.out = 100)), ...,
+  max(as.data.frame(data)[["time"]]) * 1.1, length.out = 200)), ...,
   keepCalls = F)
 }
 \arguments{
-\item{keepCalls}{}
+\item{dMod.frame}{A dmod.frame}
+
+\item{prd}{Expression after which the concatenated prediction function is formed. Has to wrapped in list()}
+
+\item{obj_data}{Expression after which the objective function which describes the data is formed. Has to wrapped in list()}
+
+\item{obj}{This object is taken by the standard fitting functions. At typical expression would be \code{list(obj_data +  constr)}. Has to wrapped in list()}
+
+\item{...}{Other columns which are mutations of existing ones or new columns.}
+
+\item{keepCalls}{Store a record of the calls in a new colun? See \link{mutatedMod.frame}.}
+}
+\value{
+The dMod.frame augmented by standardized columns
 }
 \description{
 Append an objective function to a basic dMod.frame

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{tpaste0}
 \alias{tpaste0}
-\title{Append a time-stamp before}
+\title{Append a time-stamp before a string}
 \usage{
 tpaste0(...)
 }
@@ -10,5 +10,8 @@ tpaste0(...)
 \item{mystring}{}
 }
 \description{
-Append a time-stamp before
+Append a time-stamp before a string
+}
+\examples{
+tpaste0("workspace.rda")
 }

@@ -17,5 +17,6 @@ Imports:
   plotly,
   rlang,
   dplyr,
-  git2r
+  git2r,
+  beepr
 RoxygenNote: 6.0.1
