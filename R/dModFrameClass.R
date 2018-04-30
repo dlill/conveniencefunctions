@@ -8,7 +8,7 @@
 #' Each row corresponds to a distinct hypothesis, e.g. one would have two distinct rows
 #' for fitting with and without a prior.
 #'
-#' Since the dMod.frame is also designed for scripting, the class will not be called
+#' Since the dMod.frame is also designed for interactive use, the class will not be called
 #' "dMod.frame" as I initially planned, but will be c("tbl_df", "tbl", "data.frame").
 #' This way, I don't have to copy all the dplyr-verbs.
 #'
@@ -21,14 +21,13 @@
 #' @param e fn
 #' @param ...
 #'
-#' @return Object of class \code{tbl_df}.
+#' @return Object of class \code{tbl_df}, which is grouped rowwise.
 #'
 #' @importFrom dplyr tibble rowwise
 #'
 #' @export
 #'
-#' @example
-#' \dontrun{example("mstrust", run.dontrun = T, ask = F)}
+#' @example Examples/dMod.frame.R
 dMod.frame <- function(hypothesis, g, x, p, data, e = NULL,...) {
 
   enlist <- function(x) {
@@ -48,42 +47,28 @@ dMod.frame <- function(hypothesis, g, x, p, data, e = NULL,...) {
   return(out)
 }
 
-as.dMod.frame <- function(x) {
-  UseMethod("as.dMod.frame", x)
-}
 
-as.dMod.frame.tbl_df <- function(x) {
-
-  if (any(!(c("hypothesis", "g", "x", "p", "data", "e") %in% names(x)))) warning("This frame does not contain all basic columns")
-
-  class(x) <- c("dMod.frame", class(x))
-  return(x)
-}
-
-as.dMod.frame.data.frame <- function(x) {
-  if (any(!(c("hypothesis", "g", "x", "p", "data", "e") %in% names(x)))) warning("This frame does not contain all basic columns")
-
-  return(as.dMod.frame.tbl_df(as.tibble(x)))
-}
-
-
-# myframe <- dMod.frame(hypothesis = "hyp", g, x, p0, data)
-
-# frm <- rbind(myframe, myframe)
-# frm$hypothesis[2] <- "hyp2"
-
-
-
-#' Title
+#' A version of dplyr::mutate
 #'
-#' @param dMod.frame
-#' @param ...
-#' @param keepCalls
+#' @description This is basically dplyr::mutate with two differences
+#' 1. It groups the tibble rowwise before mutating
+#' 2. It allows to store the calls. This is intended for use when your objects are
+#' not standard transformations, such as \code{prd = g*x*p} but more complicated and you want
+#' to keep a record of what you did.
 #'
-#' @return
+#' @param dMod.frame a tibble
+#' @param ... expressions going to mutate()
+#' @param keepCalls should the dots ... be recorded?
+#'
 #' @export
 #'
 #' @examples
+#' mytbl <- tibble(a = 1:2, b = letters[1:2]) %>%
+#' mutatedMod.frame(e = paste0(a,b), keepCalls = T) %>%
+#' mutatedMod.frame(f = paste0(e, "=", a, "*", b), keepCalls = T) %>%
+#' mutatedMod.frame(e = paste0(a,"*", b), keepCalls = T)
+#'
+#' mytbl$.calls
 mutatedMod.frame <- function(dMod.frame,
                              ...,
                              keepCalls = F) {
@@ -102,17 +87,17 @@ mutatedMod.frame <- function(dMod.frame,
 
 #' Append an objective function to a basic dMod.frame
 #'
-#' @param dMod.frame
-#' @param prd
-#' @param obj_data
-#' @param obj
-#' @param ...
-#' @param keepCalls
+#' @param dMod.frame A dmod.frame
+#' @param prd Expression after which the concatenated prediction function is formed. Has to wrapped in list()
+#' @param obj_data Expression after which the objective function which describes the data is formed. Has to wrapped in list()
+#' @param obj This object is taken by the standard fitting functions. At typical expression would be \code{list(obj_data +  constr)}. Has to wrapped in list()
+#' @param ... Other columns which are mutations of existing ones or new columns.
+#' @param keepCalls Store a record of the calls in a new colun? See \link{mutatedMod.frame}.
 #'
 #' @importFrom rlang quos enquo UQS
 #' @importFrom dplyr mutate rowwise
 #'
-#' @return
+#' @return The dMod.frame augmented by standardized columns
 #' @export
 #'
 #' @examples
@@ -127,7 +112,7 @@ appendObj <- function(dMod.frame,
                       obj_data = list(normL2(data, prd, e)),
                       obj = list(obj_data),
                       pars = list(structure(rnorm(length(getParameters(obj))), names = getParameters(obj))),
-                      times = list(seq(min(as.data.frame(data)[["time"]]), max(as.data.frame(data)[["time"]])*1.1, length.out = 100)),
+                      times = list(seq(min(as.data.frame(data)[["time"]]), max(as.data.frame(data)[["time"]])*1.1, length.out = 200)),
                       ...,
                       keepCalls = F) {
 
@@ -146,17 +131,17 @@ appendObj <- function(dMod.frame,
 
 
 
-#' Title
+#' Make a column "parframes" out of "fits"
 #'
-#' @param dMod.frame
-#' @param parframes
-#' @param ...
-#' @param keepCalls
+#' Most plotting functions rely on a column "parframes" to be existent in the dMod.frame
 #'
-#' @return
+#' @param dMod.frame A dmod.frame, preferably with a column \code{fits}.
+#' @param parframes Expression to turn a column containing a parlist (e.g. fits) into a column of parframess
+#' @param ... Other columns you want to mutate.
+#' @param keepCalls Store a record of the calls in a new colun? See \link{mutatedMod.frame}.
+#'
+#' @return The dMod.frame containing the column "parframes"
 #' @export
-#'
-#' @examples
 appendParframes <- function(dMod.frame,
                             parframes = list(as.parframe(fits)),
                             ...,
@@ -167,9 +152,6 @@ appendParframes <- function(dMod.frame,
   mutatedMod.frame(dMod.frame, UQS(args), keepCalls = keepCalls)
 
 }
-
-
-
 
 
 #' Redo calls that are saved in the .calls - column

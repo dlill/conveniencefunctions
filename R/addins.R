@@ -22,6 +22,25 @@ insert_tee_print <- function ()
   {.}")
 }
 
+#' Addin to insert tee-operator
+#'
+#' @return
+#' @export
+#'
+#' @examples
+split_chunks <- function ()
+{
+  rstudioapi::insertText(
+"
+```
+
+```{r}
+")
+}
+
+
+
+
 
 #' Addin to insert map(seq_along(x), function(i))
 #'
@@ -122,12 +141,14 @@ rstudioapi::insertText(paste0('
     assign("ncores", ncores, pos = .GlobalEnv)
 
    ', dMod.frame,' %>%
-    mutate(profiles = map(seq_along(x), function(i) {
+    ungroup %>%
+    mutate(fits = map(seq_along(x), function(i) {
       assign("fit_obj", obj[[i]], pos = .GlobalEnv)
       assign("fit_pars", pars[[i]], pos = .GlobalEnv)
       assign("fit_studyname", paste0("fits", hypothesis[[i]]), pos = .GlobalEnv)
       mstrust(objfun = fit_obj, center = fit_pars, studyname = fit_studyname, sd = 3,
-             blather = F, cores = ncores, fits = 10*ncores) }))
+             blather = F, cores = ncores, fits = 10*ncores) })) %>%
+    rowwise
 
   },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
 saveRDS(', job_name, ', file = "', filename, '.rds")
@@ -141,7 +162,7 @@ saveRDS(', job_name, ', file = "', filename, '.rds")
 '))
 
 
-      } else if (job_type == "profiles") {
+      } else if (job_type == "profile") {
 
 rstudioapi::insertText(paste0('
 ', job_name, ' <- runbg({
@@ -149,10 +170,13 @@ rstudioapi::insertText(paste0('
     assign("ncores", ncores, pos = .GlobalEnv)
 
    ', dMod.frame,' %>%
+    ungroup %>%
     mutate(profiles = map(seq_along(x), function(i) {
       assign("fit_obj", obj[[i]], pos = .GlobalEnv)
       assign("fit_pars", best_parvec[[i]], pos = .GlobalEnv)
-      profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) }))
+      profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) })) %>%
+      rowwise
+
 
   },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
 saveRDS(', job_name, ', file = "', filename, '.rds")

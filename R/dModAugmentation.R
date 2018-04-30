@@ -1,12 +1,14 @@
-
 #' Print ode vector in mathematica format
 #'
 #' @param myeqnlist an eqnlist
 #'
-#' @return
 #' @export
 #'
 #' @examples
+#' NULL %>%
+#'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
+#'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
+#'   print_mathematica.eqnlist
 print_mathematica.eqnlist <- cf_print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
     as.eqnvec() %>%
     print_mathematica.eqnvec}
@@ -15,10 +17,14 @@ print_mathematica.eqnlist <- cf_print_mathematica.eqnlist <- function(myeqnlist)
 #'
 #' @param myeqnvec an eqnvec
 #'
-#' @return
 #' @export
 #'
 #' @examples
+#' NULL %>%
+#'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
+#'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
+#'   as.eqnvec %>%
+#'   print_mathematica.eqnlist
 print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
   myeqnvec %>%
 {structure(as.character(.), names = names(.))} %>%
@@ -33,7 +39,6 @@ print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
 #' @param mycharacter
 #'
 #' @return
-#' @export
 #'
 #' @examples
 #'  print_mathematica.character(paste0(letters, "_", letters))
@@ -62,7 +67,7 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
 #' @param obj
 #' @param pouter
 #'
-#' @return
+#' @return A tibble with rows corresponding to conditions and cols to several results of the objective function, such as value, gradient...
 #' @export
 #'
 #' @example Examples/obj_condition_wise.R
@@ -104,14 +109,16 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
 
 #' Look at the argpath of a fit
 #'
-#' Requires the fit to be run with blather = T
+#' Requires the fit to be run with blather = T.
+#' The same functionality was actually already implemented by Malenka in dMod::plot.parlist(..., path = T)
+#' Both are nice and you see different things.
+#' Maybe it would be cool to implement a clustering-option into Malenkas plot.parlist()
 #'
-#' @param fit a fit returned from dMod::trust()
+#' @param fit a fit returned from dMod::trust(..., blather = T)
 #'
-#' @return a data.frame for plotting
+#' @return a data.frame for plotting with plot_argpath
+#'
 #' @export
-#'
-#' @examples
 prepare_argpath <- function(fit, ncluster = 1) {
   chisquare_values <- data.frame(iteration = 1:length(fit[["valpath"]]), parameter = "-2LogLikelihood", value = log(abs(fit[["valpath"]])), cluster = 0)
 
@@ -136,10 +143,7 @@ prepare_argpath <- function(fit, ncluster = 1) {
 #'
 #' @param argpath result from \link{prepare_argpath}
 #'
-#' @return a plot
 #' @export
-#'
-#' @examples
 plot_argpath <- function(argpath) {argpath %>% ggplot(aes(value, parameter, frame = iteration, color = cluster)) +
   geom_point()
 }
@@ -155,14 +159,14 @@ plot_argpath <- function(argpath) {argpath %>% ggplot(aes(value, parameter, fram
 #' @param job
 #' @param delta_t
 #'
-#' @return
+#' @importFrom rlang eval_tidy quo enquo UQ
+#' @importFrom beepr beep
 #' @export
-#'
-#' @examples
 wait_for_runbg <- function(job, delta_t=5) {
 
-  while(!eval_tidy(quo("[["(!!enquo(job),"check")() )))
+  while(!rlang::eval_tidy(rlang::quo("[["(UQ(rlang::enquo(job)),"check")() )))
     Sys.sleep(delta_t)
+  walk(1:10,function(i) {beepr::beep(2); Sys.sleep(0.2)})
 
 }
 
@@ -173,8 +177,6 @@ wait_for_runbg <- function(job, delta_t=5) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 fitErrorModel_plot <- function(data) {
   fitErrorModel(data, factors = c("study"), blather = T, plotting = F,
                 errorModel = "exp(s0) +exp(srel)*x", par = c(s0 = -4, srel = 0)) %T>% print %>%
@@ -195,117 +197,16 @@ fitErrorModel_plot <- function(data) {
 
 
 
-#' Insert parameter values from a given table of covariates
-#'
-#' @description Why "m"insert? - multiple-insert
-#'
-#' @param trafo
-#' @param pars_to_insert
-#'
-#' @return
-#' @export
-#'
-#' @examples
-minsert <- function (trafo, pars_to_insert)
-{
-
-  # Best would be to have this option in insert, basically a check, if either expr or pars_to_insert has been supplied
-
-  if (missing(trafo))
-    trafo <- NULL
-  lookuptable <- attr(trafo, "tree")
-  if (is.list(trafo) & is.null(names(trafo)))
-    stop("If trafo is a list, elements must be named.")
-  if (is.list(trafo) & !all(names(trafo) %in% rownames(lookuptable)))
-    stop("If trafo is a list and contains a lookuptable (is branched from a tree), the list names must be contained in the rownames of the tree.")
-  if (!is.list(trafo)) {
-    mytrafo <- list(trafo)
-  }
-  else {
-    mytrafo <- trafo
-  }
-  out <- lapply(1:length(mytrafo), function(i) {
-    if (is.list(trafo)) {
-      mytable <- lookuptable[names(mytrafo)[i], , drop = FALSE]
-    }
-    else {
-      mytable <- lookuptable[1, , drop = FALSE]
-    }
-    with(mytable, {
-      args <- c(list(expr = "name ~ value", trafo = mytrafo[[i]]),
-                list(value = unlist(mget(pars_to_insert)), name = pars_to_insert))
-      # print(args)
-      do.call(repar, args)
-    })
-  })
-  names(out) <- names(mytrafo)
-  if (!is.list(trafo))
-    out <- out[[1]]
-  attr(out, "tree") <- lookuptable
-  return(out)
-}
-
-#' Insert only for a subset of conditions
-#'
-#' @param trafo
-#' @param expr
-#' @param condition_sub
-#' @param ...
-#'
-#' @return
-#' @export
-#'
-#' @examples
-insert2 <- insert_sub <- function (trafo, expr, conditions = NULL, ...)
-{
-  if (missing(trafo))
-    trafo <- NULL
-  lookuptable <- attr(trafo, "tree")
-  if (is.list(trafo) & is.null(names(trafo)))
-    stop("If trafo is a list, elements must be named.")
-  if (is.list(trafo) & !all(names(trafo) %in% rownames(lookuptable)))
-    stop("If trafo is a list and contains a lookuptable (is branched from a tree), the list names must be contained in the rownames of the tree.")
-  if (!is.list(trafo)) {
-    mytrafo <- list(trafo)
-  }
-  else {
-    mytrafo <- trafo
-  }
-  dots <- substitute(alist(...))
-  out <- lapply(1:length(mytrafo), function(i) {
-    if (is.list(trafo)) {
-      mytable <- lookuptable[names(mytrafo)[i], , drop = FALSE]
-    }
-    else {
-      mytable <- lookuptable[1, , drop = FALSE]
-    }
-
-    if((!is.null(conditions)) & (!str_detect(rownames(mytable), conditions))) {return(mytrafo[[i]])}
-
-    with(mytable, {
-      args <- c(list(expr = expr, trafo = mytrafo[[i]]),
-                eval(dots))
-      do.call(repar, args)
-    })
-  })
-  names(out) <- names(mytrafo)
-  if (!is.list(trafo))
-    out <- out[[1]]
-  attr(out, "tree") <- lookuptable
-  return(out)
-}
-
-
 
 
 #' As.datalist method for NULL
 #'
 #' @param ... NULL
 #'
-#' @return
-#' @export
+#' @details Not sure if I still need it, it was mainly for the convenient use in methatcetin_fitting.
 #'
-#' @examples
+#' @return NULL
+#' @export
 as.datalist.NULL <- function( ... ) {
   NULL
 }
@@ -316,10 +217,9 @@ as.datalist.NULL <- function( ... ) {
 #' @param p1
 #' @param p2
 #'
-#' @return
-#' @export
+#' @details Not sure if I still need it, it was mainly for the convenient use in methatcetin_fitting.
 #'
-#' @examples
+#' @export
 cfn <- function(p1,p2) {
   if(is.null(p1)|is.null(p2)) {
     return(NULL)
@@ -335,14 +235,16 @@ cfn <- function(p1,p2) {
 
 #' normL2 with NULL allowed for data or x
 #'
-#' @param data
-#' @param x
-#' @param ...
+#' @param data datalist
+#' @param x prd
+#' @param ... other stuff for normL2
 #'
-#' @return
-#' @export
+#' @details Not sure if I still need it, it was mainly for the convenient use in methatcetin_fitting.
+#'
+#' @return either NULL or the output of dMod::normL2
 #'
 #' @examples
+#' \dontrun{
 #' obj_apap <- cf_normL2(data_apap %>% as.datalist, (g_apap*x_apap*p_apap))
 #' obj_apap <- cf_normL2(NULL, (g_apap*x_apap*p_apap))
 #' obj_apap <- cf_normL2(data_apap %>% as.datalist, NULL)
@@ -351,6 +253,7 @@ cfn <- function(p1,p2) {
 #' # why is this?
 #' NULL + obj_apap
 #' obj_apap + NULL
+#' }
 cf_normL2 <- function(data, x, ...) {
   if(is.null(data)|is.null(x)) {
     return(NULL)
