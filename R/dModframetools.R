@@ -1,24 +1,11 @@
 # Ideas ----
 #'
-#' Plotting functions as methods, eg plotCombined.dMod.frame
-#'
-#' dMf_append_plots mit subset-möglichkeit, best_prediction erst hier, nicht in dMf_expand_fits
-#'
-#' for each expand/append function, write a shrink function which removes the respective columns for saving fits and so on.
-#'
 #'
 #' Ideas for dMod
 #'
 #' in runbg, when starting eg 20 fits per core and the slowly the load decreases, because there are some fits that take ages, kill these few last fits
 #'
-#' in norml2, compute the predictions with times individually -> ask Marcus, hat bei mir nicht so viel gebracht.
-#'
-#' in +.objfn fix the condition-wise thing
-#'
-#' in objfn make a condition_value attribute?
-#'
 #' in normL2, when passing an errmodel with conditions, evalute only those conditions with errmodel and the rest without errmodel
-#'
 #'
 #' plotting_functions: split them into a two-step pipe ("prepare_plotCombined" %>% "render_plotcombined") so that it can be more easily customizable?
 #'
@@ -58,139 +45,6 @@ plotCombined.dMod.frame <- function(dMod.frame, hypothesis = 1, index = 1, ... )
 
 
 
-#' Add plots to the dMod.frame
-#'
-#' @param dMod.frame with cols x, parframes, data, best_prediction, hypothesis, best_value, conditions (optional)
-#'
-#' @return dMod.frame with plots plot_value, plot_pars, plot_combined
-#' @export
-#'
-#' @examples
-dMf_append_plots <- function(mydMod.frame, tol = 1, index = 1, ...) {
-
-  message("Please write down what you see")
-
-  # Append waterfall, pars, and prediction of the best fit
-  mydMod.frame <- mydMod.frame %>%
-
-    mutate(best_prediction = map(seq_along(x), function(i) {
-      prd[[i]](times = seq(0, max(as.data.frame(data[[i]])$time),length.out = 100),
-               pars = parframes[[i]] %>% as.parvec(index),
-               deriv = F)
-    })) %>%
-
-    mutate(plot_value = map(parframes, plotValues, tol = tol),
-           plot_pars = map(parframes, plotPars, tol = tol),
-           plot_combined = map(seq_along(x), function(i) plotCombined(best_prediction[[i]], data[[i]],...))) %>%
-    mutate(plot_value = map(seq_along(x), function(i) plot_value[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))),
-           plot_pars = map(seq_along(x), function(i) plot_pars[[i]] + ggtitle(label = paste(hypothesis[[i]], ",\t", best_value[[i]]))),
-           plot_combined = map(seq_along(x), function(i) plot_combined[[i]] + ggtitle(label = paste(hypothesis[[i]],
-                                                                                                    ",\t fit_index:",
-                                                                                                    index,
-                                                                                                    "\t value:",
-                                                                                                    parframes[[i]][index, "value"]))))
-
-  # Adjust labels
-  if ("conditions" %in% names(mydMod.frame)) {
-    mydMod.frame <- mydMod.frame %>%
-      mutate(plot_combined = map(seq_along(x), function(i) plot_combined[[i]] + scale_color_dMod(labels = conditions[[i]])))
-  }
-
-  return(mydMod.frame)
-}
-
-
-
-
-# Expand fits ----
-
-#' Expand a dMod.frame with parlist by columns derived from these fits
-#'
-#' @description
-#'
-#' @param dMod.frame with columns x, data (list of datalists), prd
-#'
-#' @return dMod.frame augmented by columns parframes, best_parvec_best_value, best_prediction
-#' @export
-#'
-#' @examples
-dMf_expand_fits <- function(dMod.frame) {
-
-  if(!any(c("parframes", "fits") %in% names(dMod.frame)))
-    stop("either fits or parframes have to be present in dMod.frame")
-
-  if(! "parframes" %in% names(dMod.frame)) {
-    dMod.frame <- dMod.frame %>%
-      mutate(parframes = map(fits, as.parframe))
-  }
-
-   dMod.frame %>%
-    mutate(best_parvec = map(parframes, as.parvec)) %>%
-    mutate(best_value = map(parframes, function(pf) min(pf$value))) %>%
-    mutate(best_prediction = map(seq_along(x), function(i) {
-      prd[[i]](times = seq(0, max(as.data.frame(data[[i]])$time),length.out = 100),
-               pars = best_parvec[[i]],
-               deriv = F)
-    }))
-}
-
-# Shrink functions ----
-
-#' Remove cols from dMod.frame
-#'
-#' @param dMod.frame
-#'
-#' @return
-#' @export
-#'
-#' @examples
-shrink_fits <- function(dMod.frame) {
-  indices <- which(names(dMod.frame) %in% c("fits", "best_parvec", "best_value", "best_prediction"))
-  dMod.frame[-indices]
-}
-
-
-#' @export
-#' @rdname shrink_fits
-shrink_plots <- function(dMod.frame) {
-  indices <- which(names(dMod.frame) %in% c("plot_value", "plot_combined", "plot_pars", "plot_profile"))
-  dMod.frame[-indices]
-}
-
-
-# dMod.frame Example? -----
-#'
-#' Example of a dMod.frame pipe
-#'
-#' dMod.frame <- tibble(hypothesis = c("cell specific pars with prior", "no cell specifc pars, no prior"),
-#' x = list(x,x),
-#' g = list(g,g),
-#' p = list(p_1, p_2),
-#' pars = list(pars_1, pars2),
-#' data = list(mydatalist, mydatalist)) %>%
-#'   mutate(prd = list((g*x*p_1), (g*x*p_2))) %>%
-#'   mutate(prior = list(constraintL2(mu1, sigma1), NULL)) %>%
-#'   mutate(obj = lapply(seq_along(x), function(i) normL2(data[[i]], prd[[i]]) + prior[[i]])) %>%
-#'   mutate(machine = list(c("knecht1", "knecht2"), c("knecht3"))) %>%
-#'   mutate(fits = lapply(seq_along(x), function(i) runbg(mstrust(obj[[i]], pars[[i]]), machine = machine[[i]]) ))
-#' # wait a little
-#' dMod.frame <- dMod.frame %>%
-#'   mutate(fits = lapply(seq_along(x), function(i) fits[[i]][["get"]]()[[machine[[i]]]] )) %>%
-#'   mutate(fits = lapply(fits, as.parframe)) %>%
-#'   mutate(plots = lapply(seq_along(x), function(i) plotCombined(prd(mytimes, as.parvec(fits[[i]]), data = data[[i]])) ))
-#'
-#'
-# dMod.frame0 <- tibble::tibble(
-#   hypothesis = vector("character"),
-#   g = list(),
-#   x = list(),
-#   p = list(),
-#   prd = list(),
-#   data = list(),
-#   obj = list(),
-#   pars = list(),
-#   fits = list()
-# )
 
 
 
@@ -242,24 +96,18 @@ checkout_hypothesis <- function(dMod.frame, hypothesis, prefix = "", suffix = ""
 
 #' Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
 #'
+#' I don't really use this function, so it might not be worth it to keep working on it.
+#'
 #' @param dMod.frame the dMod.frame
 #' @param exclude not yet implemented
-#' @param include
+#' @param include not yet implemented
+#' @param prefix
+#' @param suffix
 #'
 #' @return the dMod.frame augmented by the new row
 #' @export
 #'
-#' @examples
-#'
-#' remove("doedel")
-#' dMod.frame <- tibble(doedel = "blabal")
-#' checkin_hypothesis(dMod.frame)
-#'
-#' doedel <- "yay"
-#' checkin_hypothesis(dMod.frame)
-#'
-#' doedel <- function(x) x^2
-#' checkin_hypothesis(dMod.frame)
+#' @importFrom dplyr bind_rows
 #'
 checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix = "", suffix = "") {
 
@@ -276,7 +124,7 @@ checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefi
   })
   names(new_hypothesis) <- mynames
 
-  return(rbind(dMod.frame, as.tibble(new_hypothesis)))
+  return(bind_rows(dMod.frame, as.tibble(new_hypothesis)))
 }
 
 
@@ -326,30 +174,37 @@ update_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix
 
 
 
-
+# Saving/commiting ----
 
 #' Stage a dMod.frame and all of its DLLs
 #'
 #' @param dMod.frame the dMod.frame or a character vector specifying a RDS-file
 #'
-#' @return
+#' @return This function is called for its side-effects.
 #' @export
 #'
-#' @importFrom git2r add repository
+#' @importFrom git2r add repository workdir
 #'
 #' @examples
 git_add_dMod.frame <- function(dMod.frame) {
   frame_quo <- enquo(dMod.frame)
 
   if(is_tibble(dMod.frame)) {
-    filename <- tpaste0(quo_name(frame_quo), ".rds")
-    saveRDS(dMod.frame, filename)
+    rds_file <- tpaste0(quo_name(frame_quo), ".rds")
+    saveRDS(dMod.frame, rds_file)
   } else if(is.character(dMod.frame)) {
-    filename <- dMod.frame
-    dMod.frame <- readRDS(filename)
+    rds_file <- dMod.frame
+    dMod.frame <- readRDS(rds_file)
   } else stop("dMod.frame is neither a file nor a tibble")
 
-  models <- unlist(dMod.frame) %>%
+  # if (is.null(dMod.frame[["eqnlists"]])) {
+  #   print("If called from RMarkdown document, have a look at your console (ctrl+2)")
+  #   yn <- readline("Would you like to add a column 'eqnlists'? (y = abort / anything else = continue this function to save without eqnlists)")
+  #   if(yn == "y") stop("Commitment has been aborted")
+  # }
+
+
+  models <- do.call(c, dMod.frame) %>%
     map(function(i) {
     mymodelname <- try(modelname(i), silent = T)
     if (!inherits(mymodelname, "try-error")) return(mymodelname)
@@ -363,10 +218,10 @@ git_add_dMod.frame <- function(dMod.frame) {
 
   # for compatibility with Rmd which sets its own workdir
   mywd <- getwd()
-  mygitrep <- git2r::repository() %>% workdir()
+  mygitrep <- git2r::repository() %>% git2r::workdir()
   subfolder <- str_replace(mywd, mygitrep, "")
 
-  allfiles <- paste0(subfolder, "/", c(files, filename))
+  allfiles <- paste0(subfolder, "/", c(files, rds_file))
 
   walk(allfiles , function(i) git2r::add(git2r::repository(), i))
 
@@ -376,43 +231,44 @@ git_add_dMod.frame <- function(dMod.frame) {
 
 #' Zip a dMod.frame and its DLLs
 #'
-#' This is a project
+#' This might be useful for collaboration
 #'
-#' @param dMod.frame
+#' @param dMod.frame The dMod.frame you want to zip
+#' @param zipfile If you want to add the files to an existing zipfile, specify the filepath here.
 #'
-#' @return
 #' @export
-#'
-#' @examples
-# zip_dMod.frame <- function(dMod.frame) {
-#   frame_quo <- enquo(dMod.frame)
-#
-#   if(is_tibble(dMod.frame)) {
-#     filename <- tpaste0(quo_name(frame_quo), ".rds")
-#     saveRDS(dMod.frame, filename)
-#   } else if(is.character(dMod.frame)) {
-#     filename <- dMod.frame
-#     dMod.frame <- readRDS(filename)
-#   } else stop("dMod.frame is neither a file nor a tibble")
-#
-#   models <- unlist(dMod.frame) %>%
-#     map(function(i) {
-#       mymodelname <- try(modelname(i), silent = T)
-#       if (!inherits(mymodelname, "try-error")) return(mymodelname)
-#       else return(NULL)
-#     }) %>%
-#     do.call(c,.) %>%
-#     unique()
-#   .so <- .Platform$dynlib.ext
-#   files <- paste0(outer(models, c("", "_s", "_sdcv", "_deriv"), paste0), .so)
-#   files <- files[file.exists(files)]
-#
-#
-#
-#   walk(c(files, filename) , function(i) git2r::add(repository(getwd()), i))
-#
-#   NULL
-# }
+zip_dMod.frame <- function(dMod.frame, zipfile = NULL) {
+  frame_quo <- enquo(dMod.frame)
+
+  if(is_tibble(dMod.frame)) {
+    rds_file <- tpaste0(quo_name(frame_quo), ".rds")
+    saveRDS(dMod.frame, rds_file)
+  } else if(is.character(dMod.frame)) {
+    rds_file <- dMod.frame
+    dMod.frame <- readRDS(rds_file)
+  } else stop("dMod.frame is neither a file nor a tibble")
+
+  # if (is.null(dMod.frame[["eqnlists"]])) {
+  #   yn <- readline("Would you like to add a column 'eqnlists'? (y = stop this function / anything else = continue this function to save without eqnlists)")
+  #   if(yn == "y") stop("Zipping has been aborted")
+  # }
+
+  models <- unlist(dMod.frame) %>%
+    map(function(i) {
+      mymodelname <- try(modelname(i), silent = T)
+      if (!inherits(mymodelname, "try-error")) return(mymodelname)
+      else return(NULL)
+    }) %>%
+    do.call(c,.) %>%
+    unique()
+  .so <- .Platform$dynlib.ext
+  files <- paste0(outer(models, c("", "_s", "_sdcv", "_deriv"), paste0), .so)
+  files <- files[file.exists(files)]
+
+  if (is.null(zipfile)) {zipfile <- str_replace(rds_file, "rds", "zip")}
+
+  zip(zipfile, c(rds_file, files))
+}
 
 
 

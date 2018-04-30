@@ -1,3 +1,5 @@
+# Analysis ----
+
 #' str with max.level = 0
 #'
 #' @param ...
@@ -36,85 +38,6 @@ str2 <- function(...) {
 
 
 
-
-
-#' magrittr-style two sided comparison
-#'
-#' @param x
-#' @param lower_lim
-#' @param upper_lim
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cf_is_in_between <- function(x, lower_lim, upper_lim) {
-  (x > lower_lim) & (x < upper_lim)
-}
-
-
-#' magrittr-Style Apply an expression that's more complicated
-#'
-#' Old, I use {.} now...
-#'
-#' @param x
-#' @param expr
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cf_apply_expression <- function(x, ...) {
-  myenv <- environment()
-  eval(as.expression(substitute(...)), envir = myenv)
-}
-
-#' magrittr-Style set attributes
-#'
-#' @param x
-#' @param expr
-#'
-#' @return
-#' @export
-#'
-#' @examples
-set_attributes <- function(x, attribute, value) {
-  for(i in 1:length(attribute)) {
-    attr(x, attribute[i]) <- value[i]
-  }
-  return(x)
-}
-
-
-
-#' Sort a vector by names in ascending order
-#'
-#' @param x named vector
-#'
-#' @return
-#' @export
-#'
-#' @examples
-sort_by_name <- function(x) {
-  x[order(names(x))]
-  }
-
-
-#' Pipe-friendly assigning of vectors when their names are known first
-#'
-#' @param char_vec
-#' @param value
-#'
-#' @return
-#' @export
-#'
-#' @examples
-are_names_of <- function(char_vec, value) {
-  if(length(value)==1) {value <- rep(value, length(char_vec))}
-  structure(value, names = char_vec)
-}
-
-
 #' Load the default values of formals of a function into the Global environment
 #'
 #' @param ... the function
@@ -133,65 +56,77 @@ evaluate_formals <- function(..., indices = 1:length(formals(...))) {
 }
 
 
-#' subset a vector by matching names against a pattern
+
+#' List the elements of .GlobalEnv without elements with matching naes
 #'
-#' This function is inspired by str_subset from stringr
+#' @param reg A vector of regex to be matched
 #'
-#' @param vec
-#' @param pattern
+#' @export
+global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(reg) %>% any))]
+
+
+#' The runtime of some code
 #'
-#' @return
+#' This function can be used, when you want to benchmark, but also access the results.
+#' @param ... Some code
+#'
+#' @return The output of the code with an attribute "runtime"
 #' @export
 #'
 #' @examples
-str_subset_name <- function(vec, pattern) {
-  vec %>% .[str_detect(names(.), pattern)]}
-
-#' @export
-#' @rdname str_subset_name
-"str_subset_name<-" <-  function(vec, pattern,value) {
-  vec[str_detect(names(vec), pattern)] <- value
-  vec}
-
-#' str_subset that preserves names
-#'
-#' @param vec
-#' @param pattern
-#'
-#' @return
-#' @export
-#'
-#' @examples
-str_subset_keep_names <- function(vec, pattern) {
-  vec %>% .[str_detect(., pattern)]}
+#' runtime({
+#' paste0(1:260000, letters, LETTERS)
+#' })
+runtime <- function( ... ) {
+  pt <- proc.time()
+  myenv <- environment()
+  out <- eval(as.expression(substitute(...)), envir = myenv)
+  pt <- proc.time()-pt
+  attr(out, "runtime") <- pt
+  return(out)
+}
 
 
-#' the opposite of str_subset.
+
+
+# Useful vector operations ----
+
+#' Sort a vector by names in ascending order
 #'
-#' Preserves names
+#' @param x named vector
 #'
-#' @param vec
-#' @param pattern
-#'
-#' @return
 #' @export
 #'
 #' @examples
-str_subset_not <- function(vec, pattern) {
-  vec %>% .[!str_detect(.,pattern)]}
+#' c(b = 1, a = 2) %>% sort_by_name
+sort_by_name <- function(x) {
+  x[order(names(x))]
+  }
 
 
-#' str_subset_name
+#' Pipe-friendly assigning of vectors when their names are known first
 #'
-#' @param vec
-#' @param pattern
+#' @param char_vec Character
+#' @param value Thre possibilities: 1. A function which takes \code{n} as an argument such as \code{rnorm}.
+#' 2. A vector of length 1, then this value gets recycled.
+#' 3. a vector of length \code{length(char_vec})}
+#' @param ... Arguments ging to value if value is a function
 #'
-#' @return
 #' @export
 #'
 #' @examples
-str_subset_keep_names_not <- function(vec, pattern) {
-  vec %>% .[!str_detect(., pattern)]}
+#' letters %>% are_names_of(rnorm)
+#' letters %>% are_names_of(1)
+#' letters %>% are_names_of(1:26)
+are_names_of <- function(char_vec, value, ...) {
+
+  if(is.function(value)) value <- do.call(value, list(n = 1:length(char_vec), ...))
+  else if(length(value)==1) value <- rep(value, length(char_vec))
+
+  structure(value, names = char_vec)
+}
+
+
 
 
 #' nicely formatted dput for named vectors
@@ -210,70 +145,129 @@ print_r.named_vector <- function(myvec) {myvec %>%
 
 
 
-#' Append a time-stamp before
+
+
+
+
+# useful stringr like functions ----
+
+
+
+#' subset a vector by matching names against a pattern
 #'
-#' @param mystring
+#' This function is inspired by str_subset from stringr
 #'
-#' @return
+#' @param vec named vector
+#' @param pattern regex as in \link{str_subset}
+#'
 #' @export
 #'
 #' @examples
+#' myvec <- c("a", "b", "ab", "ba") %>% are_names_of(runif)
+#' myvec %>% str_subset_name("^a")
+str_subset_name <- function(vec, pattern) {
+  vec %>% .[str_detect(names(.), pattern)]}
+
+#' @export
+#' @rdname str_subset_name
+"str_subset_name<-" <-  function(vec, pattern,value) {
+  vec[str_detect(names(vec), pattern)] <- value
+  vec}
+
+#' str_subset that preserves names
+#'
+#' @param vec named vector
+#' @param pattern regex as in str_subset
+#'
+#' @export
+#'
+#' @examples
+#' myvec <- c("a", "b", "ab", "ba") %>% are_names_of(.,.)
+#' myvec %>% str_subset_keep_names("^a")
+str_subset_keep_names <- function(vec, pattern) {
+  vec %>% .[str_detect(., pattern)]}
+
+
+#' The "opposite" of str_subset.
+#'
+#' Preserves names
+#'
+#' @param vec  named vector
+#' @param pattern regex as in str_subset
+#'
+#' @export
+#'
+#' @examples
+str_subset_not <- function(vec, pattern) {
+  vec %>% .[!str_detect(.,pattern)]}
+
+
+#' @rdname str_subset_not
+str_subset_keep_names_not <- function(vec, pattern) {
+  vec %>% .[!str_detect(., pattern)]}
+
+
+#' Is (any element) of pattern in any of the elements of vec?
+#'
+#' I usually use it with a pattern of length 1.
+#'
+#' @param vec named vector
+#' @param pattern regex as in str_subset
+#'
+#' @return Logical
+#' @export
+#'
+#' @examples
+#' str_detect_any(letters[1:3], c("c"))
+#' str_detect_any(letters[1:3], c("d"))
+#' str_detect_any(letters[1:3], c("c","d"))
+str_detect_any <- function(vec, pattern) {
+  sapply(vec, . %>% str_detect(pattern) %>% any) %>% any
+}
+
+str_detect_any(letters[1:3], c("c","d"))
+
+
+
+
+# Other useful stuff ----
+
+
+#' Append a time-stamp before a string
+#'
+#' @param mystring
+#'
+#' @export
+#'
+#' @examples
+#' tpaste0("workspace.rda")
 tpaste0 <- function(...) {
   paste0(format(Sys.time(), "%Y_%m_%d_%H_%M")
          , "_" , ...)
 }
 
 
-#' List the elements of .GlobalEnv without elements with matching naes
-#'
-#' @param reg A vector of regex to be matched
-#'
-#' @return
-#' @export
-#'
-#' @examples
-global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(reg) %>% any))]
-
-
-#' The runtime of some code
-#'
-#' This function can be used, when you want to benchmark, but also access the results.
-#' @param ... Some code
-#'
-#' @return The output of the code with an attribute "runtime"
-#' @export
-#'
-#' @examples
-runtime <- function( ... ) {
-  pt <- proc.time()
-  myenv <- environment()
-  out <- eval(as.expression(substitute(...)), envir = myenv)
-  pt <- proc.time()-pt
-  attr(out, "runtime") <- pt
-  return(out)
-}
-
 
 
 # move this to ./data/
-cf_tibble <- tibble::tibble(a = 1:4, b = c(1,1,2,2), c = letters[1:4])
-
-
-
+cf_tibble <- tibble::tibble(a = 1:4, b = c(1,1,2,2), d = letters[1:4])
 
 
 
 #' Unnest a list-column into a key-value pair, if the list entries are named vectors
 #'
-#' @param myframe
-#' @param unique
-#' @param unnest_var
+#' This function was built to look at the results of obj_condition_wise more easily
 #'
-#' @return
-#' @export
+#' @param myframe a tibble with list columns
+#' @param unique Character. A column name with unique elements in each row. \code{myframe} is split up and joined back together,
+#' so a unique identifier is needed to merge the two tibbles back together.
+#' @param unnest_var Character. The column name of the column which should be spread
+#'
+#'  @export
 #'
 #' @examples
-unnest_name <- function(myframe, unique = "condition", unnest_var = "gradient") {
+#' tibble(condition = 1, gradient = list(c(a=1, b=2, c=3))) %>% spread_list_column()
+spread_list_column <- function(myframe, unique = "condition", unnest_var = "gradient") {
   myframe_2 <- myframe %>% .[c(unique, unnest_var)]
   myframe_2 <- myframe_2 %>% apply(1, function(i) {
     tibble(condition = i[[unique]], grad_value = unlist(i[[unnest_var]]), grad_name = unlist(names(i[[unnest_var]])))
@@ -283,5 +277,6 @@ unnest_name <- function(myframe, unique = "condition", unnest_var = "gradient") 
 
 }
 
-
+#' @rdname spread_list_column
+unnest_name <- spread_list_column
 

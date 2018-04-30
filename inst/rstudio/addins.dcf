@@ -9,6 +9,11 @@ Description: Inserts `%T>% print` at the cursor position.
 Binding: insert_tee_print
 Interactive: false
 
+Name: Split Chunks
+Description: Split a code chunk in two pieces
+Binding: split_chunks
+Interactive: false
+
 
 Name: Insert seq_along(x) function(i)
 Description: Inserts `seq_along(x) function(i)` at the cursor position.
