@@ -1,3 +1,5 @@
+# Useful print functions for Mathematica ----
+
 #' Print ode vector in mathematica format
 #'
 #' @param myeqnlist an eqnlist
@@ -57,7 +59,7 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
 
 
 
-
+# obj_condition_wise ----
 
 #' Evaluate an objective function condition-wise
 #'
@@ -105,7 +107,7 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
 }
 
 
-
+# Plots ----
 
 #' Look at the argpath of a fit
 #'
@@ -150,25 +152,7 @@ plot_argpath <- function(argpath) {argpath %>% ggplot(aes(value, parameter, fram
 
 
 
-#' Wait for runbg
-#'
-#' It's better to use \code{runbg(..., wait = T)}, if you want to wait for the results anyway
-#'
-#' But this was nice for practicing enquo()
-#'
-#' @param job
-#' @param delta_t
-#'
-#' @importFrom rlang eval_tidy quo enquo UQ
-#' @importFrom beepr beep
-#' @export
-wait_for_runbg <- function(job, delta_t=5) {
 
-  while(!rlang::eval_tidy(rlang::quo("[["(UQ(rlang::enquo(job)),"check")() )))
-    Sys.sleep(delta_t)
-  walk(1:10,function(i) {beepr::beep(2); Sys.sleep(0.2)})
-
-}
 
 #' Get the nice plot of fitErrormodel
 #'
@@ -193,9 +177,27 @@ fitErrorModel_plot <- function(data) {
 
 }
 
+# runbg ----
 
+#' Wait for runbg
+#'
+#' It's better to use \code{runbg(..., wait = T)}, if you want to wait for the results anyway
+#'
+#' But this was nice for practicing enquo()
+#'
+#' @param job
+#' @param delta_t
+#'
+#' @importFrom rlang eval_tidy quo enquo UQ
+#' @importFrom beepr beep
+#' @export
+wait_for_runbg <- function(job, delta_t=5) {
 
+  while(!rlang::eval_tidy(rlang::quo("[["(UQ(rlang::enquo(job)),"check")() )))
+    Sys.sleep(delta_t)
+  walk(1:10,function(i) {beepr::beep(2); Sys.sleep(0.2)})
 
+}
 
 
 

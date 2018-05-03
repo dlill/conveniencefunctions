@@ -4,8 +4,7 @@
 \alias{plotCombined.dMod.frame}
 \title{Ideas for dMod}
 \usage{
-\method{plotCombined}{dMod.frame}(dMod.frame, hypothesis = 1, index = 1,
-  ...)
+plotCombined.dMod.frame(dMod.frame, hypothesis = 1, index = 1, ...)
 }
 \arguments{
 \item{...}{}
