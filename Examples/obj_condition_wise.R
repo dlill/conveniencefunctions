@@ -1,3 +1,4 @@
+\dontrun{
 library(dMod)
 library(conveniencefunctions)
 
@@ -60,7 +61,7 @@ obj_condition_wise((obj1+obj2),(c(a = 1)))
 
 
 
-
+}
 
 
 

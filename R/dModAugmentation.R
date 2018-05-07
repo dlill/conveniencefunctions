@@ -201,6 +201,19 @@ wait_for_runbg <- function(job, delta_t=5) {
 
 
 
+# Keep Workdir neat and tidy----
+#' Remove files with endings .c and .o
+#'
+#' @param path The path where those files should be removed
+#'
+#' @export
+remove_c_and_o <- function(path = ".") {
+  c_and_o <- list.files(path = path, pattern = "(\\.c)|(\\.o)")
+  system2("rm", args = c_and_o)
+}
+
+
+
 #' As.datalist method for NULL
 #'
 #' @param ... NULL
