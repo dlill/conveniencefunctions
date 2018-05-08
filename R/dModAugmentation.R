@@ -208,12 +208,13 @@ wait_for_runbg <- function(job, delta_t=5) {
 #'
 #' @param machine What you entered when you started the job
 #' @param filename What you entered when you started the job (if you entered nothing look at the RData-files that were generated)
+#' @param wait What you entered when you started the job
 #'
 #' @return the normal return value of runbg
 #' @export
 #'
 #' @author Daniel Kaschek, Daniel Lill just selected the respective lines
-recover_runbg <- function(machine, filename) {
+recover_runbg <- function(machine, filename, wait = FALSE) {
 
   nmachines <- length(machine)
 
