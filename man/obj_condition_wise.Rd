@@ -17,6 +17,7 @@ Easily see which condition contributes how much.
 Be careful to use this in an actual calculation, as in adding the results back together, because then the prior is evaluated multiple times
 }
 \examples{
+\dontrun{
 library(dMod)
 library(conveniencefunctions)
 
@@ -79,7 +80,7 @@ obj_condition_wise((obj1+obj2),(c(a = 1)))
 
 
 
-
+}
 
 
 

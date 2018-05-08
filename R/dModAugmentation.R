@@ -42,6 +42,8 @@ print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
 #'
 #' @return
 #'
+#' @export
+#'
 #' @examples
 #'  print_mathematica.character(paste0(letters, "_", letters))
 print_mathematica.character <- cf_print_mathematica.character <- function(mycharacter) {
@@ -200,6 +202,100 @@ wait_for_runbg <- function(job, delta_t=5) {
 }
 
 
+#' Recover a runbg-jog
+#'
+#' Recover a runbg-jog when the job is lost somewhere in the abyss between restarting sessions and not saving
+#'
+#' @param machine What you entered when you started the job
+#' @param filename What you entered when you started the job (if you entered nothing look at the RData-files that were generated)
+#'
+#' @return the normal return value of runbg
+#' @export
+#'
+#' @author Daniel Kaschek, Daniel Lill just selected the respective lines
+recover_runbg <- function(machine, filename) {
+
+  nmachines <- length(machine)
+
+  # Set file name
+  if (is.null(filename))
+    filename <- paste0("tmp_", paste(sample(c(0:9, letters), 5, replace = TRUE), collapse = ""))
+
+  filename0 <- filename
+  filename <- paste(filename, 1:nmachines, sep = "_")
+
+  # Initialize output
+  out <- structure(vector("list", 3), names = c("check", "get", "purge"))
+
+  # Check
+  out[[1]] <- function() {
+
+    check.out <- sapply(1:nmachines, function(m) length(suppressWarnings(
+      system(paste0("ssh ", machine[m], " ls ", filename[m], "_folder/ | grep -x ", filename[m], "_result.RData"),
+             intern = TRUE))))
+
+    if (all(check.out) > 0) {
+      cat("Result is ready!\n")
+      return(TRUE)
+    }
+    else if (any(check.out) > 0) {
+      cat("Result from machines", paste(which(check.out > 0), collapse = ", "), "are ready.")
+      return(FALSE)
+    }
+    else if (all(check.out) == 0) {
+      cat("Not ready!\n")
+      return(FALSE)
+    }
+
+  }
+
+  # Get
+  out[[2]] <- function() {
+
+    result <- structure(vector(mode = "list", length = nmachines), names = machine)
+    for (m in 1:nmachines) {
+      .runbgOutput <- NULL
+      system(paste0("scp ", machine[m], ":", filename[m], "_folder/", filename[m], "_result.RData ./"), ignore.stdout = TRUE, ignore.stderr = TRUE)
+      check <- try(load(file = paste0(filename[m], "_result.RData")), silent = TRUE)
+      if (!inherits("try-error", check)) result[[m]] <- .runbgOutput
+    }
+
+    .GlobalEnv$.runbgOutput <- result
+
+  }
+
+  # Purge
+  out[[3]] <- function() {
+
+    for (m in 1:nmachines) {
+      system(paste0("ssh ", machine[m], " rm -r ", filename[m], "_folder"))
+    }
+    system(paste0("rm ", filename0, "*"))
+  }
+
+
+  # Check if filenames exist and load last result (only if wait == TRUE)
+  resultfile <- paste(filename, "result.RData", sep = "_")
+  if (all(file.exists(resultfile)) & wait) {
+
+    for (m in 1:nmachines) {
+
+      result <- structure(vector(mode = "list", length = nmachines), names = machine)
+      load(file = resultfile[m])
+      result[[m]] <- .runbgOutput
+
+    }
+    .GlobalEnv$.runbgOutput <- result
+    return(out)
+  }
+
+  return(out)
+
+}
+
+
+
+
 
 # Keep Workdir neat and tidy----
 #' Remove files with endings .c and .o
@@ -214,6 +310,12 @@ remove_c_and_o <- function(path = ".") {
 
 
 
+
+
+
+
+
+# Allow NULL in .fn methods----
 #' As.datalist method for NULL
 #'
 #' @param ... NULL
