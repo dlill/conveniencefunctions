@@ -26,3 +26,7 @@ merge_col2_into_col1 <- function(.data, col1, col2) {
 }
 
 
+
+
+
+

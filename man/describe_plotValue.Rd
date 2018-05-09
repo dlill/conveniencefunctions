@@ -2,13 +2,20 @@
 % Please edit documentation in R/addins.R
 \name{describe_plotValue}
 \alias{describe_plotValue}
+\alias{describe_plotCombined}
 \title{Describe plot}
 \usage{
 describe_plotValue(dMod.frame = NULL)
+
+describe_plotCombined(dMod.frame = NULL)
 }
 \arguments{
+\item{dMod.frame}{}
+
 \item{dMod.frame}{}
 }
 \description{
 Here are some templates to motivate you to describe the plots.
+
+Addin
 }

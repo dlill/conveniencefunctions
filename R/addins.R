@@ -76,7 +76,7 @@ describe_plotValue <- function(dMod.frame = NULL) {
 #'
 #' @return
 #' @export
-#' @rdname desribe_plotValue
+#' @rdname describe_plotValue
 #' @examples
 describe_plotCombined <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best.\n")))
@@ -103,9 +103,18 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 }
 
 
+
+#' Title
+#'
+#' @param job_name character with "_job" at the end
+#' @param job_type character, options: fit, profile, profile_steps
+#' @param dMod.frame character "dMod.frame"
+#'
+#' @return
 #' @export
-#' @rdname insert runbg()
-insert_runbg <- function(job_name = "runbg_job", job_type = NULL, dMod.frame = NULL) {
+#'
+#' @examples
+insert_runbg <- function(job_name = "runbg_job", job_type = NULL, dMod.frame = NULL, tol = 1, nsteps = 3) {
 
   filename <- tpaste0(job_name)
 
@@ -173,8 +182,43 @@ rstudioapi::insertText(paste0('
     ungroup %>%
     mutate(profiles = map(seq_along(x), function(i) {
       assign("fit_obj", obj[[i]], pos = .GlobalEnv)
-      assign("fit_pars", best_parvec[[i]], pos = .GlobalEnv)
+      assign("fit_pars", parframes[[i]] %>% as.parvec, pos = .GlobalEnv)
       profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) })) %>%
+      rowwise
+
+
+  },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
+saveRDS(', job_name, ', file = "', filename, '.rds")
+# ',job_name,' <- readRDS("', filename, '.rds")
+# ',job_name,'$check()
+# wait_for_runbg(',job_name,')
+# ',job_name,'_results <- ',job_name,'$get()
+# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
+# ', job_name, '$purge()
+# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
+'))
+
+
+      } else if (job_type == "profile_steps") {
+
+        rstudioapi::insertText(paste0('
+', job_name, ' <- runbg({
+    ncores <- detectFreeCores()
+    assign("ncores", ncores, pos = .GlobalEnv)
+
+   ', dMod.frame,' %>%
+    ungroup %>%
+    mutate(profiles = map(seq_along(x), function(i) {
+      assign("fit_obj", obj[[i]], pos = .GlobalEnv)
+
+      steps <- getSteps(parframes[[i]], tol = ', tol, ', nsteps = ', nsteps ,')
+      lapply(steps, function(step) {
+        assign("fit_pars", parframes[[i]] %>% as.parvec(step), pos = .GlobalEnv)
+        profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores)
+      }) %>%
+        list
+
+       })) %>%
       rowwise
 
 

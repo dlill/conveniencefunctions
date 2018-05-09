@@ -4,12 +4,14 @@
 \alias{recover_runbg}
 \title{Recover a runbg-jog}
 \usage{
-recover_runbg(machine, filename)
+recover_runbg(machine, filename, wait = FALSE)
 }
 \arguments{
 \item{machine}{What you entered when you started the job}
 
 \item{filename}{What you entered when you started the job (if you entered nothing look at the RData-files that were generated)}
+
+\item{wait}{What you entered when you started the job}
 }
 \value{
 the normal return value of runbg
