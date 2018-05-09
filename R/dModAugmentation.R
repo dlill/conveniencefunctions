@@ -310,7 +310,7 @@ remove_c_and_o <- function(path = ".") {
 }
 
 
-
+# Parframe ----
 #' getSteps
 #'
 #' @param myparframe parframe, result from mstrust
@@ -320,9 +320,8 @@ remove_c_and_o <- function(path = ".") {
 #' @return parframe with only these steps
 #' @export
 #'
-#' @importFrom dMod stepDetect
 getSteps <- function(myparframe, nsteps = 5, tol = 1) {
-  steps <- stepDetect(myparframe$value, tol)
+  steps <- dMod:::stepDetect(myparframe$value, tol)
   steps <- steps[order(c(diff(steps), nrow(myparframe)-max(steps)), decreasing = T)][1:nsteps]
   steps <- unique(sort(c(1, steps))) #include the first step no matter what
   setNames(steps, paste0("index", steps))
