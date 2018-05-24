@@ -31,7 +31,7 @@ insert_tee_print <- function ()
 split_chunks <- function ()
 {
   rstudioapi::insertText(
-"
+    "
 ```
 
 ```{r}
@@ -114,38 +114,50 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 #' @export
 #'
 #' @examples
-insert_runbg <- function(job_name = "runbg_job", job_type = NULL, dMod.frame = NULL, tol = 1, nsteps = 3) {
+#' \dontrun{
+#' insert_runbg()
+#'
+#' insert_runbg(job_name = "myrunbg_job", job_type = "fit", dMod.frame = "myframe")
+#' insert_runbg(job_name = "myrunbg_job", job_type = "profile", dMod.frame = "myframe")
 
-  filename <- tpaste0(job_name)
+# myframe <- readRDS("~/Promotion/Projects/methacetin_fitting/Fit_model_41/2018_05_24_15_27_fit_krumbiegel_results.rds") %>% do.call(rbind,.)
+#'
+#' }
+#'
+insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame = NULL, tol = 1, nsteps = 3, distribute = NULL) {
+
 
   if(!is.null(job_type)&is.null(dMod.frame)) stop("supplying job_type works only when supplying a dMod.frame")
 
-  if (is.null(job_type)) {
+  # Defaults
+  job_name <- job_name %>% str_replace("_job$", "") %>% paste0("_job")
+  filename <- tpaste0(job_name)
+  machine <- 'c(paste0("knecht", 1))'
+  input <- 'ls(pos=.GlobalEnv)'
+  if(!is.null(dMod.frame)) input <- dMod.frame
 
 
-    rstudioapi::insertText(paste0('
-', job_name, ' <- runbg({
+  # General Job ---
+  rbg_header <- function() paste0('
+', job_name, ' <- runbg({')
 
-  },  machine = c(paste0("knecht", 1)), input = ls(pos=.GlobalEnv), filename = "', filename,'_runbg")
-saveRDS(', job_name, ', file = "', filename, '.rds")
-# ',job_name,' <- readRDS("', filename, '.rds")
+  rbg_body <- function() "\n\n"
+
+  rbg_end <- function() paste0('}, machine = ', machine, ', input = ', input,', filename = "', filename,'"
+  # , recover = T
+)')
+
+  rbg_get_save_purge <- function() paste0('
 # ',job_name,'$check()
-# wait_for_runbg(',job_name,')
-# ',job_name,'_results <- ',job_name,'$get()
-# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
+# runbg(wait_for_runbg(',job_name,'), filename = "wait", input = "', job_name, '")
+# ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
+# saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
+# ', str_replace(job_name, "_job", ""), ' <- readRDS("',str_replace(job_name, "_job", ""), '.rds")
 # ', job_name, '$purge()
-# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
-'))
+')
 
-
-    } else {
-
-
-    if(job_type == "fit") {
-
-
-rstudioapi::insertText(paste0('
-', job_name, ' <- runbg({
+  # Fit Job ----
+  fit_body <- function() paste0('
     ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
@@ -154,56 +166,28 @@ rstudioapi::insertText(paste0('
     mutate(fits = map(seq_along(x), function(i) {
       assign("fit_obj", obj[[i]], pos = .GlobalEnv)
       assign("fit_pars", pars[[i]], pos = .GlobalEnv)
+      assign("fit_fixed", NULL, pos = .GlobalEnv)
+      # assign("fit_fixed", fixed[[i]], pos = .GlobalEnv)
       assign("fit_studyname", paste0("fits", hypothesis[[i]]), pos = .GlobalEnv)
-      mstrust(objfun = fit_obj, center = fit_pars, studyname = fit_studyname, sd = 3,
+      mstrust(objfun = fit_obj, center = fit_pars, fixed = fit_fixed, studyname = fit_studyname, sd = 3,
              blather = F, cores = ncores, fits = 10*ncores) })) %>%
-    rowwise
-
-  },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
-saveRDS(', job_name, ', file = "', filename, '.rds")
-# ',job_name,' <- readRDS("', filename, '.rds")
-# ',job_name,'$check()
-# wait_for_runbg(',job_name,')
-# ',job_name,'_results <- ',job_name,'$get()
-# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
-# ', job_name, '$purge()
-# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
-'))
+    rowwise')
 
 
-      } else if (job_type == "profile") {
-
-rstudioapi::insertText(paste0('
-', job_name, ' <- runbg({
-    ncores <- detectFreeCores()
+  # Profiles ---
+  profile_body <- function() paste0('ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
-   ', dMod.frame,' %>%
-    ungroup %>%
-    mutate(profiles = map(seq_along(x), function(i) {
-      assign("fit_obj", obj[[i]], pos = .GlobalEnv)
-      assign("fit_pars", parframes[[i]] %>% as.parvec, pos = .GlobalEnv)
-      profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) })) %>%
-      rowwise
+    ', dMod.frame,' %>%
+      ungroup %>%
+      mutate(profiles = map(seq_along(x), function(i) {
+        assign("fit_obj", obj[[i]], pos = .GlobalEnv)
+        assign("fit_pars", parframes[[i]] %>% as.parvec, pos = .GlobalEnv)
+        profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) })) %>%
+      rowwise')
 
-
-  },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
-saveRDS(', job_name, ', file = "', filename, '.rds")
-# ',job_name,' <- readRDS("', filename, '.rds")
-# ',job_name,'$check()
-# wait_for_runbg(',job_name,')
-# ',job_name,'_results <- ',job_name,'$get()
-# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
-# ', job_name, '$purge()
-# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
-'))
-
-
-      } else if (job_type == "profile_steps") {
-
-        rstudioapi::insertText(paste0('
-', job_name, ' <- runbg({
-    ncores <- detectFreeCores()
+  # Profile steps ---
+  profile_step_body <- function() paste0('   ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
    ', dMod.frame,' %>%
@@ -219,23 +203,64 @@ saveRDS(', job_name, ', file = "', filename, '.rds")
         list
 
        })) %>%
-      rowwise
+      rowwise')
 
 
-  },  machine = c(paste0("knecht", 1)), input = "', dMod.frame,'", filename = "', filename,'_runbg")
-saveRDS(', job_name, ', file = "', filename, '.rds")
-# ',job_name,' <- readRDS("', filename, '.rds")
-# ',job_name,'$check()
-# wait_for_runbg(',job_name,')
-# ',job_name,'_results <- ',job_name,'$get()
-# saveRDS(', job_name, '_results, file = "',filename, '_results.rds")
-# ', job_name, '$purge()
-# ', str_replace(job_name, "_job", ""), ' <- readRDS("',filename, '_results.rds")
-'))
+  # Distribute ----
+  if(!is.null(distribute)) {
+
+    nhyp <- eval(parse(text = paste0("nrow(", dMod.frame, ")")))
+    nknecht <- length(distribute)
+
+    machine <- paste0(distribute, collapse = '","')
+
+    mycut <- cut(1:nhyp, nknecht) %>% as.numeric()
+    groups <- map(unique(mycut), function(i) {(1:nhyp)[mycut == i]})
+
+    dummy_input <- input
+    input <- "distributed_frame"
+    dMod.frame <- input
 
 
-      }
+    rbg_header <- function() paste0('
+groups <- ', deparse(groups), '
+', job_name, ' <- map(unique(groups), function(grp) {
+    grp <<- grp
+    distributed_frame <<- ',dummy_input,'[groups[[grp]],]
+runbg({
+
+#### Adjust the body of the runbg! ####
+
+')
+
+    rbg_end <- function() paste0('}, machine = c("', machine,'")[grp], input = c("', input, '", "groups", "grp"),  filename = "', filename,'"
+  # , recover = T
+)
+    })')
+
+  rbg_get_save_purge <- function() paste0('
+# map(',job_name,',. %>% .$check())
+# ',str_replace(job_name, "_job", ""),' <- map(',job_name,',. %>% .$get())
+# saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
+# ', str_replace(job_name, "_job", ""), ' <- readRDS("',str_replace(job_name, "_job", ""), '.rds")
+# map(', job_name, ',. %>% .$purge())
+')
   }
+
+if (is.null(job_type)) {
+  job_text <- paste0(rbg_header(), rbg_body(), rbg_end(), rbg_get_save_purge(), collapse = "\n")
+  rstudioapi::insertText(job_text)
+} else {
+  if(job_type == "fit") {
+    job_text <- paste0(rbg_header(), fit_body(), rbg_end(), rbg_get_save_purge(), collapse = "\n")
+    rstudioapi::insertText(job_text)
+  } else if (job_type == "profile") {
+    job_text <- paste0(rbg_header(), profile_body(), rbg_end(), rbg_get_save_purge(), collapse = "\n")
+    rstudioapi::insertText(job_text)
+  } else if (job_type == "profile_steps") {
+    job_text <- paste0(rbg_header(), profile_step_body(), rbg_end(), rbg_get_save_purge(), collapse = "\n")
+    rstudioapi::insertText(job_text)  }
+}
 
 }
 
