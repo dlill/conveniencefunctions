@@ -1,3 +1,8 @@
+# install ----
+
+# R -e 'devtools::install_github("dlill/conveniencefunctions")'
+
+
 # Analysis ----
 
 #' str with max.level = 0
