@@ -119,9 +119,8 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 #'
 #' insert_runbg(job_name = "myrunbg_job", job_type = "fit", dMod.frame = "myframe")
 #' insert_runbg(job_name = "myrunbg_job", job_type = "profile", dMod.frame = "myframe")
-
-# myframe <- readRDS("~/Promotion/Projects/methacetin_fitting/Fit_model_41/2018_05_24_15_27_fit_krumbiegel_results.rds") %>% do.call(rbind,.)
-#'
+#' myframe <- readRDS("~/Promotion/Projects/methacetin_fitting/Fit_model_41/2018_05_24_15_27_fit_krumbiegel_results.rds") %>% do.call(rbind,.)
+#' insert_runbg(job_name = "myrunbg_job", job_type = "profile_steps", dMod.frame = "myframe", distribute = paste0("knecht", 1:5))
 #' }
 #'
 insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame = NULL, tol = 1, nsteps = 3, distribute = NULL) {
@@ -228,9 +227,6 @@ groups <- ', deparse(groups), '
     grp <<- grp
     distributed_frame <<- ',dummy_input,'[groups[[grp]],]
 runbg({
-
-#### Adjust the body of the runbg! ####
-
 ')
 
     rbg_end <- function() paste0('}, machine = c("', machine,'")[grp], input = c("', input, '", "groups", "grp"),  filename = "', filename,'"
