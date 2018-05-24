@@ -197,7 +197,7 @@ wait_for_runbg <- function(job, delta_t=5) {
 
   while(!rlang::eval_tidy(rlang::quo("[["(UQ(rlang::enquo(job)),"check")() )))
     Sys.sleep(delta_t)
-  walk(1:10,function(i) {beepr::beep(2); Sys.sleep(0.2)})
+  beepr::beep(8)
 
 }
 
@@ -311,21 +311,7 @@ remove_c_and_o <- function(path = ".") {
 
 
 # Parframe ----
-#' getSteps
-#'
-#' @param myparframe parframe, result from mstrust
-#' @param tol tolerance for stepdetection
-#' @param min_stepzise minimum number of fits landed on this value
-#'
-#' @return parframe with only these steps
-#' @export
-#'
-getSteps <- function(myparframe, nsteps = 5, tol = 1) {
-  steps <- dMod:::stepDetect(myparframe$value, tol)
-  steps <- steps[order(c(diff(steps), nrow(myparframe)-max(steps)), decreasing = T)][1:nsteps]
-  steps <- unique(sort(c(1, steps))) #include the first step no matter what
-  setNames(steps, paste0("index", steps))
-}
+
 
 
 
