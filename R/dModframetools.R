@@ -1,3 +1,28 @@
+# Interaction with runbg
+
+#' Title
+#'
+#' @param runbgOutput
+#' @param return_value
+#'
+#' @return
+#' @export
+#'
+#' @examples
+uniteFits <- function(runbgOutput, return_value = c("dMod.frame", "parlist")) {
+  if (return_value == "dMod.frame") {
+    myframe <- runbgOutput[[1]]
+    myframe$fits <- runbgOutput %>% map("fits") %>% transpose() %>% map(. %>% Reduce(c.parlist,.))
+    return(myframe)
+  } else if (return_value == "parlist") {
+    myfits <- runbgOutput %>% map("fits") %>% transpose() %>% map(. %>% Reduce(c.parlist,.))
+    return(myfits)
+  }
+  NULL
+}
+
+
+
 # Interaction with .GlobalEnv ----
 
 #' Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
