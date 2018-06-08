@@ -17,9 +17,7 @@ insert_tee_operator <- function ()
 #' @examples
 insert_tee_print <- function ()
 {
-  rstudioapi::insertText(" %T>%
-  print %>%
-  {.}")
+  rstudioapi::insertText("{.} %T>% print %>%")
 }
 
 #' Addin to insert tee-operator
@@ -142,7 +140,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 
   rbg_body <- function() "\n\n"
 
-  rbg_end <- function() paste0('}, machine = ', machine, ', input = ', input,', filename = "', filename,'"
+  rbg_end <- function() paste0('\n}, machine = ', machine, ', input = "', input,'", filename = "', filename,'"
   # , recover = T
 )')
 

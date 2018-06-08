@@ -11,7 +11,7 @@
 #'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
 #'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
 #'   print_mathematica.eqnlist
-print_mathematica.eqnlist <- cf_print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
+print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
     as.eqnvec() %>%
     print_mathematica.eqnvec}
 
@@ -27,7 +27,7 @@ print_mathematica.eqnlist <- cf_print_mathematica.eqnlist <- function(myeqnlist)
 #'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
 #'   as.eqnvec %>%
 #'   print_mathematica.eqnlist
-print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
+print_mathematica.eqnvec <- function(myeqnvec) {
   myeqnvec %>%
 {structure(as.character(.), names = names(.))} %>%
     .[order(names(.))] %>%
@@ -46,7 +46,7 @@ print_mathematica.eqnvec <- cf_print_mathematica.eqnvec <- function(myeqnvec) {
 #'
 #' @examples
 #'  print_mathematica.character(paste0(letters, "_", letters))
-print_mathematica.character <- cf_print_mathematica.character <- function(mycharacter) {
+print_mathematica.character <-  function(mycharacter) {
   list(
   mycharacter %>%
     paste(collapse = ", ")  %>%
@@ -59,7 +59,16 @@ print_mathematica.character <- cf_print_mathematica.character <- function(mychar
   )
   }
 
-
+#' Print the values such that they are assignments in mathematica
+#'
+#' @param vec
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' print_mathematica.name_equals_value(c(a = 1, b = 2))
+print_mathematica.name_equals_value <- function(vec) {vec %>% paste0(names(.), " = ", . , ";\n") %>% paste0(collapse = "") %>% cat}
 
 # obj_condition_wise ----
 

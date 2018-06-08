@@ -142,10 +142,27 @@ are_names_of <- function(char_vec, value, ...) {
 #' @export
 #'
 #' @examples
-print_r.named_vector <- function(myvec) {myvec %>%
+#' letters[1:5] %>% are_names_of(0) %>% print_r.named_vector
+print_r.named_vector <- function(myvec, indices = T) {
+
+ if(!indices) {
+   myvec %>%
     paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
     paste0(collapse = "\t,\n") %>% paste("c(\n",.,"\n)") %>%
-    cat}
+    cat
+ } else {
+   n <- length(myvec)
+   myvec %>%
+     paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
+     paste0("\t, # ", 1:n) %>%
+     paste0(collapse = "\n") %>%
+     paste("c(\n",.,"\n)") %>%
+     str_replace(paste0(", # ",n), paste0("  # " , n)) %>%
+     cat
+   }
+
+
+  }
 
 
 

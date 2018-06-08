@@ -4,11 +4,14 @@
 \alias{print_r.named_vector}
 \title{nicely formatted dput for named vectors}
 \usage{
-print_r.named_vector(myvec)
+print_r.named_vector(myvec, indices = T)
 }
 \arguments{
 \item{myvec}{}
 }
 \description{
 nicely formatted dput for named vectors
+}
+\examples{
+letters[1:5] \%>\% are_names_of(0) \%>\% print_r.named_vector
 }
