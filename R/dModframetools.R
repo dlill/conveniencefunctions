@@ -1,14 +1,34 @@
-# Interaction with runbg
+# Saving/Loading ----
+# Saving is already solved by saveRDS
+
+#' Load a saved dMod.frame
+#'
+#' A dMod.frame saved by saveRDS is read and the DLLs required by its fn-objects are loaded as a side-effect
+#'
+#' @param filename Character, filename e.g. "myframe.rds"
+#'
+#' a dMod.frame
+#' @export
+readDMod.frame <- function(filename) {
+  frame <- readRDS(filename)
+  fns <- c("g", "x", "p", "obj_data", "obj")
+  frame[names(frame) %in% fns] %>% unlist(recursive = F) %>% walk(. %>% {try(loadDLL(.), silent = T)})
+  return(frame)
+}
+
+
+
+# Interaction with runbg ----
 
 #' Title
 #'
-#' @param runbgOutput
-#' @param return_value
+#' @param runbgOutput the .runbgOutput you get when you start a fit_job with insert_runbg on more than one knecht
+#' @param return_value one of c("dMod.frame", "parlist"). Do you want the dMod.frame or just the parlist
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 uniteFits <- function(runbgOutput, return_value = c("dMod.frame", "parlist")) {
   if (return_value == "dMod.frame") {
     myframe <- runbgOutput[[1]]
@@ -32,10 +52,10 @@ uniteFits <- function(runbgOutput, return_value = c("dMod.frame", "parlist")) {
 #' @param dMod.frame the dMod.frame
 #' @param exclude not yet implemented
 #' @param include not yet implemented
-#' @param prefix
-#' @param suffix
+#' @param prefix prefix
+#' @param suffix suffix
 #'
-#' @return the dMod.frame augmented by the new row
+#' the dMod.frame augmented by the new row
 #' @export
 #'
 #' @importFrom dplyr bind_rows
@@ -64,13 +84,13 @@ checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefi
 
 #' Update a hypothesis
 #'
-#' @param dMod.frame
-#' @param exclude
-#' @param include
-#' @param prefix
-#' @param suffix
+#' @param dMod.frame bla
+#' @param exclude bla
+#' @param include bla
+#' @param prefix bla
+#' @param suffix bla
 #'
-#' @return
+#'
 #' @export
 #'
 #' @examples

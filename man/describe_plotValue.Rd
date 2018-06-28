@@ -3,11 +3,20 @@
 \name{describe_plotValue}
 \alias{describe_plotValue}
 \alias{describe_plotCombined}
+\alias{describe_plotPars}
+\alias{describe_plotPars}
+\alias{describe_plotProfile}
 \title{Describe plot}
 \usage{
 describe_plotValue(dMod.frame = NULL)
 
 describe_plotCombined(dMod.frame = NULL)
+
+describe_plotPars(dMod.frame = NULL)
+
+describe_plotPars(dMod.frame = NULL)
+
+describe_plotProfile(dMod.frame = NULL)
 }
 \arguments{
 \item{dMod.frame}{}

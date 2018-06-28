@@ -14,10 +14,11 @@ checkin_hypothesis(dMod.frame, exclude = NULL, include = NULL,
 
 \item{include}{not yet implemented}
 
-\item{suffix}{}
-}
-\value{
-the dMod.frame augmented by the new row
+\item{prefix}{prefix}
+
+\item{suffix}{suffix
+
+the dMod.frame augmented by the new row}
 }
 \description{
 I don't really use this function, so it might not be worth it to keep working on it.

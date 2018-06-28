@@ -9,10 +9,10 @@
 #'
 #' @param ...
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 str0 <- function(...) {
   str(..., max.level = 0)
 }
@@ -21,10 +21,10 @@ str0 <- function(...) {
 #'
 #' @param ...
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 str1 <- function(...) {
   str(..., max.level = 1)
 }
@@ -33,10 +33,10 @@ str1 <- function(...) {
 #'
 #' @param ...
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 str2 <- function(...) {
   str(..., max.level = 2)
 }
@@ -49,7 +49,7 @@ str2 <- function(...) {
 #' @param indices the indices of the formals you want to evaluate
 #' @details Useful for debugging
 #'
-#' @return
+#'
 #' @export
 #'
 #' @examples
@@ -75,7 +75,7 @@ global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(.
 #' This function can be used, when you want to benchmark, but also access the results.
 #' @param ... Some code
 #'
-#' @return The output of the code with an attribute "runtime"
+#' The output of the code with an attribute "runtime"
 #' @export
 #'
 #' @examples
@@ -114,7 +114,7 @@ sort_by_name <- function(x) {
 #' @param char_vec Character
 #' @param value Thre possibilities: 1. A function which takes \code{n} as an argument such as \code{rnorm}.
 #' 2. A vector of length 1, then this value gets recycled.
-#' 3. a vector of length \code{length(char_vec})}
+#' 3. a vector of length \code{length(char_vec)}
 #' @param ... Arguments ging to value if value is a function
 #'
 #' @export
@@ -130,41 +130,6 @@ are_names_of <- function(char_vec, value, ...) {
 
   structure(value, names = char_vec)
 }
-
-
-
-
-#' nicely formatted dput for named vectors
-#'
-#' @param myvec
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' letters[1:5] %>% are_names_of(0) %>% print_r.named_vector
-print_r.named_vector <- function(myvec, indices = T) {
-
- if(!indices) {
-   myvec %>%
-    paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
-    paste0(collapse = "\t,\n") %>% paste("c(\n",.,"\n)") %>%
-    cat
- } else {
-   n <- length(myvec)
-   myvec %>%
-     paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
-     paste0("\t, # ", 1:n) %>%
-     paste0(collapse = "\n") %>%
-     paste("c(\n",.,"\n)") %>%
-     str_replace(paste0(", # ",n), paste0("  # " , n)) %>%
-     cat
-   }
-
-
-  }
-
-
 
 
 
@@ -219,7 +184,7 @@ str_subset_keep_names <- function(vec, pattern) {
 #'
 #' @export
 #'
-#' @examples
+#'
 str_subset_not <- function(vec, pattern) {
   vec %>% .[!str_detect(.,pattern)]}
 
@@ -236,7 +201,7 @@ str_subset_keep_names_not <- function(vec, pattern) {
 #' @param vec named vector
 #' @param pattern regex as in str_subset
 #'
-#' @return Logical
+#' Logical
 #' @export
 #'
 #' @examples

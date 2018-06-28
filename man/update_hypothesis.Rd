@@ -8,7 +8,15 @@ update_hypothesis(dMod.frame, exclude = NULL, include = NULL, prefix = "",
   suffix = "")
 }
 \arguments{
-\item{suffix}{}
+\item{dMod.frame}{bla}
+
+\item{exclude}{bla}
+
+\item{include}{bla}
+
+\item{prefix}{bla}
+
+\item{suffix}{bla}
 }
 \description{
 Update a hypothesis

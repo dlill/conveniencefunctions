@@ -7,10 +7,9 @@
 runtime(...)
 }
 \arguments{
-\item{...}{Some code}
-}
-\value{
-The output of the code with an attribute "runtime"
+\item{...}{Some code
+
+The output of the code with an attribute "runtime"}
 }
 \description{
 This function can be used, when you want to benchmark, but also access the results.

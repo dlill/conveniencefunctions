@@ -7,7 +7,9 @@
 uniteFits(runbgOutput, return_value = c("dMod.frame", "parlist"))
 }
 \arguments{
-\item{return_value}{}
+\item{runbgOutput}{the .runbgOutput you get when you start a fit_job with insert_runbg on more than one knecht}
+
+\item{return_value}{one of c("dMod.frame", "parlist"). Do you want the dMod.frame or just the parlist}
 }
 \description{
 Title

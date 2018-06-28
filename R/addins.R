@@ -1,9 +1,9 @@
 #' Addin to insert tee-operator
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 insert_tee_operator <- function ()
 {
   rstudioapi::insertText(" %T>% ")
@@ -11,10 +11,10 @@ insert_tee_operator <- function ()
 
 #' Addin to insert tee-operator
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 insert_tee_print <- function ()
 {
   rstudioapi::insertText("{.} %T>% print %>%")
@@ -22,10 +22,10 @@ insert_tee_print <- function ()
 
 #' Addin to insert tee-operator
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 split_chunks <- function ()
 {
   rstudioapi::insertText(
@@ -42,10 +42,10 @@ split_chunks <- function ()
 
 #' Addin to insert map(seq_along(x), function(i))
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 insert_seq_along_x_function_i <- function ()
 {
   rstudioapi::insertText("seq_along(x), function(i) ")
@@ -60,10 +60,10 @@ insert_seq_along_x_function_i <- function ()
 #'
 #' @param dMod.frame
 #'
-#' @return
+#'
 #' @export
 #'
-#' @examples
+#'
 describe_plotValue <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": There are good bad steps\n")))
 }
@@ -72,16 +72,16 @@ describe_plotValue <- function(dMod.frame = NULL) {
 #'
 #' @param dMod.frame
 #'
-#' @return
+#'
 #' @export
 #' @rdname describe_plotValue
-#' @examples
+#'
 describe_plotCombined <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best.\n")))
 }
 
 #' @export
-#' @rdname desribe_plotValue
+#' @rdname describe_plotValue
 describe_plotPars <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
 }
@@ -89,26 +89,26 @@ describe_plotPars <- function(dMod.frame = NULL) {
 
 
 #' @export
-#' @rdname desribe_plotValue
+#' @rdname describe_plotValue
 describe_plotPars <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
 }
 
 #' @export
-#' @rdname desribe_plotValue
+#' @rdname describe_plotValue
 describe_plotProfile <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars  are structurally non-identifiable.\n  The pars  are practically non-identifiable")))
 }
 
 
 
-#' Title
+#' Insert a runbg job
 #'
 #' @param job_name character with "_job" at the end
 #' @param job_type character, options: fit, profile, profile_steps
 #' @param dMod.frame character "dMod.frame"
 #'
-#' @return
+#'
 #' @export
 #'
 #' @examples

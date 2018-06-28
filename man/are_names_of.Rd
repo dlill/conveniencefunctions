@@ -9,6 +9,10 @@ are_names_of(char_vec, value, ...)
 \arguments{
 \item{char_vec}{Character}
 
+\item{value}{Thre possibilities: 1. A function which takes \code{n} as an argument such as \code{rnorm}.
+2. A vector of length 1, then this value gets recycled.
+3. a vector of length \code{length(char_vec)}}
+
 \item{...}{Arguments ging to value if value is a function}
 }
 \description{

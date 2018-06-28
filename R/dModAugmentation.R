@@ -1,75 +1,3 @@
-# Useful print functions for Mathematica ----
-
-#' Print ode vector in mathematica format
-#'
-#' @param myeqnlist an eqnlist
-#'
-#' @export
-#'
-#' @examples
-#' NULL %>%
-#'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
-#'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
-#'   print_mathematica.eqnlist
-print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
-    as.eqnvec() %>%
-    print_mathematica.eqnvec}
-
-#' Print ode vector in mathematica format
-#'
-#' @param myeqnvec an eqnvec
-#'
-#' @export
-#'
-#' @examples
-#' NULL %>%
-#'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
-#'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
-#'   as.eqnvec %>%
-#'   print_mathematica.eqnlist
-print_mathematica.eqnvec <- function(myeqnvec) {
-  myeqnvec %>%
-{structure(as.character(.), names = names(.))} %>%
-    .[order(names(.))] %>%
-    paste(collapse = ", ")  %>%
-    str_replace_all(c("_" = "")) %>%
-    paste0("f={",.,"};")}
-
-
-#' Print a character in mathematica format
-#'
-#' @param mycharacter
-#'
-#' @return
-#'
-#' @export
-#'
-#' @examples
-#'  print_mathematica.character(paste0(letters, "_", letters))
-print_mathematica.character <-  function(mycharacter) {
-  list(
-  mycharacter %>%
-    paste(collapse = ", ")  %>%
-    str_replace_all(c("_" = "")) %>%
-    paste0("x={",.,"};")
-  ,
-  structure(mycharacter,
-    names = paste0("\\b", mycharacter %>%
-              str_replace_all(c("_" = "")), "\\b"))
-  )
-  }
-
-#' Print the values such that they are assignments in mathematica
-#'
-#' @param vec
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#' print_mathematica.name_equals_value(c(a = 1, b = 2))
-print_mathematica.name_equals_value <- function(vec) {vec %>% paste0(names(.), " = ", . , ";\n") %>% paste0(collapse = "") %>% cat}
-
 # obj_condition_wise ----
 
 #' Evaluate an objective function condition-wise
@@ -77,8 +5,8 @@ print_mathematica.name_equals_value <- function(vec) {vec %>% paste0(names(.), "
 #' Easily see which condition contributes how much.
 #' Be careful to use this in an actual calculation, as in adding the results back together, because then the prior is evaluated multiple times
 #'
-#' @param obj
-#' @param pouter
+#' @param obj objfn
+#' @param pouter pars at which obj is evaluated
 #'
 #' @return A tibble with rows corresponding to conditions and cols to several results of the objective function, such as value, gradient...
 #' @export
@@ -167,10 +95,10 @@ plot_argpath <- function(argpath) {argpath %>% ggplot(aes(value, parameter, fram
 
 #' Get the nice plot of fitErrormodel
 #'
-#' @param data
+#' @param data data which goes into fitErrormodel
 #' @details This function is mainly to print the plotting function and to copy/paste it for manipulating it in a script
 #'
-#' @return
+#'
 #' @export
 fitErrorModel_plot <- function(data) {
   fitErrorModel(data, factors = c("study"), blather = T, plotting = F,
@@ -196,8 +124,8 @@ fitErrorModel_plot <- function(data) {
 #'
 #' But this was nice for practicing enquo()
 #'
-#' @param job
-#' @param delta_t
+#' @param job a runbg object
+#' @param delta_t in seconds, the time interval between job$check()s
 #'
 #' @importFrom rlang eval_tidy quo enquo UQ
 #' @importFrom beepr beep
@@ -209,100 +137,6 @@ wait_for_runbg <- function(job, delta_t=5) {
   beepr::beep(8)
 
 }
-
-
-#' Recover a runbg-jog
-#'
-#' Recover a runbg-jog when the job is lost somewhere in the abyss between restarting sessions and not saving
-#'
-#' @param machine What you entered when you started the job
-#' @param filename What you entered when you started the job (if you entered nothing look at the RData-files that were generated)
-#' @param wait What you entered when you started the job
-#'
-#' @return the normal return value of runbg
-#' @export
-#'
-#' @author Daniel Kaschek, Daniel Lill just selected the respective lines
-recover_runbg <- function(machine, filename, wait = FALSE) {
-
-  nmachines <- length(machine)
-
-  # Set file name
-  if (is.null(filename))
-    filename <- paste0("tmp_", paste(sample(c(0:9, letters), 5, replace = TRUE), collapse = ""))
-
-  filename0 <- filename
-  filename <- paste(filename, 1:nmachines, sep = "_")
-
-  # Initialize output
-  out <- structure(vector("list", 3), names = c("check", "get", "purge"))
-
-  # Check
-  out[[1]] <- function() {
-
-    check.out <- sapply(1:nmachines, function(m) length(suppressWarnings(
-      system(paste0("ssh ", machine[m], " ls ", filename[m], "_folder/ | grep -x ", filename[m], "_result.RData"),
-             intern = TRUE))))
-
-    if (all(check.out) > 0) {
-      cat("Result is ready!\n")
-      return(TRUE)
-    }
-    else if (any(check.out) > 0) {
-      cat("Result from machines", paste(which(check.out > 0), collapse = ", "), "are ready.")
-      return(FALSE)
-    }
-    else if (all(check.out) == 0) {
-      cat("Not ready!\n")
-      return(FALSE)
-    }
-
-  }
-
-  # Get
-  out[[2]] <- function() {
-
-    result <- structure(vector(mode = "list", length = nmachines), names = machine)
-    for (m in 1:nmachines) {
-      .runbgOutput <- NULL
-      system(paste0("scp ", machine[m], ":", filename[m], "_folder/", filename[m], "_result.RData ./"), ignore.stdout = TRUE, ignore.stderr = TRUE)
-      check <- try(load(file = paste0(filename[m], "_result.RData")), silent = TRUE)
-      if (!inherits("try-error", check)) result[[m]] <- .runbgOutput
-    }
-
-    .GlobalEnv$.runbgOutput <- result
-
-  }
-
-  # Purge
-  out[[3]] <- function() {
-
-    for (m in 1:nmachines) {
-      system(paste0("ssh ", machine[m], " rm -r ", filename[m], "_folder"))
-    }
-    system(paste0("rm ", filename0, "*"))
-  }
-
-
-  # Check if filenames exist and load last result (only if wait == TRUE)
-  resultfile <- paste(filename, "result.RData", sep = "_")
-  if (all(file.exists(resultfile)) & wait) {
-
-    for (m in 1:nmachines) {
-
-      result <- structure(vector(mode = "list", length = nmachines), names = machine)
-      load(file = resultfile[m])
-      result[[m]] <- .runbgOutput
-
-    }
-    .GlobalEnv$.runbgOutput <- result
-    return(out)
-  }
-
-  return(out)
-
-}
-
 
 
 
@@ -317,11 +151,6 @@ remove_c_and_o <- function(path = ".") {
   c_and_o <- list.files(path = path, pattern = "(\\.c)|(\\.o)")
   system2("rm", args = c_and_o)
 }
-
-
-# Parframe ----
-
-
 
 
 
@@ -341,8 +170,8 @@ as.datalist.NULL <- function( ... ) {
 
 #' *.fn in functional form for safe evaluation and allowing for p1 or p2 to be NULL
 #'
-#' @param p1
-#' @param p2
+#' @param p1 fn1
+#' @param p2 fn2
 #'
 #' @details Not sure if I still need it, it was mainly for the convenient use in methatcetin_fitting.
 #'
@@ -391,6 +220,34 @@ cf_normL2 <- function(data, x, ...) {
 
 
 
+#' Augmentation of getDerivs to subset wrt to which_states.which_pars
+#'
+#' @param prediction a prdframe which contains derivatives as an attribute
+#' @param which_states which states shall be taken the derivative of ...
+#' @param which_pars ... and with regard to which pars?
+#'
+#'
+#' @export
+#'
+#'
+extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
+  prediction %>%
+    getDerivs() %>%
+    lapply(function(i) {
+      mynames <-  colnames(i)
+      state_columns <- par_columns <- rep(T, length(mynames))
+      if(!is.null(which_states)) {
+        state_columns <- sapply(which_states, function(ws) {str_detect(mynames, paste0("^", ws, "\\."))}) %>% matrix(ncol = length(which_states)) %>% apply(1, any)
+      }
+      if(!is.null(which_pars)) {
+        par_columns <- sapply(which_pars, function(wp) str_detect(mynames, paste0("\\.", wp, "$"))) %>% matrix(ncol = length(which_pars)) %>% apply(1, any)
+      }
+
+      cols <- state_columns & par_columns
+      cols[1] <- TRUE
+      return(i[,cols])
+    })
+}
 
 
 

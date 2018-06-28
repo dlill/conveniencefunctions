@@ -10,11 +10,11 @@ d2d2r(setup_file = NULL, model_def_file = NULL, data_files = NULL,
 \arguments{
 \item{setup_file}{A script which loads the model and data}
 
-\item{model_def_file}{}
+\item{model_def_file}{filename}
 
 \item{data_files}{Character vector with file paths}
 
-\item{readme_file}{}
+\item{readme_file}{filename}
 }
 \description{
 Import a model from the D2D definition files to dMod

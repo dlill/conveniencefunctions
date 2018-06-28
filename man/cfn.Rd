@@ -7,7 +7,9 @@
 cfn(p1, p2)
 }
 \arguments{
-\item{p2}{}
+\item{p1}{fn1}
+
+\item{p2}{fn2}
 }
 \description{
 *.fn in functional form for safe evaluation and allowing for p1 or p2 to be NULL

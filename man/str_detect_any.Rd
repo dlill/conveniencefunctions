@@ -9,10 +9,9 @@ str_detect_any(vec, pattern)
 \arguments{
 \item{vec}{named vector}
 
-\item{pattern}{regex as in str_subset}
-}
-\value{
-Logical
+\item{pattern}{regex as in str_subset
+
+Logical}
 }
 \description{
 I usually use it with a pattern of length 1.

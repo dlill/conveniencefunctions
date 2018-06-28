@@ -6,6 +6,9 @@
 \usage{
 fitErrorModel_plot(data)
 }
+\arguments{
+\item{data}{data which goes into fitErrormodel}
+}
 \description{
 Get the nice plot of fitErrormodel
 }

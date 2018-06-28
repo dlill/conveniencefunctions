@@ -7,7 +7,11 @@
 merge_col2_into_col1(.data, col1, col2)
 }
 \arguments{
-\item{col2}{}
+\item{.data}{tibble}
+
+\item{col1}{colname, standard dplyr quotation rules apply}
+
+\item{col2}{colname, standard dplyr quotation rules apply}
 }
 \description{
 Title

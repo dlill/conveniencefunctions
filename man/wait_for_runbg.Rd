@@ -7,7 +7,9 @@
 wait_for_runbg(job, delta_t = 5)
 }
 \arguments{
-\item{delta_t}{}
+\item{job}{a runbg object}
+
+\item{delta_t}{in seconds, the time interval between job$check()s}
 }
 \description{
 It's better to use \code{runbg(..., wait = T)}, if you want to wait for the results anyway

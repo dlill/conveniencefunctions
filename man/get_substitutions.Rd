@@ -13,7 +13,7 @@ get_substitutions(def_content)
 eqnvec containing the substitutions.
 }
 \description{
-The substitutions are inserted iteratively. 
-Since I don't know in which order, 
+The substitutions are inserted iteratively.
+Since I don't know in which order,
 I botched a little by running resolveRecurrence(rev(substitutions)) a few times.
 }

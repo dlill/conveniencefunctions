@@ -2,7 +2,7 @@
 % Please edit documentation in R/addins.R
 \name{insert_runbg}
 \alias{insert_runbg}
-\title{Title}
+\title{Insert a runbg job}
 \usage{
 insert_runbg(job_name = "myrunbg_job", job_type = NULL, dMod.frame = NULL,
   tol = 1, nsteps = 3, distribute = NULL)
@@ -15,7 +15,7 @@ insert_runbg(job_name = "myrunbg_job", job_type = NULL, dMod.frame = NULL,
 \item{dMod.frame}{character "dMod.frame"}
 }
 \description{
-Title
+Insert a runbg job
 }
 \examples{
 \dontrun{

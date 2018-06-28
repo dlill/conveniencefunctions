@@ -1,10 +1,9 @@
 #' Title
 #'
-#' @param .data
-#' @param col1
-#' @param col2
+#' @param .data tibble
+#' @param col1 colname, standard dplyr quotation rules apply
+#' @param col2 colname, standard dplyr quotation rules apply
 #'
-#' @return
 #' @export
 #'
 #' @examples
@@ -30,3 +29,34 @@ merge_col2_into_col1 <- function(.data, col1, col2) {
 
 
 
+#' ggsave with automatically saving metainformation of how the plot was produced
+#'
+#' @param all taken from ggsave()
+#' @param check_overwrite Asks before overwriting a plot
+#'
+#' @export
+ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
+                    scale = 1, width = NA, height = NA, units = c("in", "cm",
+                                                                  "mm"), dpi = 300, limitsize = TRUE, ..., check_overwrite = T) {
+
+  # Prevent from overwriting
+  if(file.exists(filename) & check_overwrite) {
+    overwrite <- readline("Plot exists already. Overwrite? (Enter 'n/no' for no.)")
+    if(str_detect(overwrite, "n|(no)")) return(NULL)
+  }
+
+  # Save plot
+  ggsave(filename, plot, device, path,
+         scale, width, height, units, dpi, limitsize, ...)
+
+  # Save additional information
+  document <- rstudioapi::getActiveDocumentContext()
+  git_head <- git2r::commits() %>% .[[1]]
+
+  mytable <- tibble("Produced by" = document$path,
+                    "Row in document" = document$selection[[1]]$range[[1]][1],
+                    "Git SHA" = git_head@sha)
+  write_csv(mytable, path = filename %>% str_replace("\\.(pdf)|(png)", "") %>% paste0(".csv"))
+
+  return(NULL)
+}

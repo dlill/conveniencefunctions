@@ -7,7 +7,9 @@
 obj_condition_wise(obj, pars, constr1 = NULL, constr2 = NULL, ...)
 }
 \arguments{
-\item{pouter}{}
+\item{obj}{objfn}
+
+\item{pouter}{pars at which obj is evaluated}
 }
 \value{
 A tibble with rows corresponding to conditions and cols to several results of the objective function, such as value, gradient...
