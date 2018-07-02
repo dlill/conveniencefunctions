@@ -37,11 +37,11 @@ merge_col2_into_col1 <- function(.data, col1, col2) {
 #' @export
 ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
                     scale = 1, width = NA, height = NA, units = c("in", "cm",
-                                                                  "mm"), dpi = 300, limitsize = TRUE, ..., check_overwrite = T) {
+                                                                  "mm"), dpi = 300, limitsize = TRUE, ..., check_overwrite = T, commit = F) {
 
   # Prevent from overwriting
   if(file.exists(filename) & check_overwrite) {
-    overwrite <- readline("Plot exists already. Overwrite? (Enter 'n/no' for no.)")
+    overwrite <- readline("Plot exists already. Overwrite? (Enter 'n/no' for no.) ")
     if(str_detect(overwrite, "n|(no)")) return(NULL)
   }
 
@@ -51,12 +51,20 @@ ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
 
   # Save additional information
   document <- rstudioapi::getActiveDocumentContext()
+
+  if(commit) {
+    repo <- git2r::repository()
+    git2r::add(repo, document$path)
+    git2r::commit(repo, message = "Generated plot with commited script.")
+  }
+
   git_head <- git2r::commits() %>% .[[1]]
+
 
   mytable <- tibble("Produced by" = document$path,
                     "Row in document" = document$selection[[1]]$range[[1]][1],
                     "Git SHA" = git_head@sha)
-  write_csv(mytable, path = filename %>% str_replace("\\.(pdf)|(png)", "") %>% paste0(".csv"))
+  write_csv(mytable, path = filename %>% str_replace("(\\.pdf$)|(\\.png$)", "") %>% paste0(".csv"))
 
   return(NULL)
 }
