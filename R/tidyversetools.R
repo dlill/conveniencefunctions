@@ -60,7 +60,7 @@ ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
     git2r::add(repo, document$path)
     message <- NULL
     if(is.character(commit_script)) message <- commit_script
-    git2r::commit_script(repo, message = paste("Generated plot.", message))
+    git2r::commit(repo, message = paste("Generated plot.", message))
   }
 
   # Write additional information
@@ -69,7 +69,7 @@ ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
                     "Row in script" = document$selection[[1]]$range[[1]][1],
                     "Commit script message" = git_head@message,
                     "When" = (git_head@committer@when@time + git_head@committer@when@offset) %>% lubridate::as_datetime(),
-                    "Git script SHA" = git_head@sha,
+                    "Script Git SHA" = git_head@sha,
                     "Commit plot" = (is.character(commit_plot)|commit_plot==T)
                     )
 
@@ -85,7 +85,7 @@ ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
 
     message <- NULL
     if(is.character(commit_plot)) message <- commit_plot
-    git2r::commit_plot(repo, message = paste("Generated plot.", message))
+    git2r::commit(repo, message = paste("Generated plot.", message))
   }
 
   return(NULL)
