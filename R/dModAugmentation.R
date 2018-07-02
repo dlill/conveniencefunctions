@@ -148,7 +148,7 @@ wait_for_runbg <- function(job, delta_t=5) {
 #'
 #' @export
 remove_c_and_o <- function(path = ".") {
-  c_and_o <- list.files(path = path, pattern = "(\\.c)|(\\.o)")
+  c_and_o <- list.files(path = path, pattern = "(\\.c)|(\\.o)$")
   system2("rm", args = c_and_o)
 }
 

@@ -30,6 +30,9 @@ readDMod.frame <- function(filename) {
 #'
 #'
 uniteFits <- function(runbgOutput, return_value = c("dMod.frame", "parlist")) {
+
+  return_value <- return_value[1]
+
   if (return_value == "dMod.frame") {
     myframe <- runbgOutput[[1]]
     myframe$fits <- runbgOutput %>% map("fits") %>% transpose() %>% map(. %>% Reduce(c.parlist,.))
