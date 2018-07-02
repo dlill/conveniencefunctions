@@ -102,6 +102,18 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 
 
 
+#' Roxygenize which automatically git adds stuff
+#'
+#' Adds NAMESPACE and man folder
+#'
+#' @export
+cf_roxygenize <- function() {
+  devtools::document(roclets=c('rd', 'collate', 'namespace'))
+  git2r::add(git2r::repository(), "man/*")
+  git2r::add(git2r::repository(), "NAMESPACE")
+}
+
+
 #' Insert a runbg job
 #'
 #' @param job_name character with "_job" at the end

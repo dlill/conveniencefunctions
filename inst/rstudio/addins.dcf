@@ -46,3 +46,8 @@ Description: Inserts a runbg at the cursor position
 Binding: insert_runbg
 Interactive: false
 
+
+Name: Roxygenize and add man/*
+Description: Does the same job as ctrl+shift+D
+Binding: cf_roxygenize
+Interactive: false

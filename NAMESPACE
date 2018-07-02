@@ -3,6 +3,7 @@
 export("str_subset_name<-")
 export(are_names_of)
 export(as.datalist.NULL)
+export(cf_roxygenize)
 export(cfn)
 export(checkin_hypothesis)
 export(d2d2r)
