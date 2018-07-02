@@ -7,7 +7,7 @@
 ggshave(filename, plot = last_plot(), device = NULL, path = NULL,
   scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
   dpi = 300, limitsize = TRUE, ..., check_overwrite = T,
-  commit_script = F, commit_plot)
+  commit_script = F, commit_plot = F)
 }
 \arguments{
 \item{check_overwrite}{Asks before overwriting a plot}

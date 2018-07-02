@@ -39,7 +39,7 @@ merge_col2_into_col1 <- function(.data, col1, col2) {
 #' @export
 ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
                     scale = 1, width = NA, height = NA, units = c("in", "cm","mm"),
-                    dpi = 300, limitsize = TRUE, ..., check_overwrite = T, commit_script = F, commit_plot) {
+                    dpi = 300, limitsize = TRUE, ..., check_overwrite = T, commit_script = F, commit_plot = F) {
 
   # Prevent from overwriting
   if(file.exists(filename) & check_overwrite) {
@@ -65,17 +65,23 @@ ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
 
   # Write additional information
   git_head <- git2r::commits() %>% .[[1]]
-  mytable <- tibble("Produced by" = document$path,
-                    "Row in document" = document$selection[[1]]$range[[1]][1],
-                    "Commit message" = git_head@message,
-                    "Git SHA" = git_head@sha)
-  write_csv(mytable, path = filename %>% str_replace("(\\.pdf$)|(\\.png$)", "") %>% paste0(".csv"))
+  mytable <- tibble("Script" = document$path,
+                    "Row in script" = document$selection[[1]]$range[[1]][1],
+                    "Commit script message" = git_head@message,
+                    "When" = (git_head@committer@when@time + git_head@committer@when@offset) %>% lubridate::as_datetime(),
+                    "Git script SHA" = git_head@sha,
+                    "Commit plot" = (is.character(commit_plot)|commit_plot==T)
+                    )
+
+  auxiliary_file <- filename %>% str_replace("(\\.pdf$)|(\\.png$)", "") %>% paste0(".csv")
+  append <- file.exists(auxiliary_file)
+  write_csv(mytable, path = auxiliary_file, append = append)
 
   # Commit the plot in its git directory
   if(is.character(commit_plot)|commit_plot==T) {
     repo <- git2r::discover_repository(filename)
     git2r::add(repo, filename)
-    git2r::add(repo, filename %>% str_replace("(\\.pdf$)|(\\.png$)", "") %>% paste0(".csv"))
+    git2r::add(repo, auxiliary_file)
 
     message <- NULL
     if(is.character(commit_plot)) message <- commit_plot
