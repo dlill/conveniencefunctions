@@ -251,3 +251,241 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
 
 
 
+
+
+
+# hierarchical optimization----
+
+
+#' Run hierarchical optimization
+#'
+#' Inspired by Daniel Weindl's poster on SBMC 2018
+#'
+#' @param dMod.frame
+#' @param hypothesis
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' source("~/Promotion/Software/dMod/inst/examples/example_dMod.frame/setup.R")
+#' myframe1 <- myframe1 %>% appendObj
+#' }
+hierarchical_trust <- function(dMod.frame, hypothesis = 1, analytic_parms) {
+
+
+  # old try ----
+  # Extract parts of the model where an analytic solution exists
+  # source("~/Promotion/Software/dMod/inst/examples/example_dMod.frame/setup.R")
+  # myframe1 <- myframe1 %>% appendObj
+  # checkout_hypothesis(myframe1,1)
+  # analytic_parms <- paste0("s1_", letters[1:2])
+
+
+  # implementing the analytic solution is probably kanonen auf spatzen,
+  # since they are rather simple but the equations differ for offsets, scalings and sigmas, especially when they are correlated.
+  # Therefore, run a normal optimization but only for the analytic parameters. Convergence should be fast.
+
+
+  # [] Problem Parameter trafo, passing by x in g*x*p. You have to pass g and p separately?
+  # timesD <- lapply(data, `[[`, "time") %>% do.call(c,.) %>% unique()
+  # prd <- (x*p)(timesD, pars)
+  # p_pars <- p(pars)
+  # cn <- getConditions(p)[1]
+  # lapply(getConditions(p), function(cn) {
+  #     out <- g(prd[[cn]], p_pars[[cn]], fixed = NULL, deriv = TRUE, conditions = cn, env = NULL)
+  #     wrss(res(data[[cn]], out[[cn]], err = NULL, loq = loq))
+  # })
+
+  # new try ----
+  # Old try: implement a new objective function qhich doesn't repeatedly evaluate the ODEs more than once for the optimization of the analytic pars
+  # New try: just use trust sequentially alternatingly evaluating one and the other set of pars
+  library(dMod)
+  library(conveniencefunctions)
+  source("~/Promotion/Software/dMod/inst/examples/example_dMod.frame/setup.R")
+  myframe1 <- myframe1 %>% appendObj
+  checkout_hypothesis(myframe1,1)
+  analytic_parms <- paste0("s1_", letters[1:2])
+  dynamic_parms <- names(pars) %>% .[!.%in%analytic_parms]
+
+
+
+  mypars <- pars
+  # optimize the analytic pars
+  out_ana <- trust(objfun = obj, mypars[analytic_parms],
+        10,10, blather = T,
+        fixed = mypars[dynamic_parms])
+  mypars[analytic_parms] <- out_ana$argument
+
+  # why is the argument path not linear for the linear model?
+  # Because the model is non-linear after the parameter transformation
+  mygrid <-  expand.grid(seq(-1,-0,0.05),seq(-2.1,-0.5,0.05)) %>% setNames(analytic_parms)
+  i <- mygrid[1,] %>% unlist
+  obj_grid <- apply(mygrid, 1, function(i) {
+    mypars <- pars
+    i <- unlist(i)
+    mypars[names(i)] <- i
+    out <- data.frame(t(i), value = obj(mypars, deriv = F)$value)
+    return(out)
+  }) %>%
+    do.call(rbind,.)
+
+  argpath <- out_ana$argpath %>% as.data.frame() %>% setNames(analytic_parms)
+  obj_grid %>%
+    ggplot(aes(s1_a, s1_b, z=value)) +
+    geom_contour() +
+    geom_point(aes(x = s1_a, y = s1_b, z = NULL), data = argpath)
+
+  mygrid <-  expand.grid(seq(-2.0,-1.75,0.01),seq(-3.1,-2.9,0.01)) %>% setNames(analytic_parms)
+  i <- mygrid[1,] %>% unlist
+  obj_grid2 <- apply(mygrid, 1, function(i) {
+    mypars <- pars
+    i <- unlist(i)
+    mypars[names(i)] <- i
+    out <- data.frame(t(i), value = obj(mypars, deriv = F)$value)
+    return(out)
+  }) %>%
+    do.call(rbind,.)
+
+  argpath <- out_ana$argpath %>% as.data.frame() %>% setNames(analytic_parms)
+  obj_grid2 %>%
+    ggplot(aes(s1_a, s1_b, z=log(value))) +
+    geom_density2d() +
+    # geom_point(aes(x = s1_a, y = s1_b, z = NULL), data = argpath)
+    geom_blank()
+
+  # why aren't they ellipses? -> look at quadratic objfun in log-coordinates
+  mygrid <-  expand.grid(seq(-2.0,-1.75,0.01),seq(-3.1,-2.9,0.01)) %>% setNames(analytic_parms)
+  i <- mygrid[1,] %>% unlist
+  obj_grid2 <- apply(mygrid, 1, function(i) {
+    mypars <- pars
+    i <- unlist(i)
+    mypars[names(i)] <- i
+    out <- data.frame(t(i), value = (exp(i[[1]])-exp(-1.86))^2 + (exp(i[[2]])-2.96)^2)
+    return(out)
+  }) %>%
+    do.call(rbind,.)
+
+  argpath <- out_ana$argpath %>% as.data.frame() %>% setNames(analytic_parms)
+  obj_grid2 %>%
+    ggplot(aes(s1_a, s1_b, z=log(value))) +
+    geom_density2d() +
+    # geom_point(aes(x = s1_a, y = s1_b, z = NULL), data = argpath)
+    geom_blank()
+
+
+
+  # optimize dynamic pars
+  out_dyna <- trust(objfun = obj, mypars[dynamic_parms],
+                    10,10, blather = T,
+                    fixed = mypars[analytic_parms])
+  mypars[dynamic_parms] <- out_dyna$argument
+
+
+
+
+}
+
+
+
+
+# normL2 for an observation function on a given prediction ----
+#' normL2 for an observation function on a given prediction
+#'
+#' @param data
+#' @param prd
+#' @param errmodel
+#' @param times
+#' @param attr.name
+#' @param loq
+#' @param g
+#' @param p
+#'
+#' @return
+#' @export
+#'
+#' @examples
+normL2_analytic <- function(data, x, errmodel = NULL, times = NULL, attr.name = "data", loq = -Inf, g,p) {
+
+  timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
+  if (!is.null(times)) timesD <- sort(union(times, timesD))
+
+  x.conditions <- names(attr(x, "mappings"))
+  data.conditions <- names(data)
+  if (!all(data.conditions %in% x.conditions))
+    stop("The prediction function does not provide predictions for all conditions in the data.")
+
+
+  controls <- list(times = timesD, attr.name = attr.name, conditions = x.conditions, loq = loq)
+
+  # might be necessary to "store" errmodel in the objective function (-> runbg)
+  force(errmodel)
+
+  myfn <- function(..., fixed = NULL, deriv=TRUE, conditions = controls$conditions, env = NULL) {
+
+    arglist <- list(...)
+    arglist <- arglist[match.fnargs(arglist, "pars")]
+    pouter <- arglist[[1]]
+
+    # Generate output template
+    pars_out <- colnames(getDerivs(as.parvec(pouter)))
+    template <- objlist(
+      value = 0,
+      gradient = structure(rep(0, length(pars_out)), names = pars_out),
+      hessian = matrix(0, nrow = length(pars_out), ncol = length(pars_out), dimnames = list(pars_out, pars_out))
+    )
+
+    # Import from controls
+    timesD <- controls$times
+    attr.name <- controls$attr.name
+    loq <- controls$loq
+
+    # Create new environment if necessary
+    if (is.null(env)) env <- new.env()
+
+    prediction <- x(times = timesD, pars = pouter, fixed = fixed, deriv = deriv, conditions = conditions)
+
+    # Apply res() and wrss() to compute residuals and the weighted residual sum of squares
+    out.data <- lapply(conditions, function(cn) {
+      err <- NULL
+      if (!is.null(errmodel)) {
+        err <- errmodel(out = prediction[[cn]], pars = getParameters(prediction[[cn]]), conditions = cn)
+        mywrss <- nll(res(data[[cn]], prediction[[cn]], err[[cn]], loq))
+      } else {
+        mywrss <- wrss(res(data[[cn]], prediction[[cn]], NULL, loq))
+      }
+      available <- intersect(pars_out, names(mywrss$gradient))
+      result <- template
+      result$value <- mywrss$value
+      if (deriv) {
+        result$gradient[available] <- mywrss$gradient[available]
+        result$hessian[available, available] <- mywrss$hessian[available, available]
+      } else {
+        result$gradient <- result$hessian <- NULL
+      }
+
+      return(result)
+    })
+    out.data <- Reduce("+", out.data)
+
+    # Combine contributions and attach attributes
+    out <- out.data
+    attr(out, controls$attr.name) <- out.data$value
+
+    if (!is.null(env)) {
+      assign("prediction", prediction, envir = env)
+    }
+
+    attr(out, "env") <- env
+    return(out)
+
+
+  }
+  class(myfn) <- c("objfn", "fn")
+  attr(myfn, "conditions") <- data.conditions
+  attr(myfn, "parameters") <- attr(x, "parameters")
+  attr(myfn, "modelname") <- modelname(x, errmodel)
+  return(myfn)
+
+}
