@@ -251,6 +251,57 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
 
 
 
+# Experimenting with as.datalist
+
+#' cf_as.datalist
+#'
+#' @param x
+#' @param split.by
+#' @param keep.covariates
+#' @param make.names.from
+#' @param ...
+#'
+#' @return
+#' @export
+#' @examples
+#'
+cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.names.from = NULL, ...) {
+
+  dataframe <- x
+
+  #remaining.names <- setdiff(names(dataframe), split.by)
+  all.names <- colnames(dataframe)
+  standard.names <- c("name", "time", "value", "sigma")
+  if (is.null(split.by)) split.by <- setdiff(all.names, standard.names)
+
+
+  conditions <- lapply(split.by, function(n) dataframe[, n])
+  splits <- do.call(paste, c(conditions, list(sep = "_")))
+  subnames <- do.call(paste, c(conditions[split.by %in% make.names.from], list(sep = "_")))
+  if (identical(duplicated(splits), duplicated(subnames))) {
+    splits <- subnames
+  } else {warning("Supplied make.names.from do not identify all conditions")}
+
+
+
+
+  # condition grid
+  conditionframe <- dataframe[!duplicated(splits), c(split.by, keep.covariates), drop = FALSE]
+  rownames(conditionframe) <- splits[!duplicated(splits)]
+
+
+  # data list output
+  dataframe <- cbind(data.frame(condition = splits), dataframe[, standard.names])
+  out <- lapply(unique(splits), function(s) dataframe[dataframe[, 1] == s, -1])
+
+  names(out) <- as.character(unique(splits))
+
+  out <- as.datalist(out)
+  attr(out, "condition.grid") <- conditionframe
+  return(out)
+
+}
+
 
 
 
@@ -389,103 +440,3 @@ hierarchical_trust <- function(dMod.frame, hypothesis = 1, analytic_parms) {
 
 
 
-
-# normL2 for an observation function on a given prediction ----
-#' normL2 for an observation function on a given prediction
-#'
-#' @param data
-#' @param prd
-#' @param errmodel
-#' @param times
-#' @param attr.name
-#' @param loq
-#' @param g
-#' @param p
-#'
-#' @return
-#' @export
-#'
-#' @examples
-normL2_analytic <- function(data, x, errmodel = NULL, times = NULL, attr.name = "data", loq = -Inf, g,p) {
-
-  timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
-  if (!is.null(times)) timesD <- sort(union(times, timesD))
-
-  x.conditions <- names(attr(x, "mappings"))
-  data.conditions <- names(data)
-  if (!all(data.conditions %in% x.conditions))
-    stop("The prediction function does not provide predictions for all conditions in the data.")
-
-
-  controls <- list(times = timesD, attr.name = attr.name, conditions = x.conditions, loq = loq)
-
-  # might be necessary to "store" errmodel in the objective function (-> runbg)
-  force(errmodel)
-
-  myfn <- function(..., fixed = NULL, deriv=TRUE, conditions = controls$conditions, env = NULL) {
-
-    arglist <- list(...)
-    arglist <- arglist[match.fnargs(arglist, "pars")]
-    pouter <- arglist[[1]]
-
-    # Generate output template
-    pars_out <- colnames(getDerivs(as.parvec(pouter)))
-    template <- objlist(
-      value = 0,
-      gradient = structure(rep(0, length(pars_out)), names = pars_out),
-      hessian = matrix(0, nrow = length(pars_out), ncol = length(pars_out), dimnames = list(pars_out, pars_out))
-    )
-
-    # Import from controls
-    timesD <- controls$times
-    attr.name <- controls$attr.name
-    loq <- controls$loq
-
-    # Create new environment if necessary
-    if (is.null(env)) env <- new.env()
-
-    prediction <- x(times = timesD, pars = pouter, fixed = fixed, deriv = deriv, conditions = conditions)
-
-    # Apply res() and wrss() to compute residuals and the weighted residual sum of squares
-    out.data <- lapply(conditions, function(cn) {
-      err <- NULL
-      if (!is.null(errmodel)) {
-        err <- errmodel(out = prediction[[cn]], pars = getParameters(prediction[[cn]]), conditions = cn)
-        mywrss <- nll(res(data[[cn]], prediction[[cn]], err[[cn]], loq))
-      } else {
-        mywrss <- wrss(res(data[[cn]], prediction[[cn]], NULL, loq))
-      }
-      available <- intersect(pars_out, names(mywrss$gradient))
-      result <- template
-      result$value <- mywrss$value
-      if (deriv) {
-        result$gradient[available] <- mywrss$gradient[available]
-        result$hessian[available, available] <- mywrss$hessian[available, available]
-      } else {
-        result$gradient <- result$hessian <- NULL
-      }
-
-      return(result)
-    })
-    out.data <- Reduce("+", out.data)
-
-    # Combine contributions and attach attributes
-    out <- out.data
-    attr(out, controls$attr.name) <- out.data$value
-
-    if (!is.null(env)) {
-      assign("prediction", prediction, envir = env)
-    }
-
-    attr(out, "env") <- env
-    return(out)
-
-
-  }
-  class(myfn) <- c("objfn", "fn")
-  attr(myfn, "conditions") <- data.conditions
-  attr(myfn, "parameters") <- attr(x, "parameters")
-  attr(myfn, "modelname") <- modelname(x, errmodel)
-  return(myfn)
-
-}
