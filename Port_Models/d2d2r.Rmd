@@ -12,8 +12,9 @@ library(conveniencefunctions)
 ```
 
 ```{r setup files}
-model_def_file <- data_def_files <- readme_file <- NULL
 setup_file <- c("~/Promotion/Software/d2d/arFramework3/Examples/ToyModels/ABC_toyModel/Setup.m")
+model_def_file <- data_files <- readme_file <- NULL
+
 
 if (is.null(setup_file) & (is.null(model_def_file)| is.null(data_files))) stop("If setup_file is not provided, model_def_file and data_files must be provided")
 
@@ -34,12 +35,12 @@ if (!is.null(setup_file)) {
 }
 ```
 
-```{r model_def}
+
+```{r model_def and data_defs}
+# model_def
 model_def <- read_def_content(model_def_file)
 
-```
-
-```{r data_defs}
+# data_defs
 if (!is.null(setup_file)) data_files <- readLines(setup_file) %>%
 {.[!str_detect(.,"^%")]} %>% #commented lines
 {.[str_detect(.,"arLoadData")]} %>% # only lines loading the model (should be only 1)
@@ -84,29 +85,15 @@ data_sheets <- lapply(seq_along(data_sheet_files), function(i) {
 
 ```{r x}
 # Build the prediction function
-
-# # 1. Read inputs and incorporate them # -> Moved to get_reactions
-# inputs <- get_inputs(model_def)
-# inputs_data <- data_defs %>% lapply(. %>% get_inputs)
-# if (!is.null(inputs)|!is.null(do.call(c, inputs_data))) warning("Inputs not yet implemented completely")
-
-# 2. Read the reactions/odes
 reactions <- get_reactions_or_odes(model_def)
-if(is.eqnlist(reactions)) {
-  f <-  as.eqnvec(reactions)
-} else {
-  f <-  reactions
-}
-
-# 3. Build the odemodel
-myodemodel <-  odemodel(f, modelname = "x")
+myodemodel <-  odemodel(reactions, modelname = "x")
 x <-  Xs(odemodel = myodemodel)
 ```
 
 
 ```{r g e and p}
-# i <- 1
-frame <- map(seq_along(data_defs), function(i) {
+i <- 1
+frames <- map(seq_along(data_defs), function(i) {
 data_def <- data_defs[[i]]
 
 # Observables
@@ -156,19 +143,21 @@ conditions <- covariates(data) %>% rownames()
 # g
 g <- map(conditions, function(cn) Y(observables, x, condition = cn, modelname = "g")) %>% 
   Reduce("+", .)
+assign("g", g, pos = .GlobalEnv)
 
 # e
 e <- map(conditions, function(cn) Y(errors, g*x, condition = cn, modelname = "g")) %>% 
   Reduce("+", .)
+assign("e", e, pos = .GlobalEnv)
 
 # trafo
 pinner <- getParameters(g,x,e)
-pars_in_data <- names(covariates(data)) %>% intersect(pinner)
-random <- union(get_random(data_def), get_random(model_def))
+assign("pars_in_data", intersect(names(covariates(data)), pinner), pos = .GlobalEnv)
+assign("random", union(get_random(data_def), get_random(model_def)), pos = .GlobalEnv)
 
-# linear_pars Would be nice to have a function to automatically detect linear parameters
+# linear_pars: Would be nice to have a function to automatically detect linear parameters
 
-trafo <- getParameters(g,x,e) %>% 
+trafo <- pinner %>% 
   setNames(.,.) %>% 
   branch(data %>% covariates()) %>% 
   insert("name ~ value", value = unlist(mget(pars_in_data)), name = pars_in_data) %>% 
@@ -178,17 +167,37 @@ trafo <- getParameters(g,x,e) %>%
   insert("x~exp(x)", x = getSymbols(mytrafo[[i]]))
   
 p <- P(trafo, modelname = "p")
+assign("p", p, pos = .GlobalEnv)
 
 compile(g,e,p, output = "gep", cores = detectFreeCores() - 1)
 remove_c_and_o()
 
 dMod.frame(data_files[i], g, x, p, data, e)
 })
+
+# rowbind them together
+frames <- frames %>% bind_rows()
+
+
+hypothesis <- model_def_file %>% str_replace_all(".*/", "")
+model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+", frames$p), Reduce("+", frames$data), e = Reduce("+", frames$e))
 ```
 
 
+```{r}
 
+wup <- model %>%
+  mutate(e = list(NULL)) %>% 
+  appendObj() %>% 
+  mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T))) %>%
+  appendParframes() %>%
+  mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = names(as.parvec(parframes)), cores = 4)))
 
+```
+
+```{r}
+plotProfile(wup)
+```
 
 
 
