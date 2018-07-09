@@ -183,20 +183,25 @@ hypothesis <- model_def_file %>% str_replace_all(".*/", "")
 model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+", frames$p), Reduce("+", frames$data), e = Reduce("+", frames$e))
 ```
 
+```{r}
+git_add_dMod.frame(model)
+```
+
+
 
 ```{r}
 
-wup <- model %>%
-  mutate(e = list(NULL)) %>% 
-  appendObj() %>% 
-  mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T))) %>%
-  appendParframes() %>%
-  mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = names(as.parvec(parframes)), cores = 4)))
+# wup <- model %>%
+#   mutate(e = list(NULL)) %>% 
+#   appendObj() %>% 
+#   mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T))) %>%
+#   appendParframes() %>%
+#   mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = names(as.parvec(parframes)), cores = 4)))
 
 ```
 
 ```{r}
-plotProfile(wup)
+# plotProfile(wup)
 ```
 
 
