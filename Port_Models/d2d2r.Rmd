@@ -1,0 +1,221 @@
+---
+title: "D2D2R"
+author: "Daniel Lill"
+date: "7 July 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dMod)
+library(conveniencefunctions)
+```
+
+```{r setup files}
+model_def_file <- data_def_files <- readme_file <- NULL
+setup_file <- c("~/Promotion/Software/d2d/arFramework3/Examples/ToyModels/ABC_toyModel/Setup.m")
+
+if (is.null(setup_file) & (is.null(model_def_file)| is.null(data_files))) stop("If setup_file is not provided, model_def_file and data_files must be provided")
+
+if (!is.null(setup_file)) {
+  modelpath <- setup_file %>% str_split(.Platform$file.sep, simplify = T) %>% {.[1:(length(.)-1)]} %>% as.list %>% do.call(file.path,.)
+} else {
+  modelpath <- model_def_file %>% str_split(.Platform$file.sep, simplify = T) %>% {.[1:(length(.)-2)]} %>% as.list %>% do.call(file.path,.)
+}
+
+if (!is.null(setup_file)) {
+  model_def_file <- readLines(setup_file) %>%
+  {.[!str_detect(.,"^%")]} %>% #commented lines
+  {.[str_detect(.,"arLoadModel")]} %>% # only lines loading the model (should be only 1)
+    str_replace_all(c("arLoadModel\\(" = "", "\\)" = "", "'" = "", ";.*$" = "")) %>% #extract only the name of the model.def
+    paste0("Models/",. ,".def") %>% # make file path out of it
+    list(modelpath,.) %>%
+    do.call(file.path,.)
+}
+```
+
+```{r model_def}
+model_def <- read_def_content(model_def_file)
+
+```
+
+```{r data_defs}
+if (!is.null(setup_file)) data_files <- readLines(setup_file) %>%
+{.[!str_detect(.,"^%")]} %>% #commented lines
+{.[str_detect(.,"arLoadData")]} %>% # only lines loading the model (should be only 1)
+  str_replace_all(c("arLoadData\\(" = "", "\\)" = "", "'" = "", ";.*$" = "")) %>% #extract only the name of the model.def
+  str_split(",", simplify = T)
+
+data_def_files <- data_files %>%
+{paste0("Data/",.[,1] , ".def")} %>% # make file path out of it
+  list(modelpath,.) %>%
+  do.call(file.path,.)
+
+data_sheet_files <-
+  modelpath %>% file.path("Data") %>% list.files() %>%
+  str_split("\\.", simplify = T) %>%
+  as.data.frame() %>% setNames(c("dataset", "extension")) %>%
+  filter(dataset %in% data_files)  %>%
+  filter(extension != "def") %>%
+  with(paste0(dataset, ".", extension)) %>%
+  paste0(modelpath, "/Data/",.)
+
+
+
+files_exist <- file.exists(data_def_files)&file.exists(data_sheet_files)
+data_files <- data_files[files_exist,]
+data_def_files <- data_def_files[files_exist]
+data_sheet_files <- data_sheet_files[files_exist]
+
+data_defs <- data_def_files %>%
+  lapply(. %>% read_def_content)
+
+data_sheets <- lapply(seq_along(data_sheet_files), function(i) {
+  data_files
+  if(str_detect(data_sheet_files[i], "csv$")) {
+    return(read.csv(data_sheet_files[i], stringsAsFactors = F))
+  } else {
+    return(readxl::read_excel(data_sheet_files[i]))
+  }
+})
+
+
+```
+
+```{r x}
+# Build the prediction function
+
+# # 1. Read inputs and incorporate them # -> Moved to get_reactions
+# inputs <- get_inputs(model_def)
+# inputs_data <- data_defs %>% lapply(. %>% get_inputs)
+# if (!is.null(inputs)|!is.null(do.call(c, inputs_data))) warning("Inputs not yet implemented completely")
+
+# 2. Read the reactions/odes
+reactions <- get_reactions_or_odes(model_def)
+if(is.eqnlist(reactions)) {
+  f <-  as.eqnvec(reactions)
+} else {
+  f <-  reactions
+}
+
+# 3. Build the odemodel
+myodemodel <-  odemodel(f, modelname = "x")
+x <-  Xs(odemodel = myodemodel)
+```
+
+
+```{r g e and p}
+# i <- 1
+frame <- map(seq_along(data_defs), function(i) {
+data_def <- data_defs[[i]]
+
+# Observables
+# 1. Read observables in model_def and the data_defs
+observables <-  get_observables(model_def)
+observables_data_def <- data_def %>% get_observables
+# 2. For each data_def, replace the specific obervables
+observables <- observables %>% replace(names(observables_data_def),observables_data_def) %>% as.eqnvec
+
+# Error models
+# 1. Read errors in model_def and the data_defs
+errors <-  get_errors(model_def)
+errors_data_def <- data_def %>% get_errors
+# 2. For each data_def, replace the specific errors
+errors <-  errors %>% replace(names(errors_data_def),errors_data_def) %>% as.eqnvec
+
+
+# Conditions in def files
+# 1.
+conditions <- get_conditions(model_def)
+conditions_data_def <- get_conditions(data_def)
+# 2.
+conditions <- conditions %>% replace(names(conditions_data_def), conditions_data_def)
+
+# Data sheet
+# Add conditions as columns
+data_sheet <- data_sheets[[i]] %>% 
+  data.frame(t(conditions), dataset = data_files[i], stringsAsFactors = F) 
+  
+
+# Gather obs and obs_sd columns and transform them into name, value, sigma. Then as.datalist
+data <- data_sheet %>% 
+  gather(name,value, one_of(c(names(observables), paste0(names(observables), "_std")))) %>% 
+  mutate(is_sigma = str_detect(name, "_std$"), name = str_replace_all(name, "_std$", "")) %>% 
+  { mydf <- .
+    if (any(mydf$is_sigma)) {
+    mydf <- mydf %>% 
+      mutate(is_sigma = replace(is_sigma, is_sigma, "sigma"), is_sigma = replace(is_sigma, is_sigma == "FALSE", "value")) %>%
+      spread(is_sigma, value) 
+    } else {mydf <- mydf %>% select(-is_sigma)}
+  mydf
+  } %>% 
+  filter(!is.na(value)) %>% 
+  as.data.frame() %>% as.datalist()
+conditions <- covariates(data) %>% rownames()
+
+# g
+g <- map(conditions, function(cn) Y(observables, x, condition = cn, modelname = "g")) %>% 
+  Reduce("+", .)
+
+# e
+e <- map(conditions, function(cn) Y(errors, g*x, condition = cn, modelname = "g")) %>% 
+  Reduce("+", .)
+
+# trafo
+pinner <- getParameters(g,x,e)
+pars_in_data <- names(covariates(data)) %>% intersect(pinner)
+random <- union(get_random(data_def), get_random(model_def))
+
+# linear_pars Would be nice to have a function to automatically detect linear parameters
+
+trafo <- getParameters(g,x,e) %>% 
+  setNames(.,.) %>% 
+  branch(data %>% covariates()) %>% 
+  insert("name ~ value", value = unlist(mget(pars_in_data)), name = pars_in_data) %>% 
+  {tr <- .
+  if (!is.null(random)) tr <-  insert(tr, "x_random~x_value", value = unlist(mget(random)), random = random)
+  tr} %>% 
+  insert("x~exp(x)", x = getSymbols(mytrafo[[i]]))
+  
+p <- P(trafo, modelname = "p")
+
+compile(g,e,p, output = "gep", cores = detectFreeCores() - 1)
+remove_c_and_o()
+
+dMod.frame(data_files[i], g, x, p, data, e)
+})
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
