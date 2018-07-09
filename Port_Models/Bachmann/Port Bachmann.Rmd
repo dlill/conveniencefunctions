@@ -93,24 +93,32 @@ data.frame(data_sheet_files, data_def_files)
 # reactions <- get_reactions_or_odes(model_def)
 # myodemodel <-  odemodel(reactions, modelname = "x")
 # x <-  Xs(odemodel = myodemodel)
-# saveRDS("x", "x.rds")
+# saveRDS(x, "x.rds")
 x <- readRDS("x.rds")
 loadDLL(x)
 ```
-
 ```{r}
-data_sheet_files
+data_def_files
 ```
+
 
 ```{r g e and p}
 i <- 1
-# frames <- map(seq_along(data_defs), function(i) {
-data_def <- data_defs[[i]]
+frames <- map(seq_along(data_defs), function(i) {
+i<<-i
 
+data_def <- data_defs[[i]]
+cat("\n", i, "\n")
+cat("\n", data_def_files[[i]], "\n")
+
+derived_md <- model_def %>% get_derived()
+derived_dd <- data_def %>% get_derived()
+if(any(names(derived_dd)%in%names(derived_md))) warning( "deriveds are overwritten?")
 # Observables
 # 1. Read observables in model_def and the data_defs
-observables <-  get_observables(model_def)
-observables_data_def <- data_def %>% get_observables
+
+observables <-  get_observables(model_def, rbind(derived_md, derived_dd))
+observables_data_def <- get_observables(data_def, derived = c(derived_md,derived_dd))
 # 2. For each data_def, replace the specific obervables
 observables <- observables %>% replace(names(observables_data_def),observables_data_def) %>% as.eqnvec
 
@@ -124,20 +132,20 @@ errors <-  errors %>% replace(names(errors_data_def),errors_data_def) %>% as.eqn
 
 # Conditions in def files
 # 1.
-conditions_to_datashet <- get_conditions(model_def)
-conditions_to_datashet_data_def <- get_conditions(data_def)
+conditions_to_datasheet <- get_conditions(model_def)
+conditions_to_datasheet_data_def <- get_conditions(data_def)
 # 2.
-conditions_to_datashet <- conditions_to_datashet %>% replace(names(conditions_to_datashet_data_def), conditions_to_datashet_data_def)
+conditions_to_datasheet <- conditions_to_datasheet %>% replace(names(conditions_to_datasheet_data_def), conditions_to_datasheet_data_def)
 
 # Data sheet
 # Add conditions as columns, don't overwrite columns in the data by "conditions" as the data is the outermost "layer" of defining conditions
 data_sheet <- data_sheets[[i]]
-which_conditions_to_datasheet <- setdiff(names(conditions_to_datashet), names(data_sheet))
-data_sheet <- data.frame(data_sheet, t(conditions_to_datashet[which_conditions_to_datasheet]), dataset = data_files[i], stringsAsFactors = F) 
+which_conditions_to_datasheet <- setdiff(names(conditions_to_datasheet), names(data_sheet))
+data_sheet <- data.frame(data_sheet, t(conditions_to_datasheet[which_conditions_to_datasheet]), dataset = data_files[i], stringsAsFactors = F) 
 
 
 # Deal with unused data and with conditions supplied by the data sheet which are not declared anywhere
-standard_vars <- c("time", "dataset", names(observables), paste0(names(observables), "_std"), which_conditions_to_datasheet)
+standard_vars <- c("time", "dataset", names(observables), paste0(names(observables), "_std"), names(get_conditions(model_def)))
 undeclared_vars <- names(data_sheet) %>% .[!.%in%standard_vars]
 obs_estimate  <- undeclared_vars %>% str_subset("(.*_au)|(.*_std)")
 cond_estimate <- undeclared_vars %>% .[!.%in%obs_estimate]
@@ -147,7 +155,8 @@ select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
     gadgetTitleBar("My Gadget"),
     miniContentPanel(
       selectInput("observables", "Observables which aren't in the def files", undeclared_vars, obs_estimate, multiple = T),
-      selectInput("conditions", "Condition columns", undeclared_vars, cond_estimate, multiple = T)
+      selectInput("conditions", "Columns which contribute to conditions", undeclared_vars, cond_estimate, multiple = T),
+      selectInput("excluded", "exclude from conditions", undeclared_vars, NULL, multiple = T)
       )
   )
 
@@ -156,7 +165,7 @@ select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
     
     # When the Done button is clicked, return a value
     observeEvent(input$done, {
-      returnValue <- list(obs = input$observables, cond = input$conditions)
+      returnValue <- list(obs = input$observables, cond = input$conditions, excluded = input$excluded)
       stopApp(returnValue)
     })
   }
@@ -164,14 +173,14 @@ select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
   runGadget(ui, server)
 }
 
-cols <- list(obs = NULL, cond = NULL)
+cols <- list(obs = NULL, cond = NULL, excluded = NULL)
 if(length(obs_estimate) > 0 | length(cond_estimate) > 0) {
   cols <- select_cols(undeclared_vars, obs_estimate, cond_estimate)
 }
 # kick out unused data_cols
 data_sheet <- data_sheet[!names(data_sheet)%in%cols$obs]
 # define variables which uniquely identify conditions
-condition_names <- c("dataset", names(conditions_to_datashet_data_def), cols$cond)
+condition_names <- c("dataset", names(conditions_to_datasheet_data_def), cols$cond) %>% unique %>% setdiff(cols$excluded)
   
 
 
@@ -189,6 +198,7 @@ data <- data_sheet %>%
   } %>% 
   filter(!is.na(value)) %>% 
   as.data.frame() %>% cf_as.datalist(make.names.from = condition_names)
+
 
 
 
