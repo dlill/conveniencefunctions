@@ -102,14 +102,9 @@ loadDLL(x)
 data_sheet_files
 ```
 
-# Find a way to keep init_ in the equations and duplicate the parameters!
-
 ```{r g e and p}
-i <- 4
-
-
-
-# frames <- map(seq_along(data_defs)[1], function(i) {
+i <- 1
+# frames <- map(seq_along(data_defs), function(i) {
 data_def <- data_defs[[i]]
 
 # Observables
@@ -170,14 +165,16 @@ select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
 }
 
 cols <- list(obs = NULL, cond = NULL)
-if(length(obs_estimate) > 0 & length(cond_estimate) > 0) {
+if(length(obs_estimate) > 0 | length(cond_estimate) > 0) {
   cols <- select_cols(undeclared_vars, obs_estimate, cond_estimate)
 }
 # kick out unused data_cols
-data_sheet <- data_sheet[-which(names(data_sheet)%in%cols$obs)]
+data_sheet <- data_sheet[!names(data_sheet)%in%cols$obs]
 # define variables which uniquely identify conditions
 condition_names <- c("dataset", names(conditions_to_datashet_data_def), cols$cond)
   
+
+
 # Gather obs and obs_sd columns and transform them into name, value, sigma. Then as.datalist
 data <- data_sheet %>% 
   gather(name,value, one_of(c(names(observables), paste0(names(observables), "_std")))) %>% 
@@ -193,13 +190,10 @@ data <- data_sheet %>%
   filter(!is.na(value)) %>% 
   as.data.frame() %>% cf_as.datalist(make.names.from = condition_names)
 
+
+
+
 conditions <- covariates(data) %>% rownames()
-
-
-
-```
-
-```{r}
 
 # g
 g <- map(conditions, function(cn) Y(observables, x, condition = cn, modelname = "g")) %>% 
@@ -244,6 +238,8 @@ frames <- frames %>% bind_rows()
 
 hypothesis <- model_def_file %>% str_replace_all(".*/", "")
 model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+", frames$p), Reduce("+", frames$data), e = Reduce("+", frames$e))
+
+
 ```
 
 
