@@ -97,10 +97,6 @@ data.frame(data_sheet_files, data_def_files)
 x <- readRDS("x.rds")
 loadDLL(x)
 ```
-```{r}
-data_def_files
-```
-
 
 ```{r g e and p}
 i <- 1
@@ -156,7 +152,7 @@ select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
     miniContentPanel(
       selectInput("observables", "Observables which aren't in the def files", undeclared_vars, obs_estimate, multiple = T),
       selectInput("conditions", "Columns which contribute to conditions", undeclared_vars, cond_estimate, multiple = T),
-      selectInput("excluded", "exclude from conditions", undeclared_vars, NULL, multiple = T)
+      selectInput("excluded", "Keep in covariates(data) but don't use in condition name.", undeclared_vars, NULL, multiple = T)
       )
   )
 
@@ -243,8 +239,8 @@ dMod.frame(data_files[i], g, x, p, data, e)
 })
 
 # rowbind them together
-frames <- frames %>% bind_rows()
-
+bachmann <- frames <- frames %>% bind_rows()
+git_add_dMod.frame(bachmann)
 
 hypothesis <- model_def_file %>% str_replace_all(".*/", "")
 model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+", frames$p), Reduce("+", frames$data), e = Reduce("+", frames$e))
@@ -255,17 +251,19 @@ model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+"
 
 ```{r}
 
-wup <- model %>%
-  mutate(e = list(NULL)) %>% 
-  appendObj() %>% 
-  mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T))) %>%
-  appendParframes() %>%
-  mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = names(as.parvec(parframes)), cores = 4)))
+# wup <- model %>%
+#   mutate(e = list(NULL)) %>% 
+#   appendObj() %>% 
+#   mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T))) %>%
+#   appendParframes() %>%
+#   mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = names(as.parvec(parframes)), cores = 4)))
 
 ```
 
 ```{r}
-plotProfile(wup)
+mydata <- model$data[[1]]
+mydata %>% wide2long()
+  plotData(mydata)
 ```
 
 

@@ -255,15 +255,10 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
 
 #' cf_as.datalist
 #'
-#' @param x
-#' @param split.by
-#' @param keep.covariates
-#' @param make.names.from
-#' @param ...
+#' @importFrom dMod as.datalist
 #'
-#' @return
 #' @export
-#' @examples
+#'
 #'
 cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.names.from = NULL, ...) {
 
@@ -312,10 +307,9 @@ cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.name
 #'
 #' Inspired by Daniel Weindl's poster on SBMC 2018
 #'
-#' @param dMod.frame
-#' @param hypothesis
+#' @param dMod.frame a dMod frame
+#' @param hypothesis the hypotheses
 #'
-#' @return
 #' @export
 #'
 #' @examples

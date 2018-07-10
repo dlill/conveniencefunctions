@@ -17,7 +17,7 @@ read_def_content <- function(connection) {
   # clean up def_content: remove double spaces, space-tab, tab-space combinations, escaped quotation marks
   def_content <- str_replace_all(def_content, "\t", " ")
   def_content <- str_replace_all(def_content, " * ", " ")
-  def_content <- str_replace_all(def_content, "\\\"", "")
+  # def_content <- str_replace_all(def_content, "\\\"", "")
 
   # remove commented lines and comments
   def_content <- def_content[!str_detect(def_content, "^//")]
@@ -179,7 +179,8 @@ get_derived <- function(def_content) {
   derived <- NULL
 
   if (any(def_content[["section"]] == "DERIVED")) {
-    derived <- def_content[["def_content"]][def_content[["section"]]=="DERIVED"]
+    derived <- def_content[["def_content"]][def_content[["section"]]=="DERIVED"] %>% str_replace_all("\\\"", "")
+
     derived <- str_split(derived, " ", simplify = T)
     derived <- data.frame(derived, stringsAsFactors = F)
 
@@ -246,7 +247,7 @@ get_inputs <- function(def_content) {
   if (any(def_content[["section"]] == "INPUTS")) {
     warning("get_inputs not yet complete")
 
-    inputs <- def_content[["def_content"]][def_content[["section"]]=="INPUTS"]
+    inputs <- def_content[["def_content"]][def_content[["section"]]=="INPUTS"] %>% str_replace_all("\\\"", "")
 
     # debugging
     # inputs <- inputs[1]
@@ -342,7 +343,7 @@ get_inputs <- function(def_content) {
     # # replace the predictor "t" with "time"
 
 
-    inputs <- structure(inputs[,5], names = inputs[,1]) %>% as.eqnvec()
+    inputs <- structure(inputs_eqns, names = inputs[,1]) %>% as.eqnvec()
 
   }
   return(inputs) # because not yet ready
@@ -374,6 +375,7 @@ get_reactions_or_odes <- function(def_content,
 
   if (any(def_content[["section"]] == "REACTIONS")) {
     reactions <- def_content[["def_content"]][def_content[["section"]]=="REACTIONS"]
+    reactions <- reactions %>% str_replace_all("\\\"", "")
 
     # replace derived variables by their definitions
 
@@ -434,7 +436,8 @@ get_reactions_or_odes <- function(def_content,
 
     # Incorporate the inputs
     if(!is.null(inputs)) reaction_list <- reaction_list %>% lapply(function(reaction) {
-      myrate <- reaction %>% {.["rate"]} %>% str_replace_all(inputs)
+      myinputs <- structure(inputs, names = paste0("\\b", names(inputs), "\\b"))
+      myrate <- reaction %>% {.["rate"]} %>% str_replace_all(myinputs)
       reaction["rate"] <- myrate
       return(reaction)
     })
@@ -501,10 +504,15 @@ get_observables <- function(def_content, derived = get_derived(def_content)) {
       observables <- observables %>% str_replace_all(myderived)
     }
 
+    eqn_position <- observables %>% str_locate_all('"') %>% map(. %>% .[,1] %>% .[(length(.)-1):length(.)]) %>% do.call(rbind,.)
+    eqn_position[,1] <- eqn_position[,1]+1
+    eqn_position[,2] <- eqn_position[,2]-1
+    eqn <- observables %>% str_sub(eqn_position)
+
     observables <- str_split(observables, " ", simplify = T)
     observables <- data.frame(observables, stringsAsFactors = F)
 
-    # Columns 1-6 are always well defined
+    # Columns 1-6 are usually well defined, but sometimes, if for example unit plot name consists of two words this is not the case
     # Column 7 might be spread across more columns. Paste these expressions back together
     observables_eqns <- observables[7:length(observables)] %>% apply(1, paste , collapse = " ")
     observables <- data.frame(observables[1:6], observables_eqns, stringsAsFactors = F)
@@ -513,7 +521,7 @@ get_observables <- function(def_content, derived = get_derived(def_content)) {
     observables_names <- c("name", "unit_type", "unit", "unit_plot_name", "rescale", "log10", "eqn")
     names(observables) <- observables_names[seq_along(observables)]
 
-    observables <- structure(observables[["eqn"]], names = observables[["name"]]) %>% as.eqnvec()
+    observables <- structure(eqn, names = observables[["name"]]) %>% as.eqnvec()
   }
 
   return(observables)
@@ -539,7 +547,8 @@ get_errors <- function(def_content) {
     warning("It is assumed that only observables and error-pars occur in the equations of the errormodel")
 
     # fitErrorModel
-    errors <- def_content[["def_content"]][def_content[["section"]]=="ERRORS"]
+    errors <- def_content[["def_content"]][def_content[["section"]]=="ERRORS"] %>% str_replace_all("\\\"", "")
+
     errors <- str_split(errors, " ", simplify = T)
     errors <- data.frame(errors, stringsAsFactors = F)
 
@@ -579,7 +588,7 @@ get_substitutions <- function(def_content) {
   if (any(def_content[["section"]] == "SUBSTITUTIONS")) {
 
     # this also has to be done before STATES/ODEs to resolveRecurrence
-    substitutions <- def_content[["def_content"]][def_content[["section"]]=="SUBSTITUTIONS"]
+    substitutions <- def_content[["def_content"]][def_content[["section"]]=="SUBSTITUTIONS"] %>% str_replace_all("\\\"", "")
     substitutions <- str_split(substitutions, " ", simplify = T)
     substitutions <- data.frame(substitutions, stringsAsFactors = F)
 
@@ -632,7 +641,7 @@ get_conditions <- function(def_content,
   trafo <- eqnvec()
 
   if (any(def_content[["section"]] == "CONDITIONS")) {
-    trafo <- def_content[["def_content"]][def_content[["section"]]=="CONDITIONS"]
+    trafo <- def_content[["def_content"]][def_content[["section"]]=="CONDITIONS"] %>% str_replace_all("\\\"", "")
 
     # replace derived variables by their definitions
     # don't know if this really was needed
@@ -692,7 +701,7 @@ get_random <- function(def_content) {
   random_pars <- NULL
 
   if (any(def_content[["section"]] == "RANDOM")) {
-    random_pars <- def_content[["def_content"]][def_content[["section"]]=="RANDOM"]
+    random_pars <- def_content[["def_content"]][def_content[["section"]]=="RANDOM"] %>% str_replace_all("\\\"", "")
 
     random_pars <- str_split(random_pars, " ", simplify = T)
     random_pars <- data.frame(random_pars, stringsAsFactors = F)

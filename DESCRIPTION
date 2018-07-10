@@ -12,6 +12,7 @@ LazyData: true
 Depends: 
   tidyverse
 Imports: 
+  dMod,
   tidyverse,
   magrittr,
   plotly,

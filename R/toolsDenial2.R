@@ -45,10 +45,16 @@ d2d2r <- function(setup_file = NULL,
     list(modelpath,.) %>%
     do.call(file.path,.)
 
-  data_sheet_files <- data_files %>%
-  {paste0("Data/",.[,1] , ".", .[,3])} %>% # make file path out of it
-    list(modelpath,.) %>%
-    do.call(file.path,.)
+  data_sheet_files <-
+    modelpath %>% file.path("Data") %>% list.files() %>%
+      str_split("\\.", simplify = T) %>%
+      as.data.frame() %>% setNames(c("dataset", "extension")) %>%
+    filter(dataset %in% data_files)  %>%
+    filter(extension != "def") %>%
+    with(paste0(dataset, ".", extension)) %>%
+    paste0(modelpath, "/Data/",.)
+
+
 
   files_exist <- file.exists(data_def_files)&file.exists(data_sheet_files)
   data_files <- data_files[files_exist,]
@@ -59,7 +65,8 @@ d2d2r <- function(setup_file = NULL,
     lapply(. %>% read_def_content)
 
   data_sheets <- lapply(seq_along(data_sheet_files), function(i) {
-    if(data_files[i,3] == "csv") {
+    data_files
+    if(str_detect(data_sheet_files[i], "csv$")) {
       return(read.csv(data_sheet_files[i], stringsAsFactors = F))
     } else {
       return(readxl::read_excel(data_sheet_files[i]))
@@ -83,19 +90,15 @@ d2d2r <- function(setup_file = NULL,
   }
 
 
-
-
-
-
   # 3. Build the odemodel/load it, if it exists already
-  odemodelname <- str_replace_all(model_def_file, structure(c("", "", ""), names = c(modelpath, "/", "\\.def")))
-  odemodel_rda <- str_replace_all(model_def_file, structure(c(".rda"), names = c("\\.def$")))
-  if (!file.exists(odemodel_rda)) {
+  # odemodelname <- str_replace_all(model_def_file, structure(c("", "", ""), names = c(modelpath, "/", "\\.def")))
+  # odemodel_rds <- str_replace_all(model_def_file, structure(c(".rds"), names = c("\\.def$")))
+  # if (!file.exists(odemodel_rda)) {
     myodemodel <-  odemodel(f, modelname = odemodelname)
-    save(myodemodel, file = odemodel_rda)
-  } else {
-    load(odemodel_rda)
-  }
+    # save(myodemodel, file = odemodel_rda)
+  # } else {C
+    # load(odemCodel_rda)
+  # }
   x <-  Xs(odemodel = myodemodel)
   loadDLL(x)
 
