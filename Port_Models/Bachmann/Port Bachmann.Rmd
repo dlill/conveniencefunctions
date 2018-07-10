@@ -195,12 +195,33 @@ data <- data_sheet %>%
   filter(!is.na(value)) %>% 
   as.data.frame() %>% cf_as.datalist(make.names.from = condition_names)
 
+# Ensure time value and sigma are numeric and consistently use NA for missing values
+covtable <- covariates(dataset)
+data <- map(data, function(cn) {
+  # make value numeric
+  cn$value <- cn$value %>% as.numeric()
+  indices <- is.nan(cn$value)
+  cn$value[indices] <- NA
+  
+  # make sigma numeric, can be mising, but use NA instead of NaN
+  cn$sigma <- cn$sigma %>% as.numeric()
+  indices <- is.nan(cn$sigma)
+  cn$sigma[indices] <- NA
+  
+  # make time numeric, drop timepoints with non-existing times
+  cn$time <- cn$time %>% as.numeric()
+  indices <- is.nan(cn$time)
+  cn$time[indices] <- NA
+}) %>% 
+  as.datalist() %>% 
+  `attr<-`("condition.grid", covtable)
 
 
-
+# Create condition specific functions
+# Somehow the whole search tree is again messed up in compile. It needs g e and p to be in the .GlobalEnv to modify their "modelname" attribute.
+# This on the other hand then implies that I need to get these objects from the .GlobalEnv in order to write the correct objects with the correct modelname to the dMod.frame
 
 conditions <- covariates(data) %>% rownames()
-
 # g
 g <- map(conditions, function(cn) Y(observables, x, condition = cn, modelname = "g")) %>% 
   Reduce("+", .)
@@ -235,44 +256,22 @@ assign("p", p, pos = .GlobalEnv)
 compile(g,e,p, output = "gep", cores = detectFreeCores() - 1)
 remove_c_and_o()
 
+g <- get("g", pos = .GlobalEnv)
+e <- get("e", pos = .GlobalEnv)
+p <- get("p", pos = .GlobalEnv)
+
 dMod.frame(data_files[i], g, x, p, data, e)
 })
 
 # rowbind them together
 bachmann <- frames <- frames %>% bind_rows()
-git_add_dMod.frame(bachmann)
+saveRDS(bachmann, tpaste0("bachmann.rds"))
 
 hypothesis <- model_def_file %>% str_replace_all(".*/", "")
 model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+", frames$p), Reduce("+", frames$data), e = Reduce("+", frames$e))
 
 
 ```
-
-
-```{r}
-
-# wup <- model %>%
-#   mutate(e = list(NULL)) %>% 
-#   appendObj() %>% 
-#   mutate(fits = list(mstrust(obj, pars, studyname = "Fits", fits = 20, cores = 4, blather = T))) %>%
-#   appendParframes() %>%
-#   mutate(profiles = list(profile(obj, as.parvec(parframes), whichPar = names(as.parvec(parframes)), cores = 4)))
-
-```
-
-```{r}
-mydata <- model$data[[1]]
-mydata %>% wide2long()
-  plotData(mydata)
-```
-
-
-
-
-
-
-
-
 
 
 
