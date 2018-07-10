@@ -99,7 +99,7 @@ loadDLL(x)
 ```
 
 ```{r g e and p}
-i <- 1
+i <- 6
 frames <- map(seq_along(data_defs), function(i) {
 i<<-i
 
@@ -137,13 +137,14 @@ conditions_to_datasheet <- conditions_to_datasheet %>% replace(names(conditions_
 # Add conditions as columns, don't overwrite columns in the data by "conditions" as the data is the outermost "layer" of defining conditions
 data_sheet <- data_sheets[[i]]
 which_conditions_to_datasheet <- setdiff(names(conditions_to_datasheet), names(data_sheet))
+if(intersect(names(conditions_to_datasheet), names(data_sheet)) %>% length() %>% `>`(0)) warning("Conditions are both present in data def and data sheet")
 data_sheet <- data.frame(data_sheet, t(conditions_to_datasheet[which_conditions_to_datasheet]), dataset = data_files[i], stringsAsFactors = F) 
 
 
 # Deal with unused data and with conditions supplied by the data sheet which are not declared anywhere
 standard_vars <- c("time", "dataset", names(observables), paste0(names(observables), "_std"), names(get_conditions(model_def)))
 undeclared_vars <- names(data_sheet) %>% .[!.%in%standard_vars]
-obs_estimate  <- undeclared_vars %>% str_subset("(.*_au)|(.*_std)")
+obs_estimate  <- undeclared_vars %>% str_subset("(.*_au)|(.*_std)|(.*_rel)|(.*_abs)")
 cond_estimate <- undeclared_vars %>% .[!.%in%obs_estimate]
 
 select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
@@ -152,7 +153,7 @@ select_cols <- function(undeclared_vars, obs_estimate, cond_estimate) {
     miniContentPanel(
       selectInput("observables", "Observables which aren't in the def files", undeclared_vars, obs_estimate, multiple = T),
       selectInput("conditions", "Columns which contribute to conditions", undeclared_vars, cond_estimate, multiple = T),
-      selectInput("excluded", "Keep in covariates(data) but don't use in condition name.", undeclared_vars, NULL, multiple = T)
+      selectInput("excluded", "Keep in covariates(data) but don't use in condition name.", c(undeclared_vars, names(conditions_to_datasheet)), setdiff(names(conditions_to_datasheet), cond_estimate), multiple = T)
       )
   )
 
@@ -180,6 +181,7 @@ condition_names <- c("dataset", names(conditions_to_datasheet_data_def), cols$co
   
 
 
+
 # Gather obs and obs_sd columns and transform them into name, value, sigma. Then as.datalist
 data <- data_sheet %>% 
   gather(name,value, one_of(c(names(observables), paste0(names(observables), "_std")))) %>% 
@@ -196,7 +198,7 @@ data <- data_sheet %>%
   as.data.frame() %>% cf_as.datalist(make.names.from = condition_names)
 
 # Ensure time value and sigma are numeric and consistently use NA for missing values
-covtable <- covariates(dataset)
+covtable <- covariates(data)
 data <- map(data, function(cn) {
   # make value numeric
   cn$value <- cn$value %>% as.numeric()
@@ -212,6 +214,8 @@ data <- map(data, function(cn) {
   cn$time <- cn$time %>% as.numeric()
   indices <- is.nan(cn$time)
   cn$time[indices] <- NA
+  
+  return(cn)
 }) %>% 
   as.datalist() %>% 
   `attr<-`("condition.grid", covtable)
