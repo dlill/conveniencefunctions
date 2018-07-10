@@ -4,7 +4,7 @@
 \alias{as.datalist.NULL}
 \title{As.datalist method for NULL}
 \usage{
-as.datalist.NULL(...)
+\method{as.datalist}{NULL}(...)
 }
 \arguments{
 \item{...}{NULL}
