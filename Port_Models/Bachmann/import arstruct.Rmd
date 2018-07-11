@@ -186,13 +186,13 @@ mycondition[str_detect(names(mycondition), "^n")] %>% map(unlist) # a bit intere
 mycondition[str_detect(names(mycondition), "^p")] %>% map(unlist)
 # mycondition[str_detect(names(mycondition), "^q")] %>% map(unlist) # not interesting
 # mycondition[str_detect(names(mycondition), "^s")] %>% map(unlist) %>% name # not interesting, sensitiivities
-# mycondition[str_detect(names(mycondition), "^t")] %>% map(unlist) # time not interesting, aybe only tLim
-mycondition[str_detect(names(mycondition), "^y")] %>% map(unlist) %>% names
+mycondition[str_detect(names(mycondition), "^t")] %>% map(unlist) # time
+mycondition[str_detect(names(mycondition), "^y")] %>% map(unlist) #%>% names
 ```
 
 build observation function
-```{r}
-# g and e
+```{r g and e cond}
+
 y <- mycondition$y %>% unlist %>% unname
 
 fy <- mycondition$fy %>% unlist %>% unname
@@ -208,7 +208,7 @@ e <- Y(errors, (g*x), condition = condname, modelname = paste0("ar_e_", condname
 
 ```
 
-```{r}
+```{r p cond}
 parnames <- mycondition$pold  %>% unlist %>% unname
 pareqns  <- mycondition$fp %>% unlist %>% unname
 
@@ -227,11 +227,34 @@ pareqns <- c(pareqns, init_eqns)
 parnames[1:length(comp)] <- comp
 
 trafo_cond <-  pareqns %>%
-  setNames(parnames)
+  setNames(parnames) %>% 
+  insert("x~exp(log(10)*x)", x = getSymbols(mytrafo[[i]]))
 
 p <- P(trafo_cond, condition = condname, modelname = paste0("ar_p_", condname))
+
+pouter_values <- mycondition$pNum  %>% unlist %>% unname %>% `attr<-`("dim", NULL)
+pouter_names <- mycondition$p  %>% unlist %>% unname
+
+pars <- pouter_values %>% setNames(pouter_names)
 ```
 
+```{r}
+mycondition[str_detect(names(mycondition), "^t")] %>% map(unlist) # time
+mycondition[str_detect(names(mycondition), "^y")] %>% map(unlist) #%>% names
+```
+
+```{r data cond}
+timesD <- mycondition$tExp %>% unlist() %>% unname()
+yExp <- mycondition$yExp
+
+yExp <- yExp %>% `colnames<-`(y)
+yExp[is.nan(yExp)] <- NA
+
+data <- data.frame(time = timesD, sigma = NA, condition = condname, yExp) %>% 
+  gather(name, value, -time, -sigma, -condition) %>% 
+  as.data.frame() %>% 
+  as.datalist()
+```
 
 
 
