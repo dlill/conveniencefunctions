@@ -88,6 +88,26 @@ mymodel <- d2dresult$ar[,1,1][["model"]][,1,1] %>%  # is a list, since again the
 mymodel %>% str1
 ```
 
+
+```{r}
+start_letters <- mymodel %>% names %>% str_sub(end = 1) %>% sort %>% unique
+
+mymodel[str_detect(names(mymodel), "^c")] %>% map(unlist) %>% names # 
+mymodel[str_detect(names(mymodel), "^d")] %>% map(unlist) # 
+mymodel[str_detect(names(mymodel), "^f")] %>% map(unlist)
+mymodel[str_detect(names(mymodel), "^i")] %>% map(unlist)# 
+mymodel[str_detect(names(mymodel), "^n")] %>% map(unlist) #
+mymodel[str_detect(names(mymodel), "^N")] %>% map(unlist) #
+mymodel[str_detect(names(mymodel), "^p")] %>% map(unlist)
+mymodel[str_detect(names(mymodel), "^q")] %>% map(unlist) # 
+mymodel[str_detect(names(mymodel), "^s")] %>% map(unlist) %>% name #
+mymodel[str_detect(names(mymodel), "^t")] %>% map(unlist) # 
+mymodel[str_detect(names(mymodel), "^u")] %>% map(unlist) #%>% names
+mymodel[str_detect(names(mymodel), "^v")] %>% map(unlist) #%>% names
+mymodel[str_detect(names(mymodel), "^x")] %>% map(unlist) #%>% names
+```
+
+
 ```{r odemodel}
 states <- mymodel$xNames %>% unlist %>% unname()
 comp <- mymodel$c %>% unlist() %>% unname()
@@ -100,9 +120,15 @@ N <- mymodel$N
 rownames(N) <- states_df$state
 N[N==0] <- NA
 
+u <- mymodel$u %>% unlist %>% unname
+fu <- mymodel$fu %>% unlist %>% unname
+rates <- replaceSymbols(u,fu,rates)
+
+
+
 reactions <- eqnlist(smatrix = t(N), states = states_df$state, rates = rates, volumes = structure(states_df$volumes, names = states_df$state))
 
-f <- odemodel(reactions, modelname = "arOdemodel")
+f <- odemodel(reactions, modelname = "arOdemodel", estimate = c("CIS", "CISTurn"))
 x <- Xs(f)
 ```
 
@@ -171,9 +197,6 @@ mycondition <- mymodel[["data"]][,1,i]
 condname <- mycondition$name %>% unlist() %>% unname() %>% paste0( "_", i)
 ```
 
-```{r}
-start_letters <- mycondition %>% names() %>% str_sub(end = 1) %>% unique() %>% sort
-```
 
 
 ```{r}
@@ -192,7 +215,6 @@ mycondition[str_detect(names(mycondition), "^y")] %>% map(unlist) #%>% names
 
 build observation function
 ```{r g and e cond}
-
 y <- mycondition$y %>% unlist %>% unname
 
 fy <- mycondition$fy %>% unlist %>% unname
@@ -228,15 +250,25 @@ parnames[1:length(comp)] <- comp
 
 trafo_cond <-  pareqns %>%
   setNames(parnames) %>% 
-  insert("x~exp(log(10)*x)", x = getSymbols(mytrafo[[i]]))
+  insert("x~exp(x*log(10))", x = getSymbols(mytrafo[[i]]))
 
 p <- P(trafo_cond, condition = condname, modelname = paste0("ar_p_", condname))
-
+compile(g,e,p)
+remove_c_and_o()
 pouter_values <- mycondition$pNum  %>% unlist %>% unname %>% `attr<-`("dim", NULL)
-pouter_names <- mycondition$p  %>% unlist %>% unname
+pouter_names <- mycondition$p  %>% unlist %>% unname %>% str_replace_all("init_", "")
 
-pars <- pouter_values %>% setNames(pouter_names)
+pars <- pouter_values %>% log %>% `/`(log(10)) %>%  setNames(pouter_names)
 ```
+
+```{r}
+pars
+```
+
+```{r}
+p(pars)
+```
+
 
 ```{r}
 mycondition[str_detect(names(mycondition), "^t")] %>% map(unlist) # time
@@ -252,9 +284,56 @@ yExp[is.nan(yExp)] <- NA
 
 data <- data.frame(time = timesD, sigma = NA, condition = condname, yExp) %>% 
   gather(name, value, -time, -sigma, -condition) %>% 
+  filter(!is.na(value)) %>% 
+  mutate(value = exp(log(10)*value)) %>% 
   as.data.frame() %>% 
   as.datalist()
 ```
+
+
+```{r}
+myframe <- dMod.frame("Bachmann-Datensatz1", g,x,p,data,e) %>% appendObj(pars = list(pars))
+```
+
+```{r}
+myframe %>% plotCombined()
+ggsave("bla.pdf")
+```
+
+
+```{r}
+with(myframe, {
+  obj_data[[1]](pars[[1]])
+})
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
