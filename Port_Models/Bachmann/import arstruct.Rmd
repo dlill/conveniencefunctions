@@ -81,7 +81,7 @@ d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,1] %>% # elements of one condit
 
 
 # Build ode model
-```{r}
+```{r, eval=FALSE}
 mymodel <- d2dresult$ar[,1,1][["model"]][,1,1] %>%  # is a list, since again the array was of dim 50 1 1
   # str1 %>%
   {.}
@@ -133,53 +133,29 @@ x <- Xs(f)
 ```
 
 ```{r parameters global trafo}
-
-# # all inner parameter names of the model
-# # however, $pc is not the name of the parameter but the volume directly
-# pvariables <- c("c", "u", "x", "x0")
-# parnames <- map(pvariables %>% paste0("p",.) %>% setNames(.,.), function(myvar) mymodel[[myvar]] %>% unlist %>% unname)
-# parnames$pc <- comp
+# parnames <- mymodel$p  %>% unlist %>% unname
+# pareqns  <- mymodel$fp %>% unlist %>% unname
 # 
-# fvariables <- c("p", "u", "v", "x")
-# # map(fvariables %>% paste0("f",.) %>% setNames(.,.), function(myvar) mymodel[[myvar]] %>% unlist %>% unname)
-# pareqns <- mymodel$fp %>% unlist %>% unname
+# # in parameter trafos, replacing "init_" by "" is not a problem, but they also appear in observation functions to normalize observations. Therefore, duplicate inits, once keeping init_ in the name, but filling both duplicates with the same value
+# init_ind <- parnames %>% str_detect("^init_")
+# init_names <- parnames[init_ind]
+# parnames <- parnames %>% str_replace_all("init_", "")
+# pareqns  <- pareqns  %>% str_replace_all("init_", "")
+# init_eqns <- pareqns[init_ind]
 # 
-# # general trafo
-# # order of mymodel$fp: c("pc", "px", "pu", "px0")
-# inits <- parnames$px0 #%>% are_names_of(.,str_replace_all(.,"init_",""))
-# parnames <- parnames[c("pc", "px", "pu", "px0")] %>% do.call(c,.) #%>% str_replace_all("^init_", "")
-# 
-# # fp(x0) are not of the same order as px0
+# parnames <- c(parnames, init_names)
+# pareqns <- c(pareqns, init_eqns)
 # 
 # 
+# # compartment names are somehow already replaced by their values not very elegant, hardcoded and could result in problems for other models
+# parnames[1:length(comp)] <- comp
 # 
-# trafo0 <-  pareqns %>% 
+# trafo0 <-  pareqns %>%
 #   setNames(parnames)
-
-parnames <- mymodel$p  %>% unlist %>% unname
-pareqns  <- mymodel$fp %>% unlist %>% unname
-
-# in parameter trafos, replacing "init_" by "" is not a problem, but they also appear in observation functions to normalize observations. Therefore, duplicate inits, once keeping init_ in the name, but filling both duplicates with the same value
-init_ind <- parnames %>% str_detect("^init_")
-init_names <- parnames[init_ind]
-parnames <- parnames %>% str_replace_all("init_", "")
-pareqns  <- pareqns  %>% str_replace_all("init_", "")
-init_eqns <- pareqns[init_ind]
-
-parnames <- c(parnames, init_names)
-pareqns <- c(pareqns, init_eqns)
-
-
-# compartment names are somehow already replaced by their values not very elegant, hardcoded and could result in problems for other models
-parnames[1:length(comp)] <- comp
-
-trafo0 <-  pareqns %>%
-  setNames(parnames)
-
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 mymodel[["data"]][,1,1] %>% 
   # str1
   names %>% sort
@@ -193,37 +169,22 @@ mymodel[["data"]][1,1,] %>%
 
 
 ```{r condition}
-conds <- 1:42
+conds <- seq_len(dim(mymodel[["data"]])[3])
 # i <- 1
 condlist <- map(conds, function(i) {
   
 mycondition <- mymodel[["data"]][,1,i]
-
-# not very elegant
 condname <- mycondition$name %>% unlist() %>% unname()
 
-# # mycondition[str_detect(names(mycondition), "^c")] %>% map(unlist) # not interesting
-# # mycondition[str_detect(names(mycondition), "^d")] %>% map(unlist) # not interesting
-# mycondition[str_detect(names(mycondition), "^f")] %>% map(unlist)
-# # mycondition[str_detect(names(mycondition), "^h")] %>% map(unlist)# not interesting
-# mycondition[str_detect(names(mycondition), "^l")] %>% map(unlist) # a bit interesting
-# mycondition[str_detect(names(mycondition), "^n")] %>% map(unlist) # a bit interesting
-# mycondition[str_detect(names(mycondition), "^p")] %>% map(unlist)
-# # mycondition[str_detect(names(mycondition), "^q")] %>% map(unlist) # not interesting
-# # mycondition[str_detect(names(mycondition), "^s")] %>% map(unlist) %>% name # not interesting, sensitiivities
-# mycondition[str_detect(names(mycondition), "^t")] %>% map(unlist) # time
-# mycondition[str_detect(names(mycondition), "^y")] %>% map(unlist) #%>% names
 
 y <- mycondition$y %>% unlist %>% unname
 fy <- mycondition$fy %>% unlist %>% unname
 obs <- fy %>% setNames(y)
-# g <- Y(obs, x, condition = condname, modelname = paste0("ar_g_", condname))
-# warning("write them out into .GlobalEnv when inside a loop to compile() them")
+
 
 y <- mycondition$y %>% unlist %>% unname
 fystd <- mycondition$fystd %>% unlist() %>% unname()
 errors <- fystd %>% setNames(y)
-# e <- Y(errors, (g*x), condition = condname, modelname = paste0("ar_e_", condname))
 
 
 parnames <- mycondition$pold  %>% unlist %>% unname
@@ -245,14 +206,10 @@ trafo <-  pareqns %>%
   setNames(parnames) %>% 
   insert("x~exp(x*log(10))", x = getSymbols(mytrafo[[i]]))
 
-# p <- P(trafo, condition = condname, modelname = paste0("ar_p_", condname))
-
 
 best_fit_values <- mycondition$pNum  %>% unlist %>% unname %>% `attr<-`("dim", NULL)
 best_fit_names <- mycondition$p  %>% unlist %>% unname %>% str_replace_all("init_", "")
 pars <- best_fit_values %>% log %>% `/`(log(10)) %>%  setNames(best_fit_names)
-
-
 
 
 timesD <- mycondition$tExp %>% unlist() %>% unname()
@@ -265,10 +222,6 @@ data <- data.frame(time = timesD, sigma = NA, condition = condname, yExp) %>%
   mutate(value = exp(log(10)*value)) %>% 
   as.data.frame() %>% 
   as.datalist()
-
-# compile(g,e,p)
-# remove_c_and_o()
-# dMod.frame(i, g,x,p,data,e, pars = pars)
 
 return(list(condname = condname, i = i, obs = obs, errors = errors, trafo = trafo, pars = pars, data = data))
 })
@@ -355,75 +308,6 @@ data <-  map(condlist, "data") %>% map(1) %>% .[!cond_no_data] %>% as.datalist(n
 model <- dMod.frame("1", g,x,p,data,e) %>% appendObj(pars = list(pars))
 
 ```
-
-```{r compare elements across conditions}
-
-mylist <- transpose(condlist)
-# mylist %>% map(function(i) {
-#   try(compare(i[[1]], i[[2]]))
-# })
-# mylist$condname
-
-prs <- mylist[["pars"]]
-
-do.call(rbind, prs) %>% apply(2, . %>% unique %>% length %>% `==`(1))
-
-
-```
-
-
-```{r compare elements across conditions}
-
-mylist <- transpose(condlist)
-# mylist %>% map(function(i) {
-#   try(compare(i[[1]], i[[2]]))
-# })
-# mylist$condname
-
-prs <- mylist[["pars"]]
-
-allpars <- prs %>% map(names) %>% do.call(c,.) %>% unique()
-
-prs2 <- prs %>% map(function(i) {
-  not_in_i <- allpars[!allpars%in%names(i)] %>% are_names_of(NA)
-  c(i, not_in_i) %>% sort_by_name()
-})
-
-
-allpar_mat <- do.call(rbind, prs2) %>% 
-  cbind(mylist$condname %>% unlist, mylist$i %>% unlist,.)
-
-all_equal <- do.call(rbind, prs2) %>% 
-  cbind(mylist$condname %>% unlist, mylist$i %>% unlist,.) %>% 
-  apply(2, . %>% 
-          unique %>% 
-          length %>% 
-          `==`(1) %>% 
-          {.}) %>% 
-          {.}
-
-
-allpar_mat[,!all_equal] %>% colnames()
-allpar_mat[,!all_equal_except_for_nas] %>% colnames()
-
-
-
-all_equal[all_equal] %>% length()
-all_equal %>% length()
-
-# Neat: All condition specific pars have a unique name
-```
-
-
-```{r}
-frm %>% bind_rows() %>% appendObj() %>%  plotCombined(2)
-```
-
-
-
-
-
-
 
 
 
