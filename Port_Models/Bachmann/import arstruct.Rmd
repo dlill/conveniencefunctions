@@ -18,6 +18,7 @@ library(miniUI)
 # d2dresult <- readMat(c("~/Promotion/Software/d2d/arFramework3/Examples/Bachmann_MSB2011/Results/BestFit/workspace.mat"))
 # saveRDS(d2dresult, "workspaceMAT.rds")
 d2dresult <- readRDS("workspaceMAT.rds")
+mymodel <- d2dresult$ar[,1,1][["model"]][,1,1]
 ```
 
 
@@ -85,7 +86,7 @@ d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,1] %>% # elements of one condit
 mymodel <- d2dresult$ar[,1,1][["model"]][,1,1] %>%  # is a list, since again the array was of dim 50 1 1
   # str1 %>%
   {.}
-mymodel %>% str1
+# mymodel %>% str1
 ```
 
 
@@ -124,12 +125,7 @@ u <- mymodel$u %>% unlist %>% unname
 fu <- mymodel$fu %>% unlist %>% unname
 rates <- replaceSymbols(u,fu,rates)
 
-
-
 reactions <- eqnlist(smatrix = t(N), states = states_df$state, rates = rates, volumes = structure(states_df$volumes, names = states_df$state))
-
-f <- odemodel(reactions, modelname = "arOdemodel", estimate = c("CIS", "CISTurn"))
-x <- Xs(f)
 ```
 
 ```{r parameters global trafo}
@@ -170,7 +166,7 @@ mymodel[["data"]][1,1,] %>%
 
 ```{r condition}
 conds <- seq_len(dim(mymodel[["data"]])[3])
-# i <- 1
+conds <- 2
 condlist <- map(conds, function(i) {
   
 mycondition <- mymodel[["data"]][,1,i]
@@ -285,7 +281,11 @@ condnames <- covtable %>% apply(1, paste0, collapse = "_")
 rownames(covtable) <- condnames
 
 
-### Build g, e and p and supply covtable to data
+### Build g, x p and e and supply covtable to data
+estimate <- c(reactions$rates, reactions$states, reactions$volumes) %>% getSymbols() %>% .[.%in%names(pars)]
+f <- odemodel(reactions, estimate = estimate, modelname = "ar_x")
+x <- Xs(f)
+
 trafo <- map(condlist, "trafo") %>% `attr<-`("condition.grid", covtable) %>% `attr<-`("names", condnames)
 p <- P(trafo, modelname = "ar_p")
 
@@ -305,7 +305,7 @@ remove_c_and_o()
 cond_no_data <-  map(condlist, "data") %>% map(1) %>% map_lgl(is.null)
 data <-  map(condlist, "data") %>% map(1) %>% .[!cond_no_data] %>% as.datalist(names = condnames[!cond_no_data]) %>% `attr<-`("condition.grid", covtable[!cond_no_data,])
 
-model <- dMod.frame("1", g,x,p,data,e) %>% appendObj(pars = list(pars))
+model <- dMod.frame("1", g,x,p,data,e, reactions = list(reactions)) %>% appendObj(pars = list(pars))
 
 ```
 
