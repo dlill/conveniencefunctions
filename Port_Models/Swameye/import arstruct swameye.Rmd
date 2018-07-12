@@ -1,0 +1,360 @@
+---
+title: "Untitled"
+author: "Daniel Lill"
+date: "11 July 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dMod)
+library(conveniencefunctions)
+library(shiny)
+library(miniUI)
+```
+
+```{r}
+library(R.matlab)
+# library(h5)
+# library(rhdf5)
+# filename <- c("~/Promotion/Projects/LiSyM/TGFb/Clemens/Models/TGFb_ComplexModel_withGenes/Results/20170613T135608_TGFb_ComplexModel_withGenes/workspace.mat")
+d2dresult <- readMat(c("workspace.mat")) # Fuck :(
+# file <- h5::h5file(filename)
+# methods(class = class(file))
+# file["ar"]["model"]["condition"]["fu"]
+# 
+# d2dresult <- rhdf5::h5read(filename, "ar")
+
+# d2dresult <- h5::readDataSet(file)
+# saveRDS(d2dresult, "workspaceMAT.rds")
+# d2dresult <- readRDS("workspaceMAT.rds")
+mymodel <- d2dresult$ar[,1,1][["model"]][,1,1]
+```
+
+
+The best way to explore the ar struct is to print out the structure, then find the dimensions which have length 1
+```{r explore ar struct, eval=FALSE}
+d2dresult$ar %>% dim # answer: 38 1 1
+
+d2dresult$ar[,1,1] %>% # take only the first dimension
+# names %>% 
+  str1 %>%
+  {.}
+
+# Look at model
+d2dresult$ar[,1,1][["model"]][,1,1] %>%  # is a list, since again the array was of dim 50 1 1
+  str1 %>%
+  {.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][["fp"]] %>% 
+  # str1 %>%
+  {.}
+
+
+d2dresult$ar[,1,1][["model"]][,1,1][1:10] %>% # rather boring
+  # str2 %>%
+{.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][11:20] %>% # rather boring
+  # str2 %>%
+{.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][21:30] %>% # rather boring
+  # str2 %>%
+{.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][31:40] %>% # data is interesting
+  # str2 %>%
+{.}
+
+
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,] %>% # dim 70 (1) 42
+  str1 %>% 
+  {.}
+
+
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][1,1,] %>% # last dimension is a realization of a condition
+  str1 %>% 
+  {.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,] %>% # elements of one condition
+  # dimnames() %>% 
+  dim %>% 
+  {.}
+
+
+# look at one condition
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,1] %>% # elements of one condition
+  # names %>% 
+  str1 %>%
+  # dim %>% 
+  {.}
+```
+
+
+
+# Build ode model
+```{r, eval=FALSE}
+# mymodel <- d2dresult$model %>%  # is a list, since again the array was of dim 50 1 1
+  # str1 %>%
+  # {.}
+mymodel %>% str1
+```
+
+
+```{r, eval=FALSE}
+# start_letters <- mymodel %>% names %>% str_sub(end = 1) %>% sort %>% unique
+# 
+# mymodel[str_detect(names(mymodel), "^c")] %>% map(unlist) %>% names # 
+# mymodel[str_detect(names(mymodel), "^d")] %>% map(unlist) # 
+# mymodel[str_detect(names(mymodel), "^f")] %>% map(unlist)
+# mymodel[str_detect(names(mymodel), "^i")] %>% map(unlist)# 
+# mymodel[str_detect(names(mymodel), "^n")] %>% map(unlist) #
+# mymodel[str_detect(names(mymodel), "^N")] %>% map(unlist) #
+# mymodel[str_detect(names(mymodel), "^p")] %>% map(unlist)
+# mymodel[str_detect(names(mymodel), "^q")] %>% map(unlist) # 
+# mymodel[str_detect(names(mymodel), "^s")] %>% map(unlist) %>% names #
+# mymodel[str_detect(names(mymodel), "^t")] %>% map(unlist) # 
+# mymodel[str_detect(names(mymodel), "^u")] %>% map(unlist) #%>% names
+# mymodel[str_detect(names(mymodel), "^v")] %>% map(unlist) #%>% names
+# mymodel[str_detect(names(mymodel), "^x")] %>% map(unlist) #%>% names
+```
+
+
+```{r odemodel}
+states <- mymodel$xNames %>% unlist %>% unname()
+comp <- mymodel$c %>% unlist() %>% unname()
+comp_size <- mymodel$pc %>% unlist() %>% unname() %>% as.numeric()
+state_comp <- mymodel$cLink[1,] %>% factor() %>% `levels<-`(comp)
+states_df <- data.frame(state = states, compartment = state_comp, volumes = comp_size[state_comp], stringsAsFactors = F)
+
+rates <- mymodel$fv %>% unlist() %>% unname()
+N <- mymodel$N
+rownames(N) <- states_df$state
+N[N==0] <- NA
+
+u <- mymodel$u %>% unlist %>% unname
+fu <- mymodel$fu %>% unlist %>% unname
+forcings <-
+  fu %>% str_replace_all(c("^.*t, " = "", "\\)" = "")) %>% str_split(", ", simplify = T) %>% matrix(nrow = 2) %>% t %>% 
+    as.data.frame(stringsAsFactors = F) %>% `names<-`(c("time", "value")) %>% mutate(time = as.numeric(time)) %>% cbind(var = u, stringsAsFactors = F)
+# rates <- replaceSymbols(u,fu,rates)
+
+reactions <- eqnlist(smatrix = t(N), states = states_df$state, rates = rates, volumes = structure(states_df$volumes, names = states_df$state))
+```
+
+
+
+```{r parameters global trafo}
+# parnames <- mymodel$p  %>% unlist %>% unname
+# pareqns  <- mymodel$fp %>% unlist %>% unname
+# 
+# # in parameter trafos, replacing "init_" by "" is not a problem, but they also appear in observation functions to normalize observations. Therefore, duplicate inits, once keeping init_ in the name, but filling both duplicates with the same value
+# init_ind <- parnames %>% str_detect("^init_")
+# init_names <- parnames[init_ind]
+# parnames <- parnames %>% str_replace_all("init_", "")
+# pareqns  <- pareqns  %>% str_replace_all("init_", "")
+# init_eqns <- pareqns[init_ind]
+# 
+# parnames <- c(parnames, init_names)
+# pareqns <- c(pareqns, init_eqns)
+# 
+# 
+# # compartment names are somehow already replaced by their values not very elegant, hardcoded and could result in problems for other models
+# parnames[1:length(comp)] <- comp
+# 
+# trafo0 <-  pareqns %>%
+#   setNames(parnames)
+```
+
+
+```{r, eval=FALSE}
+mymodel[["data"]][,1,1] %>% 
+  # str1
+  names %>% sort
+
+mymodel[["data"]][,1,] %>% 
+  dim()
+
+mymodel[["data"]][1,1,] %>% 
+{.}
+```
+
+
+```{r condition}
+conds <- seq_len(dim(mymodel[["data"]])[3])
+# conds <- 2
+i <- 1
+condlist <- map(conds, function(i) {
+  
+mycondition <- mymodel[["data"]][,1,i]
+condname <- mycondition$name %>% unlist() %>% unname()
+
+
+y <- mycondition$y %>% unlist %>% unname
+fy <- mycondition$fy %>% unlist %>% unname
+obs <- fy %>% setNames(y)
+
+
+y <- mycondition$y %>% unlist %>% unname
+fystd <- mycondition$fystd %>% unlist() %>% unname()
+errors <- fystd %>% setNames(y)
+
+
+parnames <- mycondition$pold  %>% unlist %>% unname
+pareqns  <- mycondition$fp %>% unlist %>% unname
+# in parameter trafos, replacing "init_" by "" is not a problem, but they also appear in observation functions to normalize observations. Therefore, duplicate inits, once keeping init_ in the name, but filling both duplicates with the same value
+init_ind <- parnames %>% str_detect("^init_")
+init_names <- parnames[init_ind]
+parnames_wo_init <- parnames %>% str_replace_all("init_", "")
+pareqns_wo_init  <- pareqns  %>% str_replace_all("init_", "")
+init_eqns <- pareqns[init_ind]
+
+parnames <- c(parnames_wo_init, init_names)
+pareqns <- c(pareqns_wo_init, init_eqns)
+
+# compartment names are somehow already replaced by their values not very elegant, hardcoded and could result in problems for other models
+parnames[1:length(comp)] <- comp
+
+trafo <-  pareqns %>%
+  setNames(parnames) %>% 
+  insert("x~exp(x*log(10))", x = getSymbols(mytrafo[[i]]))
+
+
+best_fit_values <- mycondition$pNum  %>% unlist %>% unname %>% `attr<-`("dim", NULL)
+best_fit_names <- mycondition$p  %>% unlist %>% unname %>% str_replace_all("init_", "")
+pars <- best_fit_values %>% log %>% `/`(log(10)) %>%  setNames(best_fit_names)
+
+
+timesD <- mycondition$tExp %>% unlist() %>% unname()
+yExp <- mycondition$yExp %>% `colnames<-`(y)
+yExp[is.nan(yExp)] <- NA
+
+data <- data.frame(time = timesD, sigma = NA, condition = condname, yExp) %>% 
+  gather(name, value, -time, -sigma, -condition) %>% 
+  filter(!is.na(value)) %>% 
+  mutate(value = exp(log(10)*value)) %>% 
+  as.data.frame() %>% 
+  as.datalist()
+
+return(list(condname = condname, i = i, obs = obs, errors = errors, trafo = trafo, pars = pars, data = data))
+})
+
+
+### all parameters collected
+all_parnames <- map(condlist, "pars") %>% do.call(c,.) %>% names %>% unique()
+pars <- map(condlist, "pars") %>% map(function(i) {
+  not_in_i <- all_parnames[!all_parnames%in%names(i)] %>% are_names_of(NA)
+  c(i, not_in_i) %>% sort_by_name()
+}) %>% 
+  do.call(rbind, .) %>% 
+  apply(2, . %>% .[!is.na(.)] %>% unique)
+
+### all trafos collected
+all_trafonames <- map(condlist, "trafo") %>% do.call(c,.) %>% names %>% unique()
+all_trafos <- map(condlist, "trafo") %>% map(function(i) {
+  not_in_i <- all_trafonames[!all_trafonames%in%names(i)] %>% are_names_of(NA)
+  c(i, not_in_i) %>% sort_by_name()
+}) %>% 
+  do.call(rbind, .) %>% 
+  apply(2, . %>% .[!is.na(.)] %>% 
+          unique %>%
+          {.})
+varying_trafos <- all_trafos[map_lgl(all_trafos, . %>% length %>% `>`(1))] %>% .[!str_detect(names(.), "^init_")]
+## select covariates and make condition names
+select_covariates <- function(varying_trafos) {
+  mynames <- names(varying_trafos)
+  lengths <- map(varying_trafos, . %>% map_dbl(str_length) %>% max)
+  
+  ui <- miniPage(
+    gadgetTitleBar("Select covariates"),
+    miniContentPanel(
+      selectInput("true_covariates", "True covariates which are not derived from other ones", mynames, mynames[lengths<=10], multiple = T),
+      selectInput("derived_conds", "Derived covariates (discarded)", mynames, mynames[lengths>10], multiple = T),
+      tableOutput("varying")
+      )
+  )
+  server <- function(input, output, session) {
+    # Define reactive expressions, outputs, etc.
+    output$varying <- renderTable(unlist(varying_trafos) %>% data.frame(name = names(.), trafo = .) )
+    # When the Done button is clicked, return a value
+    observeEvent(input$done, {
+      returnValue <- input$true_covariates
+      stopApp(returnValue)
+    })
+  }
+  runGadget(ui, server)
+}
+# covs <- select_covariates(varying_trafos)
+covs <- NULL
+
+covtable <- map(condlist, "trafo") %>% map(function(i) {
+  not_in_i <- all_trafonames[!all_trafonames%in%names(i)] %>% are_names_of(NA)
+  c(i, not_in_i) %>% sort_by_name()
+}) %>% 
+  do.call(rbind, .) %>% 
+  .[,covs] %>% 
+  cbind(dataset = map_chr(condlist, "condname"), .)
+condnames <- covtable %>% apply(1, paste0, collapse = "_")
+rownames(covtable) <- condnames
+
+
+### Build g, x p and e and supply covtable to data
+forc_pars <- pars[names(pars)%in%forcings$value] %>% data.frame(value = names(.), val = ., stringsAsFactors = F)
+forcings <- forcings %>% left_join(forc_pars) %>% select(-value) %>% rename(value = val)
+
+estimate <- c(reactions$rates, reactions$states, reactions$volumes) %>% getSymbols() %>% .[.%in%names(pars)]
+estimate <- estimate[!estimate%in%forc_pars$value]
+
+f <- odemodel(reactions, forcings = forcings, estimate = estimate, modelname = "ar_x", fcontrol = "einspline")
+x <- Xs(f)
+
+trafo <- map(condlist, "trafo") %>% `attr<-`("condition.grid", covtable) %>% `attr<-`("names", condnames)
+p <- P(trafo, modelname = "ar_p")
+
+g <- seq_along(condlist) %>% map(function(cn)
+  Y(condlist[[cn]][["obs"]],x, condition = condnames[cn], modelname = "ar_g")
+  ) %>% 
+  Reduce("+",.)
+
+e <- seq_along(condlist) %>% map(function(cn)
+  Y(condlist[[cn]][["errors"]],x, condition = condnames[cn], modelname = "ar_g")
+  ) %>% 
+  Reduce("+",.)
+
+compile(g,e,p, output = "ar_gep", cores = 4)
+remove_c_and_o()
+
+cond_no_data <-  map(condlist, "data") %>% map(1) %>% map_lgl(is.null)
+data <-  map(condlist, "data") %>% map(1) %>% .[!cond_no_data] %>% as.datalist(names = condnames[!cond_no_data]) %>% `attr<-`("condition.grid", covtable[!cond_no_data,])
+
+model <- dMod.frame("1", g,x,p,data,e, reactions = list(reactions)) %>% appendObj(pars = list(pars))
+
+```
+
+
+
+```{r}
+d2dresult$ar[,1,1]$model[,1,1]$fp
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
