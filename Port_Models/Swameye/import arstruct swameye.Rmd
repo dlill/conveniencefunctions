@@ -137,7 +137,7 @@ u <- mymodel$u %>% unlist %>% unname
 fu <- mymodel$fu %>% unlist %>% unname
 forcings <-
   fu %>% str_replace_all(c("^.*t, " = "", "\\)" = "")) %>% str_split(", ", simplify = T) %>% matrix(nrow = 2) %>% t %>% 
-    as.data.frame(stringsAsFactors = F) %>% `names<-`(c("time", "value")) %>% mutate(time = as.numeric(time)) %>% cbind(var = u, stringsAsFactors = F)
+    as.data.frame(stringsAsFactors = F) %>% `names<-`(c("time", "value")) %>% mutate(time = as.numeric(time)) %>% cbind(name = u, stringsAsFactors = T)
 # rates <- replaceSymbols(u,fu,rates)
 
 reactions <- eqnlist(smatrix = t(N), states = states_df$state, rates = rates, volumes = structure(states_df$volumes, names = states_df$state))
@@ -150,7 +150,7 @@ reactions <- eqnlist(smatrix = t(N), states = states_df$state, rates = rates, vo
 # pareqns  <- mymodel$fp %>% unlist %>% unname
 # 
 # # in parameter trafos, replacing "init_" by "" is not a problem, but they also appear in observation functions to normalize observations. Therefore, duplicate inits, once keeping init_ in the name, but filling both duplicates with the same value
-# init_ind <- parnames %>% str_detect("^init_")
+# init_ind <- parnames %>% str_detect("init_")
 # init_names <- parnames[init_ind]
 # parnames <- parnames %>% str_replace_all("init_", "")
 # pareqns  <- pareqns  %>% str_replace_all("init_", "")
@@ -181,10 +181,10 @@ mymodel[["data"]][1,1,] %>%
 ```
 
 
-```{r condition}
+```{r condlist}
 conds <- seq_len(dim(mymodel[["data"]])[3])
 # conds <- 2
-i <- 1
+# i <- 1
 condlist <- map(conds, function(i) {
   
 mycondition <- mymodel[["data"]][,1,i]
@@ -204,17 +204,17 @@ errors <- fystd %>% setNames(y)
 parnames <- mycondition$pold  %>% unlist %>% unname
 pareqns  <- mycondition$fp %>% unlist %>% unname
 # in parameter trafos, replacing "init_" by "" is not a problem, but they also appear in observation functions to normalize observations. Therefore, duplicate inits, once keeping init_ in the name, but filling both duplicates with the same value
-init_ind <- parnames %>% str_detect("^init_")
+init_ind <- parnames %>% str_detect("init_")
 init_names <- parnames[init_ind]
 parnames_wo_init <- parnames %>% str_replace_all("init_", "")
 pareqns_wo_init  <- pareqns  %>% str_replace_all("init_", "")
-init_eqns <- pareqns[init_ind]
+init_eqns_init_removed <- pareqns_wo_init[init_ind]
 
 parnames <- c(parnames_wo_init, init_names)
-pareqns <- c(pareqns_wo_init, init_eqns)
+pareqns <- c(pareqns_wo_init, init_eqns_init_removed)
 
 # compartment names are somehow already replaced by their values not very elegant, hardcoded and could result in problems for other models
-parnames[1:length(comp)] <- comp
+# parnames[1:length(comp)] <- comp
 
 trafo <-  pareqns %>%
   setNames(parnames) %>% 
@@ -239,8 +239,9 @@ data <- data.frame(time = timesD, sigma = NA, condition = condname, yExp) %>%
 
 return(list(condname = condname, i = i, obs = obs, errors = errors, trafo = trafo, pars = pars, data = data))
 })
+```
 
-
+```{r}
 ### all parameters collected
 all_parnames <- map(condlist, "pars") %>% do.call(c,.) %>% names %>% unique()
 pars <- map(condlist, "pars") %>% map(function(i) {
@@ -260,7 +261,7 @@ all_trafos <- map(condlist, "trafo") %>% map(function(i) {
   apply(2, . %>% .[!is.na(.)] %>% 
           unique %>%
           {.})
-varying_trafos <- all_trafos[map_lgl(all_trafos, . %>% length %>% `>`(1))] %>% .[!str_detect(names(.), "^init_")]
+varying_trafos <- all_trafos[map_lgl(all_trafos, . %>% length %>% `>`(1))] %>% .[!str_detect(names(.), "init_")]
 ## select covariates and make condition names
 select_covariates <- function(varying_trafos) {
   mynames <- names(varying_trafos)
@@ -299,21 +300,39 @@ condnames <- covtable %>% apply(1, paste0, collapse = "_")
 rownames(covtable) <- condnames
 
 
-### Build g, x p and e and supply covtable to data
+```
+
+```{r}
+# Extract data from condlist and supply covtable
+cond_no_data <-  map(condlist, "data") %>% map(1) %>% map_lgl(is.null)
+data <-  map(condlist, "data") %>% map(1) %>% .[!cond_no_data] %>% as.datalist(names = condnames[!cond_no_data]) %>% `attr<-`("condition.grid", covtable[!cond_no_data,])
+
+### Build g, x p and e
 forc_pars <- pars[names(pars)%in%forcings$value] %>% data.frame(value = names(.), val = ., stringsAsFactors = F)
-forcings <- forcings %>% left_join(forc_pars) %>% select(-value) %>% rename(value = val)
+## forc_pars %>% mutate(val = 10^val)
+# forcings <- forcings %>% left_join(forc_pars) %>% select(-value) %>% rename(value = val) %>% mutate(value = 10^value)
+# Make a dense forcing frame # Inputgedöns
+forcspline <- data$pnas_data_original %>% 
+  filter(name == "pEpoR_au") %>% 
+  with({smooth.spline(time,value, df = length(time)/2) %>% predict(seq(min(time), max(time), length.out = 200))})
+forcings <- forcspline %>% setNames(c("time", "value")) %>% as.data.frame() %>% cbind(name = "pEpoR", stringsAsFactors = T) 
+
+reactions$rates <- reactions$rates %>% replaceSymbols("pEpoR", "pEpoR*scale_pEpoR",.) # Inputgedöns
 
 estimate <- c(reactions$rates, reactions$states, reactions$volumes) %>% getSymbols() %>% .[.%in%names(pars)]
 estimate <- estimate[!estimate%in%forc_pars$value]
 
-f <- odemodel(reactions, forcings = forcings, estimate = estimate, modelname = "ar_x", fcontrol = "einspline")
-x <- Xs(f)
+f <- odemodel(reactions, forcings = levels(forcings$name), estimate = estimate, modelname = "ar_x")#, fcontrol = "einspline")
+x <- Xs(f, forcings = forcings)
 
-trafo <- map(condlist, "trafo") %>% `attr<-`("condition.grid", covtable) %>% `attr<-`("names", condnames)
+trafo <- map(condlist, "trafo") %>% 
+  map(c, c(scale_pEpoR = "exp(scale_pEpoR*log(10))")) %>% # Inputgedöns
+  `attr<-`("condition.grid", covtable) %>% `attr<-`("names", condnames)
 p <- P(trafo, modelname = "ar_p")
+pars <- c(pars, scale_pEpoR = -1) # Inputgedöns
 
 g <- seq_along(condlist) %>% map(function(cn)
-  Y(condlist[[cn]][["obs"]],x, condition = condnames[cn], modelname = "ar_g")
+  Y(condlist[[cn]][["obs"]], x, condition = condnames[cn], modelname = "ar_g")
   ) %>% 
   Reduce("+",.)
 
@@ -325,30 +344,63 @@ e <- seq_along(condlist) %>% map(function(cn)
 compile(g,e,p, output = "ar_gep", cores = 4)
 remove_c_and_o()
 
-cond_no_data <-  map(condlist, "data") %>% map(1) %>% map_lgl(is.null)
-data <-  map(condlist, "data") %>% map(1) %>% .[!cond_no_data] %>% as.datalist(names = condnames[!cond_no_data]) %>% `attr<-`("condition.grid", covtable[!cond_no_data,])
 
-model <- dMod.frame("1", g,x,p,data,e, reactions = list(reactions)) %>% appendObj(pars = list(pars))
+
+
+model <- dMod.frame("1", g,x,p,data,e, reactions = list(reactions)) %>% 
+  appendObj(pars = list(pars))
 
 ```
+
+```{r}
+checkout_hypothesis(model, 1, "wup")
+```
+
+```{r}
+# qplot(time, value, data= forcings)
+```
+
+```{r}
+# p(pars)
+pars
+```
+
+```{r}
+condlist[[1]]$obs
+```
+```{r}
+pars
+```
+
+
+```{r}
+plotCombined(model, 1)
+```
+
 
 
 
 ```{r}
-d2dresult$ar[,1,1]$model[,1,1]$fp
+g((x*p)(wuptimes[1:10], pars)[[1]], p(pars)[[1]])
 ```
 
+```{r}
+trafo[[1]] %>% as.eqnvec()
+getParameters(p) %>% compare(names(pars))
+```
 
+```{r}
+bla <- model %>% 
+  mutate(fits = list(mstrust(obj, pars, fits = 50, iterlim = 100, cores = 4, parupper = 3, parlower = -3)))#, fixed = c("scale_pEpoR" = 1))))
+```
 
-
-
-
-
-
-
-
-
-
+```{r}
+bla %>% 
+  appendParframes() %>% 
+  # .$parframes
+  plotCombined(1,1)
+  # plotValues()
+```
 
 
 

@@ -99,7 +99,7 @@ loadDLL(x)
 ```
 
 ```{r g e and p}
-i <- 6
+# i <- 6
 frames <- map(seq_along(data_defs), function(i) {
 i<<-i
 
@@ -272,10 +272,138 @@ bachmann <- frames <- frames %>% bind_rows()
 saveRDS(bachmann, tpaste0("bachmann.rds"))
 
 hypothesis <- model_def_file %>% str_replace_all(".*/", "")
+# hypothesis <- "bla"
 model <- dMod.frame(hypothesis, Reduce("+", frames$g), frames$x[[1]], Reduce("+", frames$p), Reduce("+", frames$data), e = Reduce("+", frames$e))
 
 
 ```
+
+
+
+# Testing
+
+```{r load dMod.frame, message=FALSE}
+frames <- bachmann <- readDMod.frame("2018_07_10_15_00_bachmann.rds") %>% appendObj()
+```
+
+## Test plots
+
+```{r}
+bachmann$data %>% map(plotData)
+```
+
+```{r}
+pdf()
+seq_along(bachmann$hypothesis) %>% map(function(i) {
+  plotCombined(bachmann, i) + guides(color = FALSE)
+})
+dev.off()
+```
+
+# Loading parameters and so on
+
+```{r}
+library(R.matlab)
+```
+
+```{r}
+d2dresult <- readMat(c("~/Promotion/Software/d2d/arFramework3/Examples/Bachmann_MSB2011/Results/BestFit/workspace.mat"))
+saveRDS(d2dresult, "workspaceMAT.rds")
+```
+
+
+The best way to explore the ar struct is to print out the structure, then find the dimensions which have length 1
+```{r explore ar struct}
+d2dresult$ar %>% dim # answer: 38 1 1
+
+d2dresult$ar[,1,1] %>% # take only the first dimension
+# names %>% 
+  str1 %>%
+  {.}
+
+# Look at model
+d2dresult$ar[,1,1][["model"]][,1,1] %>%  # is a list, since again the array was of dim 50 1 1
+  str1 %>%
+  {.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][["fp"]] %>% 
+  # str1 %>%
+  {.}
+
+
+d2dresult$ar[,1,1][["model"]][,1,1][1:10] %>% # rather boring
+  # str2 %>%
+{.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][11:20] %>% # rather boring
+  # str2 %>%
+{.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][21:30] %>% # rather boring
+  # str2 %>%
+{.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][31:40] %>% # data is interesting
+  # str2 %>%
+{.}
+
+
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,] %>% # dim 70 (1) 42
+  str1 %>% 
+  {.}
+
+
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][1,1,] %>% # last dimension is a realization of a condition
+  str1 %>% 
+  {.}
+
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,] %>% # elements of one condition
+  dimnames()
+  {.}
+
+
+# look at one condition
+d2dresult$ar[,1,1][["model"]][,1,1][["data"]][,1,1] %>% # elements of one condition
+  # names %>% 
+  str1 %>%
+  # dim %>% 
+  {.}
+
+
+```
+
+
+
+
+
+
+
+# Quick d2d2r from results-workspace
+```{r}
+# library(R.matlab)
+# d2dresult <- readMat(c("~/Promotion/Software/d2d/arFramework3/Examples/Bachmann_MSB2011/Results/BestFit/workspace.mat"))
+# saveRDS(d2dresult, "workspaceMAT.rds")
+d2dresult <- readRDS("workspaceMAT.rds")
+```
+
+
+```{r x}
+armodel <- d2dresult$ar[,1,1][["model"]][,1,1]
+
+ind <- which(names(armodel) %in% c("data", "plot", "condition"))
+
+map(armodel[-ind], unlist)
+```
+
+
+
+
+
+
+
+
+
+
 
 
 

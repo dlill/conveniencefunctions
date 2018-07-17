@@ -190,7 +190,7 @@ init_ind <- parnames %>% str_detect("^init_")
 init_names <- parnames[init_ind]
 parnames_wo_init <- parnames %>% str_replace_all("init_", "")
 pareqns_wo_init  <- pareqns  %>% str_replace_all("init_", "")
-init_eqns <- pareqns[init_ind]
+init_eqns <- pareqns_wo_init[init_ind]
 
 parnames <- c(parnames_wo_init, init_names)
 pareqns <- c(pareqns_wo_init, init_eqns)
