@@ -300,6 +300,22 @@ cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.name
 
 
 
+# Update package versions: dMod, cOde, conveniencefunctions, MRAr----
+#' Update versions
+#'
+#' @param cOde,dMod,cf,MRAr Logicals which packages are updated
+#' @export
+update_version <- function(cOde = T, dMod = T, cf = T, MRAr = F) {
+  if(cOde) devtools::install_github("dkaschek/cOde")
+  if(dMod) devtools::install_github("dkaschek/dMod")
+  if(cf)  devtools::install_github("dlill/conveniencefunctions")
+  if(MRAr) devtools::install_github("dlill/MRAr")
+}
+
+
+
+
+
 # hierarchical optimization----
 
 
