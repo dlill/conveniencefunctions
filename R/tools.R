@@ -131,7 +131,26 @@ are_names_of <- function(char_vec, value, ...) {
   structure(value, names = char_vec)
 }
 
-
+#' Insert values from another vector with some shared names
+#'
+#' @param vec
+#' @param values
+#'
+#' @return the modified vector
+#' @export
+#'
+#' @examples
+#' vec <- letters[1:3] %>% are_names_of(0)
+#' vals <- letters[2:4] %>% are_names_of(1)
+#' insert_values(vec, vals)
+insert_values <- function(vec, values) {
+  oldnames <- names(vec)
+  vec <- sort_by_name(vec)
+  values <- sort_by_name(values)
+  mynames <- intersect(names(vec), names(values))
+  vec[mynames] <- values[mynames]
+  return(vec[oldnames])
+}
 
 
 
