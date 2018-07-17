@@ -107,8 +107,8 @@ describe_plotProfile <- function(dMod.frame = NULL) {
 #' Adds NAMESPACE and man folder
 #'
 #' @export
-cf_roxygenize <- function() {
-  devtools::document(roclets=c('rd', 'collate', 'namespace'))
+stage_documentation <- function() {
+  print(git2r::repository())
   git2r::add(git2r::repository(), "man/*")
   git2r::add(git2r::repository(), "NAMESPACE")
 }
