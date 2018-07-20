@@ -7,40 +7,39 @@
 
 #' str with max.level = 0
 #'
-#' @param ...
-#'
+#' Saves you typoing when analysing objects
+#' @param ... an object
 #'
 #' @export
-#'
-#'
 str0 <- function(...) {
   str(..., max.level = 0)
 }
 
-#' str with max.level = 1
-#'
-#' @param ...
-#'
-#'
+#' @rdname str0
 #' @export
-#'
-#'
 str1 <- function(...) {
   str(..., max.level = 1)
 }
 
-#' str with max.level = 2
-#'
-#' @param ...
-#'
-#'
+#' @rdname str0
 #' @export
-#'
-#'
 str2 <- function(...) {
   str(..., max.level = 2)
 }
 
+
+#' @rdname str0
+#' @export
+head1 <- function(...) {
+  head(..., n = 1)
+}
+
+
+#' @rdname str0
+#' @export
+head3 <- function(...) {
+  head(..., n = 3)
+}
 
 
 #' Load the default values of formals of a function into the Global environment
@@ -64,10 +63,12 @@ evaluate_formals <- function(..., indices = 1:length(formals(...))) {
 
 #' List the elements of .GlobalEnv without elements with matching naes
 #'
-#' @param reg A vector of regex to be matched
+#' @param pattern A vector of regex to be matched
 #'
 #' @export
-global_env_without <- function(reg) ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(reg) %>% any))]
+global_env_without <- function(pattern) {
+  ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(pattern) %>% any))]
+}
 
 
 #' The runtime of some code
@@ -133,8 +134,8 @@ are_names_of <- function(char_vec, value, ...) {
 
 #' Insert values from another vector with some shared names
 #'
-#' @param vec
-#' @param values
+#' @param vec the vector where the values should be inserted
+#' @param values the vector with the replacements
 #'
 #' @return the modified vector
 #' @export
@@ -143,7 +144,7 @@ are_names_of <- function(char_vec, value, ...) {
 #' vec <- letters[1:3] %>% are_names_of(0)
 #' vals <- letters[2:4] %>% are_names_of(1)
 #' insert_values(vec, vals)
-insert_values <- function(vec, values) {
+insert_values_by_name <- function(vec, values) {
   oldnames <- names(vec)
   vec <- sort_by_name(vec)
   values <- sort_by_name(values)

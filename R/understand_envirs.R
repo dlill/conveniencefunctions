@@ -64,17 +64,6 @@ understand_envirs <- function() {
 
 
 
-#' Fun
-#'
-#' @param fun
-#' @param arg1
-#'
-#' @return
-#' @export
-understand_environments <- function(fun, arg1) {
-  fun(arg1)
-}
-
 
 
 

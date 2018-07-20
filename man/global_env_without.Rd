@@ -4,10 +4,10 @@
 \alias{global_env_without}
 \title{List the elements of .GlobalEnv without elements with matching naes}
 \usage{
-global_env_without(reg)
+global_env_without(pattern)
 }
 \arguments{
-\item{reg}{A vector of regex to be matched}
+\item{pattern}{A vector of regex to be matched}
 }
 \description{
 List the elements of .GlobalEnv without elements with matching naes

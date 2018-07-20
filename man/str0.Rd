@@ -2,13 +2,25 @@
 % Please edit documentation in R/tools.R
 \name{str0}
 \alias{str0}
+\alias{str1}
+\alias{str2}
+\alias{head1}
+\alias{head3}
 \title{str with max.level = 0}
 \usage{
 str0(...)
+
+str1(...)
+
+str2(...)
+
+head1(...)
+
+head3(...)
 }
 \arguments{
-\item{...}{}
+\item{...}{an object}
 }
 \description{
-str with max.level = 0
+Saves you typoing when analysing objects
 }

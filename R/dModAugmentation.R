@@ -1,3 +1,55 @@
+# d2d data format to dMod data format----
+
+#' Bring wide d2d format of data into long dMod format
+#'
+#' The challenge is that sigmas get their own column each, therefore it's a bit more complicated than simply gathering
+#'
+#' @param data a data.frame
+#' @param keep character vector of columns with covariates to preserve and not count as variables
+#'
+#' @return The data in long format
+#' @export
+#'
+#' @importFrom rlang syms UQS
+d2d2dMod_data <- function(data, keep = NULL) {
+
+  # Add a rownumber to uniquely identify rows, when splitting up the  data into values and sigmas
+  data <- data %>%
+    mutate(.rownumber = 1:nrow(data))
+
+  keep0 <- c("time", ".rownumber")
+  keep <- c(keep0, keep)
+
+  datanames <- names(data)
+  sdnames <- datanames %>% str_subset("_sd$")
+  varnames <- datanames[!datanames%in%c(keep, sdnames)]
+
+  clean_for_output <- . %>%
+    select(-.rownumber) %>%
+    filter(!is.na(value)) %>%
+    as.data.frame()
+
+  vardata <- data %>%
+    select(UQS(syms(c(keep, varnames)))) %>%
+    gather(name, value, UQS(syms(varnames)))
+
+  if (length(sdnames) == 0) {
+    return(vardata %>% clean_for_output)
+  }
+
+  sddata <- data %>%
+    select(UQS(syms(c(keep, sdnames)))) %>%
+    gather(name, sigma, UQS(syms(sdnames))) %>%
+    mutate(name = str_replace(name, "_sd$", ""))
+
+  out <- full_join(vardata, sddata, by = keep) %>%
+    clean_for_output
+
+  return(out)
+}
+
+
+
 # obj_condition_wise ----
 
 #' Evaluate an objective function condition-wise
