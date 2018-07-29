@@ -158,10 +158,10 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 
   rbg_get_save_purge <- function() paste0('
 # ',job_name,'$check()
-# runbg(wait_for_runbg(',job_name,'), filename = "wait", input = "', job_name, '")
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
+# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' %>% uniteFits %>% appendParframes
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
-# ', str_replace(job_name, "_job", ""), ' <- readRDS("',str_replace(job_name, "_job", ""), '.rds")
+# ', dMod.frame, ' <- readdMod.frame("',str_replace(job_name, "_job", ""), '.rds")
 # ', job_name, '$purge()
 ')
 
@@ -268,6 +268,38 @@ if (is.null(job_type)) {
     rstudioapi::insertText(job_text)  }
 }
 
+}
+
+
+# Insert Fit-analysis ----
+
+#' Insert some common plots after mstrust into your Rmarkdown file
+#'
+#' @param dMod.frame The dMod.frame you want to analyze
+#' @export
+insert_fit_analysis <- function(dMod.frame = "model") {
+fit_analysis <- '
+```{r}
+model %>% plotValues(1, value < 10^6)
+```
+
+```{r}
+model %>% parframes_summary
+```
+
+```{r}
+model %>% plotPars()
+```
+
+```{r}
+model %>% plotCombined(1,1)
+```
+
+
+' %>%
+    str_replace_all("\\bmodel\\b", dMod.frame)
+
+rstudioapi::insertText(fit_analysis)
 }
 
 

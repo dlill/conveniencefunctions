@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+Port_Models/
+*.so

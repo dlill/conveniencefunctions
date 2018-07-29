@@ -4,7 +4,6 @@
 \alias{describe_plotValue}
 \alias{describe_plotCombined}
 \alias{describe_plotPars}
-\alias{describe_plotPars}
 \alias{describe_plotProfile}
 \title{Describe plot}
 \usage{
@@ -25,6 +24,4 @@ describe_plotProfile(dMod.frame = NULL)
 }
 \description{
 Here are some templates to motivate you to describe the plots.
-
-Addin
 }

@@ -46,6 +46,10 @@ Description: Inserts a runbg at the cursor position
 Binding: insert_runbg
 Interactive: false
 
+Name: Insert fit analysis
+Description: Inserts some chunks which print plots about a dmod.frame with parframes
+Binding: insert_fit_analysis
+Interactive: false
 
 Name: Stage Documentation
 Description: Stage files in man/ and NAMESPACE

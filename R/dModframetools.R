@@ -46,6 +46,34 @@ uniteFits <- function(runbgOutput, return_value = c("dMod.frame", "parlist")) {
 
 
 
+# Convenience functions for fit result analysis ----
+
+#' Quickly print the number of converged fits
+#'
+#' @param dMod.frame dMod.frame with parframes column
+#' @param hypothesis hypothesis, if null, analyse all hypotheses given in the dMod.frame
+#' @param tol tol going to \code{dMod:::stepDetect}
+#'
+#' @export
+parframes_summary <- function(dMod.frame, hypothesis = NULL, tol = 1) {
+  if ( is.null(hypothesis)) hypothesis <- 1:nrow(dMod.frame)
+  map(hypothesis, function(i) {
+    converged <- dMod.frame$parframes[[i]]$converged %>% summary
+    values <- dMod.frame$parframes[[i]]$value %>% summary
+    steps_first_20 <- dMod.frame$parframes[[i]]$value %>% dMod:::stepDetect(tol) %>% .[1:20]
+    largest_steps <- dMod.frame$parframes[[i]] %>% getStepIndices()
+    iterations <- dMod.frame$parframes[[i]]$iterations %>% summary
+
+    list(converged = converged,
+         values = values,
+         steps_first_20 = steps_first_20,
+         largest_steps = largest_steps,
+         iterations = iterations)
+  }) %>% setNames(dMod.frame$hypothesis[hypothesis])
+}
+
+
+
 # Interaction with .GlobalEnv ----
 
 #' Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
