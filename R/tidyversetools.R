@@ -53,9 +53,6 @@ remove_geom <- function(x, geom_type, last_only = T) {
 }
 
 
-selector <- c(T,F,T, F)
-
-
 #' ggsave() with automatically saving metainformation of how the plot was produced
 #'
 #' @param all taken from ggsave()
