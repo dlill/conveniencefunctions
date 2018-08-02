@@ -197,11 +197,13 @@ wait_for_runbg <- function(job, delta_t=5) {
 #' Remove files with endings .c and .o
 #'
 #' @param path The path where those files should be removed
-#' @param extensions file extensions
+#' @param other_extensions,extensions file extensions
 #'
 #' @export
-remove_c_and_o <- function(path = ".", extensions = c("c", "o")) {
-  myregex <- paste0("(\\.", extensions, ")$") %>% paste0(collapse = "|")
+remove_c_and_o <- function(other_extensions = NULL, path = ".", extensions = c("c", "o")) {
+  myregex <- paste0("(\\.", c(extensions, other_extensions), ")$")
+  if (length(myregex) > 1)
+    myregex <- myregex %>% paste0(collapse = "|")
   c_and_o <- list.files(path = path, pattern = myregex)
   system2("rm", args = c_and_o)
 }
