@@ -263,7 +263,11 @@ tpaste0 <- function(...) {
          , "_" , ...)
 }
 
-
+#' quasi random seed when a seed is already set
+#'
+#' @export
+time_to_seed <- function(){ date() %>% as.character.Date() %>% str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(10000)  %>% round() %>% as.integer()
+}
 
 
 # move this to ./data/
@@ -296,4 +300,7 @@ spread_list_column <- function(myframe, unique = "condition", unnest_var = "grad
 
 #' @rdname spread_list_column
 unnest_name <- spread_list_column
+
+
+
 

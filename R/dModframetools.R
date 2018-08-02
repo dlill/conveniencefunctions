@@ -10,20 +10,24 @@
 #'
 #' @return either dMod.frame with data in it and column "truth" or data.frame
 #' @export
-simulate_data <- function(model, hypothesis = 1, output = c("dMod.frame", "data.frame", "datalist"), timesD = 0:10, s0 = 0.1, srel = 0.1, observables = getObservables(model, hypothesis), ..., seed = 1) {
+simulate_data <- function(model,
+                          hypothesis = 1,
+                          output = c("dMod.frame", "data.frame", "datalist"),
+                          timesD = 0:10, s0 = 0.1, srel = 0.1, observables = getObservables(model, hypothesis), ...,
+                          seed1 = 1, seed2 = time_to_seed()) {
 
   conditions <- getConditions(model, hypothesis)
   data_template <- expand.grid(name = observables, time = timesD, s0 = s0, srel = srel, condition = conditions, ..., stringsAsFactors = F)
 
-  set.seed(seed)
+  set.seed(seed1)
   pars <- getParameters(model$p[[hypothesis]]) %>% are_names_of(rnorm)
 
   prd <- (model$g[[hypothesis]] * model$x[[hypothesis]] * model$p[[hypothesis]])
 
   prediction <- prd(unique(data_template$time), pars, deriv = F) %>% wide2long()
 
-  random_seed <- date() %>% as.character.Date() %>% str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(10000)  %>% round() %>% as.integer()
-  set.seed(random_seed)
+
+  set.seed(seed2)
 
   mydata <- suppressWarnings(left_join(data_template, prediction, by = c("time", "name", "condition"))) %>%
     mutate(sigma = sqrt(s0^2 + srel^2*value^2)) %>%

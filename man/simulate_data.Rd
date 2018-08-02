@@ -6,7 +6,8 @@
 \usage{
 simulate_data(model, hypothesis = 1, output = c("dMod.frame", "data.frame",
   "datalist"), timesD = 0:10, s0 = 0.1, srel = 0.1,
-  observables = getObservables(model, hypothesis), ..., seed = 1)
+  observables = getObservables(model, hypothesis), ..., seed1 = 1,
+  seed2 = time_to_seed())
 }
 \arguments{
 \item{model}{dMod.frame , may be unfinished}
