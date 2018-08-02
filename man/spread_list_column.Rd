@@ -5,8 +5,7 @@
 \alias{unnest_name}
 \title{Unnest a list-column into a key-value pair, if the list entries are named vectors}
 \usage{
-spread_list_column(myframe, unique = "condition",
-  unnest_var = "gradient")
+spread_list_column(myframe, unique = "condition", unnest_var = "gradient")
 
 unnest_name(myframe, unique = "condition", unnest_var = "gradient")
 }

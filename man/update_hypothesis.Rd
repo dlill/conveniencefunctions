@@ -4,8 +4,8 @@
 \alias{update_hypothesis}
 \title{Update a hypothesis}
 \usage{
-update_hypothesis(dMod.frame, exclude = NULL, include = NULL,
-  prefix = "", suffix = "")
+update_hypothesis(dMod.frame, exclude = NULL, include = NULL, prefix = "",
+  suffix = "")
 }
 \arguments{
 \item{dMod.frame}{bla}

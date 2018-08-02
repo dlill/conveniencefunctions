@@ -4,8 +4,8 @@
 \alias{insert_runbg}
 \title{Insert a runbg job}
 \usage{
-insert_runbg(job_name = "myrunbg_job", job_type = NULL,
-  dMod.frame = NULL, tol = 1, nsteps = 3, distribute = NULL)
+insert_runbg(job_name = "myrunbg_job", job_type = NULL, dMod.frame = NULL,
+  tol = 1, nsteps = 3, distribute = NULL)
 }
 \arguments{
 \item{job_name}{character with "_job" at the end}

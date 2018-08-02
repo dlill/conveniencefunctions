@@ -4,10 +4,12 @@
 \alias{remove_c_and_o}
 \title{Remove files with endings .c and .o}
 \usage{
-remove_c_and_o(path = ".")
+remove_c_and_o(path = ".", extensions = c("c", "o"))
 }
 \arguments{
 \item{path}{The path where those files should be removed}
+
+\item{extensions}{file extensions}
 }
 \description{
 Remove files with endings .c and .o
