@@ -370,7 +370,7 @@ cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.name
 #' @param cOde,dMod,cf,MRAr Logicals which packages are updated
 #' @export
 update_version <- function(cOde = T, dMod = T, cf = T, MRAr = F) {
-  devtools::install_github("https://github.com/rpremraj/mailR")
+  devtools::install_github("rpremraj/mailR")
   if(cOde) devtools::install_github("dkaschek/cOde")
   if(dMod) devtools::install_github("dkaschek/dMod")
   if(cf)  devtools::install_github("dlill/conveniencefunctions")
