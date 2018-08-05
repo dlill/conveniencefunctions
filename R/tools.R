@@ -312,8 +312,8 @@ unnest_name <- spread_list_column
 send_runbg_mail <- function(job_name, to = "dl140@physik.uni-freiburg.de") {
   try(mailR::send.mail(from = "myRunbgJob@gmail.com",
                    to = to,
-                   subject=paste0("Job ", job_name, " done"),
-                   body = "The job is ready to fetch :) ",
+                   subject=paste0("Job  done"),
+                   body = paste("The job", job_name, "from machine", Sys.info()["nodename"], "is ready to fetch :) "),
                    smtp = list(host.name = "smtp.gmail.com", port = 465,
                                user.name = "myRunbgJob",
                                passwd = digest::digest("myRunbgJob"),
