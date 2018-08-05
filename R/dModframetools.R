@@ -170,24 +170,37 @@ readDMod.frame <- function(filename) {
 #'
 #' @param runbgOutput the .runbgOutput you get when you start a fit_job with insert_runbg on more than one knecht
 #' @param return_value one of c("dMod.frame", "parlist"). Do you want the dMod.frame or just the parlist
-#'
+#' @param whichUnite
 #'
 #' @export
-#'
-#'
-uniteFits <- function(runbgOutput, return_value = c("dMod.frame", "parlist")) {
+uniteFits <- function(runbgOutput, whichUnite = c("fits", "parframes"), return_value = c("dMod.frame", "parlist")) {
 
   return_value <- return_value[1]
+  whichUnite <- whichUnite[1]
 
   if (return_value == "dMod.frame") {
-    myframe <- runbgOutput[[1]]
-    myframe$fits <- runbgOutput %>% map("fits") %>% transpose() %>% map(. %>% Reduce(c.parlist,.))
-    return(myframe)
+    out <- runbgOutput[[1]]
+    if (whichUnite == "fits")
+      out[["fits"]] <- runbgOutput %>%
+        map("fits") %>%
+        transpose() %>%
+        map(function(fitlist) {
+          myparframe<-Reduce(c.parlist,fitlist)
+          myparframe[["index"]] <- 1:nrow(myparframe)
+          myparframe})
+    if (whichUnite == "parframes")
+      out[["parframes"]] <- runbgOutput %>%
+        map("parframes") %>%
+        transpose() %>%
+        map(function(parflist) {
+          myparframe<-Reduce(rbind,parflist)
+          myparframe <- myparframe[order(myparframe$value),]
+          myparframe[["index"]] <- 1:nrow(myparframe)
+          myparframe})
   } else if (return_value == "parlist") {
-    myfits <- runbgOutput %>% map("fits") %>% transpose() %>% map(. %>% Reduce(c.parlist,.))
-    return(myfits)
+    out <- runbgOutput %>% map("fits") %>% transpose() %>% map(. %>% Reduce(c.parlist,.))
   }
-  NULL
+  out
 }
 
 

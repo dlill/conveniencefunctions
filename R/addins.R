@@ -152,16 +152,21 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 
   rbg_body <- function() "\n\n"
 
-  rbg_end <- function() paste0('\n}, machine = ', machine, ', input = "', input,'", filename = "', filename,'"
+  rbg_end <- function() paste0('
+     send_runbg_mail(', filename, ')
+
+     out
+\n}, machine = ', machine, ', input = "', input,'", filename = "', filename,'"
   # , recover = T
 )')
 
   rbg_get_save_purge <- function() paste0('
 # ',job_name,'$check()
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
-# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' %>% uniteFits %>% appendParframes
+# ',str_replace(job_name, "_job", ""),' %>% str1
+# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' #%>% uniteFits %>% appendParframes
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
-# ', dMod.frame, ' <- readdMod.frame("',str_replace(job_name, "_job", ""), '.rds")
+# ', dMod.frame, ' <- readDMod.frame("',str_replace(job_name, "_job", ""), '.rds")
 # ', job_name, '$purge()
 ')
 
@@ -170,7 +175,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
     ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
-   ', dMod.frame,' %>%
+   out <- ', dMod.frame,' %>%
     ungroup %>%
     mutate(fits = map(seq_along(x), function(i) {
       assign("fit_obj", obj[[i]], pos = .GlobalEnv)
@@ -187,7 +192,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   profile_body <- function() paste0('ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
-    ', dMod.frame,' %>%
+    out <- ', dMod.frame,' %>%
       ungroup %>%
       mutate(profiles = map(seq_along(x), function(i) {
         assign("fit_obj", obj[[i]], pos = .GlobalEnv)
@@ -199,7 +204,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   profile_step_body <- function() paste0('   ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
-   ', dMod.frame,' %>%
+   out <- ', dMod.frame,' %>%
     ungroup %>%
     mutate(profiles = map(seq_along(x), function(i) {
       assign("fit_obj", obj[[i]], pos = .GlobalEnv)
@@ -247,8 +252,9 @@ runbg({
   rbg_get_save_purge <- function() paste0('
 # map(',job_name,',. %>% .$check())
 # ',str_replace(job_name, "_job", ""),' <- map(',job_name,',. %>% .$get())
+# save(.runbgOutput, file = "runbgOutput.rda")
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
-# ', str_replace(job_name, "_job", ""), ' <- readRDS("',str_replace(job_name, "_job", ""), '.rds")
+# ', str_replace(job_name, "_job", ""), ' <- readDMod.frame("',str_replace(job_name, "_job", ""), '.rds")
 # map(', job_name, ',. %>% .$purge())
 ')
   }

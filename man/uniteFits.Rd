@@ -4,10 +4,13 @@
 \alias{uniteFits}
 \title{Title}
 \usage{
-uniteFits(runbgOutput, return_value = c("dMod.frame", "parlist"))
+uniteFits(runbgOutput, whichUnite = c("fits", "parframes"),
+  return_value = c("dMod.frame", "parlist"))
 }
 \arguments{
 \item{runbgOutput}{the .runbgOutput you get when you start a fit_job with insert_runbg on more than one knecht}
+
+\item{whichUnite}{}
 
 \item{return_value}{one of c("dMod.frame", "parlist"). Do you want the dMod.frame or just the parlist}
 }

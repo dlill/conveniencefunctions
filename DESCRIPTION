@@ -9,13 +9,15 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Depends: 
+Depends:
   dMod,
   tidyverse
-Imports: 
+Imports:
   plotly,
   rlang,
   dplyr,
   git2r,
-  beepr
+  beepr,
+  mailR
 RoxygenNote: 6.1.0
+Suggests: testthat
