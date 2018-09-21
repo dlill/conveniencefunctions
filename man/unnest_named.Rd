@@ -2,22 +2,14 @@
 % Please edit documentation in R/tools.R
 \name{unnest_named}
 \alias{unnest_named}
-\alias{append_rownumber_col}
 \title{Unnesting functions for list-columns}
 \usage{
 unnest_named(df, key, value)
-
-append_rownumber_col(df)
 }
 \arguments{
 \item{df}{a tibble with list columns}
 
 \item{key, value}{like in gather and spread}
-
-\item{df}{tibble or data.frame}
-}
-\value{
-df with additional column "rownumber"
 }
 \description{
 The following functions serve two purposes

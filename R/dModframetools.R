@@ -1,6 +1,11 @@
 # report generation ----
-# dMod.frame <- model
 
+#' Print plots and shit
+#'
+#' @param model DL to do
+#' @param folder DL to do
+#'
+#' @export
 report_dMod.frame <- function(model, folder = tpaste0("report/")) {
 
   allnames <- names(model)

@@ -336,16 +336,13 @@ unnest_named <- function(df, key, value) {
 }
 
 
-#' @rdname unnest_named
-#' @export
-
-
 
 #' Quickly append a column which contains the rownumber
 #'
 #' @param df tibble or data.frame
 #'
 #' @return df with additional column "rownumber"
+#'
 #' @export
 append_rownumber_col <- function(df) {
   df %>% mutate(., rownumber = 1:nrow(.))
