@@ -114,6 +114,34 @@ stage_documentation <- function() {
 }
 
 
+#' Insert Wolfgang's unit test template
+#'
+#' @param context The context
+#' @param description The description in test_that(description)
+#'
+#' @export
+insert_unit_test <- function(context = "Context", description= "test_what") {
+  rstudioapi::insertText(paste0('# context("', context, '")
+# test_that("', description ,'", {
+
+  #-!Start example code
+  #-! library(conveniencefunctions)
+  #-! library(dMod)
+
+
+  #-!End example code
+
+
+  # Define your expectations here
+  expect_known_hash(, hash = NULL)
+
+#})
+  '))
+}
+
+
+# insert runbg----
+
 #' Insert a runbg job
 #'
 #' @param job_name character with "_job" at the end

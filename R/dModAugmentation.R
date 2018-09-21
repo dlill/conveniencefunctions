@@ -1,3 +1,36 @@
+# helper functions ----
+
+#' Set rownames so that the covtable is in condition.grid format
+#'
+#' @param df a data.frame containing the covariates
+#'
+#' @export
+as.condition.grid <- function(df) {
+  mynames <- do.call(paste, c(df, list(sep = "_")))
+
+  if (any(duplicated(mynames)))
+    stop("Duplicated condition names. Check if conditions can be merged or create additional covariate.")
+  `rownames<-`(df, mynames)
+}
+
+getConditions.fn <- dMod:::getConditions.fn
+
+#' Try getting conditions
+#'
+#' first from obj, then from data, then from p
+#'
+#' @export
+getConditions.tbl_df <- function(model, hypothesis = 1) {
+  if (!is.null(suppressWarnings(model$obj[[hypothesis]])))
+    return(getConditions.fn(model$obj[[hypothesis]]))
+  if (!is.null(model$data[[hypothesis]]))
+    return(names(model$data[[hypothesis]]))
+  if (!is.null(model$p[[hypothesis]]))
+    return(getConditions.fn(model$p[[hypothesis]]))
+}
+
+
+
 # d2d data format to dMod data format----
 
 #' Bring wide d2d format of data into long dMod format
@@ -48,7 +81,54 @@ d2d2dMod_data <- function(data, keep = NULL) {
   return(out)
 }
 
+# Clemens Identifiability test ----
 
+#' Clemens Kreutz Quick identifiability test
+#'
+#' @param model dMod.frame
+#' @param hypothesis which hypothesis
+#' @param r_test Radius which should be tested
+#' @param thresh threshold
+#'
+#' @return table with objective function values, the fit which is performed during this test and the parameter values.
+#' Additional column "identifiable" which is true if the objective function value has been pushed to a value higher than the threshold
+#' @export
+#'
+#' @examples
+#'  \dontrun{DL: To do.}
+id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
+
+  # write out objects to this this environment
+  lapply(seq_along(model), function(i) {
+    value <- model[[i]][[hypothesis]]
+    try(assign(x = paste0(names(model)[i]), value = value, pos = 1), silent = T)})
+
+  bestfit <- pars
+  if(!is.null(model$parframes))
+    bestfit <- parframes %>% as.parvec
+
+
+  r <- bestfit %>% paste0("(", names(.), " - ", ., ")^2") %>% paste0(collapse = " + ") %>% paste0("sqrt(", ., ")") %>% `names<-`("R_BESTFIT")
+  p_id <- P(r)
+  constr_id <- constraintL2(c(R_BESTFIT = r_test), sigma = 1, attr.name = "prior_id")
+  constr_id <- (constr_id*p_id)
+
+  obj_id <- obj + constr_id
+
+  current_value <- obj(bestfit, deriv = F)$value
+  myfit <- trust(obj_id, bestfit, 1, 10)
+
+  out <- tibble(old_value = current_value,
+                new_value = myfit$value,
+                new_value_data = attr(myfit, "data"),
+                new_value_prior_id  = attr(myfit, "prior_id"),
+                new_fit = list(myfit),
+                old_argument = list(bestfit),
+                new_argument = list(myfit$argument)) %>%
+    mutate(identifiable = (new_value-old_value) > thresh)
+
+  return(out)
+}
 
 # obj_condition_wise ----
 

@@ -1,46 +1,285 @@
+# report generation ----
+# dMod.frame <- model
+
+report_dMod.frame <- function(model, folder = tpaste0("report/")) {
+
+  allnames <- names(model)
+  nhyp <- nrow(model)
+
+  folder_hypwise <- paste0(folder, "by_hypothesis/")
+  folder_objectwise <- paste0(folder, "by_object/")
+
+  dir.create(folder)
+  dir.create(paste0(folder_hypwise))
+  dir.create(paste0(folder_objectwise))
+
+
+  # helper functions ----
+  get_steps_by_diff <- function(model, hypothesis, min_diff = 0.1, min_stepsize = 3) {
+    mysteps <- model$parframes[[hypothesis]]$value %>% diff %>% {.>min_diff} #DL das hier als funktion auch 1 weiter oben
+    mysteps[1] <- TRUE
+    mysteps[length(mysteps)+1] <- F
+
+    whichstep_bigger_min_stepsize <- which(mysteps) %>% diff() %>% {.>min_stepsize} %>% which
+    step_indices <- which(mysteps)[whichstep_bigger_min_stepsize]
+  }
+
+  # Table reports ----
+
+  # reactions ----
+  report_reactions <- function(model, hypothesis, folder) {
+    write.eqnlist(model$reactions[[hypothesis]],file = paste0(folder, "reactions_", hypothesis, ".csv"))
+    print(invisible(model$reactions[[hypothesis]])) %>% write_csv(paste0(folder, "reactions_", hypothesis, "_human_readable.csv"))
+  }
+
+  # parframes summary ----
+  report_parframes_summary <- function(model, hypothesis = NULL, folder) { # hypothesis not used, print all in the same file
+    parframes_summary(model, hypothesis = NULL) %>% write_lines(path = paste0(folder, "parframes_summary.csv"))
+  }
+
+  # parvecs ----
+  # predefined pars, bestfit, best of steps
+  report_parvecs <- function(model, hypothesis, folder) {
+    step_indices <- get_steps_by_diff(model, hypothesis)
+
+    model$parframes[[hypothesis]] %>% as.data.frame() %>%
+      .[step_indices,] %>%
+      bind_rows(model$pars[[hypothesis]] %>% t %>% as.data.frame %>% cbind(predefined = "predefined", index = 0, ., stringsAsFactors = F), .) %>%
+      write_csv(paste0(folder, "pars_steps.csv"))
+
+  }
+
+  # Plot reports ----
+  # data ----
+  plot_data <- function(model, hypothesis) {
+    p1 <- plotData(model) +
+      ggtitle(paste0("Data, hypothesis = ", hypothesis))
+    print(p1)
+
+    p2 <- plotData(model) +
+      geom_point(aes(color = name)) +
+      geom_errorbar(aes(color = name)) +
+      facet_wrap(~condition)+
+      ggtitle(paste0("Data facet by condition, hypothesis = ", hypothesis))
+    print(p2)
+  }
+
+  # parframes ----
+  png_parframes_scatter <- function(model, hypothesis) {
+    fit_value_quantiles <- c("10" = 0.1, "25" = 0.25, "50" = 0.5, "100" = 1)
+
+    walk(seq_along(fit_value_quantiles), function(i) {
+      model$parframes[[hypothesis]] %>%
+        as.data.frame() %>%
+        filter(value < quantile(value, fit_value_quantiles[i])) %>%
+        select(-(1:4)) %>%
+        pairs() %>% print()
+    })
+  }
+
+  png_parframes_scatter_step <- function(model, hypothesis) {
+  step_indices <- get_steps_by_diff(model, hypothesis)
+    walk(seq_along(step_indices), function(i) {
+      model$parframes[[hypothesis]] %>%
+        as.data.frame() %>%
+        filter(value>=value[step_indices[i]]&value<=value[step_indices[i+1]]) %>%
+        select(-(1:4)) %>%
+        pairs() %>% print()
+    })
+  }
+
+
+  plot_values_quantiles <- function(model, hypothesis) {
+    fit_value_quantiles <- c("10" = 0.1, "25" = 0.25, "50" = 0.5, "100" = 1)
+
+    walk(seq_along(fit_value_quantiles), function(i) {
+      assign("i", i, pos = .GlobalEnv)
+      p1 <- plotValues(model, hypothesis, value < quantile(value, fit_value_quantiles[i]))+
+        ggtitle(paste0("Pars values, hypothesis = ", hypothesis, "quantiles = ", i))
+      print(p1)
+    })
+  }
+
+  plot_pars_quantiles <- function(model, hypothesis) {
+    fit_value_quantiles <- c("10" = 0.1, "25" = 0.25, "50" = 0.5, "100" = 1)
+
+    walk(seq_along(fit_value_quantiles), function(i) {
+      assign("i", i, pos = .GlobalEnv)
+      p1 <- plotPars(model$parframes[[hypothesis]], tol = 1, value < quantile(value, fit_value_quantiles[i]))+
+        ggtitle(paste0("Pars quantiles, hypothesis = ", hypothesis, "quantiles = ", i))
+
+      print(p1)
+    })
+  }
+
+  plot_pars_stepwise <- function(model, hypothesis) {
+
+    step_indices <- get_steps_by_diff(model, hypothesis)
+
+    walk(seq_along(step_indices), function(i) {
+      assign("i", i, pos = .GlobalEnv)
+      mystep_indices <- c(step_indices, model$parframes[[hypothesis]] %>% nrow)
+      myindices <- seq(mystep_indices[i], mystep_indices[i+1],1)
+      p1 <- plotPars(model$parframes[[hypothesis]], tol = 1, value>=value[step_indices[i]]&value<=value[step_indices[i+1]])+
+        ggtitle(paste0("Pars stepwise, hypothesis = ", hypothesis, "step_index = ", step_indices[i],
+                       "\n best value in step = ", model$parframes[[hypothesis]]$value[step_indices[i]]))
+
+      print(p1)})
+  }
+
+  # Predictions ----
+  plot_combined_stepwise <- function(model, hypothesis) {
+
+    step_indices <- get_steps_by_diff(model, hypothesis)
+
+    walk(step_indices, function(step_index) {
+      assign("step_index", step_index, pos = .GlobalEnv)
+
+      p1 <- plotCombined(model, hypothesis, step_index) +
+        ggtitle(paste0("All states and observables, hypothesis = ", hypothesis, "step_index = ", step_index,
+                       "\n value = ", model$parframes[[hypothesis]]$value[step_index]))
+
+
+      print(p1)})
+  }
+
+
+  plot_combined_obs_only_stepwise <- function(model, hypothesis) {
+
+    step_indices <- get_steps_by_diff(model, hypothesis)
+
+    walk(step_indices, function(step_index) {
+      assign("step_index", step_index, pos = .GlobalEnv)
+
+      p1 <- plotCombined(model, hypothesis, step_index, name %in% getObservables(model, hypothesis)) +
+        ggtitle(paste0("Observables, hypothesis = ", hypothesis, "step_index = ", step_index,
+                       "\n value = ", model$parframes[[hypothesis]]$value[step_index]))
+
+      print(p1)})
+  }
+
+
+  # Profiles ----
+  plot_profiles <- function(model, hypothesis) {
+    if (!is.null(model$profiles[[hypothesis]])) {
+      p1 <- plotProfile(model, hypothesis) +
+        ggtitle("Profiles, hypothesis = ", hypothesis)
+      print(p1)
+      }
+  }
+
+  # Helper function to execute plots and reports ----
+  do_plot <- function(model, folder, plotfun) {
+    mypl <- plotfun %>% str_replace("plot_", "")
+    plotfun <- get(plotfun)
+    pdf(paste0(folder, mypl, ".pdf"))
+      map(1:nrow(model), function(hypothesis) {
+        plotfun(model, hypothesis)
+      })
+    dev.off()
+  }
+
+  do_png <- function(model, folder, pngfun) {
+    mypl <- plotfun %>% str_replace("png_", "")
+    pngfun <- get(pngfun)
+    map(1:nrow(model), function(hypothesis) {
+      png(paste0(folder, mypl, hypothesis, ".png"))
+      pngfun(model, hypothesis)
+      dev.off()
+    })
+  }
+
+  do_report <- function(model, folder, reportfun) {
+      reportfun <- get(reportfun)
+      map(1:nrow(model), function(hypothesis) {
+        reportfun(model, hypothesis, folder)
+      })
+    }
+
+  # Execute plots and other reports ----
+
+  plotfuns <- ls(pattern = "^plot_")
+  map(plotfuns, function(plotfun) {
+    cat(paste0("doing plots ", plotfun, " --------------------- \n"))
+    do_plot(model, folder_hypwise, plotfun)
+  })
+
+  pngfuns <- ls(pattern = "^png_")
+  map(pngfuns, function(pngfun) {
+    cat(paste0("doing pngs ", pngfun, " --------------------- \n"))
+    do_png(model, folder_hypwise, pngfun)
+  })
+
+  reportfuns <- ls(pattern = "^report")
+  map(reportfuns, function(reportfun) {
+    cat(paste0("doing report ", reportfun, " --------------------- \n"))
+
+    do_report(model, folder_hypwise, reportfun)
+  })
+
+  graphics.off()
+
+}
+
+
 # dmod.frame building----
 
 #' Simluate data with a dMod.frame
 #'
-#' @param model dMod.frame , may be unfinished
+#' @param model dMod.frame, preferably with columns pars and covtable
 #' @param hypothesis 1
 #' @param output output type. if dMod.frame, the current "data" in the given hypothesis will be overwritten
-#' @param timesD,s0,srel,observables,... things to create the data template
+#' @param timesD,s0,srel,observables things to create the data template
 #' @param seed
 #'
 #' @return either dMod.frame with data in it and column "truth" or data.frame
 #' @export
+#' @example Examples/SimulateData.R
 simulate_data <- function(model,
                           hypothesis = 1,
                           output = c("dMod.frame", "data.frame", "datalist"),
-                          timesD = 0:10, s0 = 0.1, srel = 0.1, observables = getObservables(model, hypothesis), ...,
-                          seed1 = 1, seed2 = time_to_seed()) {
+                          timesD = 0:10, s0 = 0.1, srel = 0.1, observables = getObservables(model, hypothesis),
+                          seed_pars = 1,  seed_data = 1) {
 
   conditions <- getConditions(model, hypothesis)
-  data_template <- expand.grid(name = observables, time = timesD, s0 = s0, srel = srel, condition = conditions, ..., stringsAsFactors = F)
+  data_template <- expand.grid(name = observables, time = timesD, s0 = s0, srel = srel, condition = conditions, stringsAsFactors = F)
 
-  set.seed(seed1)
-  pars <- getParameters(model$p[[hypothesis]]) %>% are_names_of(rnorm)
+
+  pars <- model$pars[[hypothesis]]
+  if (is.null(pars)) {
+    set.seed(seed_pars)
+    pars <- getParameters(model$p[[hypothesis]]) %>% are_names_of(rnorm)
+  }
 
   prd <- (model$g[[hypothesis]] * model$x[[hypothesis]] * model$p[[hypothesis]])
-
   prediction <- prd(unique(data_template$time), pars, deriv = F) %>% wide2long()
 
-
-  set.seed(seed2)
-
+  set.seed(seed_data)
   mydata <- suppressWarnings(left_join(data_template, prediction, by = c("time", "name", "condition"))) %>%
     mutate(sigma = sqrt(s0^2 + srel^2*value^2)) %>%
     mutate(value = value + rnorm(length(value), 0, sigma)) %>%
     select(-s0, -srel)
 
+  covtable <- model$covtable[[hypothesis]]
+
+  if (!is.null(covtable)) {
+    rownames_to_condition <- function(covtable) {
+      out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
+      out <- out[!duplicated(names(out))]
+      return(out)}
+    covtable <- rownames_to_condition(covtable)
+    mydata <- left_join(mydata, covtable, "condition")
+    mydata <- mydata %>% select(-condition) # recreate condition from covariates
+  }
+
+  output <- output[1]
   if (output == "dMod.frame") {
     model$data[[hypothesis]] <- mydata %>% as.data.frame %>% as.datalist
-    model$truth[[hypothesis]] <- list(pars)
+    model[["truth"]][[hypothesis]] <- list(pars)
     return(model)
   }
 
-  if(ouput == "data.frame")
+  if(output == "data.frame")
     return(mydata %>% as.data.frame %>% `attr<-`("truth", pars))
 
   if(output == "datalist")
@@ -183,11 +422,8 @@ uniteFits <- function(runbgOutput, whichUnite = c("fits", "parframes"), return_v
     if (whichUnite == "fits")
       out[["fits"]] <- runbgOutput %>%
         map("fits") %>%
-        transpose() %>%
-        map(function(fitlist) {
-          myparframe<-Reduce(c.parlist,fitlist)
-          myparframe[["index"]] <- 1:nrow(myparframe)
-          myparframe})
+        transpose %>%
+        map(. %>% Reduce(c.parlist, .))
     if (whichUnite == "parframes")
       out[["parframes"]] <- runbgOutput %>%
         map("parframes") %>%

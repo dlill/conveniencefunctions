@@ -266,7 +266,7 @@ tpaste0 <- function(...) {
 #' quasi random seed when a seed is already set
 #'
 #' @export
-time_to_seed <- function(){ date() %>% as.character.Date() %>% str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(10000)  %>% round() %>% as.integer()
+time_to_seed <- function(){ date() %>% as.character.Date() %>% str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(.,10000)  %>% round() %>% as.integer()
 }
 
 
@@ -275,31 +275,82 @@ cf_tibble <- tibble::tibble(a = 1:4, b = c(1,1,2,2), d = letters[1:4])
 
 
 
-#' Unnest a list-column into a key-value pair, if the list entries are named vectors
+#' Unnesting functions for list-columns
 #'
-#' This function was built to look at the results of obj_condition_wise more easily
+#' The following functions serve two purposes
+#' 1. Keep other list-columns when unnesting one specific list-column
+#' 2. Keep names of list-columns when unnesting them
+#' 3. Make it possible to spread a list-column
 #'
-#' @param myframe a tibble with list columns
-#' @param unique Character. A column name with unique elements in each row. \code{myframe} is split up and joined back together,
-#' so a unique identifier is needed to merge the two tibbles back together.
-#' @param unnest_var Character. The column name of the column which should be spread
+#' However, this inroduces the need for a key-column.
 #'
-#'  @export
+#' @param df a tibble with list columns
+#' @param key,value like in gather and spread
+#'
+#' @export
 #'
 #' @examples
-#' tibble(condition = 1, gradient = list(c(a=1, b=2, c=3))) %>% spread_list_column()
-spread_list_column <- function(myframe, unique = "condition", unnest_var = "gradient") {
-  myframe_2 <- myframe %>% .[c(unique, unnest_var)]
-  myframe_2 <- myframe_2 %>% apply(1, function(i) {
-    tibble(condition = i[[unique]], grad_value = unlist(i[[unnest_var]]), grad_name = unlist(names(i[[unnest_var]])))
-  }) %>% do.call(rbind,.)
+#' df <- tibble(a = 1:2, b = list(c(d = 1, e = 2), c(e = 2, f = 4)), g = list(1, 2:3)) #%>% map(setNames, nm = c("c", "d")))
+#'
+#' df %>% unnest(b)
+#'
+#' df %>% spread_list_column(a,b) %>%
+#'   print
+#'
+#' df %>% unnest_named(a,b)
+unnest_named <- function(df, key, value) {
 
-  left_join(myframe, myframe_2)
+  key <- enquo(key)
+  value <- enquo(value)
+
+  key_n <- quo_name(key)
+  value_n <- quo_name(value)
+
+  myframe_1 <- select(df, - !! value)
+
+  myframe_2 <- df %>% select(!!key, !!value)
+
+  myframe_2 <- unnest(myframe_2, !!value)
+
+  if(!is.null(names(df[[!!key]][[1]])))
+    map()
+
+  myframe_2 <- map(1:nrow(myframe_2), function(i) {
+    df <- myframe_2[i,]
+
+    mykey <- select(df, !!key)[[1]]
+    myval <- select(df, !!value)[[1]][[1]]
+
+    out <- tibble(!! key_n := mykey, !! value_n := myval)
+
+    if(!is.null(names(myval))) {
+      name_n <- paste0("names_", value_n)
+      out <- bind_cols(out, !!name_n := names(myval))
+    }
+
+    return(out)
+  }) %>% bind_rows()
+
+  left_join(myframe_1, myframe_2, by = key_n)
 
 }
 
-#' @rdname spread_list_column
-unnest_name <- spread_list_column
+
+#' @rdname unnest_named
+#' @export
+
+
+
+#' Quickly append a column which contains the rownumber
+#'
+#' @param df tibble or data.frame
+#'
+#' @return df with additional column "rownumber"
+#' @export
+append_rownumber_col <- function(df) {
+  df %>% mutate(., rownumber = 1:nrow(.))
+}
+
 
 
 #' Send a mail informing you
