@@ -4,8 +4,17 @@
 \alias{str0}
 \alias{str1}
 \alias{str2}
+\alias{stra0}
+\alias{sttr0}
+\alias{strr0}
+\alias{stra1}
+\alias{sttr1}
+\alias{strr1}
+\alias{sttr2}
+\alias{strr2}
 \alias{head1}
 \alias{head3}
+\alias{head11}
 \title{str with max.level = 0}
 \usage{
 str0(...)
@@ -14,9 +23,27 @@ str1(...)
 
 str2(...)
 
+stra0(...)
+
+sttr0(...)
+
+strr0(...)
+
+stra1(...)
+
+sttr1(...)
+
+strr1(...)
+
+sttr2(...)
+
+strr2(...)
+
 head1(...)
 
 head3(...)
+
+head11(...)
 }
 \arguments{
 \item{...}{an object}
