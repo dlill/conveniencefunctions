@@ -130,7 +130,7 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
   return(out)
 }
 
-# obj_condition_wise ----
+# analysis ----
 
 #' Evaluate an objective function condition-wise
 #'
@@ -176,6 +176,86 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
  out <- bind_rows(out, out1)#, out2)
 
 }
+
+
+
+
+
+#' Check function to check sensitivities
+#'
+#'
+#' @param prd prediction function
+#' @param times vector of times
+#' @param pars vector of pars
+#' @param whichpar names of pars to check
+#' @param cond indexing for condition
+#' @param step stepsize for finite difference
+#'
+#' @details Taken (with slight changes) from Daniel Kaschek in dMod/inst/examples/events.R
+#'
+#' @family analysisFunctions
+#' @seealso [do_checkSensitivities()]
+#'
+#' @export
+checkSensitivities <- function(prd, times, pars, whichpar, cond = 1, step = 0.1) {
+  h <- rep(0, length(pars))
+  h[which(names(pars) == whichpar)] <- step
+
+
+  M1 <-  prd(times, pars, deriv = TRUE)[[cond]]
+  M2 <-  prd(times, pars + h, deriv = TRUE)[[cond]]
+  M3 <- attr(prd(times, pars, deriv = TRUE)[[cond]], "deriv")
+  print(colnames(M3))
+
+  S1 <- cbind(time = M1[, 1], (M2[,-1] - M1[,-1])/step)
+  # print(colnames(S1))
+  S2 <- cbind(time = M1[, 1], M3[,grep(paste0(".", whichpar), colnames(M3), fixed = TRUE)])
+  # print(colnames(S2))
+  colnames(S1) <- colnames(S2)
+
+  out <- list(numeric = S1, sens = S2)
+  return(out)
+
+}
+
+
+#' Do Check sensitivities over a list of prds
+#'
+#' @param prds list of predicition funcitons
+#' @param times vector of times
+#' @param pars pars
+#' @param path filepath for the pdf
+#'
+#' @seealso [checkSensitivities()]
+#' @family doFunctions
+#'
+#'
+#' @export
+do_checkSensitivities <- function(prds, times, pars, path = "checkSensitivities.pdf") {
+  pdf(path)
+  map(prds, function(prd) {
+    p1 <- plotCombined((prd)(times, pars, deriv = F))
+
+    p2 <- map(names(pars) %>% `names<-`(.,.), function(mypar) {
+      out <- checkSensitivities((prd), times, pars, mypar, 3, .0001) %>% as.prdlist
+    }) %>%
+      transpose() %>%
+      map(. %>% do.call(cbind,.) %>% {.[,!duplicated(colnames(.)), drop = F]}) %>%
+      as.prdlist() %>%
+      plotPrediction()
+
+    print(p1)
+    print(p2)
+    NULL
+  })
+  dev.off(dev.cur())
+}
+
+
+
+
+
+
 
 
 # Plots ----
@@ -295,6 +375,17 @@ remove_c_and_o <- function(other_extensions = NULL, path = ".", extensions = c("
   c_and_o <- list.files(path = path, pattern = myregex)
   system2("rm", args = c_and_o)
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
