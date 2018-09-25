@@ -5,6 +5,7 @@
 #' @param myeqnlist an eqnlist
 #'
 #' @export
+#' @family printtools
 #'
 #' @examples
 #' NULL %>%
@@ -20,6 +21,7 @@ print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
 #' @param myeqnvec an eqnvec
 #'
 #' @export
+#' @family printtools
 #'
 #' @examples
 #' NULL %>%
@@ -43,6 +45,7 @@ print_mathematica.eqnvec <- function(myeqnvec) {
 #'
 #'
 #' @export
+#' @family printtools
 #'
 #' @examples
 #'  print_mathematica.character(paste0(letters, "_", letters))
@@ -65,6 +68,7 @@ print_mathematica.character <-  function(mycharacter) {
 #'
 #'
 #' @export
+#' @family printtools
 #'
 #' @examples
 #' print_mathematica.name_equals_value(c(a = 1, b = 2))
@@ -79,6 +83,7 @@ print_mathematica.name_equals_value <- function(vec) {vec %>% paste0(names(.), "
 #'
 #'
 #' @export
+#' @family printtools
 #'
 #' @examples
 #' print_mathematica.matrix(diag(1:5))
@@ -101,6 +106,7 @@ print_mathematica.matrix <- function(mat, name_in_mathematica = "M") {
 #'
 #'
 #' @export
+#' @family printtools
 #'
 #' @examples
 #' letters[1:5] %>% are_names_of(0) %>% print_r.named_vector
@@ -128,7 +134,23 @@ print_r.named_vector <- function(myvec, indices = T) {
 
 
 
+#' Print an eqnlist as a pipe of addReaction()-calls and insert them in place
+#'
+#' @param reactions
+#'
+#' @family printtools
+#' @family insertfunctions
+#'
+#' @export
+print_r.eqnlist2addReaction_pipe <- function(reactions){
+  reaction_chain <- getReactions(reactions) %>%
+    with({
+      paste0('  addReaction(from = "', Educt, '", to = "', Product, '", rate = "', Rate, '", description = "', Description, '") %>% ')
+    })
 
+  full_chain <- paste0("\n", "reactions <- NULL %>% \n", paste0(reaction_chain, collapse = "\n"), "{.}\n")
+  rstudioapi::insertText(text = full_chain)
+}
 
 
 

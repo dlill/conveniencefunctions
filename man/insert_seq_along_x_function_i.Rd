@@ -9,3 +9,10 @@ insert_seq_along_x_function_i()
 \description{
 Addin to insert map(seq_along(x), function(i))
 }
+\seealso{
+Other insertfunctions: \code{\link{describe_plotValue}},
+  \code{\link{insert_tee_operator}},
+  \code{\link{insert_tee_print}},
+  \code{\link{print_r.eqnlist2addReaction_pipe}},
+  \code{\link{split_chunks}}
+}

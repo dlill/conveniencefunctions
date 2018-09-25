@@ -15,3 +15,11 @@ Print a character in mathematica format
 \examples{
  print_mathematica.character(paste0(letters, "_", letters))
 }
+\seealso{
+Other printtools: \code{\link{print_mathematica.eqnlist}},
+  \code{\link{print_mathematica.eqnvec}},
+  \code{\link{print_mathematica.matrix}},
+  \code{\link{print_mathematica.name_equals_value}},
+  \code{\link{print_r.eqnlist2addReaction_pipe}},
+  \code{\link{print_r.named_vector}}
+}

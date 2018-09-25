@@ -19,6 +19,9 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
   dir.create(paste0(folder_objectwise))
 
 
+
+
+
   # helper functions ----
   get_steps_by_diff <- function(model, hypothesis, min_diff = 0.1, min_stepsize = 3) {
     mysteps <- model$parframes[[hypothesis]]$value %>% diff %>% {.>min_diff} #DL das hier als funktion auch 1 weiter oben
@@ -70,6 +73,8 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
   }
 
   # parframes ----
+
+
   png_parframes_scatter <- function(model, hypothesis) {
     fit_value_quantiles <- c("10" = 0.1, "25" = 0.25, "50" = 0.5, "100" = 1)
 
@@ -83,7 +88,9 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
   }
 
   png_parframes_scatter_step <- function(model, hypothesis) {
-  step_indices <- get_steps_by_diff(model, hypothesis)
+
+    step_indices <- get_steps_by_diff(model, hypothesis)
+
     walk(seq_along(step_indices), function(i) {
       model$parframes[[hypothesis]] %>%
         as.data.frame() %>%
@@ -185,7 +192,7 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
   }
 
   do_png <- function(model, folder, pngfun) {
-    mypl <- plotfun %>% str_replace("png_", "")
+    mypl <- pngfun %>% str_replace("png_", "")
     pngfun <- get(pngfun)
     map(1:nrow(model), function(hypothesis) {
       png(paste0(folder, mypl, hypothesis, ".png"))
@@ -201,6 +208,16 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
       })
     }
 
+
+  # DL to do fix the need for the assignment
+  fit_value_quantiles <- c("10" = 0.1, "25" = 0.25, "50" = 0.5, "100" = 1)
+  assign("fit_value_quantiles", fit_value_quantiles, .GlobalEnv)
+  assign("hypothesis", 1, .GlobalEnv)
+  step_indices <- get_steps_by_diff(model, hypothesis)
+  assign("step_indices", step_indices, .GlobalEnv)
+
+
+
   # Execute plots and other reports ----
 
   plotfuns <- ls(pattern = "^plot_")
@@ -209,11 +226,12 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
     do_plot(model, folder_hypwise, plotfun)
   })
 
-  pngfuns <- ls(pattern = "^png_")
-  map(pngfuns, function(pngfun) {
-    cat(paste0("doing pngs ", pngfun, " --------------------- \n"))
-    do_png(model, folder_hypwise, pngfun)
-  })
+  # DL: Fix pngfuns
+  # pngfuns <- ls(pattern = "^png_")
+  # map(pngfuns, function(pngfun) {
+  #   cat(paste0("doing pngs ", pngfun, " --------------------- \n"))
+  #   do_png(model, folder_hypwise, pngfun)
+  # })
 
   reportfuns <- ls(pattern = "^report")
   map(reportfuns, function(reportfun) {

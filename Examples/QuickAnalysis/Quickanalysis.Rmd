@@ -1,0 +1,27 @@
+---
+title: "Quickanalysis"
+author: "Daniel Lill"
+date: "3 May 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dMod)
+library(conveniencefunctions)
+```
+
+```{r}
+# example("dMod.frame", run.dontrun = T)
+```
+
+
+```{r}
+myframe <- readRDS("2018_05_03_17_14_myframe7.rds")
+walk(myframe$obj, loadDLL)
+```
+
+```{r}
+cat("Hypotheses:")
+conveniencefunctions::print_r.named_vector(myframe$hypothesis %>% setNames(.,1:length(.)))
+```
+

@@ -15,3 +15,11 @@ nicely formatted dput for named vectors
 \examples{
 letters[1:5] \%>\% are_names_of(0) \%>\% print_r.named_vector
 }
+\seealso{
+Other printtools: \code{\link{print_mathematica.character}},
+  \code{\link{print_mathematica.eqnlist}},
+  \code{\link{print_mathematica.eqnvec}},
+  \code{\link{print_mathematica.matrix}},
+  \code{\link{print_mathematica.name_equals_value}},
+  \code{\link{print_r.eqnlist2addReaction_pipe}}
+}

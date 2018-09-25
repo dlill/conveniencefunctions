@@ -1,5 +1,6 @@
 #' Addin to insert tee-operator
 #'
+#' @family insertfunctions
 #'
 #' @export
 #'
@@ -12,6 +13,9 @@ insert_tee_operator <- function ()
 #' Addin to insert tee-operator
 #'
 #'
+#' @family insertfunctions
+#'
+#'
 #' @export
 #'
 #'
@@ -22,6 +26,7 @@ insert_tee_print <- function ()
 
 #' Addin to insert tee-operator
 #'
+#' @family insertfunctions
 #'
 #' @export
 #'
@@ -43,6 +48,9 @@ split_chunks <- function ()
 #' Addin to insert map(seq_along(x), function(i))
 #'
 #'
+#' @family insertfunctions
+#'
+#'
 #' @export
 #'
 #'
@@ -58,6 +66,9 @@ insert_seq_along_x_function_i <- function ()
 #'
 #' Here are some templates to motivate you to describe the plots.
 #'
+#' @family insertfunctions
+#'
+#'
 #' @param dMod.frame
 #'
 #'
@@ -71,6 +82,8 @@ describe_plotValue <- function(dMod.frame = NULL) {
 #' Addin
 #'
 #' @param dMod.frame
+#'
+#' @family insertfunctions
 #'
 #'
 #' @export

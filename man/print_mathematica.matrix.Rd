@@ -15,3 +15,11 @@ Print mathematica
 \examples{
 print_mathematica.matrix(diag(1:5))
 }
+\seealso{
+Other printtools: \code{\link{print_mathematica.character}},
+  \code{\link{print_mathematica.eqnlist}},
+  \code{\link{print_mathematica.eqnvec}},
+  \code{\link{print_mathematica.name_equals_value}},
+  \code{\link{print_r.eqnlist2addReaction_pipe}},
+  \code{\link{print_r.named_vector}}
+}
