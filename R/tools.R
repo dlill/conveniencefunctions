@@ -22,21 +22,72 @@ check2sink <- function(path = "check.txt") {
 #'
 #' @export
 str0 <- function(...) {
-  str(..., max.level = 0)
+  str(..., max.level = 0, give.attr = F)
 }
 
 #' @rdname str0
 #' @export
 str1 <- function(...) {
-  str(..., max.level = 1)
+  str(..., max.level = 1, give.attr = F)
 }
 
 #' @rdname str0
 #' @export
 str2 <- function(...) {
-  str(..., max.level = 2)
+  str(..., max.level = 2, give.attr = F)
 }
 
+#' @rdname str0
+#' @export
+stra0 <- function(...) {
+  str(..., max.level = 0, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+sttr0 <- function(...) {
+  str(..., max.level = 0, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+strr0 <- function(...) {
+  str(..., max.level = 0, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+stra1 <- function(...) {
+  str(..., max.level = 1, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+sttr1 <- function(...) {
+  str(..., max.level = 1, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+strr1 <- function(...) {
+  str(..., max.level = 1, give.attr = T)
+}
+
+stra2 <- function(...) {
+  str(..., max.level = 2, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+sttr2 <- function(...) {
+  str(..., max.level = 2, give.attr = T)
+}
+
+#' @rdname str0
+#' @export
+strr2 <- function(...) {
+  str(..., max.level = 2, give.attr = T)
+}
 
 #' @rdname str0
 #' @export
@@ -44,12 +95,19 @@ head1 <- function(...) {
   head(..., n = 1)
 }
 
-
 #' @rdname str0
 #' @export
 head3 <- function(...) {
   head(..., n = 3)
 }
+
+#' @rdname str0
+#' @export
+head11 <- function(...) {
+  x <- list(...)
+  x[[1]][[1]] %>% head(n = 5)
+}
+
 
 
 #' Load the default values of formals of a function into the Global environment
