@@ -61,56 +61,52 @@ remove_geom <- function(x, geom_type, last_only = T) {
 #' @param commit_plot Lgl o character. Commit the plot in its git repository. Can be logical or commit message.
 #'
 #' @export
-ggshave <- function(filename, plot = last_plot(), device = NULL, path = NULL,
-                    scale = 1, width = NA, height = NA, units = c("in", "cm","mm"),
-                    dpi = 300, limitsize = TRUE, ..., check_overwrite = T, commit_script = F, commit_plot = F) {
+ggshave <- function (filename, plot = last_plot(), device = NULL, path = NULL,
+                     scale = 1, width = NA, height = NA, units = c("in", "cm",
+                                                                   "mm"), dpi = 300, limitsize = TRUE, ..., check_overwrite = T,
+                     commit_script = F, commit_plot = F)
+{
 
-  # Prevent from overwriting
-  if(file.exists(filename) & check_overwrite) {
+
+  if (file.exists(filename) & check_overwrite) {
     overwrite <- readline("Plot exists already. Overwrite? (Enter 'n/no' for no.) ")
-    if(str_detect(overwrite, "n|(no)")) return(NULL)
+    if (str_detect(overwrite, "n|(no)"))
+      return(NULL)
   }
-
-  # Save plot
-  ggsave(filename, plot, device, path,
-         scale, width, height, units, dpi, limitsize, ...)
-
-  # Get script information
+  ggsave(filename, plot, device, path, scale, width, height,
+         units, dpi, limitsize, ...)
   document <- rstudioapi::getActiveDocumentContext()
-
-  # Commit the script
-  if(is.character(commit_script)|commit_script==T) {
+  rstudioapi::documentSave(document$id)
+  if (is.character(commit_script) | commit_script == T) {
     repo <- git2r::repository()
     git2r::add(repo, document$path)
     message <- NULL
-    if(is.character(commit_script)) message <- commit_script
-    git2r::commit(repo, message = paste("Generated plot.", message))
+    if (is.character(commit_script))
+      message <- commit_script
+    git2r::commit(repo, message = paste("Generated plot.",
+                                        message))
   }
-
-  # Write additional information
   git_head <- git2r::commits() %>% .[[1]]
-  mytable <- tibble("Script" = document$path,
-                    "Row in script" = document$selection[[1]]$range[[1]][1],
-                    "Commit script message" = git_head@message,
-                    "When" = (git_head@committer@when@time + git_head@committer@when@offset) %>% lubridate::as_datetime(),
-                    "Script Git SHA" = git_head@sha,
-                    "Commit plot" = (is.character(commit_plot)|commit_plot==T)
-                    )
 
-  auxiliary_file <- filename %>% str_replace("(\\.pdf$)|(\\.png$)", "") %>% paste0(".csv")
+  mytable <- tibble(Script = document$path,
+                    `Row in script` = document$selection[[1]]$range[[1]][1],
+                    `Commit script message` = git_head$message, When = lubridate::as_datetime((git_head$author$when$time +
+                                                                                                 git_head$author$when$offset)),
+                    `Script Git SHA` = git_head$sha, `Commit plot` = (is.character(commit_plot) |
+                                                                        commit_plot == T))
+  auxiliary_file <- filename %>% str_replace("(\\.pdf$)|(\\.png$)",
+                                             "") %>% paste0(".csv")
   append <- file.exists(auxiliary_file)
   write_csv(mytable, path = auxiliary_file, append = append)
-
-  # Commit the plot in its git directory
-  if(is.character(commit_plot)|commit_plot==T) {
+  if (is.character(commit_plot) | commit_plot == T) {
     repo <- git2r::discover_repository(filename)
     git2r::add(repo, filename)
     git2r::add(repo, auxiliary_file)
-
     message <- NULL
-    if(is.character(commit_plot)) message <- commit_plot
-    git2r::commit(repo, message = paste("Generated plot.", message))
+    if (is.character(commit_plot))
+      message <- commit_plot
+    git2r::commit(repo, message = paste("Generated plot.",
+                                        message))
   }
-
   return(NULL)
 }

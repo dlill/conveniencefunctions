@@ -55,3 +55,8 @@ Name: Stage Documentation
 Description: Stage files in man/ and NAMESPACE
 Binding: stage_documentation
 Interactive: false
+
+Name: Insert unit test
+Description: Insert unit test template
+Binding: inesrt_unit_test
+Interactive: false
