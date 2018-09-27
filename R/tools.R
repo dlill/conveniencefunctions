@@ -1,6 +1,6 @@
 # install ----
 
-# R -e 'devtools::install_github("dlill/conveniencefunctions")'
+# R -e 'devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = F)'
 
 #' Write the output of the check to a file
 #'
