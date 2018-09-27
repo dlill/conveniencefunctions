@@ -6,7 +6,7 @@
 \alias{describe_plotPars}
 \alias{describe_plotPars}
 \alias{describe_plotProfile}
-\title{Describe plot}
+\title{Insert description template}
 \usage{
 describe_plotValue(dMod.frame = NULL)
 
@@ -20,24 +20,7 @@ describe_plotProfile(dMod.frame = NULL)
 }
 \arguments{
 \item{dMod.frame}{}
-
-\item{dMod.frame}{}
 }
 \description{
-Here are some templates to motivate you to describe the plots.
-
-Addin
-}
-\seealso{
-Other insertfunctions: \code{\link{insert_seq_along_x_function_i}},
-  \code{\link{insert_tee_operator}},
-  \code{\link{insert_tee_print}},
-  \code{\link{print_r.eqnlist2addReaction_pipe}},
-  \code{\link{split_chunks}}
-
-Other insertfunctions: \code{\link{insert_seq_along_x_function_i}},
-  \code{\link{insert_tee_operator}},
-  \code{\link{insert_tee_print}},
-  \code{\link{print_r.eqnlist2addReaction_pipe}},
-  \code{\link{split_chunks}}
+Describe results in a Rmd-file with these templates.
 }

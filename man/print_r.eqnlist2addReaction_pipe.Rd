@@ -20,9 +20,7 @@ Other printtools: \code{\link{print_mathematica.character}},
   \code{\link{print_mathematica.name_equals_value}},
   \code{\link{print_r.named_vector}}
 
-Other insertfunctions: \code{\link{describe_plotValue}},
-  \code{\link{insert_seq_along_x_function_i}},
-  \code{\link{insert_tee_operator}},
+Other insertfunctions: \code{\link{insert_tee_operator}},
   \code{\link{insert_tee_print}},
   \code{\link{split_chunks}}
 }
