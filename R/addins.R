@@ -3,8 +3,6 @@
 #' @family insertfunctions
 #'
 #' @export
-#'
-#'
 insert_tee_operator <- function ()
 {
   rstudioapi::insertText(" %T>% ")
@@ -12,13 +10,9 @@ insert_tee_operator <- function ()
 
 #' Addin to insert tee-operator
 #'
-#'
 #' @family insertfunctions
 #'
-#'
 #' @export
-#'
-#'
 insert_tee_print <- function ()
 {
   rstudioapi::insertText("{.} %T>% print %>%")
@@ -29,8 +23,6 @@ insert_tee_print <- function ()
 #' @family insertfunctions
 #'
 #' @export
-#'
-#'
 split_chunks <- function ()
 {
   rstudioapi::insertText(
@@ -47,48 +39,47 @@ split_chunks <- function ()
 
 #' Addin to insert map(seq_along(x), function(i))
 #'
-#'
-#' @family insertfunctions
-#'
-#'
 #' @export
-#'
-#'
 insert_seq_along_x_function_i <- function ()
 {
   rstudioapi::insertText("seq_along(x), function(i) ")
 }
 
 
+# Name: Describe plotValue
+# Description: Inserts a description of the plot at the cursor position.
+# Binding: describe_plotValue
+# Interactive: false
+#
+# Name: Describe plotCombined
+# Description: Inserts a description of the plot at the cursor position.
+# Binding: describe_plotCombined
+# Interactive: false
+#
+# Name: Describe plotPars
+# Description: Inserts a description of the plot at the cursor position.
+# Binding: describe_plotPars
+# Interactive: false
+#
+# Name: Describe plotProfile
+# Description: Inserts a description of the plot at the cursor position.
+# Binding: describe_plotProfile
+# Interactive: false
 
-
-#' Describe plot
+#' Insert description template
 #'
-#' Here are some templates to motivate you to describe the plots.
-#'
-#' @family insertfunctions
-#'
+#' Describe results in a Rmd-file with these templates.
 #'
 #' @param dMod.frame
 #'
-#'
 #' @export
-#'
-#'
 describe_plotValue <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": There are good bad steps\n")))
 }
 
-#' Addin
-#'
-#' @param dMod.frame
-#'
-#' @family insertfunctions
-#'
-#'
+
 #' @export
 #' @rdname describe_plotValue
-#'
 describe_plotCombined <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best.\n")))
 }
@@ -98,7 +89,6 @@ describe_plotCombined <- function(dMod.frame = NULL) {
 describe_plotPars <- function(dMod.frame = NULL) {
   rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
 }
-
 
 
 #' @export
@@ -150,6 +140,16 @@ insert_unit_test <- function(context = "Context", description= "test_what") {
 
 #})
   '))
+}
+
+
+#' Insert setwd
+#'
+#' @export
+#'
+#' @importFrom magrittr %>%
+insert_setwd <- function() {
+  rstudioapi::getActiveDocumentContext() %>% docpath2dirpath() %>% paste0('setwd("',.,'")') %>% rstudioapi::insertText()
 }
 
 

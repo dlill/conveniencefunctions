@@ -1,3 +1,18 @@
+Name: Insert setwd
+Description: Inserts `%T>%` at the cursor position.
+Binding: insert_setwd
+Interactive: false
+
+Name: Stage Documentation
+Description: Stage files in man/ and NAMESPACE
+Binding: stage_documentation
+Interactive: false
+
+Name: Insert unit test
+Description: Insert unit test template
+Binding: insert_unit_test
+Interactive: false
+
 Name: Insert %T>%
 Description: Inserts `%T>%` at the cursor position.
 Binding: insert_tee_operator
@@ -21,25 +36,6 @@ Binding: insert_seq_along_x_function_i
 Interactive: false
 
 
-Name: Describe plotValue
-Description: Inserts a description of the plot at the cursor position.
-Binding: describe_plotValue
-Interactive: false
-
-Name: Describe plotCombined
-Description: Inserts a description of the plot at the cursor position.
-Binding: describe_plotCombined
-Interactive: false
-
-Name: Describe plotPars
-Description: Inserts a description of the plot at the cursor position.
-Binding: describe_plotPars
-Interactive: false
-
-Name: Describe plotProfile
-Description: Inserts a description of the plot at the cursor position.
-Binding: describe_plotProfile
-Interactive: false
 
 Name: Insert runbg() with skeleton
 Description: Inserts a runbg at the cursor position
@@ -51,12 +47,3 @@ Description: Inserts some chunks which print plots about a dmod.frame with parfr
 Binding: insert_fit_analysis
 Interactive: false
 
-Name: Stage Documentation
-Description: Stage files in man/ and NAMESPACE
-Binding: stage_documentation
-Interactive: false
-
-Name: Insert unit test
-Description: Insert unit test template
-Binding: inesrt_unit_test
-Interactive: false
