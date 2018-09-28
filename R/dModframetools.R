@@ -319,8 +319,9 @@ simulate_data <- function(model,
 #' Test some basic functionalities of a dMod.frame
 #'
 #' @param model A dMod.frame
+#' @param test_plots,test_obj logical
 #'
-#' @return an augmented dMod.frame
+#' @return an augmented dMod.frame containing columns named like "tested_*"
 #' @export
 #'
 #' @examples
@@ -346,11 +347,11 @@ test_dMod.frame <- function(model,
   if (test_obj) {
     cat("test objfuns ----- \n")
     model <- model %>%
-      mutate(objtest = list(obj(pars, fixed = fixed)))
+      mutate(tested_obj = list(obj(pars, fixed = fixed)))
 
     cat("print test of objfuns ----- \n")
     map(seq_len(nrow(model)), function(i) {
-      print(model$objtest[[i]])
+      print(model$tested_obj[[i]])
     })
   }
 
@@ -474,9 +475,12 @@ zip_dMod.frame <- function(dMod.frame, zipfile = NULL) {
 #' a dMod.frame
 #' @export
 readDMod.frame <- function(filename) {
+  curwd <- getwd()
   frame <- readRDS(filename)
+  setwd(dirname(filename))
   fns <- c("g", "x", "p", "obj_data", "obj")
   frame[names(frame) %in% fns] %>% unlist(recursive = F) %>% walk(. %>% {try(loadDLL(.), silent = T)})
+  setwd(curwd)
   return(frame)
 }
 

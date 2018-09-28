@@ -8,9 +8,11 @@ test_dMod.frame(model, test_plots = T, test_obj = T)
 }
 \arguments{
 \item{model}{A dMod.frame}
+
+\item{test_plots, test_obj}{logical}
 }
 \value{
-an augmented dMod.frame
+an augmented dMod.frame containing columns named like "tested_*"
 }
 \description{
 Test some basic functionalities of a dMod.frame

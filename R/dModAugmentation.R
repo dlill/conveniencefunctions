@@ -115,8 +115,8 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
 
   obj_id <- obj + constr_id
 
-  current_value <- obj(bestfit, deriv = F)$value
-  myfit <- trust(obj_id, bestfit, 1, 10)
+  current_value <- obj(bestfit, fixed = fixed, deriv = F)$value
+  myfit <- trust(obj_id, bestfit, 1, 10, fixed = fixed)
 
   out <- tibble(old_value = current_value,
                 new_value = myfit$value,
