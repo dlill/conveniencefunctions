@@ -2,6 +2,10 @@
 
 #' Print plots and shit
 #'
+#' @description Ideas for the future:
+#' 1. plotPaths
+#' 2. plotFluxes
+#'
 #' @param model DL to do
 #' @param folder DL to do
 #'
@@ -245,7 +249,7 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
 }
 
 
-# dmod.frame building----
+# Modeling helpers ----
 
 #' Simluate data with a dMod.frame
 #'
@@ -309,6 +313,52 @@ simulate_data <- function(model,
     return(mydata %>% as.data.frame %>% as.datalist %>% `attr<-`("truth", pars))
 
 }
+
+
+
+#' Test some basic functionalities of a dMod.frame
+#'
+#' @param model A dMod.frame
+#'
+#' @return an augmented dMod.frame
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' DL: TODO
+#' }
+test_dMod.frame <- function(model,
+                            test_plots = T,
+                            test_obj = T
+                            ) {
+  # Test some plots
+  cat("plotCombined ----- \n")
+  plotCombined(model) %>% print
+  cat("plotData ----- \n")
+  plotData(model) %>% print
+  cat("plotPrediction ----- \n")
+  plotPrediction(model) %>% print
+
+  # Test objective function
+  cat("test objfuns ----- \n")
+  model <- model %>%
+    mutate(objtest = list(obj(pars, fixed = fixed)))
+
+  cat("print test of objfuns ----- \n")
+  map(seq_len(nrow(model)), function(i) {
+    print(model$objtest[[i]])
+  })
+
+  return(model)
+}
+
+
+
+
+
+
+
+
 
 
 # Saving/commiting ----

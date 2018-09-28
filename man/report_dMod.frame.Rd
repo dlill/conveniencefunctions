@@ -12,5 +12,7 @@ report_dMod.frame(model, folder = tpaste0("report/"))
 \item{folder}{DL to do}
 }
 \description{
-Print plots and shit
+Ideas for the future:
+1. plotPaths
+2. plotFluxes
 }
