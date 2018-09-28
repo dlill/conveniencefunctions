@@ -332,22 +332,28 @@ test_dMod.frame <- function(model,
                             test_obj = T
                             ) {
   # Test some plots
-  cat("plotCombined ----- \n")
-  plotCombined(model) %>% print
-  cat("plotData ----- \n")
-  plotData(model) %>% print
-  cat("plotPrediction ----- \n")
-  plotPrediction(model) %>% print
+  if (test_plots) {
+    cat("plotCombined ----- \n")
+    plotCombined(model) %>% print
+    cat("plotData ----- \n")
+    plotData(model) %>% print
+    cat("plotPrediction ----- \n")
+    plotPrediction(model) %>% print
+  }
+
 
   # Test objective function
-  cat("test objfuns ----- \n")
-  model <- model %>%
-    mutate(objtest = list(obj(pars, fixed = fixed)))
+  if (test_obj) {
+    cat("test objfuns ----- \n")
+    model <- model %>%
+      mutate(objtest = list(obj(pars, fixed = fixed)))
 
-  cat("print test of objfuns ----- \n")
-  map(seq_len(nrow(model)), function(i) {
-    print(model$objtest[[i]])
-  })
+    cat("print test of objfuns ----- \n")
+    map(seq_len(nrow(model)), function(i) {
+      print(model$objtest[[i]])
+    })
+  }
+
 
   return(model)
 }
