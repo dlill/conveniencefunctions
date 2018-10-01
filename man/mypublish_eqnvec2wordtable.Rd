@@ -11,6 +11,8 @@ print2word_eqnvec(x, path = "odes")
 }
 \arguments{
 \item{x}{eqnvec}
+
+\item{path}{filename without ending}
 }
 \description{
 printout of c(x = -k\*x) will look like d/dt\[x] = - k*[x]

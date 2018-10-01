@@ -12,7 +12,7 @@ print2word_matrixlist(x, path, digits = 2)
 \arguments{
 \item{x}{list of matrices}
 
-\item{path}{filename}
+\item{path}{filename without ending}
 
 \item{digits}{digits for rounding}
 }

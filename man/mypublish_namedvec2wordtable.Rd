@@ -5,12 +5,16 @@
 \alias{print2word_namedvec}
 \title{Print the odes of an eqnvec in a tex and a docx table}
 \usage{
-mypublish_namedvec2wordtable(x, path = "pars")
+mypublish_namedvec2wordtable(x, path = "pars", names_in_mathenv = F)
 
-print2word_namedvec(x, path = "pars")
+print2word_namedvec(x, path = "pars", names_in_mathenv = F)
 }
 \arguments{
-\item{x}{eqnvec}
+\item{x}{vector with names}
+
+\item{path}{filename without ending}
+
+\item{names_in_mathenv}{put the names in an in-line math environment (latex: $$)}
 }
 \description{
 printout of c(x = -k*x) will look like d/dt\[x\] = - k\*\[x\]
