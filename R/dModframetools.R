@@ -251,6 +251,27 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
 
 # Modeling helpers ----
 
+#' Helper function to reproducibly construct parframes
+#'
+#' @param pars named vector. values don't play a role, only names
+#' @param n how many lines should the parframe have
+#' @param seed seed for the random number generator
+#' @param samplefun rnorm, runif, etc...
+#'
+#' @return parframe (without metanames)
+#' @export
+#'
+#' @examples
+#' construct_parframe(c(a = 0, b = 100000), 5)
+#' construct_parframe(c(a = 0, b = 100000), 5)
+construct_parframe <- function(pars, n = 20, seed = 12345, samplefun = rnorm) {
+  set.seed(seed)
+  rnd <- samplefun(n*length(pars))
+  mypars <- matrix(rnd, nrow = n)
+  mypars <- `names<-`(as.data.frame(mypars), names(pars))
+  parframe(mypars)
+}
+
 #' Simluate data with a dMod.frame
 #'
 #' @param model dMod.frame, preferably with columns pars and covtable

@@ -34,7 +34,16 @@ split_chunks <- function ()
 }
 
 
-
+#' insert unlink
+#'
+#' @family insertfunctions
+#' @export
+insert_unlink <- function() {
+  rstudioapi::insertText('
+unlink(paste0("*.", c("c", "o", "so", "tex")))
+unlink("Fits/", T)
+')
+}
 
 
 #' Addin to insert map(seq_along(x), function(i))

@@ -18,6 +18,10 @@ Description: Inserts `%T>%` at the cursor position.
 Binding: insert_tee_operator
 Interactive: false
 
+Name: Insert unlink
+Description: Inserts unlink at the cursor position.
+Binding: insert_unlink
+Interactive: false
 
 Name: Insert %T>% print
 Description: Inserts `%T>% print` at the cursor position.
