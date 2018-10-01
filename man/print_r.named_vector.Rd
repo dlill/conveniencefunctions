@@ -4,10 +4,12 @@
 \alias{print_r.named_vector}
 \title{nicely formatted dput for named vectors}
 \usage{
-print_r.named_vector(myvec, indices = T)
+print_r.named_vector(myvec, vec_name = "pars", indices = T)
 }
 \arguments{
 \item{myvec}{}
+
+\item{indices}{}
 }
 \description{
 nicely formatted dput for named vectors

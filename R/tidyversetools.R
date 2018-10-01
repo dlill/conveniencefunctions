@@ -1,3 +1,23 @@
+# tibble-stuff ----
+
+#' turn a matrix into a wide data.frame
+#'
+#' @param mat a matrix
+#' @param nm vector of names for the matrix elements
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' matrix(1:4, nrow = 2) %>% matrix_2_wide_df(letters[1:4])
+matrix_2_wide_df <- function(mat, nm) {mat %>%
+    `dim<-`(NULL) %>%
+    t %>%
+    as.data.frame(stringsAsFactors = F) %>%
+    `names<-`(nm)}
+
+
+
 #' Title
 #'
 #' @param .data tibble
