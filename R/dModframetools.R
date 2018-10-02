@@ -306,7 +306,8 @@ simulate_data <- function(model,
   mydata <- suppressWarnings(left_join(data_template, prediction, by = c("time", "name", "condition"))) %>%
     mutate(sigma = sqrt(s0^2 + srel^2*value^2)) %>%
     mutate(value = value + rnorm(length(value), 0, sigma)) %>%
-    select(-s0, -srel)
+    select(-s0, -srel) %>%
+    filter((!is.na(value))|(!is.nan(value)))
 
   covtable <- model$covtable[[hypothesis]]
 

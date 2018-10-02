@@ -30,6 +30,17 @@ getConditions.tbl_df <- function(model, hypothesis = 1) {
 }
 
 
+#' as.parvec for dMod.frames
+#'
+#' @param x dMod.frame
+#' @param hypothesis 1
+#' @param index going to as.parvec.parframe
+#'
+#' @export
+as.parvec.tbl_df <- function(x, hypothesis = 1, index = 1) {
+  x[["parframes"]][[hypothesis]] %>% dMod:::as.parvec.parframe(index)
+}
+
 
 # d2d data format to dMod data format----
 
