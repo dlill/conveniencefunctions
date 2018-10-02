@@ -3,6 +3,7 @@
 #' printout of c(x = -k\*x) will look like d/dt\[x] = - k*[x]
 #'
 #' @param x eqnvec
+#' @param path filename without ending
 #'
 #' @export
 mypublish_eqnvec2wordtable <- function(x, path = "odes") {
@@ -29,13 +30,17 @@ mypublish_eqnvec2wordtable <- function(x, path = "odes") {
 #'
 #' printout of c(x = -k*x) will look like d/dt\[x\] = - k\*\[x\]
 #'
-#' @param x eqnvec
+#' @param x vector with names
+#' @param path filename without ending
+#' @param names_in_mathenv put the names in an in-line math environment (latex: $$)
 #'
 #' @export
-mypublish_namedvec2wordtable <- function(x, path = "pars") {
+mypublish_namedvec2wordtable <- function(x, path = "pars", names_in_mathenv = F) {
   mynames <- x %>% names
+  if (names_in_mathenv)
+    mynames <- paste0("$", mynames, "$")
   x %>%
-    tibble(names(.),.) %>%
+    tibble(mynames,.) %>%
     xtable() %>% print(include.rownames = F, include.colnames = F) %>%
     paste("\\documentclass[10pt,a4paper]{article}
 \\usepackage[latin1]{inputenc}
@@ -96,7 +101,7 @@ mypublish_matrix2wordmath <- function(x,filename) {
 #' Print a list of matrices to a single word file with a table of these matrices
 #'
 #' @param x list of matrices
-#' @param path filename
+#' @param path filename without ending
 #' @param digits digits for rounding
 #'
 #' @export

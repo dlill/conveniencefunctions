@@ -104,28 +104,35 @@ print_mathematica.matrix <- function(mat, name_in_mathematica = "M") {
 #'
 #' @param myvec
 #'
+#' @param vec_name
+#' @param indices
 #'
 #' @export
 #' @family printtools
 #'
 #' @examples
 #' letters[1:5] %>% are_names_of(0) %>% print_r.named_vector
-print_r.named_vector <- function(myvec, indices = T) {
-
+print_r.named_vector <- function(myvec, vec_name = "pars", indices = T) {
+  mytext <- myvec
   if(!indices) {
-    myvec %>%
+    mytext <- myvec %>%
       paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
-      paste0(collapse = "\t,\n") %>% paste("c(\n",.,"\n)") %>%
-      cat
+      paste0(collapse = "\t,\n") %>% paste("c(\n",.,"\n)")
   } else {
     n <- length(myvec)
-    myvec %>%
+    mytext <- myvec %>%
       paste(str_pad(names(.), width = max(str_length(names(.))), side = "right"), "=", ., sep = "\t") %>%
       paste0("\t, # ", 1:n) %>%
       paste0(collapse = "\n") %>%
       paste("c(\n",.,"\n)") %>%
-      str_replace(paste0(", # ",n), paste0("  # " , n)) %>%
-      cat
+      str_replace(paste0(", # ",n), paste0("  # " , n))
+    }
+
+  if(is.null(vec_name)) {
+    cat(mytext)
+  } else {
+    paste0("\nvec_name <- ", mytext) %>%
+      rstudioapi::insertText()
   }
 
 
