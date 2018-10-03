@@ -22,5 +22,5 @@ Other printtools: \code{\link{print_mathematica.character}},
 
 Other insertfunctions: \code{\link{insert_tee_operator}},
   \code{\link{insert_tee_print}},
-  \code{\link{split_chunks}}
+  \code{\link{insert_unlink}}, \code{\link{split_chunks}}
 }
