@@ -3,11 +3,14 @@
 \name{mypublish_matrix2wordmath}
 \alias{mypublish_matrix2wordmath}
 \alias{print2word_matrix}
+\alias{print2word_matrixlist2}
 \title{Print single matrices as matrices in word math environemt}
 \usage{
 mypublish_matrix2wordmath(x, filename)
 
 print2word_matrix(x, filename)
+
+print2word_matrixlist2(x, filename)
 }
 \arguments{
 \item{x}{a single matrix as xtable \%>\% print(tabluar.environment = "pmatrix)}
@@ -22,13 +25,6 @@ The align argument of xtable outside of mypublish mat needs to be ncol(mat) \+ 1
 list(r_0 = matrix(1:9, ncol = 3),
      r_1 = matrix(0,ncol = 3, nrow = 3),
      r_opt_1 = matrix(2:10, nrow = 3)) \%>\%
-  imap(~.x \%>\% round(2) \%>\% xtable(align = rep("",4)) \%>\%
-         print(tabular.environment="pmatrix",
-               include.colnames = F,
-               include.rownames = F,
-               floating = F,
-               hline.after = NULL) \%>\%
-         mypublish_mat(.y)
-       )
+  imap(~.x \%>\% round(2) \%>\% mypublish_mat(.y))
 }
 }

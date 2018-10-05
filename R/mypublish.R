@@ -69,16 +69,18 @@ mypublish_namedvec2wordtable <- function(x, path = "pars", names_in_mathenv = F)
 #' list(r_0 = matrix(1:9, ncol = 3),
 #'      r_1 = matrix(0,ncol = 3, nrow = 3),
 #'      r_opt_1 = matrix(2:10, nrow = 3)) %>%
-#'   imap(~.x %>% round(2) %>% xtable(align = rep("",4)) %>%
-#'          print(tabular.environment="pmatrix",
-#'                include.colnames = F,
-#'                include.rownames = F,
-#'                floating = F,
-#'                hline.after = NULL) %>%
-#'          mypublish_mat(.y)
-#'        )
+#'   imap(~.x %>% round(2) %>% mypublish_mat(.y))
 #' }
 mypublish_matrix2wordmath <- function(x,filename) {
+
+  cols <- ncol(x)
+
+  x <- x %>% xtable(align = rep("",cols+1)) %>%
+    print(tabular.environment="pmatrix",
+          include.colnames = F,
+          include.rownames = F,
+          floating = F,
+          hline.after = NULL)
 
   x %>%
     paste("\\documentclass[10pt,a4paper]{article}
@@ -93,10 +95,54 @@ mypublish_matrix2wordmath <- function(x,filename) {
           "\\end{equation*}",
           "\\end{document}") %>%
     write_lines(paste0(filename,".tex"))
+
+
   system2("pandoc", c(paste0("-o", filename,".docx"), paste0(filename,".tex")))}
 
 
+#' Print a list of matrices as matrices in word math environemt
+#'
+#'
+#' @param x a list of matrices
+#' @param filename filename without ending
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{ x <- list(r_0 = matrix(1:9, ncol = 3),
+#'      r_1 = matrix(0,ncol = 3, nrow = 3),
+#'      r_opt_1 = matrix(2:10, nrow = 3))
+#'   mypublish_matlist2wordmath(x, "matrices)
+#' }
+mypublish_matlist2wordmath <- function(x,filename) {
 
+  x <- imap(x, function(.x,.y) {
+    cols <- ncol(.x)
+    .x %>% xtable::xtable(align = rep("",cols+1)) %>%
+      xtable:::print.xtable(tabular.environment="pmatrix",
+            include.colnames = F,
+            include.rownames = F,
+            floating = F,
+            hline.after = NULL) %>%
+      paste0("\\begin{equation*}",
+             .y, " = ", .,
+             "\\end{equation*} \n\n\n")
+  }) %>% reduce(paste0, collapse = "\n\n\n")
+
+
+  paste("\\documentclass[10pt,a4paper]{article}
+\\usepackage[latin1]{inputenc}
+\\usepackage{amsmath}
+\\usepackage{amsfonts}
+\\usepackage{amssymb}
+\\usepackage{graphicx}
+\\begin{document}",
+        x ,
+"\\end{document}") %>%
+    write_lines(paste0(filename,".tex"))
+
+
+  system2("pandoc", c(paste0("-o", filename,".docx"), paste0(filename,".tex")))}
 
 #' Print a list of matrices to a single word file with a table of these matrices
 #'
@@ -150,6 +196,11 @@ print2word_matrixlist <- mypublish_matlist2wordtable
 #' @export
 #' @rdname mypublish_matrix2wordmath
 print2word_matrix <- mypublish_matrix2wordmath
+
+#' @export
+#' @rdname mypublish_matrix2wordmath
+print2word_matrixlist2 <- mypublish_matlist2wordmath
+
 
 #' @export
 #' @rdname mypublish_namedvec2wordtable
