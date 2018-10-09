@@ -29,7 +29,7 @@ check2sink <- function(path = "check.txt") {
 docpath2dirpath <- function(doc) {
   if(class(doc) == "document_context")
     doc <- doc$path
-  doc %>% str_split("/", simplify = T) %>% .[1:(length(.)-1)] %>% paste0(collapse = "/") %>% paste0("/")
+  doc %>% stringr::str_split("/", simplify = T) %>% .[1:(length(.)-1)] %>% paste0(collapse = "/") %>% paste0("/")
 }
 
 
@@ -162,9 +162,11 @@ evaluate_formals <- function(..., indices = 1:length(formals(...))) {
 #'
 #' @param pattern A vector of regex to be matched
 #'
+#' @importFrom stringr str_detect
+#'
 #' @export
 global_env_without <- function(pattern) {
-  ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% str_detect(pattern) %>% any))]
+  ls(.GlobalEnv)[!(ls(.GlobalEnv) %>% sapply(. %>% stringr::str_detect(pattern) %>% any))]
 }
 
 
@@ -297,12 +299,12 @@ insert_values_by_name <- function(vec, values) {
 #' myvec <- c("a", "b", "ab", "ba") %>% are_names_of(runif)
 #' myvec %>% str_subset_name("^a")
 str_subset_name <- function(vec, pattern) {
-  vec %>% .[str_detect(names(.), pattern)]}
+  vec %>% .[stringr::str_detect(names(.), pattern)]}
 
 #' @export
 #' @rdname str_subset_name
 "str_subset_name<-" <-  function(vec, pattern,value) {
-  vec[str_detect(names(vec), pattern)] <- value
+  vec[stringr::str_detect(names(vec), pattern)] <- value
   vec}
 
 #' str_subset that preserves names
@@ -316,7 +318,7 @@ str_subset_name <- function(vec, pattern) {
 #' myvec <- c("a", "b", "ab", "ba") %>% are_names_of(.,.)
 #' myvec %>% str_subset_keep_names("^a")
 str_subset_keep_names <- function(vec, pattern) {
-  vec %>% .[str_detect(., pattern)]}
+  vec %>% .[stringr::str_detect(., pattern)]}
 
 
 #' The "opposite" of str_subset.
@@ -330,12 +332,12 @@ str_subset_keep_names <- function(vec, pattern) {
 #'
 #'
 str_subset_not <- function(vec, pattern) {
-  vec %>% .[!str_detect(.,pattern)]}
+  vec %>% .[!stringr::str_detect(.,pattern)]}
 
 
 #' @rdname str_subset_not
 str_subset_keep_names_not <- function(vec, pattern) {
-  vec %>% .[!str_detect(., pattern)]}
+  vec %>% .[!stringr::str_detect(., pattern)]}
 
 
 #' Is (any element) of pattern in any of the elements of vec?
@@ -353,10 +355,9 @@ str_subset_keep_names_not <- function(vec, pattern) {
 #' str_detect_any(letters[1:3], c("d"))
 #' str_detect_any(letters[1:3], c("c","d"))
 str_detect_any <- function(vec, pattern) {
-  sapply(vec, . %>% str_detect(pattern) %>% any) %>% any
+  sapply(vec, . %>% stringr::str_detect(pattern) %>% any) %>% any
 }
 
-str_detect_any(letters[1:3], c("c","d"))
 
 
 
@@ -378,14 +379,10 @@ tpaste0 <- function(...) {
 }
 
 #' quasi random seed when a seed is already set
-#'
+#' @importFrom stringr str_rextract_all
 #' @export
-time_to_seed <- function(){ date() %>% as.character.Date() %>% str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(.,10000)  %>% round() %>% as.integer()
+time_to_seed <- function(){ date() %>% as.character.Date() %>% stringr::str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(.,10000)  %>% round() %>% as.integer()
 }
-
-
-# move this to ./data/
-cf_tibble <- tibble::tibble(a = 1:4, b = c(1,1,2,2), d = letters[1:4])
 
 
 
