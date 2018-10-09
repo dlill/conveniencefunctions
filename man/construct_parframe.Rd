@@ -4,16 +4,18 @@
 \alias{construct_parframe}
 \title{Helper function to reproducibly construct parframes}
 \usage{
-construct_parframe(pars, n = 20, seed = 12345, samplefun = rnorm)
+construct_parframe(pars, n = 20, seed = 12345, samplefun = rnorm, ...)
 }
 \arguments{
-\item{pars}{named vector. values don't play a role, only names}
+\item{pars}{Named vector. Values don't play a role, only names}
 
-\item{n}{how many lines should the parframe have}
+\item{n}{Integer how many lines should the parframe have}
 
-\item{seed}{seed for the random number generator}
+\item{seed}{Seed for the random number generator}
 
-\item{samplefun}{rnorm, runif, etc...}
+\item{samplefun}{random number generator: \code{\link{rnorm}}, \code{\link{runif}}, etc...}
+
+\item{...}{arguments going to samplefun}
 }
 \value{
 parframe (without metanames)
