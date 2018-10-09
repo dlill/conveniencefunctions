@@ -251,6 +251,24 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
 
 # Modeling helpers ----
 
+#' Toggle attach.input in a dMod.frame
+#'
+#' Sometimes it is wanted to turn on "attach.input" in a prediction function to look at internal states
+#'
+#' @param est1 a dMod.frame
+#' @param att_in If supllied, overwrites the toggle
+#'
+#' @return no return, as the dMod.frame is modified inside this function. The function is called for its side effect.
+#' @export
+toggle_attach.input <- function(est1, att_in = NULL) {
+  toggle <- !controls(est1[["g"]][[1]], name = "attach.input")
+  controls(est1[["g"]][[1]], name = "attach.input") <- toggle
+  if(!is.null(att_in))
+    controls(est1[["g"]][[1]], name = "attach.input") <- att_in
+  NULL
+}
+
+
 #' Helper function to reproducibly construct parframes
 #'
 #' @param pars Named vector. Values don't play a role, only names
@@ -573,6 +591,20 @@ parframes_summary <- function(dMod.frame, hypothesis = NULL, tol = 1) {
   }) %>% setNames(dMod.frame$hypothesis[hypothesis])
 }
 
+
+# Interaction with "with()" ----
+
+
+#' unlist hypothesis
+#'
+#' @param est dMod.frame
+#' @param hypothesis 1
+#'
+#' @return list
+#' @export
+uh <- function(est, hypothesis = 1) {
+  unlist(est[1,], F)
+}
 
 
 # Interaction with .GlobalEnv ----

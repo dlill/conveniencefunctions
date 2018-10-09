@@ -1,3 +1,92 @@
+# Compare ----
+
+#' Setdiff of names
+#'
+#' @param .x,.y Vectors/matrices with (dim)names
+#'
+#' @return output of compare.character
+#' @export
+compare_names <- function(.x,.y) {
+  if(length(dim(.x))!=length(dim(.y)))
+    stop("not the same number of dimensions")
+  if (is.null(dim(.x))) {
+    if(!identical(order(names(.x)), order(names(.y))))
+      warning("Names not in identical order")
+    return(compare(names(.x), names(.y)))
+  }
+  if (length(dim(.x)) == 2) {
+    if(!(identical(order(rownames(.x)), order(rownames(.y)))&identical(order(colnames(.x)), order(colnames(.y)))))
+      warning("Dimnames not in identical order")
+    return(map2(dimnames(.x), dimnames(.y), ~compare(.x, .y)))
+  }
+}
+
+#' compare named numerics
+#'
+#' @param .x,.y Named numerics
+#'
+#' @return data.frame with name, diff = (.y-.x), appended output of compare_names
+#' @export
+compare_named_numeric <- function(.x,.y) {
+  if(!identical(order(names(.x)), order(names(.y))))
+    warning("Names not in identical order")
+  out <- subtract_by_name(.y,.x)
+  out <- data.frame(diff = out, name = names(out), stringsAsFactors = F)
+  comp <- compare(names(.x), names(.y))
+  comp <- data.frame(comp$name, diff = rownames(comp))
+  out <- rbind(out, comp)
+  rownames(out) <- NULL
+  return(out)
+}
+
+#' compare two objlists
+#'
+#' @param .x,.y objlist
+#'
+#' @return difference of their values
+#' @export
+compare_objlist <- function(.x,.y) {
+  map2(.x,.y, subtract_by_name)
+}
+
+# Trust blather analysis ----
+
+#' evaluate objfun along an argpath of a fit
+#'
+#' @param est a dMod.frame
+#' @param hypothesis 1
+#' @param fit a fit with blather = T, has to have the same pars as est$obj
+#'
+#' @return list of objlists
+#' @export
+trustAna_obj_along_path <- function(est, hypothesis = 1, fit) {
+  mypath <- fit$argpath
+
+  lapply(1:nrow(mypath), function(i) {
+    mypars <- mypath[i,]
+    names(mypars) <- names(fit$argument)
+
+    with(unlist(est[hypothesis,], F), obj(mypars, fixed = fixed))
+  })
+}
+
+#' Get the i'th row of an argpath or argtry as a named vector
+#'
+#'
+#' @param fit a trust()-fit with blather = T
+#' @param i the iteration (the step taken)
+#' @param whichPath argpath or argtry, is regexed. as long as the regex matches uniquely, you can use it, e.g. "p" for path, "tr" for try
+#'
+#' @return named numeric
+#' @export
+trustAna_getArg <- function(fit, i = 1, whichPath = "argpath") {
+  nm <- names(fit$argument)
+  pathnames <- c("argpath", "argtry")
+  pathname <- str_subset(pathnames, whichPath)
+  out <- fit[[pathname]][i,,drop = T] %>% `names<-`(nm)
+  return(out)
+}
+
 # helper functions ----
 
 #' Set rownames so that the covtable is in condition.grid format
@@ -13,7 +102,6 @@ as.condition.grid <- function(df) {
   `rownames<-`(df, mynames)
 }
 
-getConditions.fn <- dMod:::getConditions.fn
 
 #' Try getting conditions
 #'
@@ -22,11 +110,11 @@ getConditions.fn <- dMod:::getConditions.fn
 #' @export
 getConditions.tbl_df <- function(model, hypothesis = 1) {
   if (!is.null(suppressWarnings(model$obj[[hypothesis]])))
-    return(getConditions.fn(model$obj[[hypothesis]]))
+    return(dMod:::getConditions.fn(model$obj[[hypothesis]]))
   if (!is.null(model$data[[hypothesis]]))
     return(names(model$data[[hypothesis]]))
   if (!is.null(model$p[[hypothesis]]))
-    return(getConditions.fn(model$p[[hypothesis]]))
+    return(dMod:::getConditions.fn(model$p[[hypothesis]]))
 }
 
 

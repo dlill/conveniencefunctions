@@ -194,6 +194,33 @@ runtime <- function( ... ) {
 
 # Useful vector operations ----
 
+
+#' Subtract elements with matching names
+#'
+#' @param .x,.y vecs or matrices
+#'
+#' @return .y-.x at the respective positions
+#' @export
+subtract_by_name <- function(.x,.y) {
+
+  if(length(dim(.x))!=length(dim(.y)))
+    stop("not the same number of dimensions")
+  if (is.null(dim(.x))) {
+    if(!identical(order(names(.x)), order(names(.y))))
+      warning("Names not in identical order")
+    return(.y[intersect(names(.x), names(.y))] - .x[intersect(names(.x), names(.y))])
+  }
+  if (length(dim(.x)) == 2) {
+    if(!(identical(order(rownames(.x)), order(rownames(.y)))&identical(order(colnames(.x)), order(colnames(.y)))))
+      warning("Dimnames not in identical order")
+    return(  .y[intersect(dimnames(.x)[[1]], dimnames(.y)[[1]]),
+                intersect(dimnames(.x)[[2]], dimnames(.y)[[2]])] -
+               .x[intersect(dimnames(.x)[[1]], dimnames(.y)[[1]]),
+                  intersect(dimnames(.x)[[2]], dimnames(.y)[[2]])])
+  }
+}
+
+
 #' Sort a vector by names in ascending order
 #'
 #' @param x named vector

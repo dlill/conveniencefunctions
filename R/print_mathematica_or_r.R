@@ -163,3 +163,44 @@ print_r.eqnlist2addReaction_pipe <- function(reactions){
 
 
 
+# R Console ----
+
+#' "tibble-print" a matrix
+#'
+#'  print only the first i rows and j cols
+#'
+#' @param x matrix
+#' @param i,j how many rows/cols
+#' @param drop drop
+#'
+#' @return x without subsetting
+#' @export
+tblprint <- function(x, i = 10, j = 5, drop = T) {
+  dims <- dim(x)
+  if (length(dims) == 1 ) {
+    print(x[1:i])
+  }
+  if (length(dims) == 2) {
+    print(x[1:i, 1:j, drop = drop])
+  }
+  x <- x
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
