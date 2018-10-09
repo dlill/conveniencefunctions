@@ -379,7 +379,7 @@ tpaste0 <- function(...) {
 }
 
 #' quasi random seed when a seed is already set
-#' @importFrom stringr str_rextract_all
+#' @importFrom stringr str_extract_all
 #' @export
 time_to_seed <- function(){ date() %>% as.character.Date() %>% stringr::str_extract_all("[0-9]") %>% do.call(c,.) %>% paste0(collapse = "") %>% as.numeric() %>%  `/`(.,10000)  %>% round() %>% as.integer()
 }
