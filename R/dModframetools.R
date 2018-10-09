@@ -253,10 +253,11 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
 
 #' Helper function to reproducibly construct parframes
 #'
-#' @param pars named vector. values don't play a role, only names
-#' @param n how many lines should the parframe have
-#' @param seed seed for the random number generator
-#' @param samplefun rnorm, runif, etc...
+#' @param pars Named vector. Values don't play a role, only names
+#' @param n Integer how many lines should the parframe have
+#' @param seed Seed for the random number generator
+#' @param samplefun random number generator: \code{\link{rnorm}}, \code{\link{runif}}, etc...
+#' @param ... arguments going to samplefun
 #'
 #' @return parframe (without metanames)
 #' @export
@@ -264,7 +265,7 @@ report_dMod.frame <- function(model, folder = tpaste0("report/")) {
 #' @examples
 #' construct_parframe(c(a = 0, b = 100000), 5)
 #' construct_parframe(c(a = 0, b = 100000), 5)
-construct_parframe <- function(pars, n = 20, seed = 12345, samplefun = rnorm) {
+construct_parframe <- function(pars, n = 20, seed = 12345, samplefun = rnorm, ...) {
   set.seed(seed)
   rnd <- samplefun(n*length(pars))
   mypars <- matrix(rnd, nrow = n)
