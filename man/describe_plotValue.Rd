@@ -4,7 +4,6 @@
 \alias{describe_plotValue}
 \alias{describe_plotCombined}
 \alias{describe_plotPars}
-\alias{describe_plotPars}
 \alias{describe_plotProfile}
 \title{Insert description template}
 \usage{

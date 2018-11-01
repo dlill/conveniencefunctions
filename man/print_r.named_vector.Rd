@@ -25,3 +25,4 @@ Other printtools: \code{\link{print_mathematica.character}},
   \code{\link{print_mathematica.name_equals_value}},
   \code{\link{print_r.eqnlist2addReaction_pipe}}
 }
+\concept{printtools}

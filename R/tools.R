@@ -285,6 +285,19 @@ insert_values_by_name <- function(vec, values) {
 # useful stringr like functions ----
 
 
+#' Escape all special characters in a string
+#'
+#' @param string string
+#'
+#' @return string with single escapes before special characters (don't be confused by the double escapes from "print")
+#' @export
+#'
+#' @examples
+#' str_escape("a.(asdfsadf)") %>% cat
+str_escape <- function(string) {
+  message("Remember to cat() to see result with single escapes.")
+  str_replace_all(string, "([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1")
+}
 
 #' subset a vector by matching names against a pattern
 #'
@@ -363,6 +376,24 @@ str_detect_any <- function(vec, pattern) {
 
 
 # Other useful stuff ----
+
+
+#' Write a regex to search for all function names in a package
+#'
+#' @param package string of length 1
+#'
+#' @return a fancy regex
+#' @export
+#'
+#' @examples
+#' funnames_in_package("conveniencefunctions")
+funnames_in_package <- function(package) {
+  ls(envir = asNamespace(package)) %>%
+    str_escape %>%
+    paste(collapse = "|") %>%
+    paste0("\b(", ., ")\b") %>%
+    cat
+  }
 
 
 #' Append a time-stamp before a string

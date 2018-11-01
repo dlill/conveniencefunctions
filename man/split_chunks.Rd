@@ -15,3 +15,4 @@ Other insertfunctions: \code{\link{insert_tee_operator}},
   \code{\link{insert_unlink}},
   \code{\link{print_r.eqnlist2addReaction_pipe}}
 }
+\concept{insertfunctions}

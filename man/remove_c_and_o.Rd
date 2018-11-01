@@ -4,8 +4,8 @@
 \alias{remove_c_and_o}
 \title{Remove files with endings .c and .o}
 \usage{
-remove_c_and_o(other_extensions = NULL, path = ".", extensions = c("c",
-  "o"))
+remove_c_and_o(other_extensions = NULL, path = ".",
+  extensions = c("c", "o"))
 }
 \arguments{
 \item{other_extensions, extensions}{file extensions}

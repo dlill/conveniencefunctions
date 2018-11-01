@@ -631,8 +631,23 @@ cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.name
 
 }
 
-
-
+# Objlist template ----
+#' Create an empty objlist full of zeros
+#'
+#' @param pars a named vector, names will be used to construct the gradient and hessian
+#'
+#' @return objlist full of zeros
+#' @export
+#'
+#' @examples objlist_template(structure(1:3, names = letters[1:3]))
+objlist_template <- function(pars) {
+  objlist(value = 0,
+          gradient = pars * 0,
+          hessian = matrix(0,
+                           nrow = length(pars),
+                           ncol = length(pars),
+                           dimnames = list(names(pars), names(pars))))
+}
 
 # Update package versions: dMod, cOde, conveniencefunctions, MRAr----
 #' Update versions

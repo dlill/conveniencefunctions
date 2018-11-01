@@ -21,3 +21,4 @@ Do Check sensitivities over a list of prds
 \seealso{
 [checkSensitivities()]
 }
+\concept{doFunctions}

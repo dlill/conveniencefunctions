@@ -26,3 +26,4 @@ Other printtools: \code{\link{print_mathematica.character}},
   \code{\link{print_r.eqnlist2addReaction_pipe}},
   \code{\link{print_r.named_vector}}
 }
+\concept{printtools}

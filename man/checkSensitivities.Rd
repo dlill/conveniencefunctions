@@ -28,3 +28,4 @@ Taken (with slight changes) from Daniel Kaschek in dMod/inst/examples/events.R
 \seealso{
 [do_checkSensitivities()]
 }
+\concept{analysisFunctions}
