@@ -124,6 +124,8 @@ getConditions.tbl_df <- function(model, hypothesis = 1) {
 #' @param hypothesis 1
 #' @param index going to as.parvec.parframe
 #'
+#' @importFrom dMod as.parvec.parframe
+#'
 #' @export
 as.parvec.tbl_df <- function(x, hypothesis = 1, index = 1) {
   x[["parframes"]][[hypothesis]] %>% dMod:::as.parvec.parframe(index)
@@ -193,6 +195,8 @@ d2d2dMod_data <- function(data, keep = NULL) {
 #' Additional column "identifiable" which is true if the objective function value has been pushed to a value higher than the threshold
 #' @export
 #'
+#' @importFrom dMod as.parvec
+#'
 #' @examples
 #'  \dontrun{DL: To do.}
 id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
@@ -204,7 +208,7 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
 
   bestfit <- pars
   if(!is.null(model$parframes))
-    bestfit <- parframes %>% as.parvec
+    bestfit <- parframes %>% dMod:::as.parvec
 
 
   r <- bestfit %>% paste0("(", names(.), " - ", ., ")^2") %>% paste0(collapse = " + ") %>% paste0("sqrt(", ., ")") %>% `names<-`("R_BESTFIT")

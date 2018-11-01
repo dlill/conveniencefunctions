@@ -12,6 +12,8 @@ Depends:
   dMod,
   tidyverse
 Imports:
+  magrittr,
+  stringr,
   plotly,
   rlang,
   dplyr,

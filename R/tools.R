@@ -381,14 +381,18 @@ str_detect_any <- function(vec, pattern) {
 #' Write a regex to search for all function names in a package
 #'
 #' @param package string of length 1
+#' @param as_namespace print everything in the namespace or just exported objects?
 #'
 #' @return a fancy regex
 #' @export
 #'
 #' @examples
 #' funnames_in_package("conveniencefunctions")
-funnames_in_package <- function(package) {
-  ls(envir = asNamespace(package)) %>%
+funnames_in_package <- function(package, as_namespace = F) {
+  wup <- ls(paste0("package:", package))
+  if (as_namespace)
+    wup <- ls(envir = asNamespace(package))
+  wup %>%
     str_escape %>%
     paste(collapse = "|") %>%
     paste0("\b(", ., ")\b") %>%

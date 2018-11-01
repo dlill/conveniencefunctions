@@ -4,10 +4,12 @@
 \alias{funnames_in_package}
 \title{Write a regex to search for all function names in a package}
 \usage{
-funnames_in_package(package)
+funnames_in_package(package, as_namespace = F)
 }
 \arguments{
 \item{package}{string of length 1}
+
+\item{as_namespace}{print everything in the namespace or just exported objects?}
 }
 \value{
 a fancy regex
