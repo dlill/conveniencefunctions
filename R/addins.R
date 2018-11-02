@@ -203,7 +203,6 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   rbg_body <- function() "\n\n"
 
   rbg_end <- function() paste0('
-     send_runbg_mail("', job_name, '")
 
      out
 \n}, machine = ', machine, ', input = "', input,'", filename = "', filename,'"

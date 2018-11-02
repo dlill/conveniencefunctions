@@ -7,9 +7,11 @@
 print_r.named_vector(myvec, vec_name = "pars", indices = T)
 }
 \arguments{
-\item{myvec}{}
+\item{myvec}{a vector}
 
-\item{indices}{}
+\item{vec_name}{the name that this vector gets in the rscript}
+
+\item{indices}{print indices as well?}
 }
 \description{
 nicely formatted dput for named vectors

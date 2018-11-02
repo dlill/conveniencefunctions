@@ -387,6 +387,9 @@ test_dMod.frame <- function(model,
   # Test objective function
   if (test_obj) {
     cat("test objfuns ----- \n")
+    if (is.null (model$fixed))
+      model <- mutate(model, fixed = list(NULL))
+
     model <- model %>%
       mutate(tested_obj = list(obj(pars, fixed = fixed)))
 
