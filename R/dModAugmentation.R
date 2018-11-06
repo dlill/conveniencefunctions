@@ -123,12 +123,11 @@ getConditions.tbl_df <- function(model, hypothesis = 1) {
 #' @param x dMod.frame
 #' @param hypothesis 1
 #' @param index going to as.parvec.parframe
-#'
-#' @importFrom dMod as.parvec.parframe
+#' @importFrom dMod as.parvec
 #'
 #' @export
 as.parvec.tbl_df <- function(x, hypothesis = 1, index = 1) {
-  x[["parframes"]][[hypothesis]] %>% dMod:::as.parvec.parframe(index)
+  x[["parframes"]][[hypothesis]] %>% dMod::as.parvec(index)
 }
 
 

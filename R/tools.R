@@ -395,8 +395,7 @@ funnames_in_package <- function(package, as_namespace = F) {
   wup %>%
     str_escape %>%
     paste(collapse = "|") %>%
-    paste0("\b(", ., ")\b") %>%
-    cat
+    paste0("\\b(", ., ")\\b")
   }
 
 
