@@ -145,7 +145,6 @@ insert_unit_test <- function(context = "Context", description= "test_what") {
 
 
   # Define your expectations here
-  expect_known_hash(, hash = NULL)
 
 #})
   '))

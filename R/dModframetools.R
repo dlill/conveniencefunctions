@@ -308,7 +308,7 @@ simulate_data <- function(model,
                           timesD = 0:10, s0 = 0.1, srel = 0.1, observables = getObservables(model, hypothesis),
                           seed_pars = 1,  seed_data = 1) {
 
-  conditions <- getConditions(model, hypothesis)
+  conditions <- getConditions.tbl_df(model, hypothesis)
   data_template <- expand.grid(name = observables, time = timesD, s0 = s0, srel = srel, condition = conditions, stringsAsFactors = F)
 
 
