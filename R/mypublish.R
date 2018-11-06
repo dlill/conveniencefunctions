@@ -109,10 +109,9 @@ mypublish_matrix2wordmath <- function(x,filename) {
 #' @export
 #'
 #' @examples
-#' \dontrun{ x <- list(r_0 = matrix(1:9, ncol = 3),
-#'      r_1 = matrix(0,ncol = 3, nrow = 3),
-#'      r_opt_1 = matrix(2:10, nrow = 3))
-#'   mypublish_matlist2wordmath(x, "matrices)
+#' \dontrun{
+#' x <- list(r_0 = matrix(1:9, ncol = 3), r_1 = matrix(0,ncol = 3, nrow = 3), r_opt_1 = matrix(2:10, nrow = 3))
+#' mypublish_matlist2wordmath(x, "matrices")
 #' }
 mypublish_matlist2wordmath <- function(x,filename) {
 

@@ -5,7 +5,6 @@
 #' @param mat a matrix
 #' @param nm vector of names for the matrix elements
 #'
-#' @return
 #' @export
 #'
 #' @examples

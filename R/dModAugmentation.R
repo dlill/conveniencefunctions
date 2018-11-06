@@ -89,6 +89,27 @@ trustAna_getArg <- function(fit, i = 1, whichPath = "argpath") {
 
 # helper functions ----
 
+#' Construct a parframe with tightly sampled parameters around other parameters stored in a parframe
+#'
+#' @param myparframe a parfame
+#' @param n how many new rows should be created per row?
+#' @param sd,seed going to rnorm in msParframe
+#'
+#' @return a parframe without metanames
+#' @export
+#'
+#' @importFrom dMod msParframe as.parvec
+#'
+#' @examples msNarrow(msParframe(c(a = 0, b = 2), n = 2, sd = 3), sd = 0.1)
+msNarrow <- function(myparframe, n = 5, sd = 0.2, seed = NULL) {
+  map(1:nrow(myparframe), function(.x) {
+    mypars <- as.parvec(myparframe, .x)
+    msParframe(mypars, seed = seed, n = n, sd = sd)
+  }) %>%
+    reduce(bind_rows)
+}
+
+
 #' Set rownames so that the covtable is in condition.grid format
 #'
 #' @param df a data.frame containing the covariates
@@ -109,6 +130,8 @@ as.condition.grid <- function(df) {
 #'
 #' @export
 getConditions.tbl_df <- function(model, hypothesis = 1) {
+  getConditions.fn <- dMod:::getConditions.fn
+
   if (!is.null(suppressWarnings(model$obj[[hypothesis]])))
     return(dMod:::getConditions.fn(model$obj[[hypothesis]]))
   if (!is.null(model$data[[hypothesis]]))
@@ -431,6 +454,16 @@ fitErrorModel_plot <- function(data) {
 }
 
 
+#' Unlink standard dMod-generated files
+#'
+#' Removes all \*.c and \*.o from your workdir
+#'
+#' @param endings additional endings
+#'
+#' @export
+unlink_dMod <- function(endings = NULL) {
+  unlink(paste0("*.", c("c", "o", endings)))
+}
 
 
 
@@ -715,8 +748,8 @@ hierarchical_trust <- function(dMod.frame, hypothesis = 1, analytic_parms) {
   # new try ----
   # Old try: implement a new objective function qhich doesn't repeatedly evaluate the ODEs more than once for the optimization of the analytic pars
   # New try: just use trust sequentially alternatingly evaluating one and the other set of pars
-  library(dMod)
-  library(conveniencefunctions)
+  require(dMod)
+  require(conveniencefunctions)
   source("~/Promotion/Software/dMod/inst/examples/example_dMod.frame/setup.R")
   myframe1 <- myframe1 %>% appendObj
   checkout_hypothesis(myframe1,1)

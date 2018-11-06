@@ -102,10 +102,10 @@ print_mathematica.matrix <- function(mat, name_in_mathematica = "M") {
 
 #' nicely formatted dput for named vectors
 #'
-#' @param myvec
+#' @param myvec a vector
 #'
-#' @param vec_name
-#' @param indices
+#' @param vec_name the name that this vector gets in the rscript
+#' @param indices print indices as well?
 #'
 #' @export
 #' @family printtools
