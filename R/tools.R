@@ -192,7 +192,18 @@ runtime <- function( ... ) {
 }
 
 
-
+#' Clear the warnings-list
+#'
+#' @export
+#'
+#' @examples
+#' warning("noooo")
+#' warnings()
+#' flush_warnings()
+#' warnings()
+flush_warnings <- function() {
+  assign("last.warning", NULL, envir = baseenv())
+}
 
 # Useful vector operations ----
 
