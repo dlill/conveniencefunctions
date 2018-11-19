@@ -20,3 +20,11 @@ insert_header <- function(){
 }
 
 
+#' Print a text into the script
+#'
+#' @export
+#'
+to_script <- function(string) {
+  id <- rstudioapi::getSourceEditorContext()$id
+  rstudioapi::insertText(text = string, id = id)
+}
