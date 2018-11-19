@@ -296,6 +296,26 @@ insert_values_by_name <- function(vec, values) {
 # useful stringr like functions ----
 
 
+#' Align some lines of code along a pattern
+#'
+#' @param string string
+#' @param pattern pattern
+#'
+#' @return aligned string
+#' @export
+#'
+#' @examples
+#' mystr <- 'a<- 1
+#' sdlfkjslkdjlskdfjlsjdkjslkd<-2'
+#' str_align(mystr)
+str_align <- function(string, pattern = "<-") {
+  split1 <- str_split(string, "\\n", simplify = T)
+  mysplit <- str_split(split1, pattern, simplify = T)
+  len1 <- max(str_length(mysplit[,1]))
+  aligned <- sprintf(paste0("%-", len1, "s", pattern, "%s"), mysplit[,1], mysplit[,2])
+  paste(aligned, collapse = "\n")
+}
+
 #' Escape all special characters in a string
 #'
 #' @param string string
