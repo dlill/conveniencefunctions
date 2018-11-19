@@ -4,7 +4,14 @@
 \alias{to_script}
 \title{Print a text into the script}
 \usage{
-to_script(string)
+to_script(string, wrap_in_quotes = F, assignment = NULL)
+}
+\arguments{
+\item{string}{Character 1L. if longer, will be collapsed by ", "}
+
+\item{wrap_in_quotes}{wrap the string into quotes}
+
+\item{assignment}{character assign the string to a variable}
 }
 \description{
 Print a text into the script

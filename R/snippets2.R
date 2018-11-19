@@ -22,9 +22,20 @@ insert_header <- function(){
 
 #' Print a text into the script
 #'
+#' @param string Character 1L. if longer, will be collapsed by ", "
+#' @param wrap_in_quotes wrap the string into quotes
+#' @param assignment character assign the string to a variable
+#'
 #' @export
 #'
-to_script <- function(string) {
+to_script <- function(string, wrap_in_quotes = F, assignment = NULL) {
   id <- rstudioapi::getSourceEditorContext()$id
+
+  if (wrap_in_quotes)
+    string <- paste0('"', string, '"')
+  string <- paste0(string, collapse = ", ")
+  if (!is.null(assignment))
+    paste0(assignment, " <- ", string)
+
   rstudioapi::insertText(text = string, id = id)
 }
