@@ -403,6 +403,42 @@ str_detect_any <- function(vec, pattern) {
 }
 
 
+#' Title
+#'
+#' @param path filepath
+#' @param pattern,replacement as in str_replace
+#' @param walkthrough walk through each matching line and decide
+#' @param writeout write to file
+#'
+#' @return the modified string
+#' @export
+str_replace_in_file <- function(path, pattern, replacement, walkthrough = F, writeout = F) {
+  string <- readLines(path)
+
+  strsubset <- str_subset(string, pattern)
+  if (!writeout){
+    cat("original---------------------------\n")
+    print(strsubset)
+    print("# ---------------------------------------------------------- #
+    # new ----
+    # ---------------------------------------------------------- #")
+    print(str_replace_all(strsubset, pattern, replacement))
+  }
+
+  do_replace <- logical(length(strsubset))
+  if (walkthrough) {
+    for (i in seq_along(do_replace)) {
+      do_replace[i] <- readline(paste0("replace in: ", strsubset[i]))
+    }
+  strsubset[do_replace] <- str_replace_all(strsubset[do_replace], pattern, replacement)
+  string[str_detect(pattern)] <- strsubset
+  }
+
+  if(writeout)
+    writeLines(string, path)
+  attr(string, "do_replace") <- do_replace
+  return(string)
+}
 
 
 
