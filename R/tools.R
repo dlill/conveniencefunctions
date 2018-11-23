@@ -2,6 +2,9 @@
 
 # R -e 'devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = F)'
 
+
+# check2sink ----
+
 #' Write the output of the check to a file
 #'
 #' @param path where the output should be sunk to
@@ -13,7 +16,48 @@ check2sink <- function(path = "check.txt") {
   sink()
 }
 
+# diff ----
 
+#' Compare two strings in meld
+#'
+#' @param string1,string2,string3 strings to compare
+#' @param filenames dummy filenames
+#' @param do_unlink remove the files
+#'
+#' @return side-effect
+#' @export
+#'
+#' @family meld-functions
+#' @examples
+#' meld_functions(lm, glm)
+meld_strings <- function(string1, string2, string3 = NULL, filenames = "dummymeldcomparison", do_unlink = T) {
+  writeLines(string1, paste0(filenames, "1.txt"))
+  writeLines(string2, paste0(filenames, "2.txt"))
+  if (!is.null(string3))
+    writeLines(string3, paste0(filenames, "3.txt"))
+  filenumbers <- switch(is.null(string3), "TRUE" = 1:2, "FALSE" = 1:3)
+  system2("meld", paste0(filenames, filenumbers, ".txt"), wait = F)
+  if (do_unlink) {
+    Sys.sleep(2)
+    unlink(paste0(filenames, filenumbers, ".txt"))
+  }
+}
+
+#' meld-diff two functions
+#'
+#' @param function1,function2
+#'
+#' @return side-effect
+#' @export
+#'
+#' @family meld-functions
+#' @examples
+#' meld_functions(lm, glm)
+meld_functions <- function(function1, function2, filenames = "dummymeldcomparison", do_unlink = T) {
+  string1 <- capture.output(print(function1))
+  string2 <- capture.output(print(function2))
+  meld_strings(string1, string2, filenames = filenames ,do_unlink = do_unlink)
+}
 
 # system/file interactions ----
 
