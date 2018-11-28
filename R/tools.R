@@ -2,6 +2,9 @@
 
 # R -e 'devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = F)'
 
+
+# check2sink ----
+
 #' Write the output of the check to a file
 #'
 #' @param path where the output should be sunk to
@@ -13,7 +16,48 @@ check2sink <- function(path = "check.txt") {
   sink()
 }
 
+# diff ----
 
+#' Compare two strings in meld
+#'
+#' @param string1,string2,string3 strings to compare
+#' @param filenames dummy filenames
+#' @param do_unlink remove the files
+#'
+#' @return side-effect
+#' @export
+#'
+#' @family meld-functions
+#' @examples
+#' meld_functions(lm, glm)
+meld_strings <- function(string1, string2, string3 = NULL, filenames = "dummymeldcomparison", do_unlink = T) {
+  writeLines(string1, paste0(filenames, "1.txt"))
+  writeLines(string2, paste0(filenames, "2.txt"))
+  if (!is.null(string3))
+    writeLines(string3, paste0(filenames, "3.txt"))
+  filenumbers <- switch(is.null(string3), "TRUE" = 1:2, "FALSE" = 1:3)
+  system2("meld", paste0(filenames, filenumbers, ".txt"), wait = F)
+  if (do_unlink) {
+    Sys.sleep(2)
+    unlink(paste0(filenames, filenumbers, ".txt"))
+  }
+}
+
+#' meld-diff two functions
+#'
+#' @param function1,function2
+#'
+#' @return side-effect
+#' @export
+#'
+#' @family meld-functions
+#' @examples
+#' meld_functions(lm, glm)
+meld_functions <- function(function1, function2, filenames = "dummymeldcomparison", do_unlink = T) {
+  string1 <- capture.output(print(function1))
+  string2 <- capture.output(print(function2))
+  meld_strings(string1, string2, filenames = filenames ,do_unlink = do_unlink)
+}
 
 # system/file interactions ----
 
@@ -192,7 +236,18 @@ runtime <- function( ... ) {
 }
 
 
-
+#' Clear the warnings-list
+#'
+#' @export
+#'
+#' @examples
+#' warning("noooo")
+#' warnings()
+#' flush_warnings()
+#' warnings()
+flush_warnings <- function() {
+  assign("last.warning", NULL, envir = baseenv())
+}
 
 # Useful vector operations ----
 
@@ -285,6 +340,26 @@ insert_values_by_name <- function(vec, values) {
 # useful stringr like functions ----
 
 
+#' Align some lines of code along a pattern
+#'
+#' @param string string
+#' @param pattern pattern
+#'
+#' @return aligned string
+#' @export
+#'
+#' @examples
+#' mystr <- 'a<- 1
+#' sdlfkjslkdjlskdfjlsjdkjslkd<-2'
+#' str_align(mystr)
+str_align <- function(string, pattern = "<-") {
+  split1 <- str_split(string, "\\n", simplify = T)
+  mysplit <- str_split(split1, pattern, simplify = T)
+  len1 <- max(str_length(mysplit[,1]))
+  aligned <- sprintf(paste0("%-", len1, "s", pattern, "%s"), mysplit[,1], mysplit[,2])
+  paste(aligned, collapse = "\n")
+}
+
 #' Escape all special characters in a string
 #'
 #' @param string string
@@ -372,6 +447,42 @@ str_detect_any <- function(vec, pattern) {
 }
 
 
+#' Title
+#'
+#' @param path filepath
+#' @param pattern,replacement as in str_replace
+#' @param walkthrough walk through each matching line and decide
+#' @param writeout write to file
+#'
+#' @return the modified string
+#' @export
+str_replace_in_file <- function(path, pattern, replacement, walkthrough = F, writeout = F) {
+  string <- readLines(path)
+
+  strsubset <- str_subset(string, pattern)
+  if (!writeout){
+    cat("original---------------------------\n")
+    print(strsubset)
+    print("# ---------------------------------------------------------- #
+    # new ----
+    # ---------------------------------------------------------- #")
+    print(str_replace_all(strsubset, pattern, replacement))
+  }
+
+  do_replace <- logical(length(strsubset))
+  if (walkthrough) {
+    for (i in seq_along(do_replace)) {
+      do_replace[i] <- readline(paste0("replace in: ", strsubset[i]))
+    }
+  strsubset[do_replace] <- str_replace_all(strsubset[do_replace], pattern, replacement)
+  string[str_detect(pattern)] <- strsubset
+  }
+
+  if(writeout)
+    writeLines(string, path)
+  attr(string, "do_replace") <- do_replace
+  return(string)
+}
 
 
 
@@ -395,8 +506,7 @@ funnames_in_package <- function(package, as_namespace = F) {
   wup %>%
     str_escape %>%
     paste(collapse = "|") %>%
-    paste0("\b(", ., ")\b") %>%
-    cat
+    paste0("\\b(", ., ")\\b")
   }
 
 

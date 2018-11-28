@@ -146,7 +146,6 @@ getConditions.tbl_df <- function(model, hypothesis = 1) {
 #' @param x dMod.frame
 #' @param hypothesis 1
 #' @param index going to as.parvec.parframe
-#'
 #' @importFrom dMod as.parvec
 #'
 #' @export
@@ -622,7 +621,7 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
 
 
 
-# Experimenting with as.datalist
+# Experimenting with as.datalist ----
 
 #' cf_as.datalist
 #'

@@ -2,3 +2,6 @@
 #' @export
 plotly::ggplotly
 
+#' @importFrom dMod getConditions
+#' @export
+dMod::getConditions

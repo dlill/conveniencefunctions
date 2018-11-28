@@ -4,6 +4,7 @@
 \name{reexports}
 \alias{reexports}
 \alias{ggplotly}
+\alias{getConditions}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -11,6 +12,8 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
+  \item{dMod}{\code{\link[dMod]{getConditions}}}
+
   \item{plotly}{\code{\link[plotly]{ggplotly}}}
 }}
 
