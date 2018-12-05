@@ -53,13 +53,53 @@ meld_strings <- function(string1, string2, string3 = NULL, filenames = "dummymel
 #' @family meld-functions
 #' @examples
 #' meld_functions(lm, glm)
-meld_functions <- function(function1, function2, filenames = "dummymeldcomparison", do_unlink = T) {
+meld_functions <- function(function1, function2, filenames = "dummymeldcomparison", do_unlink = T, do_trim = F) {
   string1 <- capture.output(print(function1))
   string2 <- capture.output(print(function2))
+  if (do_trim) {
+    string1 <- str_trim(string1)
+    string2 <- str_trim(string2)
+  }
   meld_strings(string1, string2, filenames = filenames ,do_unlink = do_unlink)
 }
 
+
+#' meld 2 folders
+#'
+#' @param folder1,folder2  paths
+#' @export
+#'
+meld_folders <- function(folder1, folder2) {
+  system2("meld", c(folder1, folder2))
+}
+
+
 # system/file interactions ----
+
+#' Relative path between two absolute paths
+#'
+#' @param from,to absPaths
+#'
+#' @return relPath
+#' @export
+#'
+#' @examples
+#' relPath_from_1_to_2("~/test", "/usr/local")
+relPath_from_1_to_2 <- function(from, to) {
+  from <- path.expand(from)
+  to <- path.expand(to)
+
+  split1 <- str_split(from, "/", simplify = T) %>% `dim<-`(NULL)
+  split2 <- str_split(to, "/", simplify = T) %>% `dim<-`(NULL)
+
+  minlen <- min(c(length(split1), length(split2)))
+  root <- map2_lgl(split1[1:minlen], split2[1:minlen], ~.x == .y) %>% cumsum %>% max
+
+  backwards <- rep("../", length(split1) - root) %>% paste0(collapse = "")
+  forwards <- split2[-c(1:root)] %>% paste0("/") %>% paste0(collapse = "")
+
+  return(paste0(backwards, forwards))
+}
 
 #' remove the document name from a document path
 #'
