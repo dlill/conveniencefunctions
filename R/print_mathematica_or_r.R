@@ -161,6 +161,31 @@ print_r.eqnlist2addReaction_pipe <- function(reactions){
 
 
 
+#' Print data.frame as tribble-call
+#'
+#' @param df
+#' @param FLAGround round numeric columns
+#'
+#' @return insertion into your script
+#' @export
+#'
+#' @examples
+#' print_r.df2tribble(mydf)
+print_r.df2tribble <- function(df, FLAGround = F) {
+  nm <- names(df)
+  nm <- paste0("~", nm) %>% paste0(collapse = ", ")
+  df <- as.data.frame(df)
+  df[map_lgl(df, is.character)] <- map(df[map_lgl(df, is.character)], ~paste0("'", .x, "'"))
+  if(FLAGround)
+    df[map_lgl(df, is.numeric)] <- map(df[map_lgl(df, is.numeric)], ~round(.x, 2))
+
+  rows <- map_chr(1:nrow(df), ~paste0(df[.x,, drop = TRUE], collapse = ", ") )
+
+  string <- c(nm, rows)
+  paste0(string, collapse = ",\n") %>%
+    paste0("tribble(", ., ")\n\n\n") %>%
+    rstudioapi::insertText()
+}
 
 
 # R Console ----
