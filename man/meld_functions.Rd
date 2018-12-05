@@ -5,7 +5,7 @@
 \title{meld-diff two functions}
 \usage{
 meld_functions(function1, function2, filenames = "dummymeldcomparison",
-  do_unlink = T)
+  do_unlink = T, do_trim = F)
 }
 \arguments{
 \item{function1, function2}{}
