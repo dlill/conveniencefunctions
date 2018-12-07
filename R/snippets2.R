@@ -4,7 +4,7 @@
 #' @export
 #'
 insert_header <- function(){
-  paste0("rm(list = ls())",                                             "\n",
+  header <- paste0("rm(list = ls())",                                             "\n",
          "library(conveniencefunctions)",                               "\n",
          "devtools::load_all('~/PROJTOOLS/IQRtoolsGITHUB/IQRtools/')",  "\n",
          "development_path <- '~/PROJTOOLS/IQRtoolsGITHUB/99_Development_Environment/QSP/sysdMod-files/active-development'", "\n",
@@ -15,8 +15,9 @@ insert_header <- function(){
          "projwd <- '", rstudioapi::getActiveProject(),                  "'\n",
          "scriptwd <- '", dirname(rstudioapi::getActiveDocumentContext()$path), "'\n",
          "setwd(scriptwd)", "\n",
-         "load('workspace.rda')","\n") %>% cat
-  invisible(NULL)
+         "load('workspace.rda')","\n")
+  header %>% cat
+  invisible(header)
 }
 
 
