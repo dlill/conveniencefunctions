@@ -4,7 +4,7 @@
 \alias{insert_header}
 \title{Print a header to your console}
 \usage{
-insert_header()
+insert_header(insert_in_script = T)
 }
 \description{
 Print a header to your console

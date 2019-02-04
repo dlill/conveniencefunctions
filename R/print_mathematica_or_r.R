@@ -188,6 +188,23 @@ print_r.df2tribble <- function(df, FLAGround = F) {
 }
 
 
+#' Print a string with comments into your script
+#'
+#' @param vec
+#'
+#' @return
+#' @export
+#'
+#' @examples
+print_rscript_comment <- function(vec) {
+  vec %>%
+    paste0("# ", 1:length(.)," ", .) %>%
+    {sprintf(paste0("%-", max(str_length(.))+3, "s #"),.)} %>%
+    paste0(collapse = "\n") %>%
+    rstudioapi::insertText()
+}
+
+
 # R Console ----
 
 #' "tibble-print" a matrix

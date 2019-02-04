@@ -3,7 +3,7 @@
 #'
 #' @export
 #'
-insert_header <- function(){
+insert_header <- function(insert_in_script = T){
   header <- paste0(
     "# ---------------------------------------------------------- #", "\n",
     "# Purpose ----",                                                   "\n",
@@ -27,7 +27,8 @@ insert_header <- function(){
     "scriptwd <- '", dirname(rstudioapi::getActiveDocumentContext()$path), "'\n",
     "setwd(scriptwd)", "\n",
     "load('workspace.rda')","\n")
-  header %>% cat
+  if (insert_in_script)
+    rstudioapi::insertText(header)
   return(invisible(header))
 }
 
@@ -51,6 +52,9 @@ to_script <- function(string, wrap_in_quotes = F, assignment = NULL) {
 
   rstudioapi::insertText(text = string, id = id)
 }
+
+
+
 
 
 

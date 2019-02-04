@@ -453,6 +453,233 @@ fitErrorModel_plot <- function(data) {
 
 }
 
+#' Plot a list data points
+#' @export
+plotData  <- function(data,...) {
+  UseMethod("plotData", data)
+}
+
+#' Plot a list of model predictions and a list of data points in a combined plot
+#' @export
+plotCombined <- function(prediction,...) {
+  UseMethod("plotCombined", prediction)
+}
+
+
+#' Title
+#'
+#' @param data
+#' @param ...
+#' @param scales
+#' @param facet
+#' @param transform
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL) {
+
+  rownames_to_condition <- function(covtable) {
+    out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
+    out <- out[!duplicated(names(out))]
+    return(out)}
+  covtable <- rownames_to_condition(covariates(data))
+
+  data <- lbind(data)
+  data <- base::merge(data, covtable, by = "condition", all.x = T)
+  data <- as.data.frame(dplyr::filter(data, ...), stringsAsFactors = F)
+  data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
+
+  if (!is.null(transform)) data <- coordTransform(data, transform)
+
+  if (facet == "wrap")
+    p <- ggplot(data, aes(x = time, y = value, ymin = value - sigma,
+                          ymax = value + sigma, group = condition, color = condition, pch = bloq)) +
+    facet_wrap(~name, scales = scales)
+  if (facet == "grid")
+    p <- ggplot(data, aes(x = time, y = value, ymin = value - sigma,
+                          ymax = value + sigma, pch = bloq)) +
+    facet_grid(name ~ condition, scales = scales)
+
+  p <- p + geom_point() + geom_errorbar(width = 0) +
+    scale_shape_manual(name = "BLoQ", values = c(yes = 4, no = 19))
+
+  if (all(data$bloq %in% "no"))
+    p <- p + guides(shape = FALSE)
+
+  p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
+
+  attr(p, "data") <- data
+  return(p)
+
+}
+
+#' Title
+#'
+#' @param dMod.frame
+#' @param hypothesis
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
+
+  dots <- substitute(alist(...))
+  if(is.character(hypothesis)) hypothesis <- which(dMod.frame$hypothesis == hypothesis)
+
+  plotData.datalist(dMod.frame[["data"]][[hypothesis]], ...) +
+    ggtitle(label = paste0(dMod.frame[["hypothesis"]][[hypothesis]], "\n",
+                           paste0(paste(names(dots), "=", dots )[-1], collapse = "\n")) )
+}
+
+
+#' Title
+#'
+#' @param model
+#' @param hypothesis
+#' @param index
+#' @param ...
+#' @param plotErrorBands
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
+
+  dots <- substitute(alist(...))
+  message("If you want to subset() the plot, specify hypothesis AND index")
+  if(is.character(hypothesis)) hypothesis <- which(model$hypothesis == hypothesis)
+
+
+  data <- model[["data"]][[hypothesis]]
+  prediction <- title <- NULL
+  if (is.null(model[["parframes"]])) {
+    prediction <- model[["prd"]][[hypothesis]](model[["times"]][[hypothesis]],
+                                               model[["pars"]][[hypothesis]],
+                                               deriv = F,
+                                               fixed = model[["fixed"]][[hypothesis]])
+    title <- paste(model[["hypothesis"]][[hypothesis]], "initiated with predefined (probably random) parameters")
+  }
+
+  if (!is.null(model[["parframes"]])) {
+    myparvec <- as.parvec(model[["parframes"]][[hypothesis]], index = index)
+    prediction <- model[["prd"]][[hypothesis]](model[["times"]][[hypothesis]],
+                                               pars = myparvec,
+                                               deriv = F,
+                                               fixed = model[["fixed"]][[hypothesis]])
+    myvalue <- model[["parframes"]][[hypothesis]][index, "value"]
+    title <- paste0(model[["hypothesis"]][[hypothesis]], "\n",
+                    "value = ", round(model[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
+                    paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))
+  }
+
+
+
+  myplot <- plotCombined.prdlist(prediction, data, ...) +
+    ggtitle(label = title)
+
+  if (plotErrorBands) {
+    predicition_with_error <- NULL
+    if (!is.null(model[["e"]][[hypothesis]])){
+      predicition_with_error <- dMod:::as.data.frame.prdlist(prediction, data = data, errfn = model[["e"]][[hypothesis]])
+      predicition_with_error <- subset(predicition_with_error, ...)
+    }
+    myplot <- myplot +
+      geom_ribbon(data = predicition_with_error, alpha = 0.15, size = 0)
+  }
+  return(myplot)
+}
+
+#' Title
+#'
+#' @param prediction
+#' @param data
+#' @param ...
+#' @param scales
+#' @param facet
+#' @param transform
+#' @param aesthetics
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
+
+  mynames <- c("time", "name", "value", "sigma", "condition")
+  covtable <- NULL
+
+  if (!is.null(data)) {
+    rownames_to_condition <- function(covtable) {
+      out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
+      out <- out[!duplicated(names(out))]
+      return(out)}
+    covtable <- rownames_to_condition(covariates(data))
+
+    data <- lbind(data)
+    data <- base::merge(data, covtable, by = "condition", all.x = T)
+    data <- dplyr::filter(data, ...)
+    data <- as.data.frame(data, stringsAsFactors = F)
+    data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
+
+    if (!is.null(transform)) data <- coordTransform(data, transform)
+  }
+
+  if (!is.null(prediction)) {
+    prediction <- cbind(wide2long(prediction), sigma = NA)
+    if (!is.null(data)) prediction <- base::merge(prediction, covtable, by = "condition", all.x = T)
+    prediction <- as.data.frame(dplyr::filter(prediction, ...), stringsAsFactors = F)
+
+    if (!is.null(transform)) prediction <- coordTransform(prediction, transform)
+  }
+
+  total <- rbind(prediction[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
+
+
+  if (facet == "wrap"){
+    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", group = "condition", color = "condition")
+    aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
+    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name, scales = scales)}
+  if (facet == "grid"){
+    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma")
+    aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
+    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_grid(name ~ condition, scales = scales)}
+  if (facet == "wrap_plain"){
+    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma")
+    aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
+    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
+
+  if (!is.null(prediction))
+    p <- p +  geom_line(data = prediction)
+
+  if (!is.null(data))
+    p <- p +
+    geom_point(data = data, aes(pch = bloq)) +
+    geom_errorbar(data = data, width = 0) +
+    scale_shape_manual(name = "BLoQ", values = c(yes = 4, no = 19))
+
+  if (all(data$bloq %in% "no"))
+    p <- p + guides(shape = FALSE)
+
+  p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
+
+
+  attr(p, "data") <- list(data = data, prediction = prediction)
+  return(p)
+
+  attr(p, "data") <- list(data = data, prediction = prediction)
+  return(p)
+
+}
+
+
+# unlink dMod----
+
+
 
 #' Unlink standard dMod-generated files
 #'
@@ -464,9 +691,6 @@ fitErrorModel_plot <- function(data) {
 unlink_dMod <- function(endings = NULL) {
   unlink(paste0("*.", c("c", "o", endings)))
 }
-
-
-
 
 
 
