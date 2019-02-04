@@ -12,13 +12,10 @@ Depends:
   dMod,
   tidyverse
 Imports:
-  magrittr,
   stringr,
   plotly,
   rlang,
   dplyr,
-  git2r,
-  beepr,
-  mailR
+  git2r
 RoxygenNote: 6.1.0
 Suggests: testthat

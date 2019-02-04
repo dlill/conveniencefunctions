@@ -15,7 +15,7 @@ d2d2r <- function(setup_file = NULL,
   if (is.null(setup_file) & (is.null(model_def_file)| is.null(data_files))) stop("If setup_file is not provided, model_def_file and data_files must be provided")
 
   if (!is.null(setup_file)) {
-    modelpath <- setup_file %>% str_split(.Platform$file.sep, simplify = T) %>% {.[1:(length(.)-1)]} %>% as.list %>% do.call(file.path,.)
+    modelpath <- dirname(setup_file)
   } else {
     modelpath <- model_def_file %>% str_split(.Platform$file.sep, simplify = T) %>% {.[1:(length(.)-2)]} %>% as.list %>% do.call(file.path,.)
   }
@@ -91,7 +91,7 @@ d2d2r <- function(setup_file = NULL,
 
 
   # 3. Build the odemodel/load it, if it exists already
-  # odemodelname <- str_replace_all(model_def_file, structure(c("", "", ""), names = c(modelpath, "/", "\\.def")))
+  odemodelname <- str_replace_all(model_def_file, structure(c("", "", ""), names = c(modelpath, "/", "\\.def")))
   # odemodel_rds <- str_replace_all(model_def_file, structure(c(".rds"), names = c("\\.def$")))
   # if (!file.exists(odemodel_rda)) {
     myodemodel <-  odemodel(f, modelname = odemodelname)

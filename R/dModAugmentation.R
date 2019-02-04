@@ -473,25 +473,6 @@ unlink_dMod <- function(endings = NULL) {
 
 # runbg ----
 
-#' Wait for runbg
-#'
-#' It's better to use \code{runbg(..., wait = T)}, if you want to wait for the results anyway
-#'
-#' But this was nice for practicing enquo()
-#'
-#' @param job a runbg object
-#' @param delta_t in seconds, the time interval between job$check()s
-#'
-#' @importFrom rlang eval_tidy quo enquo UQ
-#' @importFrom beepr beep
-#' @export
-wait_for_runbg <- function(job, delta_t=5) {
-
-  while(!rlang::eval_tidy(rlang::quo("[["(UQ(rlang::enquo(job)),"check")() )))
-    Sys.sleep(delta_t)
-  beepr::beep(8)
-
-}
 
 
 

@@ -4,20 +4,31 @@
 #' @export
 #'
 insert_header <- function(){
-  header <- paste0("rm(list = ls())",                                             "\n",
-         "library(conveniencefunctions)",                               "\n",
-         "devtools::load_all('~/PROJTOOLS/IQRtoolsGITHUB/IQRtools/')",  "\n",
-         "development_path <- '~/PROJTOOLS/IQRtoolsGITHUB/99_Development_Environment/QSP/sysdMod-files/active-development'", "\n",
-         "sysdMod_files <- list.files(development_path, pattern = 'syspharm')", "\n",
-         "walk(sysdMod_files, ~ source(file.path(development_path,.x)))",  "\n",
-         "#library(IQRtools)",                                            "\n",
-         "currentwd <- '", getwd(),                                      "'\n",
-         "projwd <- '", rstudioapi::getActiveProject(),                  "'\n",
-         "scriptwd <- '", dirname(rstudioapi::getActiveDocumentContext()$path), "'\n",
-         "setwd(scriptwd)", "\n",
-         "load('workspace.rda')","\n")
+  header <- paste0(
+    "# ---------------------------------------------------------- #", "\n",
+    "# Purpose ----",                                                   "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "\n",
+    "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# Header ----",                                                   "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "rm(list = ls())",                                             "\n",
+    "library(conveniencefunctions)",                               "\n",
+    "currentwd <- '", getwd(),                                      "'\n",
+    "projwd <- '", rstudioapi::getActiveProject(),                  "'\n",
+    "scriptwd <- '", dirname(rstudioapi::getActiveDocumentContext()$path), "'\n",
+    "setwd(scriptwd)", "\n",
+    "load('workspace.rda')","\n")
   header %>% cat
-  invisible(header)
+  return(invisible(header))
 }
 
 
