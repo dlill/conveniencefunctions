@@ -459,11 +459,21 @@ plotData  <- function(data,...) {
   UseMethod("plotData", data)
 }
 
-#' Plot a list of model predictions and a list of data points in a combined plot
+
+#' Quickly plot a tibble
+#'
 #' @export
-plotCombined <- function(prediction,...) {
-  UseMethod("plotCombined", prediction)
+#'
+#' @examples
+plotAsDatalist <- function(x, ..., smooth = T, se = FALSE) {
+  myplot <- x %>% as.data.frame() %>% as.datalist()
+  myplot <- plotData(myplot, ...)
+  if(smooth)
+    myplot <- myplot + geom_smooth(se = se)
+  myplot
 }
+
+
 
 
 #' Title
@@ -478,7 +488,7 @@ plotCombined <- function(prediction,...) {
 #' @export
 #'
 #' @examples
-plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL) {
+plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
 
   rownames_to_condition <- function(covtable) {
     out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
@@ -493,16 +503,29 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
 
   if (!is.null(transform)) data <- coordTransform(data, transform)
 
-  if (facet == "wrap")
-    p <- ggplot(data, aes(x = time, y = value, ymin = value - sigma,
-                          ymax = value + sigma, group = condition, color = condition, pch = bloq)) +
-    facet_wrap(~name, scales = scales)
-  if (facet == "grid")
-    p <- ggplot(data, aes(x = time, y = value, ymin = value - sigma,
-                          ymax = value + sigma, pch = bloq)) +
-    facet_grid(name ~ condition, scales = scales)
+  if (facet == "wrap"){
+    aes0 <- list(x = "time",
+                 y = "value",
+                 ymin = "value - sigma",
+                 ymax = "value + sigma",
+                 group = "condition",
+                 color = "condition",
+                 pch = "bloq")
+    aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
+    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name, scales = scales)}
+  if (facet == "grid"){
+    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", pch = "bloq")
+    aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
+    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_grid(name ~ condition, scales = scales)}
+  if (facet == "wrap_plain"){
+    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", pch = "bloq")
+    aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
+    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
 
-  p <- p + geom_point() + geom_errorbar(width = 0) +
+  if (!is.null(data))
+    p <- p +
+    geom_point(data = data, aes(pch = bloq)) +
+    geom_errorbar(data = data, width = 0) +
     scale_shape_manual(name = "BLoQ", values = c(yes = 4, no = 19))
 
   if (all(data$bloq %in% "no"))
@@ -533,6 +556,13 @@ plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
   plotData.datalist(dMod.frame[["data"]][[hypothesis]], ...) +
     ggtitle(label = paste0(dMod.frame[["hypothesis"]][[hypothesis]], "\n",
                            paste0(paste(names(dots), "=", dots )[-1], collapse = "\n")) )
+}
+
+
+#' Plot a list of model predictions and a list of data points in a combined plot
+#' @export
+plotCombined <- function(prediction,...) {
+  UseMethod("plotCombined", prediction)
 }
 
 
@@ -667,9 +697,6 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
 
   p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
 
-
-  attr(p, "data") <- list(data = data, prediction = prediction)
-  return(p)
 
   attr(p, "data") <- list(data = data, prediction = prediction)
   return(p)

@@ -24,6 +24,8 @@ insert_header <- function(insert_in_script = T){
     "library(conveniencefunctions)",                               "\n",
     "currentwd <- '", getwd(),                                      "'\n",
     "projwd <- '", rstudioapi::getActiveProject(),                  "'\n",
+    "datawd <- '", file.path(rstudioapi::getActiveProject(), "Data"),"'\n",
+    "outputswd <- '", file.path(rstudioapi::getActiveProject(), "Outputs"),"'\n",
     "scriptwd <- '", dirname(rstudioapi::getActiveDocumentContext()$path), "'\n",
     "setwd(scriptwd)", "\n",
     "load('workspace.rda')","\n")

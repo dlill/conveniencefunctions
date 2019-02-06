@@ -5,7 +5,7 @@
 \title{Title}
 \usage{
 \method{plotData}{datalist}(data, ..., scales = "free", facet = "wrap",
-  transform = NULL)
+  transform = NULL, aesthetics = NULL)
 }
 \arguments{
 \item{transform}{}
