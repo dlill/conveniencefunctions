@@ -126,6 +126,34 @@ thisdocsetwd <- function() {
 }
 
 
+#' Sequential file numbering
+#'
+#' Create filenames myfile001.png myfile002.png ... automatically
+#'
+#' @param basename,fileext,filepath strings that are concatenated like this: paste0(filepath, basename, NUMBER, fileext)
+#'
+#' @author dww from stackoverflow https://stackoverflow.com/questions/54752246/automatic-file-numbering-in-ggsave-as-in-png
+#' @return character
+#' @export
+#'
+#' @examples
+#' nextfile()
+next_file <-  function(basename = 'plots', fileext = 'png', filepath = '.'){
+  old.fnames = grep(paste0(basename,' \\d+\\.', fileext,'$'),
+                    list.files(filepath), value = T)
+  lastnum = gsub(paste0(basename,' (\\d+)\\.', fileext,'$'), '\\1', old.fnames)
+  if (!length(lastnum)) {
+    lastnum = 1
+  } else {
+    lastnum = sort(as.integer(lastnum),T)[1] + 1L
+  }
+  return(paste0(basename, sprintf('%03i', lastnum), '.', fileext))
+}
+
+
+
+
+
 # Analysis ----
 
 #' str with max.level = 0

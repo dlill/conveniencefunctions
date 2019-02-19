@@ -206,6 +206,35 @@ d2d2dMod_data <- function(data, keep = NULL) {
 
 # Clemens Identifiability test ----
 
+
+#' Turn a fit into a 2nd order taylor approximation
+#'
+#' @param fit output from trust: list with value gradient hessian and argument
+#'
+#' @return objfun
+#' @export
+#'
+fit2obj <- function(fit) {
+
+    outfn <- function(pars, fixed = NULL, ...) {
+
+    # if (!identical(names(pars), names(fit$argument)))
+    #   stop("Parameters have not the same order as in the fit, please rearrange")
+    pars <- c(pars, fixed)[names(fit$argument)]
+    nm <- setdiff(names(pars), names(fixed))
+    value <- fit$value + t(fit$gradient) %*% (pars-fit$argument) + 1/2 * t(pars - fit$argument) %*% fit$hessian %*% (pars - fit$argument)
+    gradient <- fit$gradient + fit$hessian %*% (pars - fit$argument)
+    gradient <- gradient[,1, drop = TRUE]
+
+    out <- objlist(value, gradient[nm], fit$hessian[nm,nm])
+    attr(out, "data") <- value
+    return(out)
+  }
+  class(outfn) <- c("objfn", "fn")
+  return(outfn)
+}
+
+
 #' Clemens Kreutz Quick identifiability test
 #'
 #' @param model dMod.frame
@@ -277,9 +306,9 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
 
     ndata <- get("data", environment(obj))
     if(is.function(ndata)) ndata <- NULL
-      else ndata <- ndata[[cond]] %>% nrow
+    else ndata <- ndata[[cond]] %>% nrow
     if(!is.null(ndata)) reduced_value <- myvalues[["value"]]/ndata
-      else reduced_value <- NULL
+    else reduced_value <- NULL
 
     attrib <- myvalues %>% attributes()
 
@@ -298,7 +327,7 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
   # if(!is.null(constr2)) out2 <- c(condition = "Constraint 2", constr2(pars = pars, ...) %>% .[names(.)!="hessian"]) %>%
   #   lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
 
- out <- bind_rows(out, out1)#, out2)
+  out <- bind_rows(out, out1)#, out2)
 
 }
 
@@ -423,7 +452,7 @@ prepare_argpath <- function(fit, ncluster = 1) {
 #'
 #' @export
 plot_argpath <- function(argpath) {argpath %>% ggplot(aes(value, parameter, frame = iteration, color = cluster)) +
-  geom_point()
+    geom_point()
 }
 
 
@@ -512,20 +541,19 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
                  color = "condition",
                  pch = "bloq")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
-    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name, scales = scales)}
+    p <- ggplot(data, do.call("aes_string", aesthetics)) + facet_wrap(~name, scales = scales)}
   if (facet == "grid"){
     aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", pch = "bloq")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
-    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_grid(name ~ condition, scales = scales)}
+    p <- ggplot(data, do.call("aes_string", aesthetics)) + facet_grid(name ~ condition, scales = scales)}
   if (facet == "wrap_plain"){
     aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", pch = "bloq")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
-    p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
+    p <- ggplot(data, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
 
-  if (!is.null(data))
-    p <- p +
-    geom_point(data = data, aes(pch = bloq)) +
-    geom_errorbar(data = data, width = 0) +
+  p <- p +
+    geom_point() +
+    geom_errorbar(width = 0) +
     scale_shape_manual(name = "BLoQ", values = c(yes = 4, no = 19))
 
   if (all(data$bloq %in% "no"))
@@ -781,9 +809,9 @@ as.datalist.NULL <- function( ... ) {
 cfn <- function(p1,p2) {
   if(is.null(p1)|is.null(p2)) {
     return(NULL)
-    } else {
-  dMod:::`*.fn`(p1,p2)
-    }
+  } else {
+    dMod:::`*.fn`(p1,p2)
+  }
 }
 
 
