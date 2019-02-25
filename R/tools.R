@@ -130,7 +130,7 @@ thisdocsetwd <- function() {
 #'
 #' Create filenames myfile001.png myfile002.png ... automatically
 #'
-#' @param basename,fileext,filepath strings that are concatenated like this: paste0(filepath, basename, NUMBER, fileext)
+#' @param basename,fileext,filepath,addition strings that are concatenated like this: paste0(filepath, basename, NUMBER, addition, fileext)
 #'
 #' @author dww from stackoverflow https://stackoverflow.com/questions/54752246/automatic-file-numbering-in-ggsave-as-in-png
 #' @return character
@@ -138,16 +138,28 @@ thisdocsetwd <- function() {
 #'
 #' @examples
 #' nextfile()
-next_file <-  function(basename = 'plots', fileext = 'png', filepath = '.'){
-  old.fnames = grep(paste0(basename,' \\d+\\.', fileext,'$'),
+next_file <-  function(addition = "", base_name = '', fileext = 'png', filepath = '.', purge = FALSE){
+
+  if (exists(".base_name", .GlobalEnv) & str_length(base_name) == 0){
+    base_name <- .base_name
+  }
+
+  if (purge) {
+    files <- list.files(filepath, paste0(base_name,'\\d+.*\\.', fileext,'$'))
+    unlink(file.path(filepath, files))
+    return(TRUE)
+  }
+
+
+  old.fnames = grep(paste0(base_name,'\\d+.*\\.', fileext,'$'),
                     list.files(filepath), value = T)
-  lastnum = gsub(paste0(basename,' (\\d+)\\.', fileext,'$'), '\\1', old.fnames)
+  lastnum = gsub(paste0(base_name,'(\\d+).*\\.', fileext,'$'), '\\1', old.fnames)
   if (!length(lastnum)) {
     lastnum = 1
   } else {
     lastnum = sort(as.integer(lastnum),T)[1] + 1L
   }
-  return(paste0(basename, sprintf('%03i', lastnum), '.', fileext))
+  return(paste0(base_name, sprintf('%03i', lastnum), addition, '.', fileext))
 }
 
 

@@ -1,3 +1,54 @@
+# ---------------------------------------------------------- #
+# Parframe-class ----
+# ---------------------------------------------------------- #
+
+#' Add step column and fitrank
+#'
+#' @param myparframe a parframe
+#' @param tol integer for steps.
+#'
+#' @return the parframe with columns fitrank and step
+#' @export
+add_stepcolumn <- function(myparframe, tol = 1) {
+  steps <- dMod:::stepDetect(myparframe$value, tol)
+  bla <- 1:nrow(myparframe)
+  stepcol <- cut(bla, steps-0.1, 1:(length(steps)-1), TRUE) %>% as.character() %>% as.numeric()
+  fitrank <- 1:length(stepcol)
+  mydf <- cbind(fitrank = fitrank, step  = stepcol, as.data.frame(myparframe))
+  return(parframe(mydf, parameters = attr(myparframe, "parameters")))
+}
+
+# ---------------------------------------------------------- #
+# Data ----
+# ---------------------------------------------------------- #
+
+
+#' create vector of times from min to max
+#'
+#' @param data datalist
+#'
+#' @return
+#' @export
+#'
+#' @examples
+datatimes <- function(data, n = 500){
+  data %>% as.data.frame() %>% .$time %>% range %>% setNames(c("from", "to")) %>% c(length.out = n) %>% as.list %>% do.call(seq,.)
+}
+
+
+#' Title
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+as.datalist.datalist <- function(x,...){
+  dMod:::as.datalist.list(x,...)
+}
+
 # Compare ----
 
 #' Setdiff of names
@@ -204,8 +255,9 @@ d2d2dMod_data <- function(data, keep = NULL) {
   return(out)
 }
 
-# Clemens Identifiability test ----
-
+# ---------------------------------------------------------- #
+# Quadratic approximation of fit ----
+# ---------------------------------------------------------- #
 
 #' Turn a fit into a 2nd order taylor approximation
 #'
@@ -234,6 +286,7 @@ fit2obj <- function(fit) {
   return(outfn)
 }
 
+# Clemens Identifiability test ----
 
 #' Clemens Kreutz Quick identifiability test
 #'
@@ -560,7 +613,7 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
     p <- p + guides(shape = FALSE)
 
   p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
-
+  p <- p + theme_dMod() + scale_color_dMod()
   attr(p, "data") <- data
   return(p)
 
@@ -725,6 +778,7 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
 
   p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
 
+  p <- p + theme_dMod() + scale_color_dMod()
 
   attr(p, "data") <- list(data = data, prediction = prediction)
   return(p)

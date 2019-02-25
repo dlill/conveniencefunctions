@@ -2,9 +2,12 @@
 % Please edit documentation in R/snippets2.R
 \name{insert_header}
 \alias{insert_header}
+\alias{insert_exit}
 \title{Print a header to your console}
 \usage{
 insert_header(insert_in_script = T)
+
+insert_exit(insert_in_script = T)
 }
 \description{
 Print a header to your console

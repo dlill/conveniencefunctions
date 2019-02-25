@@ -12,6 +12,12 @@ insert_header <- function(insert_in_script = T){
     "# ", "\n",
     "# ", "\n",
     "# ", "\n",
+    "\n",
+    "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# Dependendcies (Scripts) ----",                                 "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# ", "\n",
     "# ", "\n",
     "# ", "\n",
     "# ", "\n",
@@ -22,17 +28,46 @@ insert_header <- function(insert_in_script = T){
     "# ---------------------------------------------------------- #", "\n",
     "rm(list = ls())",                                             "\n",
     "library(conveniencefunctions)",                               "\n",
-    "currentwd <- '", getwd(),                                      "'\n",
-    "projwd <- '", rstudioapi::getActiveProject(),                  "'\n",
-    "datawd <- '", file.path(rstudioapi::getActiveProject(), "Data"),"'\n",
-    "outputswd <- '", file.path(rstudioapi::getActiveProject(), "Outputs"),"'\n",
-    "scriptwd <- '", dirname(rstudioapi::getActiveDocumentContext()$path), "'\n",
-    "setwd(scriptwd)", "\n",
-    "load('workspace.rda')","\n")
+    "setwd(here())", "\n",
+    "\n",
+    'outdir <- "', paste0(str_replace(basename(rstudioapi::getActiveDocumentContext()$path), " .*$", '"'), "_outputs"), "\n",
+    "if (!dir.exists(file.path(here(), 'Outputs', outdir)))", "\n",
+    "  dir.create(outdir)", "\n",
+    "\n",
+    '.base_name <- "plots_', str_replace(basename(rstudioapi::getActiveDocumentContext()$path), "\\..*$", '"'), "\n",
+    "next_file(purge = TRUE)", "\n"
+    )
   if (insert_in_script)
     rstudioapi::insertText(header)
   return(invisible(header))
 }
+
+
+#' @export
+#' @rdname insert_header
+insert_exit <- function(insert_in_script = T){
+  exit <- paste0(
+    "# ---------------------------------------------------------- #", "\n",
+    "# Exit ----",                                                   "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    'save.image("workspace_', str_replace(basename(rstudioapi::getActiveDocumentContext()$path), "\\..*$", ''), '.rda")', "\n",
+    "unlink_dMod()" , "\n",
+    "while(dev.cur() > 1){", "\n",
+    "  dev.off()", "\n",
+    "}", "\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n"
+
+  )
+  if (insert_in_script)
+    rstudioapi::insertText(exit)
+  return(invisible(exit))
+}
+
 
 
 #' Print a text into the script
@@ -51,9 +86,9 @@ to_script <- function(string, wrap_in_quotes = F, assignment = NULL) {
   string <- paste0(string, collapse = ", ")
   if (!is.null(assignment))
     paste0(assignment, " <- ", string)
-
   rstudioapi::insertText(text = string, id = id)
 }
+
 
 
 
