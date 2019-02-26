@@ -267,7 +267,7 @@ d2d2dMod_data <- function(data, keep = NULL) {
 #' @export
 #'
 fit2obj <- function(fit) {
-
+    force(fit)
     outfn <- function(pars, fixed = NULL, ...) {
 
     # if (!identical(names(pars), names(fit$argument)))
@@ -696,11 +696,12 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
   if (plotErrorBands) {
     predicition_with_error <- NULL
     if (!is.null(model[["e"]][[hypothesis]])){
-      predicition_with_error <- dMod:::as.data.frame.prdlist(prediction, data = data, errfn = model[["e"]][[hypothesis]])
+      errorconds <- getConditions(model[["e"]][[hypothesis]])
+      predicition_with_error <- dMod:::as.data.frame.prdlist(prediction[errorconds], data = data[errorconds], errfn = model[["e"]][[hypothesis]])
       predicition_with_error <- subset(predicition_with_error, ...)
     }
     myplot <- myplot +
-      geom_ribbon(data = predicition_with_error, alpha = 0.15, size = 0)
+      geom_ribbon(aes(fill = condition), data = predicition_with_error, alpha = 0.15, size = 0) + scale_fill_dMod()
   }
   return(myplot)
 }
@@ -784,6 +785,118 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
   return(p)
 
 }
+
+
+
+#' Title
+#'
+#' @param x
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotMulti <- function(x,...) {
+  UseMethod("plotMulti", x)
+}
+
+
+#' Title
+#'
+#' @param x
+#' @param parframe_filter
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotMulti.tbl_df <- function(x, parframe_filter = NULL, ...) {
+
+  prd <- x[["prd"]][[1]]
+  times <- x[["times"]][[1]]
+  myparframe <- x[["parframes"]][[1]]
+  if (!is.null(parframe_filter)){
+    par_attributes <- attributes(myparframe)
+    myparframe <- filter(as.data.frame(myparframe), eval(parframe_filter))
+    par_attributes$row.names <- par_attributes$row.names[1:nrow(myparframe)]
+    attributes(myparframe) <-par_attributes
+  }
+  data <- x[["data"]][[1]]
+  plotMulti.prdfn(prd, times, myparframe, data, ...)
+}
+
+#' Title
+#'
+#' @param x
+#' @param times
+#' @param parframe
+#' @param data
+#' @param ...
+#' @param colorAsFactor
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotMulti.prdfn = function(x, times, parframe, data = NULL, ..., colorAsFactor = F) {
+  if (!is.null(data)) {
+    rownames_to_condition <- function(covtable) {
+      out <- cbind(condition = rownames(covtable), covtable,
+                   stringsAsFactors = F)
+      out <- out[!duplicated(names(out))]
+      return(out)
+    }
+
+
+    covtable <- rownames_to_condition(covariates(data))
+    data <- lbind(data)
+    data <- base::merge(data, covtable, by = "condition",
+                        all.x = T)
+    data <- dplyr::filter(data, ...)
+    data <- as.data.frame(data, stringsAsFactors = F)
+    data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
+  }
+
+
+  prediction = dMod:::predict.prdfn(x, times = times, pars = parframe)
+  if(!is.null(data)) {
+    prediction <- base::merge(prediction, covtable, by = "condition",
+                              all.x = T)
+    prediction <- dplyr::filter(prediction, ...)
+  }
+  p = ggplot(prediction, aes(time, value))
+  if (colorAsFactor){
+    p <- p + geom_line(aes(color = as.factor(.index), group = as.factor(.index)))
+  } else {
+    p <- p + geom_line(aes(color = .index, group = .index))
+  }
+  p <- p + facet_wrap(~ name)
+  if (!is.null(data)) {
+    p <- p + geom_point(data = data, aes(time, value), inherit.aes = F) + geom_errorbar(data = data, aes(ymin = value-sigma, ymax=value+sigma),
+                                                                                        width = 0)
+  }
+  attr(p, "data") <- list(data = data, prediction = prediction)
+  return(p)
+}
+
+#' Title
+#'
+#' @param x
+#' @param parframe_filter
+#' @param dModframe
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotMulti.parframe <- function(x, parframe_filter = NULL, dModframe, ...) {
+  dModframe$parframes[[1]] <- x
+  plotMulti.tbl_df(dModframe, parframe_filter, ...)
+}
+
 
 
 # unlink dMod----
