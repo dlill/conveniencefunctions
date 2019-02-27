@@ -155,7 +155,7 @@ print_r.eqnlist2addReaction_pipe <- function(reactions){
       paste0('  addReaction(from = "', Educt, '", to = "', Product, '", rate = "', Rate, '", description = "', Description, '") %>% ')
     })
 
-  full_chain <- paste0("\n", "reactions <- NULL %>% \n", paste0(reaction_chain, collapse = "\n"), "{.}\n")
+  full_chain <- paste0("\n", "reactions <- NULL %>% \n", paste0(reaction_chain, collapse = "\n"), "\n{.}\n")
   rstudioapi::insertText(text = full_chain)
 }
 
