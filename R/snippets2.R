@@ -46,6 +46,7 @@ insert_exit <- function(insert_in_script = T){
     "# ---------------------------------------------------------- #", "\n",
     "# Exit ----",                                                   "\n",
     "# ---------------------------------------------------------- #", "\n",
+    'setwd(here("Outputs", outdir))', "\n",
     '# save.image("workspace_', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '.rda")', "\n",
     "unlink_dMod()" , "\n",
     "while(dev.cur() > 1){", "\n",

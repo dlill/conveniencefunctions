@@ -920,105 +920,6 @@ unlink_dMod <- function(endings = NULL) {
 # compile/modelname ----
 # ---------------------------------------------------------- #
 
-#' Title
-#'
-#' @param x
-#' @param ...
-#' @param value
-#'
-#' @return
-#' @export
-#'
-#' @examples
-"modelname<-.odemodel" <- function(x, ..., value) {
-  a1 <- attributes(x$func)
-  a2 <- attributes(x$extended)
-  a1$modelname <- value
-  a2$modelname <- value
-
-  func <- do.call(structure, c(list(.Data = value), a1))
-  extended <- do.call(structure, c(list(.Data = value), a2))
-  return(list(func = func, extended = extended))
-}
-
-#' Title
-#'
-#' @param x
-#' @param conditions
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mname.odemodel <- function(x, conditions = NULL) {
-  union(x$func, x$extended)
-}
-
-
-
-
-
-#' Title
-#'
-#' @param ...
-#' @param output
-#' @param args
-#' @param cores
-#' @param verbose
-#'
-#' @return
-#' @export
-#'
-#' @examples
-function(..., output = NULL, args = NULL, cores = 1, verbose = F) {
-  objects <- list(...)
-  obj.names <- as.character(substitute(list(...)))[-1]
-  # Get full list of .c and .cpp files for the obsfn, parfn and prdfn objects in ...
-  files <- NULL
-  for (i in 1:length(objects)) {
-
-    if (inherits(objects[[i]], c("obsfn", "parfn", "prdfn", "odemodel"))) {
-      # Get and reset modelname
-      filename <- modelname(objects[[i]])
-      # Expand modelname by possible endings and check if file exists
-      filename <- outer(filename, c("", "_deriv", "_s", "_sdcv", "_dfdx", "_dfdp"), paste0)
-      files.obj <- c(paste0(filename, ".c"), paste0(filename, ".cpp"))
-      files.obj <- files.obj[file.exists(files.obj)]
-      files <- union(files, files.obj)
-    }
-  }
-
-
-  roots <- sapply(files, function(f) {
-    l <- strsplit(f, split = ".", fixed = TRUE)[[1]]
-    paste(l[1:(length(l)-1)], collapse = ".")
-  })
-
-  .so <- .Platform$dynlib.ext
-  #print(files)
-
-  # Sanitize cores on windows
-  if (Sys.info()[['sysname']] == "Windows") cores <- 1
-
-  #return(files)
-  if (is.null(output)) {
-    compilation_out <- mclapply(1:length(files), function(i) {
-      try(dyn.unload(paste0(roots[i], .so)), silent = TRUE)
-      system(paste0(R.home(component = "bin"), "/R CMD SHLIB ", files[i], " ", args), intern = !verbose)
-    }, mc.cores = cores, mc.silent = FALSE)
-    for (r in roots) dyn.load(paste0(r, .so))
-  } else {
-    for (i in 1:length(objects)) {
-      eval(parse(text = paste0("modelname(", obj.names[i], ") <<- '", output, "'")))
-    }
-    for (r in roots) try(dyn.unload(paste0(r, .so)), silent = TRUE)
-    try(dyn.unload(output), silent = TRUE)
-    system(paste0(R.home(component = "bin"), "/R CMD SHLIB ", paste(files, collapse = " "), " -o ", output, .so, " ", args), intern = !verbose)
-    dyn.load(paste0(output, .so))
-  }
-}
-
-
 
 
 
@@ -1190,10 +1091,10 @@ objlist_template <- function(pars) {
 #' @export
 update_version <- function(cOde = T, dMod = T, cf = T, MRAr = F) {
   devtools::install_github("rpremraj/mailR")
-  if(cOde) devtools::install_github("dkaschek/cOde")
-  if(dMod) devtools::install_github("dkaschek/dMod")
-  if(cf)  devtools::install_github("dlill/conveniencefunctions")
-  if(MRAr) devtools::install_github("dlill/MRAr")
+  if(cOde) devtools::install_github("dkaschek/cOde", upgrade_dependencies = FALSE, force = TRUE)
+  if(dMod) devtools::install_github("dkaschek/dMod", upgrade_dependencies = FALSE, force = TRUE)
+  if(cf)  devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = FALSE, force = TRUE)
+  if(MRAr) devtools::install_github("dlill/MRAr", upgrade_dependencies = FALSE, force = TRUE)
 }
 
 
