@@ -32,7 +32,12 @@ add_stepcolumn <- function(myparframe, tol = 1) {
 #'
 #' @examples
 datatimes <- function(data, n = 500){
-  data %>% as.data.frame() %>% .$time %>% range %>% setNames(c("from", "to")) %>% c(length.out = n) %>% as.list %>% do.call(seq,.)
+  mytimes <- data %>% as.data.frame() %>% .$time %>% unique
+  out <- mytimes %>% range %>% setNames(c("from", "to")) %>%
+    c(length.out = n) %>% as.list %>% do.call(seq,.) %>%
+    c(mytimes) %>% sort
+  return(out)
+
 }
 
 
@@ -79,14 +84,13 @@ compare_names <- function(.x,.y) {
 #' @return data.frame with name, diff = (.y-.x), appended output of compare_names
 #' @export
 compare_named_numeric <- function(.x,.y) {
-  if(!identical(order(names(.x)), order(names(.y))))
-    warning("Names not in identical order")
-  out <- subtract_by_name(.y,.x)
-  out <- data.frame(diff = out, name = names(out), stringsAsFactors = F)
-  comp <- compare(names(.x), names(.y))
-  comp <- data.frame(comp$name, diff = rownames(comp))
-  out <- rbind(out, comp)
-  rownames(out) <- NULL
+
+  .x <- tibble(name = names(.x),x = .x)
+  .y = tibble(name = names(.y), y = .y)
+  out <- full_join(.x,.y, "name")
+  out <- out %>%
+    mutate(`y-x` = y-x) %>%
+    mutate(`abs(y)>abs(x)` = abs(y)>abs(x))
   return(out)
 }
 
@@ -139,6 +143,9 @@ trustAna_getArg <- function(fit, i = 1, whichPath = "argpath") {
 }
 
 # helper functions ----
+
+
+
 
 #' Construct a parframe with tightly sampled parameters around other parameters stored in a parframe
 #'
@@ -665,7 +672,6 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
   message("If you want to subset() the plot, specify hypothesis AND index")
   if(is.character(hypothesis)) hypothesis <- which(model$hypothesis == hypothesis)
 
-
   data <- model[["data"]][[hypothesis]]
   prediction <- title <- NULL
   if (is.null(model[["parframes"]])) {
@@ -677,15 +683,25 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
   }
 
   if (!is.null(model[["parframes"]])) {
-    myparvec <- as.parvec(model[["parframes"]][[hypothesis]], index = index)
-    prediction <- model[["prd"]][[hypothesis]](model[["times"]][[hypothesis]],
-                                               pars = myparvec,
-                                               deriv = F,
-                                               fixed = model[["fixed"]][[hypothesis]])
+
+    # browser()
+
+    prediction <- map(index, function(ind) {
+      myparvec <- as.parvec(model[["parframes"]][[hypothesis]], index = ind)
+      prediction <- model[["prd"]][[hypothesis]](model[["times"]][[hypothesis]],
+                                                 pars = myparvec,
+                                                 deriv = F,
+                                                 fixed = model[["fixed"]][[hypothesis]])
+    }) %>% transpose %>%
+      map(~do.call(rbind,.x)) %>%
+      `attr<-`("class", c("prdlist", "list"))
+
+    title <- paste0("Indices", paste0(index, collapse = " "))
+    if (length(index) > 1){
     myvalue <- model[["parframes"]][[hypothesis]][index, "value"]
     title <- paste0(model[["hypothesis"]][[hypothesis]], "\n",
                     "value = ", round(model[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
-                    paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))
+                    paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))}
   }
 
 
@@ -696,9 +712,14 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
   if (plotErrorBands) {
     predicition_with_error <- NULL
     if (!is.null(model[["e"]][[hypothesis]])){
+
       errorconds <- getConditions(model[["e"]][[hypothesis]])
-      predicition_with_error <- dMod:::as.data.frame.prdlist(prediction[errorconds], data = data[errorconds], errfn = model[["e"]][[hypothesis]])
+      errorobs <- getEquations(model[["e"]][[hypothesis]])
+
+      predicition_with_error <- prediction[errorconds]
+      predicition_with_error <- dMod:::as.data.frame.prdlist(predicition_with_error, data = data[errorconds], errfn = model[["e"]][[hypothesis]])
       predicition_with_error <- subset(predicition_with_error, ...)
+
     }
     myplot <- myplot +
       geom_ribbon(aes(fill = condition), data = predicition_with_error, alpha = 0.15, size = 0) + scale_fill_dMod()
