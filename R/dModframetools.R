@@ -606,7 +606,7 @@ parframes_summary <- function(dMod.frame, hypothesis = NULL, tol = 1) {
 #' @return list
 #' @export
 uh <- function(est, hypothesis = 1) {
-  unlist(est[1,], F)
+  unlist(est[hypothesis,], F)
 }
 
 

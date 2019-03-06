@@ -187,7 +187,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 
   if(!is.null(job_type)&is.null(dMod.frame)) stop("supplying job_type works only when supplying a dMod.frame")
 
-  # Defaults
+  # Defaults ----
   job_name <- job_name %>% str_replace("_job$", "") %>% paste0("_job")
   filename <- tpaste0(job_name)
   machine <- 'c(paste0("knecht", 1))'
@@ -195,7 +195,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   if(!is.null(dMod.frame)) input <- dMod.frame
 
 
-  # General Job ---
+  # Header----
   rbg_header <- function() paste0('
 ', job_name, ' <- runbg({')
 
@@ -208,17 +208,20 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   # , recover = T
 )')
 
+  # GetSavePurge ----
   rbg_get_save_purge <- function() paste0('
 # ',job_name,'$check()
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
 # ',str_replace(job_name, "_job", ""),' %>% str1
+# ',str_replace(job_name, "_job", ""),' %>% %>% map(list("fits", 1)) %>% unlist(F) %>% map("value") %>% reduce(c)
 # ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' #%>% uniteFits %>% appendParframes
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
 # ', dMod.frame, ' <- readDMod.frame("',str_replace(job_name, "_job", ""), '.rds")
 # ', job_name, '$purge()
 ')
 
-  # Fit Job ----
+  # Body ----
+  # .. Fitjob ----
   fit_body <- function() paste0('
     ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
@@ -226,17 +229,23 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
    out <- ', dMod.frame,' %>%
     ungroup %>%
     mutate(fits = map(seq_along(x), function(i) {
-      assign("fit_obj", obj[[i]], pos = .GlobalEnv)
-      assign("fit_pars", pars[[i]], pos = .GlobalEnv)
-      assign("fit_fixed", NULL, pos = .GlobalEnv)
-      # assign("fit_fixed", fixed[[i]], pos = .GlobalEnv)
-      assign("fit_studyname", paste0("fits", hypothesis[[i]]), pos = .GlobalEnv)
-      mstrust(objfun = fit_obj, center = fit_pars, fixed = fit_fixed, studyname = fit_studyname, sd = 3,
-             blather = F, cores = ncores, fits = 10*ncores) })) %>%
+      checkout_hypothesis(', dMod.frame,', i, "fit_")
+
+      mstrust(objfun = fit_obj,
+              center = fit_center,
+              fixed = fit_fixed,
+              studyname = "fits",
+              blather = F,
+              cores = ncores,
+              conditions = fit_conditions,
+              parupper = fit_parupper,
+              parlower = fit_parlower,
+              iterlim = 300
+      ) })) %>%
     rowwise')
 
 
-  # Profiles ---
+  # .. Profiles ----
   profile_body <- function() paste0('ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
@@ -248,7 +257,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
         profile(obj = fit_obj, pars = fit_pars, whichPar = names(fit_pars), cores = ncores) })) %>%
       rowwise')
 
-  # Profile steps ---
+  # .. Profile steps ----
   profile_step_body <- function() paste0('   ncores <- detectFreeCores()
     assign("ncores", ncores, pos = .GlobalEnv)
 
@@ -268,7 +277,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
       rowwise')
 
 
-  # Distribute ----
+  # .. Distribute ----
   if(!is.null(distribute)) {
 
     nhyp <- eval(parse(text = paste0("nrow(", dMod.frame, ")")))
@@ -306,6 +315,8 @@ runbg({
 # map(', job_name, ',. %>% .$purge())
 ')
   }
+
+  # Print ----
 
 if (is.null(job_type)) {
   job_text <- paste0(rbg_header(), rbg_body(), rbg_end(), rbg_get_save_purge(), collapse = "\n")
