@@ -197,6 +197,9 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 
   # Header----
   rbg_header <- function() paste0('
+# ---------------------------------------------------------- #
+# Runbg: ',str_replace(job_name, "_job$", ""), ' ----
+# ---------------------------------------------------------- #
 ', job_name, ' <- runbg({')
 
   rbg_body <- function() "\n\n"
@@ -210,11 +213,14 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 
   # GetSavePurge ----
   rbg_get_save_purge <- function() paste0('
+# ----------------------------------------------- #
+# .. get/save/purge ----
+# ----------------------------------------------- #
 # ',job_name,'$check()
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
 # ',str_replace(job_name, "_job", ""),' %>% str1
 # ',str_replace(job_name, "_job", ""),' %>% %>% map(list("fits", 1)) %>% unlist(F) %>% map("value") %>% reduce(c)
-# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' #%>% uniteFits %>% appendParframes
+# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' #%>% uniteFits %>% appendParframes %>% mutate(parframes = list(add_stepcolumn(parframes)))
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
 # ', dMod.frame, ' <- readDMod.frame("',str_replace(job_name, "_job", ""), '.rds")
 # ', job_name, '$purge()
@@ -307,6 +313,9 @@ runbg({
     })')
 
   rbg_get_save_purge <- function() paste0('
+# ----------------------------------------------- #
+# .. get/save/purge ----
+# ----------------------------------------------- #
 # map(',job_name,',. %>% .$check())
 # ',str_replace(job_name, "_job", ""),' <- map(',job_name,',. %>% .$get())
 # save(.runbgOutput, file = "runbgOutput.rda")

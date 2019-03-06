@@ -14,7 +14,9 @@ add_stepcolumn <- function(myparframe, tol = 1) {
   bla <- 1:nrow(myparframe)
   stepcol <- cut(bla, steps-0.1, 1:(length(steps)-1), TRUE) %>% as.character() %>% as.numeric()
   fitrank <- 1:length(stepcol)
-  mydf <- cbind(fitrank = fitrank, step  = stepcol, as.data.frame(myparframe))
+  mydf <- as.data.frame(myparframe)
+  mydf <- mydf[!names(mydf)%in%c("fitrank", "step")]
+  mydf <- cbind(fitrank = fitrank, step  = stepcol, mydf)
   return(parframe(mydf, parameters = attr(myparframe, "parameters")))
 }
 
