@@ -2,6 +2,22 @@
 
 # R -e 'devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = F)'
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+load_cf <- function() {
+  devtools::load_all("~/Promotion/Projects/conveniencefunctions/")
+}
+
+#' @export
+#' @rdname load_cf
+load_dMod <- function() {
+  devtools::load_all("~/Promotion/Software/dMod/")
+}
+
 
 # check2sink ----
 
@@ -670,19 +686,5 @@ unnest_named <- function(df, key, value) {
   left_join(myframe_1, myframe_2, by = key_n)
 
 }
-
-
-
-#' Quickly append a column which contains the rownumber
-#'
-#' @param df tibble or data.frame
-#'
-#' @return df with additional column "rownumber"
-#'
-#' @export
-append_rownumber_col <- function(df) {
-  df %>% mutate(., rownumber = 1:nrow(.))
-}
-
 
 
