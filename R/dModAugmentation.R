@@ -12,13 +12,33 @@
 add_stepcolumn <- function(myparframe, tol = 1) {
   steps <- dMod:::stepDetect(myparframe$value, tol)
   bla <- 1:nrow(myparframe)
-  stepcol <- cut(bla, steps-0.1, 1:(length(steps)-1), TRUE) %>% as.character() %>% as.numeric()
+  stepcol <- cumsum(bla%in%steps)
+
   fitrank <- 1:length(stepcol)
+  stepsize <- map_dbl(stepcol, ~sum(stepcol == .x)/length(stepcol)) %>% round(3)
   mydf <- as.data.frame(myparframe)
-  mydf <- mydf[!names(mydf)%in%c("fitrank", "step")]
-  mydf <- cbind(fitrank = fitrank, step  = stepcol, mydf)
+  mydf <- mydf[!names(mydf)%in%c("fitrank", "step", "stepsize")]
+  mydf <- cbind(fitrank = fitrank, step  = stepcol, stepsize = stepsize, mydf)
+
   return(parframe(mydf, parameters = attr(myparframe, "parameters")))
 }
+
+#' get Parameter names of a parframe
+#'
+#' @export
+getParameters.parframe <- function(x) {
+  attr(x, "parameters")
+}
+
+
+#' Select parameter columns of parframe
+#'
+#'@export
+subsetparameters <- function(parf, parameters) {
+  metanames <- setdiff(attr(parf, "names"), getParameters(parf))
+  parf %>% as.data.frame() %>% .[c(metanames, parameters)] %>% parframe(.,setdiff(names(.), metanames), metanames)
+}
+
 
 # ---------------------------------------------------------- #
 # Data ----
@@ -276,8 +296,8 @@ d2d2dMod_data <- function(data, keep = NULL) {
 #' @export
 #'
 fit2obj <- function(fit) {
-    force(fit)
-    outfn <- function(pars, fixed = NULL, ...) {
+  force(fit)
+  outfn <- function(pars, fixed = NULL, ...) {
 
     # if (!identical(names(pars), names(fit$argument)))
     #   stop("Parameters have not the same order as in the fit, please rearrange")
@@ -355,13 +375,16 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
 #'
 #' @param obj objfn
 #' @param pouter pars at which obj is evaluated
+#' @param conditions vector of conditions to be evaluated. if null, all conditions are evaluated
 #'
 #' @return A tibble with rows corresponding to conditions and cols to several results of the objective function, such as value, gradient...
 #' @export
 #'
 #' @example Examples/obj_condition_wise.R
-obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL,...) {
+obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL, conditions = NULL, ...) {
   myconditions <- getConditions(obj)
+  if (length(conditions))
+    myconditions <- myconditions[myconditions == conditions]
 
   out <- lapply(myconditions, function(cond) {
     myvalues <- obj(pars = pars, conditions = cond, ...)
@@ -544,6 +567,12 @@ fitErrorModel_plot <- function(data) {
 
 }
 
+
+
+# ----------------------------------------------- #
+# .. plotData ----
+# ----------------------------------------------- #
+
 #' Plot a list data points
 #' @export
 plotData  <- function(data,...) {
@@ -649,25 +678,28 @@ plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
 }
 
 
+# ----------------------------------------------- #
+# .. PlotCombined ----
+# ----------------------------------------------- #
+
 #' Plot a list of model predictions and a list of data points in a combined plot
+#' @param model sdf
+#' @param hypothesis sdf
+#' @param index sdf
+#' @param ... sdf
+#' @param plotErrorBands sdf
 #' @export
 plotCombined <- function(prediction,...) {
   UseMethod("plotCombined", prediction)
 }
 
 
-#' Title
-#'
-#' @param model
-#' @param hypothesis
-#' @param index
-#' @param ...
-#' @param plotErrorBands
-#'
-#' @return
+
 #' @export
+#' @rdname plotCombined
 #'
-#' @examples
+#' @details Works with multiple steps (index as a vector). I recommend then using it with \code{aesthetics = c(linetype= "step_")}
+#' to access the step-information
 plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
 
   dots <- substitute(alist(...))
@@ -694,16 +726,18 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
                                                  pars = myparvec,
                                                  deriv = F,
                                                  fixed = model[["fixed"]][[hypothesis]])
-    }) %>% transpose %>%
-      map(~do.call(rbind,.x)) %>%
+      prediction <- map(prediction, function(.x) {attr(.x, "step") <- ind; .x})
+      prediction
+    }) %>%
+      unlist(F) %>%
       `attr<-`("class", c("prdlist", "list"))
 
     title <- paste0("Indices", paste0(index, collapse = " "))
     if (length(index) > 1){
-    myvalue <- model[["parframes"]][[hypothesis]][index, "value"]
-    title <- paste0(model[["hypothesis"]][[hypothesis]], "\n",
-                    "value = ", round(model[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
-                    paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))}
+      myvalue <- model[["parframes"]][[hypothesis]][index, "value"]
+      title <- paste0(model[["hypothesis"]][[hypothesis]], "\n",
+                      "value = ", round(model[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
+                      paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))}
   }
 
 
@@ -729,23 +763,11 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
   return(myplot)
 }
 
-#' Title
-#'
-#' @param prediction
-#' @param data
-#' @param ...
-#' @param scales
-#' @param facet
-#' @param transform
-#' @param aesthetics
-#'
-#' @return
 #' @export
-#'
-#' @examples
+#' @rdname plotCombined
 plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
 
-  mynames <- c("time", "name", "value", "sigma", "condition")
+  mynames <- c("time", "name", "value", "sigma", "condition", "step_")
   covtable <- NULL
 
   if (!is.null(data)) {
@@ -760,23 +782,33 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
     data <- dplyr::filter(data, ...)
     data <- as.data.frame(data, stringsAsFactors = F)
     data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
-
+    data <- cbind(data, step_ = NA)
     if (!is.null(transform)) data <- coordTransform(data, transform)
   }
 
   if (!is.null(prediction)) {
-    prediction <- cbind(wide2long(prediction), sigma = NA)
+    mywide2long <- function(out, keep = 1, na.rm = FALSE) {
+      conditions <- names(out)
+      outlong <- do.call(rbind, lapply(1:max(c(length(conditions), 1)), function(cond) {
+        step <- attr(out[[cond]], "step")
+        if (is.null(step))
+          step <- NA
+        cbind(wide2long.matrix(out[[cond]]), condition = conditions[cond], step_ = step)
+      }))
+      return(outlong)
+    }
+    prediction <- cbind(mywide2long(prediction), sigma = NA)
     if (!is.null(data)) prediction <- base::merge(prediction, covtable, by = "condition", all.x = T)
     prediction <- as.data.frame(dplyr::filter(prediction, ...), stringsAsFactors = F)
-
+    prediction$step_ <- as.factor(prediction$step_)
     if (!is.null(transform)) prediction <- coordTransform(prediction, transform)
   }
 
-  total <- rbind(prediction[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
+    total <- rbind(prediction[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
 
 
   if (facet == "wrap"){
-    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", group = "condition", color = "condition")
+    aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", color = "condition")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
     p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name, scales = scales)}
   if (facet == "grid"){
@@ -809,7 +841,9 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
 
 }
 
-
+# ----------------------------------------------- #
+# .. plotMulti ----
+# ----------------------------------------------- #
 
 #' Title
 #'
@@ -920,10 +954,81 @@ plotMulti.parframe <- function(x, parframe_filter = NULL, dModframe, ...) {
   plotMulti.tbl_df(dModframe, parframe_filter, ...)
 }
 
+# ----------------------------------------------- #
+# .. plotPars ----
+# ----------------------------------------------- #
 
 
-# unlink dMod----
+#' Plot parameter values for a fitlist
+#'
+#' @param x parameter frame as obtained by as.parframe(mstrust)
+#' @param tol maximal allowed difference between neighboring objective values
+#' to be recognized as one.
+#' @param ... arguments for subsetting of x
+#' @export
+plotPars <- function(x,...) {
+  UseMethod("plotPars", x)
+}
 
+
+
+#' @export
+#' @rdname plotPars
+plotPars.parframe <- function(x, tol = 1, ...){
+
+  if (!missing(...)) x <- subset(x, ...)
+
+  jumps <- dMod:::stepDetect(x$value, tol)
+  jump.index <- approx(jumps, jumps, xout = 1:length(x$value), method = "constant", rule = 2)$y
+
+  #values <- round(x$value/tol)
+  #unique.values <- unique(values)
+  #jumps <- which(!duplicated(values))
+  #jump.index <- jumps[match(values, unique.values)]
+  x$index <- as.factor(jump.index)
+
+  myparframe <- x
+  parNames <- attr(myparframe,"parameters")
+  parOut <- wide2long.data.frame(out = ((myparframe[, c("index", "value", parNames)])) , keep = 1:2)
+  names(parOut) <- c("index", "value", "name", "parvalue")
+  plot <- ggplot2::ggplot(parOut, aes(x = name, y = parvalue, color = index)) + geom_boxplot(outlier.alpha = 0) +
+    theme_dMod() + scale_color_dMod() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+  attr(plot, "data") <- parOut
+
+  return(plot)
+
+}
+
+
+#' @export
+#' @rdname plotPars
+#' @param nsteps number of steps from the waterfall plot
+plotPars.tbl_df <- function(dMod.frame, hypothesis = 1,  ..., tol = 1 ) {
+
+  if (!missing(...)) {dots <- substitute(...)
+  } else {
+    dots <- T
+  }
+
+  if(is.character(hypothesis)) hypothesis <- which(dMod.frame$hypothesis == hypothesis)
+
+  if (length(hypothesis)>1){
+    message("hypothesis must be length 1")
+    return(NULL)
+    }
+
+  myparframe <- dMod.frame[["parframes"]][[hypothesis]] %>% add_stepcolumn(tol = tol)
+
+  plotPars.parframe(myparframe, tol = tol, ...)
+
+}
+
+
+
+# ---------------------------------------------------------- #
+# unlink dMod ----
+# ---------------------------------------------------------- #
 
 
 #' Unlink standard dMod-generated files

@@ -4,10 +4,13 @@
 \alias{obj_condition_wise}
 \title{Evaluate an objective function condition-wise}
 \usage{
-obj_condition_wise(obj, pars, constr1 = NULL, constr2 = NULL, ...)
+obj_condition_wise(obj, pars, constr1 = NULL, constr2 = NULL,
+  conditions = NULL, ...)
 }
 \arguments{
 \item{obj}{objfn}
+
+\item{conditions}{vector of conditions to be evaluated. if null, all conditions are evaluated}
 
 \item{pouter}{pars at which obj is evaluated}
 }

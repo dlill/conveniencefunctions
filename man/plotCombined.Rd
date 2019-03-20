@@ -2,10 +2,34 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{plotCombined}
 \alias{plotCombined}
+\alias{plotCombined.tbl_df}
+\alias{plotCombined.prdlist}
 \title{Plot a list of model predictions and a list of data points in a combined plot}
 \usage{
 plotCombined(prediction, ...)
+
+\method{plotCombined}{tbl_df}(model, hypothesis = 1, index = 1, ...,
+  plotErrorBands = F)
+
+\method{plotCombined}{prdlist}(prediction, data = NULL, ...,
+  scales = "free", facet = "wrap", transform = NULL,
+  aesthetics = NULL)
+}
+\arguments{
+\item{...}{sdf}
+
+\item{model}{sdf}
+
+\item{hypothesis}{sdf}
+
+\item{index}{sdf}
+
+\item{plotErrorBands}{sdf}
 }
 \description{
 Plot a list of model predictions and a list of data points in a combined plot
+}
+\details{
+Works with multiple steps. I recommend then using it with \code{aesthetics = c(linetype= "step_")}
+to access the step-information
 }

@@ -200,6 +200,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 # ---------------------------------------------------------- #
 # Runbg: ',str_replace(job_name, "_job$", ""), ' ----
 # ---------------------------------------------------------- #
+setwd(here("Outputs", outdir))
 ', job_name, ' <- runbg({')
 
   rbg_body <- function() "\n\n"
@@ -214,13 +215,21 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   # GetSavePurge ----
   rbg_get_save_purge <- function() paste0('
 # ----------------------------------------------- #
+# .. Description ----
+# ----------------------------------------------- #
+# ',job_name,' calculates ', job_type, 's for model ...
+# The primary goal is to ...
+#
+#
+# ----------------------------------------------- #
 # .. get/save/purge ----
 # ----------------------------------------------- #
+setwd(here("Outputs", outdir))
 # ',job_name,'$check()
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
 # ',str_replace(job_name, "_job", ""),' %>% str1
-# ',str_replace(job_name, "_job", ""),' %>% %>% map(list("fits", 1)) %>% unlist(F) %>% map("value") %>% reduce(c)
-# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' #%>% uniteFits %>% appendParframes %>% mutate(parframes = list(add_stepcolumn(parframes)))
+# ',str_replace(job_name, "_job", ""),' %>% map(list("fits", 1)) %>% unlist(F) %>% map("value") %>% reduce(c)
+# ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' %>% uniteFits %>% appendParframes %>% mutate(parframes = list(add_stepcolumn(parframes)))
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
 # ', dMod.frame, ' <- readDMod.frame("',str_replace(job_name, "_job", ""), '.rds")
 # ', job_name, '$purge()
