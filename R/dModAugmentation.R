@@ -782,7 +782,7 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
     data <- dplyr::filter(data, ...)
     data <- as.data.frame(data, stringsAsFactors = F)
     data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
-    data <- cbind(data, step_ = NA)
+    data <- cbind(data, step_ = rep(NA, nrow(data)))
     if (!is.null(transform)) data <- coordTransform(data, transform)
   }
 
