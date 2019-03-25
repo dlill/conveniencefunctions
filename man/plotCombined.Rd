@@ -30,6 +30,6 @@ plotCombined(prediction, ...)
 Plot a list of model predictions and a list of data points in a combined plot
 }
 \details{
-Works with multiple steps. I recommend then using it with \code{aesthetics = c(linetype= "step_")}
+Works with multiple steps (index as a vector). I recommend then using it with \code{aesthetics = c(linetype= "step_")}
 to access the step-information
 }
