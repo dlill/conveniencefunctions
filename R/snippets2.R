@@ -26,7 +26,7 @@ insert_header <- function(insert_in_script = T){
     "library(conveniencefunctions)",                               "\n",
     "setwd(here())", "\n",
     "\n",
-    'source(here("Scripts/S00 Auxiliaries.R"))', "n",
+    '#source(here("Scripts/S00 Auxiliaries.R"))', "\n",
     "fast <- TRUE", "\n",
     "\n",
     'outdir <- "', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '_outputs"', "\n",

@@ -15,6 +15,8 @@
 \alias{head1}
 \alias{head3}
 \alias{head11}
+\alias{tail1}
+\alias{tail3}
 \title{str with max.level = 0}
 \usage{
 str0(...)
@@ -44,6 +46,10 @@ head1(...)
 head3(...)
 
 head11(...)
+
+tail1(...)
+
+tail3(...)
 }
 \arguments{
 \item{...}{an object}

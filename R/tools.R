@@ -18,6 +18,14 @@ load_dMod <- function() {
   devtools::load_all("~/Promotion/Software/dMod/")
 }
 
+#' Open all scripts of a folder in rstudio
+#' @export
+open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
+  myorder <- list.files(dirname, pattern, full.names = TRUE) %>% str_replace_all(".*S([0-9]+).*", "\\1") %>% as.integer() %>% order
+  list.files(dirname, pattern, full.names = TRUE) %>% .[myorder] %>% walk(~rstudioapi::navigateToFile(.x))
+}
+
+
 
 # check2sink ----
 
@@ -277,6 +285,17 @@ head11 <- function(...) {
   x[[1]][[1]] %>% head(n = 5)
 }
 
+#' @rdname str0
+#' @export
+tail1 <- function(...) {
+  tail(..., n = 1)
+}
+
+#' @rdname str0
+#' @export
+tail3 <- function(...) {
+  tail(..., n = 3)
+}
 
 
 #' Load the default values of formals of a function into the Global environment
