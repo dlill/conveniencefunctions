@@ -124,7 +124,11 @@ relPath_from_1_to_2 <- function(from, to) {
 #' @export
 #'
 setwd_this_doc <- function() {
-  setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+  path <- dirname(rstudioapi::getSourceEditorContext()$path)
+  setwd(path)
+
+  print(path)
+  return(invisible(path))
 }
 
 
