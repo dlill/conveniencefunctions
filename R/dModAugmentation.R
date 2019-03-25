@@ -1043,14 +1043,7 @@ unlink_dMod <- function(endings = NULL) {
 }
 
 
-#' Zip .so files in a file with unique name
-protect_so <- function(model) {
-  zipname <- format(Sys.time(), "%Y%m%d%H%M%S") %>% paste0("_so_files.zip")
-  map(model, function(i) map(i, ~tryCatch(modelname(.x), error = function(e) NULL))) %>%
-    unlist() %>% unique() %>% paste0(".so") %>%
-    zip(zipname,.)
-  invisible(NULL)
-}
+
 
 
 
@@ -1058,6 +1051,19 @@ protect_so <- function(model) {
 # compile/modelname ----
 # ---------------------------------------------------------- #
 
+#' Zip .so files in a file with unique name
+#'
+#' @param model a dMod.frame
+#'
+#' @export
+#'
+protect_so <- function(model) {
+  zipname <- format(Sys.time(), "%Y%m%d%H%M%S") %>% paste0("_so_files.zip")
+  map(model, function(i) map(i, ~tryCatch(modelname(.x), error = function(e) NULL))) %>%
+    unlist() %>% unique() %>% paste0(".so") %>%
+    zip(zipname,.)
+  invisible(NULL)
+}
 
 
 

@@ -6,6 +6,9 @@
 \usage{
 protect_so(model)
 }
+\arguments{
+\item{model}{a dMod.frame}
+}
 \description{
 Zip .so files in a file with unique name
 }
