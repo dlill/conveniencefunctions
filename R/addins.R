@@ -229,6 +229,7 @@ setwd(here("Outputs", outdir))
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
 # ',str_replace(job_name, "_job", ""),' %>% str1
 # ',str_replace(job_name, "_job", ""),' %>% map(list("fits", 1)) %>% unlist(F) %>% map("value") %>% reduce(c)
+# ',str_replace(job_name, "_job", ""),' %>% map("fits") %>% unlist(F) %>% reduce(c) %>% saveRDS("fitlist_',str_replace(job_name, "_job", ""),'.rds")
 # ',str_replace(job_name, "_job", ""),' <- ', str_replace(job_name, "_job", ""), ' %>% uniteFits %>% appendParframes %>% mutate(parframes = list(add_stepcolumn(parframes)))
 # saveRDS(', str_replace(job_name, "_job", ""), ', file = "',str_replace(job_name, "_job", ""), '.rds")
 # ', dMod.frame, ' <- readDMod.frame("',str_replace(job_name, "_job", ""), '.rds")
