@@ -125,28 +125,18 @@ relPath_from_1_to_2 <- function(from, to) {
   return(paste0(backwards, forwards))
 }
 
-#' remove the document name from a document path
-#'
-#' @param doc can either be  rstudioapi::getActiveDocumentContext() or a path
-#'
-#' @return the path with the document removed
-#'
-#' @importFrom stringr str_split
-#'
-#' @export
-docpath2dirpath <- function(doc) {
-  if(class(doc) == "document_context")
-    doc <- doc$path
-  doc %>% stringr::str_split("/", simplify = T) %>% .[1:(length(.)-1)] %>% paste0(collapse = "/") %>% paste0("/")
-}
 
 
 #' Set working directory to this document's directory
 #'
 #' @export
 #'
-thisdocsetwd <- function() {
-  rstudioapi::getActiveDocumentContext() %>% docpath2dirpath() %>% setwd()
+setwd_this_doc <- function() {
+  path <- dirname(rstudioapi::getSourceEditorContext()$path)
+  setwd(path)
+
+  print(path)
+  return(invisible(path))
 }
 
 
