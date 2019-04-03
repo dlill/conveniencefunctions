@@ -4,7 +4,7 @@
 \alias{plotData.tbl_df}
 \title{Title}
 \usage{
-\method{plotData}{tbl_df}(dMod.frame, hypothesis = 1, ...)
+\method{plotData}{tbl_df}(data, hypothesis = 1, ...)
 }
 \arguments{
 \item{...}{}

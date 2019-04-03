@@ -6,25 +6,24 @@
 \alias{plotCombined.prdlist}
 \title{Plot a list of model predictions and a list of data points in a combined plot}
 \usage{
-plotCombined(prediction, ...)
+plotCombined(x, ...)
 
-\method{plotCombined}{tbl_df}(model, hypothesis = 1, index = 1, ...,
+\method{plotCombined}{tbl_df}(x, hypothesis = 1, index = 1, ...,
   plotErrorBands = F)
 
-\method{plotCombined}{prdlist}(prediction, data = NULL, ...,
-  scales = "free", facet = "wrap", transform = NULL,
-  aesthetics = NULL)
+\method{plotCombined}{prdlist}(x, data = NULL, ..., scales = "free",
+  facet = "wrap", transform = NULL, aesthetics = NULL)
 }
 \arguments{
 \item{...}{sdf}
-
-\item{model}{sdf}
 
 \item{hypothesis}{sdf}
 
 \item{index}{sdf}
 
 \item{plotErrorBands}{sdf}
+
+\item{model}{sdf}
 }
 \description{
 Plot a list of model predictions and a list of data points in a combined plot

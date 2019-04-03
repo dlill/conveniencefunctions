@@ -4,7 +4,7 @@
 \alias{plotAsDatalist}
 \title{Quickly plot a tibble}
 \usage{
-plotAsDatalist(x, ..., smooth = T, se = FALSE)
+plotAsDatalist(data, ..., smooth = T, se = FALSE)
 }
 \description{
 Quickly plot a tibble

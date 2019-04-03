@@ -30,38 +30,34 @@ optimal_cuts <- function(vec, possibilities) {
 
 #' Title
 #'
-#' @param myparframe
+#' @param myparframe .
 #'
-#' @return
+#'
 #' @export
-#'
-#' @examples
 get_parcolindices <- function(myparframe) {
   which(names(myparframe) %in% attr(myparframe, "para"))
   }
 
 #' do Plots
 #'
-#' @param model a dMod.frame
-#' @param pngname,height,width as in \code{png()}
-#' @param FLAGdev.off TRUE: shut down png device at the ende, FALSE: don't shut it down
-#' @param tol for stepDetect in parframe
-#' @param FLAG_waterfalls plotValues, subsetted to various chi2 value-thresholds
-#' @param FLAG_plotPars plotPars of steps 1-3, 1-5 and the largest step
+#' @param model a dMod.frame .
+#' @param pngname,height,width as in \code{png()} .
+#' @param FLAGdev.off TRUE: shut down png device at the ende, FALSE: don't shut it down .
+#' @param tol for stepDetect in parframe .
+#' @param FLAG_waterfalls plotValues, subsetted to various chi2 value-thresholds .
+#' @param FLAG_plotPars plotPars of steps 1-3, 1-5 and the largest step .
 #' @param FLAG_scatterall_step1 do a scatterplot of all parameters at step 1
 #' @param FLAG_iterations histogram of the number of iterations
 #' @param nm list with plotting helpers, such as a character vector of statenames or observables. their list entry must be called "states" and "observables"
-#' @param FLAG_predictions_conds_states_observables
-#' @param FLAG_predictions_states_conds
-#' @param FLAG_predictions_observables_conds
-#' @param FLAG_profiles
+#' @param FLAG_predictions_conds_states_observables .
+#' @param FLAG_predictions_states_conds .
+#' @param FLAG_predictions_observables_conds .
+#' @param FLAG_profiles .
 #'
-#' @return
 #' @export
 #'
 #' @importFrom dMod getParameters
 #'
-#' @examples
 doPlots1 <- function(model,
                      # png options
                      pngname = "plots%03d.png",
