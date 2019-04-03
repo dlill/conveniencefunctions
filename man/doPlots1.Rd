@@ -13,17 +13,17 @@ doPlots1(model, pngname = "plots\%03d.png", height = 1000,
   FLAG_predictions_observables_conds = TRUE, FLAG_profiles = TRUE)
 }
 \arguments{
-\item{model}{a dMod.frame}
+\item{model}{a dMod.frame .}
 
-\item{pngname, height, width}{as in \code{png()}}
+\item{pngname, height, width}{as in \code{png()} .}
 
-\item{FLAGdev.off}{TRUE: shut down png device at the ende, FALSE: don't shut it down}
+\item{FLAGdev.off}{TRUE: shut down png device at the ende, FALSE: don't shut it down .}
 
-\item{tol}{for stepDetect in parframe}
+\item{tol}{for stepDetect in parframe .}
 
-\item{FLAG_waterfalls}{plotValues, subsetted to various chi2 value-thresholds}
+\item{FLAG_waterfalls}{plotValues, subsetted to various chi2 value-thresholds .}
 
-\item{FLAG_plotPars}{plotPars of steps 1-3, 1-5 and the largest step}
+\item{FLAG_plotPars}{plotPars of steps 1-3, 1-5 and the largest step .}
 
 \item{FLAG_scatterall_step1}{do a scatterplot of all parameters at step 1}
 
@@ -31,7 +31,13 @@ doPlots1(model, pngname = "plots\%03d.png", height = 1000,
 
 \item{nm}{list with plotting helpers, such as a character vector of statenames or observables. their list entry must be called "states" and "observables"}
 
-\item{FLAG_profiles}{}
+\item{FLAG_predictions_conds_states_observables}{.}
+
+\item{FLAG_predictions_states_conds}{.}
+
+\item{FLAG_predictions_observables_conds}{.}
+
+\item{FLAG_profiles}{.}
 }
 \description{
 do Plots

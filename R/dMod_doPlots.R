@@ -57,6 +57,7 @@ get_parcolindices <- function(myparframe) {
 #' @export
 #'
 #' @importFrom dMod getParameters
+#' @importFrom GGally ggpairs
 #'
 doPlots1 <- function(model,
                      # png options

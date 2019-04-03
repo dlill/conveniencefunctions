@@ -1,5 +1,7 @@
 
 #' Print a header to your console
+#' 
+#' @param insert_in_script boolean
 #'
 #' @export
 #'

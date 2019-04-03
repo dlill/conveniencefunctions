@@ -24,7 +24,7 @@ add_stepcolumn <- function(myparframe, tol = 1) {
 }
 
 #' get Parameter names of a parframe
-#'
+#' @param x parframe
 #' @export
 getParameters.parframe <- function(x) {
   attr(x, "parameters")
@@ -32,6 +32,9 @@ getParameters.parframe <- function(x) {
 
 
 #' Select parameter columns of parframe
+#'
+#' @param parf parframe
+#' @param parameters keine ahnung mehr?
 #'
 #'@export
 subsetparameters <- function(parf, parameters) {
@@ -49,10 +52,7 @@ subsetparameters <- function(parf, parameters) {
 #'
 #' @param data datalist
 #'
-#' @return
 #' @export
-#'
-#' @examples
 datatimes <- function(data, n = 500){
   mytimes <- data %>% as.data.frame() %>% .$time %>% unique
   out <- mytimes %>% range %>% setNames(c("from", "to")) %>%
@@ -63,15 +63,11 @@ datatimes <- function(data, n = 500){
 }
 
 
-#' Title
+#' Identity function for datalists
 #'
-#' @param x
-#' @param ...
-#'
-#' @return
+#' @param x .
+#' @param ... .
 #' @export
-#'
-#' @examples
 as.datalist.datalist <- function(x,...){
   dMod:::as.datalist.list(x,...)
 }
@@ -208,16 +204,19 @@ as.condition.grid <- function(df) {
 #'
 #' first from obj, then from data, then from p
 #'
+#' @param x dMod frame
+#' @param hypothesis  1
+#'
 #' @export
-getConditions.tbl_df <- function(model, hypothesis = 1) {
+getConditions.tbl_df <- function(x, hypothesis = 1) {
   getConditions.fn <- dMod:::getConditions.fn
 
-  if (!is.null(suppressWarnings(model$obj[[hypothesis]])))
-    return(dMod:::getConditions.fn(model$obj[[hypothesis]]))
-  if (!is.null(model$data[[hypothesis]]))
-    return(names(model$data[[hypothesis]]))
-  if (!is.null(model$p[[hypothesis]]))
-    return(dMod:::getConditions.fn(model$p[[hypothesis]]))
+  if (!is.null(suppressWarnings(x$obj[[hypothesis]])))
+    return(dMod:::getConditions.fn(x$obj[[hypothesis]]))
+  if (!is.null(x$data[[hypothesis]]))
+    return(names(x$data[[hypothesis]]))
+  if (!is.null(x$p[[hypothesis]]))
+    return(dMod:::getConditions.fn(x$p[[hypothesis]]))
 }
 
 
@@ -1164,69 +1163,9 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
 
 
 
-# Experimenting with as.datalist ----
-
-#' cf_as.datalist
-#'
-#' @importFrom dMod as.datalist
-#'
-#' @export
-#'
-#'
-cf_as.datalist <- function(x, split.by = NULL, keep.covariates = NULL, make.names.from = NULL, ...) {
-
-  dataframe <- x
-
-  #remaining.names <- setdiff(names(dataframe), split.by)
-  all.names <- colnames(dataframe)
-  standard.names <- c("name", "time", "value", "sigma")
-  if (is.null(split.by)) split.by <- setdiff(all.names, standard.names)
-
-
-  conditions <- lapply(split.by, function(n) dataframe[, n])
-  splits <- do.call(paste, c(conditions, list(sep = "_")))
-  subnames <- do.call(paste, c(conditions[split.by %in% make.names.from], list(sep = "_")))
-  if (identical(duplicated(splits), duplicated(subnames))) {
-    splits <- subnames
-  } else {warning("Supplied make.names.from do not identify all conditions")}
 
 
 
-
-  # condition grid
-  conditionframe <- dataframe[!duplicated(splits), c(split.by, keep.covariates), drop = FALSE]
-  rownames(conditionframe) <- splits[!duplicated(splits)]
-
-
-  # data list output
-  dataframe <- cbind(data.frame(condition = splits), dataframe[, standard.names])
-  out <- lapply(unique(splits), function(s) dataframe[dataframe[, 1] == s, -1])
-
-  names(out) <- as.character(unique(splits))
-
-  out <- as.datalist(out)
-  attr(out, "condition.grid") <- conditionframe
-  return(out)
-
-}
-
-# Objlist template ----
-#' Create an empty objlist full of zeros
-#'
-#' @param pars a named vector, names will be used to construct the gradient and hessian
-#'
-#' @return objlist full of zeros
-#' @export
-#'
-#' @examples objlist_template(structure(1:3, names = letters[1:3]))
-objlist_template <- function(pars) {
-  objlist(value = 0,
-          gradient = pars * 0,
-          hessian = matrix(0,
-                           nrow = length(pars),
-                           ncol = length(pars),
-                           dimnames = list(names(pars), names(pars))))
-}
 
 # Update package versions: dMod, cOde, conveniencefunctions, MRAr----
 #' Update versions

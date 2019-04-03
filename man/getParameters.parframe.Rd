@@ -6,6 +6,9 @@
 \usage{
 \method{getParameters}{parframe}(x)
 }
+\arguments{
+\item{x}{parframe}
+}
 \description{
 get Parameter names of a parframe
 }

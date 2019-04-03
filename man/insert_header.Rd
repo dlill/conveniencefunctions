@@ -9,6 +9,9 @@ insert_header(insert_in_script = T)
 
 insert_exit(insert_in_script = T)
 }
+\arguments{
+\item{insert_in_script}{boolean}
+}
 \description{
 Print a header to your console
 }

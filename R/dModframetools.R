@@ -660,13 +660,6 @@ checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefi
 #'
 #' @export
 #'
-#' @examples
-#' remove("doedel")
-#' dMod.frame <- tibble(hypothesis = "one", doedel = "blabla", wup = "wup")
-#'
-#' hypothesis = "one"
-#' doedel <- "yay"
-#' update_hypothesis(dMod.frame)
 update_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix = "", suffix = "") {
 
   # possible future feature: set those of variables in exclude to list(NULL)

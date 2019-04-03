@@ -20,10 +20,3 @@ The following functions serve two purposes
 \details{
 However, this inroduces the need for a key-column.
 }
-\examples{
-df <- tibble(a = 1:2, b = list(c(d = 1, e = 2), c(e = 2, f = 4)), g = list(1, 2:3)) #\%>\% map(setNames, nm = c("c", "d")))
-
-df \%>\% unnest(b)
-
-df \%>\% unnest_named(a,b)
-}

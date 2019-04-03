@@ -8,7 +8,13 @@ meld_functions(function1, function2, filenames = "dummymeldcomparison",
   do_unlink = T, do_trim = F)
 }
 \arguments{
-\item{function1, function2}{}
+\item{function1, function2}{functions}
+
+\item{filenames}{.}
+
+\item{do_unlink}{delete files afterwards}
+
+\item{do_trim}{str_trim the function outputs}
 }
 \value{
 side-effect

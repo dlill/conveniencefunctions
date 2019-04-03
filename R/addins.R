@@ -161,6 +161,9 @@ insert_unit_test <- function(context = "Context", description= "test_what") {
 #' @param job_type character, options: fit, profile, profile_steps
 #' @param dMod.frame character "dMod.frame"
 #'
+#' @param tol 1 used for profile_steps
+#' @param nsteps 3
+#' @param distribute vec of names of ssh machines c("knecht1", "knecht2")
 #'
 #' @export
 #'

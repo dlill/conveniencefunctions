@@ -2,13 +2,15 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{as.datalist.datalist}
 \alias{as.datalist.datalist}
-\title{Title}
+\title{Identity function for datalists}
 \usage{
 \method{as.datalist}{datalist}(x, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{.}
+
+\item{...}{.}
 }
 \description{
-Title
+Identity function for datalists
 }

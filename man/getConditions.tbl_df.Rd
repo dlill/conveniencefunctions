@@ -4,7 +4,12 @@
 \alias{getConditions.tbl_df}
 \title{Try getting conditions}
 \usage{
-\method{getConditions}{tbl_df}(model, hypothesis = 1)
+\method{getConditions}{tbl_df}(x, hypothesis = 1)
+}
+\arguments{
+\item{x}{dMod frame}
+
+\item{hypothesis}{1}
 }
 \description{
 first from obj, then from data, then from p

@@ -1,0 +1,108 @@
+---
+title: "compare trustLq and trustL1"
+author: "Daniel Lill"
+date: "2 August 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(conveniencefunctions)
+```
+
+```{r model}
+ f <- NULL %>%
+    addReaction("A", "B", "kcat*A*E/(Km + A)", "Activation") %>%
+    addReaction("B",  "", "k2*B", "Degradation") %>%
+    addReaction("E", "", "0", "Added Enzyme") %>%
+    as.eqnvec()
+
+  events <- eventlist(var = "E", time = 2, value = "E_add", method = "add")
+  x <- odemodel(f, events = events) %>% Xs
+  g <- Y(c(Bobs = "s1*B"), x)
+
+  covtable <- data.frame(membrane = rep(1:2, each = 4), 
+                         dose = rep(c(0,0.1,1,10), 2),
+                         line = rep(paste0("line", 1:3), each = 8)) %>% as.condition.grid()
+  parameters <- getParameters(g,x)
+
+  trafo <-
+    parameters %>%
+    setNames(.,.) %>%
+    branch(covtable) %>%
+    insert("x~0", x = c("E", "B")) %>%
+    insert("par~par_line", par = c("A", "k2", "kcat", "Km"), line = line) %>% 
+    insert("x~x_scale", x = "s1", scale = membrane) %>%
+    insert("x~dose", x = "E_add", dose = dose) %>%
+    insert("x~exp(log(10)*x)", x = getSymbols(mytrafo[[i]])) %>%
+    {.}
+
+  p <- P(trafo)
+
+  pars0 <- 
+    c(
+      kcat_line1	=	0	, # 1
+      Km_line1  	=	2	, # 2
+      k2_line1  	=	-2	, # 3
+      s1_1      	=	0	, # 4
+      A_line1   	=	2	, # 5
+      s1_2      	=	1	, # 6
+      kcat_line2	=	0	, # 7
+      Km_line2  	=	2.2	, # 8
+      k2_line2  	=	-1	, # 9
+      A_line2   	=	2.3	, # 10
+      kcat_line3	=	0	, # 11
+      Km_line3  	=	2.2 , # 12
+      k2_line3  	=	-1	, # 13
+      A_line3   	=	3	  # 14 
+    )
+getConditions(p)
+covtable %>% rownames()
+  
+model <-
+  dMod.frame("1", g,x,p, NULL, NULL, pars = list(pars0), covtable = list(covtable)) %>%
+    simulate_data(timesD = c(0,3,5,10), seed_data = 1, seed_pars = 1) %>% 
+    appendObj(pars = list(pars))
+
+saveRDS(model, "model0.rds")
+model <- readDMod.frame("model0.rds")
+# checkout_hypothesis(model,1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

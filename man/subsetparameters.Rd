@@ -6,6 +6,11 @@
 \usage{
 subsetparameters(parf, parameters)
 }
+\arguments{
+\item{parf}{parframe}
+
+\item{parameters}{keine ahnung mehr?}
+}
 \description{
 Select parameter columns of parframe
 }

@@ -7,7 +7,7 @@
 get_parcolindices(myparframe)
 }
 \arguments{
-\item{myparframe}{}
+\item{myparframe}{.}
 }
 \description{
 Title

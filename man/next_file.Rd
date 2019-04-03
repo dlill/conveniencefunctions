@@ -8,7 +8,9 @@ next_file(addition = "", base_name = "", fileext = "png",
   filepath = ".", purge = FALSE)
 }
 \arguments{
-\item{basename, fileext, filepath, addition}{strings that are concatenated like this: paste0(filepath, basename, NUMBER, addition, fileext)}
+\item{addition, base_name, fileext, filepath}{filename parts}
+
+\item{purge}{delete all files}
 }
 \value{
 character

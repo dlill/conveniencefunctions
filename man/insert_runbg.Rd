@@ -13,6 +13,12 @@ insert_runbg(job_name = "myrunbg_job", job_type = NULL,
 \item{job_type}{character, options: fit, profile, profile_steps}
 
 \item{dMod.frame}{character "dMod.frame"}
+
+\item{tol}{1 used for profile_steps}
+
+\item{nsteps}{3}
+
+\item{distribute}{vec of names of ssh machines c("knecht1", "knecht2")}
 }
 \description{
 Insert a runbg job

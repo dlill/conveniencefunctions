@@ -21,11 +21,3 @@ update_hypothesis(dMod.frame, exclude = NULL, include = NULL,
 \description{
 Update a hypothesis
 }
-\examples{
-remove("doedel")
-dMod.frame <- tibble(hypothesis = "one", doedel = "blabla", wup = "wup")
-
-hypothesis = "one"
-doedel <- "yay"
-update_hypothesis(dMod.frame)
-}

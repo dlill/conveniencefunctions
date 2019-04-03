@@ -4,7 +4,7 @@ Title: Convenience Functions
 Version: 0.1.0
 Author: Daniel Lill
 Maintainer: Daniel Lill <daniel.lill@physik.uni-freiburg.de>
-Description: Collection of functions for convenience and some other stuff
+Description: Collection of functions for convenience and some other stuff. This package is used mainly for personal use and plaground.
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
@@ -17,6 +17,7 @@ Imports:
   plotly,
   rlang,
   dplyr,
-  git2r
+  git2r,
+  GGally
 RoxygenNote: 6.1.0
 Suggests: testthat

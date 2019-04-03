@@ -69,7 +69,10 @@ meld_strings <- function(string1, string2, string3 = NULL, filenames = "dummymel
 
 #' meld-diff two functions
 #'
-#' @param function1,function2
+#' @param function1,function2 functions 
+#' @param filenames .
+#' @param do_unlink delete files afterwards
+#' @param do_trim str_trim the function outputs
 #'
 #' @return side-effect
 #' @export
@@ -144,7 +147,8 @@ setwd_this_doc <- function() {
 #'
 #' Create filenames myfile001.png myfile002.png ... automatically
 #'
-#' @param basename,fileext,filepath,addition strings that are concatenated like this: paste0(filepath, basename, NUMBER, addition, fileext)
+#' @param addition,base_name,fileext,filepath filename parts
+#' @param purge delete all files
 #'
 #' @author dww from stackoverflow https://stackoverflow.com/questions/54752246/automatic-file-numbering-in-ggsave-as-in-png
 #' @return character
