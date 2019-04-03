@@ -68,6 +68,9 @@ datatimes <- function(data, n = 500){
 #' @param x .
 #' @param ... .
 #' @export
+#' 
+#' @importFrom dMod as.datalist
+#' 
 as.datalist.datalist <- function(x,...){
   dMod:::as.datalist.list(x,...)
 }

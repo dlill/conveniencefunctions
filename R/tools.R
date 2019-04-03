@@ -8,6 +8,7 @@
 #' @export
 #'
 #' @examples
+#' @importFrom devtools load_all
 load_cf <- function() {
   devtools::load_all("~/Promotion/Projects/conveniencefunctions/")
 }
@@ -27,18 +28,6 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 
 
 
-# check2sink ----
-
-#' Write the output of the check to a file
-#'
-#' @param path where the output should be sunk to
-#'
-#' @export
-check2sink <- function(path = "check.txt") {
-  sink(path)
-  devtools::check(args = c('--as-cran'), build_args = c('--no-build-vignettes'))
-  sink()
-}
 
 # diff ----
 

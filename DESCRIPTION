@@ -18,6 +18,7 @@ Imports:
   rlang,
   dplyr,
   git2r,
-  GGally
+  GGally,
+  devtools
 RoxygenNote: 6.1.0
 Suggests: testthat
