@@ -21,7 +21,7 @@ side-effect
 Compare two strings in meld
 }
 \examples{
-meld_functions(lm, glm)
+\dontrun{meld_functions(lm, glm)}
 }
 \seealso{
 Other meld-functions: \code{\link{meld_functions}}

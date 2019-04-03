@@ -13,7 +13,7 @@ print_mathematica.character(mycharacter)
 Print a character in mathematica format
 }
 \examples{
- print_mathematica.character(paste0(letters, "_", letters))
+ \dontrun{print_mathematica.character(paste0(letters, "_", letters))}
 }
 \seealso{
 Other printtools: \code{\link{print_mathematica.eqnlist}},

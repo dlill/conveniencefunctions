@@ -13,7 +13,7 @@ print_mathematica.matrix(mat, name_in_mathematica = "M")
 Print mathematica
 }
 \examples{
-print_mathematica.matrix(diag(1:5))
+\dontrun{print_mathematica.matrix(diag(1:5))}
 }
 \seealso{
 Other printtools: \code{\link{print_mathematica.character}},

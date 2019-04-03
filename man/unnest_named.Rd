@@ -25,8 +25,5 @@ df <- tibble(a = 1:2, b = list(c(d = 1, e = 2), c(e = 2, f = 4)), g = list(1, 2:
 
 df \%>\% unnest(b)
 
-df \%>\% spread_list_column(a,b) \%>\%
-  print
-
 df \%>\% unnest_named(a,b)
 }

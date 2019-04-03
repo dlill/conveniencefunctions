@@ -53,7 +53,7 @@ check2sink <- function(path = "check.txt") {
 #'
 #' @family meld-functions
 #' @examples
-#' meld_functions(lm, glm)
+#' \dontrun{meld_functions(lm, glm)}
 meld_strings <- function(string1, string2, string3 = NULL, filenames = "dummymeldcomparison", do_unlink = T) {
   writeLines(string1, paste0(filenames, "1.txt"))
   writeLines(string2, paste0(filenames, "2.txt"))
@@ -76,7 +76,7 @@ meld_strings <- function(string1, string2, string3 = NULL, filenames = "dummymel
 #'
 #' @family meld-functions
 #' @examples
-#' meld_functions(lm, glm)
+#' \dontrun{meld_functions(lm, glm)}
 meld_functions <- function(function1, function2, filenames = "dummymeldcomparison", do_unlink = T, do_trim = F) {
   string1 <- capture.output(print(function1))
   string2 <- capture.output(print(function2))
@@ -151,7 +151,7 @@ setwd_this_doc <- function() {
 #' @export
 #'
 #' @examples
-#' nextfile()
+#' next_file()
 next_file <-  function(addition = "", base_name = '', fileext = 'png', filepath = '.', purge = FALSE){
 
   if (exists(".base_name", .GlobalEnv) & str_length(base_name) == 0){
@@ -429,7 +429,7 @@ are_names_of <- function(char_vec, value, ...) {
 #' @examples
 #' vec <- letters[1:3] %>% are_names_of(0)
 #' vals <- letters[2:4] %>% are_names_of(1)
-#' insert_values(vec, vals)
+#' insert_values_by_name(vec, vals)
 insert_values_by_name <- function(vec, values) {
   oldnames <- names(vec)
   vec <- sort_by_name(vec)
@@ -654,9 +654,6 @@ time_to_seed <- function(){ date() %>% as.character.Date() %>% stringr::str_extr
 #' df <- tibble(a = 1:2, b = list(c(d = 1, e = 2), c(e = 2, f = 4)), g = list(1, 2:3)) #%>% map(setNames, nm = c("c", "d")))
 #'
 #' df %>% unnest(b)
-#'
-#' df %>% spread_list_column(a,b) %>%
-#'   print
 #'
 #' df %>% unnest_named(a,b)
 unnest_named <- function(df, key, value) {

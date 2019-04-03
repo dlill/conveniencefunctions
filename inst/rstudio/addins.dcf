@@ -1,7 +1,3 @@
-Name: Insert setwd
-Description: Inserts `%T>%` at the cursor position.
-Binding: insert_setwd
-Interactive: false
 
 Name: Stage Documentation
 Description: Stage files in man/ and NAMESPACE

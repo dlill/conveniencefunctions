@@ -20,5 +20,5 @@ Insert values from another vector with some shared names
 \examples{
 vec <- letters[1:3] \%>\% are_names_of(0)
 vals <- letters[2:4] \%>\% are_names_of(1)
-insert_values(vec, vals)
+insert_values_by_name(vec, vals)
 }

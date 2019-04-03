@@ -13,7 +13,7 @@ print_mathematica.name_equals_value(vec)
 Print the values such that they are assignments in mathematica
 }
 \examples{
-print_mathematica.name_equals_value(c(a = 1, b = 2))
+\dontrun{print_mathematica.name_equals_value(c(a = 1, b = 2))}
 }
 \seealso{
 Other printtools: \code{\link{print_mathematica.character}},

@@ -17,7 +17,7 @@ character
 Create filenames myfile001.png myfile002.png ... automatically
 }
 \examples{
-nextfile()
+next_file()
 }
 \author{
 dww from stackoverflow https://stackoverflow.com/questions/54752246/automatic-file-numbering-in-ggsave-as-in-png

@@ -16,5 +16,5 @@ insertion into your script
 Print data.frame as tribble-call
 }
 \examples{
-print_r.df2tribble(mydf)
+\dontrun{print_r.df2tribble(mydf)}
 }

@@ -17,7 +17,7 @@ print_r.named_vector(myvec, vec_name = "pars", indices = T)
 nicely formatted dput for named vectors
 }
 \examples{
-letters[1:5] \%>\% are_names_of(0) \%>\% print_r.named_vector
+\dontrun{letters[1:5] \%>\% are_names_of(0) \%>\% print_r.named_vector}
 }
 \seealso{
 Other printtools: \code{\link{print_mathematica.character}},

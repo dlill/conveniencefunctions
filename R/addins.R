@@ -151,14 +151,6 @@ insert_unit_test <- function(context = "Context", description= "test_what") {
 }
 
 
-#' Insert setwd
-#'
-#' @export
-#'
-#' @importFrom magrittr %>%
-insert_setwd <- function() {
-  rstudioapi::getActiveDocumentContext() %>% docpath2dirpath() %>% paste0('setwd("',.,'")') %>% rstudioapi::insertText()
-}
 
 
 # insert runbg----

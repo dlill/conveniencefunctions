@@ -17,7 +17,7 @@ side-effect
 meld-diff two functions
 }
 \examples{
-meld_functions(lm, glm)
+\dontrun{meld_functions(lm, glm)}
 }
 \seealso{
 Other meld-functions: \code{\link{meld_strings}}

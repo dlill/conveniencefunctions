@@ -33,3 +33,30 @@ snippet nsubsubsection
 	# .... ${1:title} ----
 	# ------------------------------------- #
 
+
+snippet seqlenout
+	seq(${1:0}, ${2:1}, length.out = ${3:200})
+
+snippet ggsavenext
+	ggsave(next_file(base_name = .base_name))
+
+snippet plotdir
+	setwd(here("Outputs", outdir))
+	plotdir <- "${1:plots}"
+	unlink(plotdir, TRUE)
+	dir.create(plotdir)
+	setwd(plotdir)
+	png("${2:plots}%03d.png", 1000, 800)
+
+snippet hereout
+	here("Outputs", outdir)
+
+snippet setwdhereout
+	setwd(here("Outputs", outdir))
+	
+snippet hereoutputs
+	here("Outputs", "S${1:x}_outputs")
+
+snippet herescripts
+	here("Scripts")
+

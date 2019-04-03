@@ -8,10 +8,10 @@
 #' @family printtools
 #'
 #' @examples
-#' NULL %>%
+#' \dontrun{NULL %>%
 #'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
 #'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
-#'   print_mathematica.eqnlist
+#'   print_mathematica.eqnlist}
 print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
     as.eqnvec() %>%
     print_mathematica.eqnvec}
@@ -24,11 +24,11 @@ print_mathematica.eqnlist <- function(myeqnlist) {myeqnlist %>%
 #' @family printtools
 #'
 #' @examples
-#' NULL %>%
+#' \dontrun{NULL %>%
 #'   addReaction("A", "B", "k1*A", "conversion A to B") %>%
 #'   addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
 #'   as.eqnvec %>%
-#'   print_mathematica.eqnlist
+#'   print_mathematica.eqnlist}
 print_mathematica.eqnvec <- function(myeqnvec) {
   myeqnvec %>%
   {structure(as.character(.), names = names(.))} %>%
@@ -48,7 +48,7 @@ print_mathematica.eqnvec <- function(myeqnvec) {
 #' @family printtools
 #'
 #' @examples
-#'  print_mathematica.character(paste0(letters, "_", letters))
+#'  \dontrun{print_mathematica.character(paste0(letters, "_", letters))}
 print_mathematica.character <-  function(mycharacter) {
   list(
     mycharacter %>%
@@ -71,7 +71,7 @@ print_mathematica.character <-  function(mycharacter) {
 #' @family printtools
 #'
 #' @examples
-#' print_mathematica.name_equals_value(c(a = 1, b = 2))
+#' \dontrun{print_mathematica.name_equals_value(c(a = 1, b = 2))}
 print_mathematica.name_equals_value <- function(vec) {vec %>% paste0(names(.), " = ", . , ";\n") %>% paste0(collapse = "") %>% cat}
 
 
@@ -86,7 +86,7 @@ print_mathematica.name_equals_value <- function(vec) {vec %>% paste0(names(.), "
 #' @family printtools
 #'
 #' @examples
-#' print_mathematica.matrix(diag(1:5))
+#' \dontrun{print_mathematica.matrix(diag(1:5))}
 print_mathematica.matrix <- function(mat, name_in_mathematica = "M") {
   mat %>%
     apply(1, function(myrow) {
@@ -111,7 +111,7 @@ print_mathematica.matrix <- function(mat, name_in_mathematica = "M") {
 #' @family printtools
 #'
 #' @examples
-#' letters[1:5] %>% are_names_of(0) %>% print_r.named_vector
+#' \dontrun{letters[1:5] %>% are_names_of(0) %>% print_r.named_vector}
 print_r.named_vector <- function(myvec, vec_name = "pars", indices = T) {
   mytext <- myvec
   if(!indices) {
@@ -170,7 +170,7 @@ print_r.eqnlist2addReaction_pipe <- function(reactions){
 #' @export
 #'
 #' @examples
-#' print_r.df2tribble(mydf)
+#' \dontrun{print_r.df2tribble(mydf)}
 print_r.df2tribble <- function(df, FLAGround = F) {
   nm <- names(df)
   nm <- paste0("~", nm) %>% paste0(collapse = ", ")
@@ -188,21 +188,7 @@ print_r.df2tribble <- function(df, FLAGround = F) {
 }
 
 
-#' Print a string with comments into your script
-#'
-#' @param vec
-#'
-#' @return
-#' @export
-#'
-#' @examples
-print_rscript_comment <- function(vec) {
-  vec %>%
-    paste0("# ", 1:length(.)," ", .) %>%
-    {sprintf(paste0("%-", max(str_length(.))+3, "s #"),.)} %>%
-    paste0(collapse = "\n") %>%
-    rstudioapi::insertText()
-}
+
 
 
 # R Console ----

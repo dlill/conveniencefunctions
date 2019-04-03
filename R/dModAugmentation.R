@@ -585,7 +585,7 @@ plotData  <- function(data,...) {
 #' @export
 #'
 #' @examples
-plotAsDatalist <- function(x, ..., smooth = T, se = FALSE) {
+plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
   myplot <- x %>% as.data.frame() %>% as.datalist()
   myplot <- plotData(myplot, ...)
   if(smooth)
@@ -667,13 +667,13 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
 #' @export
 #'
 #' @examples
-plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
+plotData.tbl_df <- function(data, hypothesis = 1, ... ) {
 
   dots <- substitute(alist(...))
-  if(is.character(hypothesis)) hypothesis <- which(dMod.frame$hypothesis == hypothesis)
+  if(is.character(hypothesis)) hypothesis <- which(data$hypothesis == hypothesis)
 
-  plotData.datalist(dMod.frame[["data"]][[hypothesis]], ...) +
-    ggtitle(label = paste0(dMod.frame[["hypothesis"]][[hypothesis]], "\n",
+  plotData.datalist(data[["data"]][[hypothesis]], ...) +
+    ggtitle(label = paste0(data[["hypothesis"]][[hypothesis]], "\n",
                            paste0(paste(names(dots), "=", dots )[-1], collapse = "\n")) )
 }
 
@@ -689,8 +689,8 @@ plotData.tbl_df <- function(dMod.frame, hypothesis = 1, ... ) {
 #' @param ... sdf
 #' @param plotErrorBands sdf
 #' @export
-plotCombined <- function(prediction,...) {
-  UseMethod("plotCombined", prediction)
+plotCombined <- function(x,...) {
+  UseMethod("plotCombined", x)
 }
 
 
@@ -700,32 +700,32 @@ plotCombined <- function(prediction,...) {
 #'
 #' @details Works with multiple steps (index as a vector). I recommend then using it with \code{aesthetics = c(linetype= "step_")}
 #' to access the step-information
-plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
+plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
 
   dots <- substitute(alist(...))
   message("If you want to subset() the plot, specify hypothesis AND index")
-  if(is.character(hypothesis)) hypothesis <- which(model$hypothesis == hypothesis)
+  if(is.character(hypothesis)) hypothesis <- which(x$hypothesis == hypothesis)
 
-  data <- model[["data"]][[hypothesis]]
+  data <- x[["data"]][[hypothesis]]
   prediction <- title <- NULL
-  if (is.null(model[["parframes"]])) {
-    prediction <- model[["prd"]][[hypothesis]](model[["times"]][[hypothesis]],
-                                               model[["pars"]][[hypothesis]],
+  if (is.null(x[["parframes"]])) {
+    prediction <- x[["prd"]][[hypothesis]](x[["times"]][[hypothesis]],
+                                               x[["pars"]][[hypothesis]],
                                                deriv = F,
-                                               fixed = model[["fixed"]][[hypothesis]])
-    title <- paste(model[["hypothesis"]][[hypothesis]], "initiated with predefined (probably random) parameters")
+                                               fixed = x[["fixed"]][[hypothesis]])
+    title <- paste(x[["hypothesis"]][[hypothesis]], "initiated with predefined (probably random) parameters")
   }
 
-  if (!is.null(model[["parframes"]])) {
+  if (!is.null(x[["parframes"]])) {
 
     # browser()
 
     prediction <- map(index, function(ind) {
-      myparvec <- as.parvec(model[["parframes"]][[hypothesis]], index = ind)
-      prediction <- model[["prd"]][[hypothesis]](model[["times"]][[hypothesis]],
+      myparvec <- as.parvec(x[["parframes"]][[hypothesis]], index = ind)
+      prediction <- x[["prd"]][[hypothesis]](x[["times"]][[hypothesis]],
                                                  pars = myparvec,
                                                  deriv = F,
-                                                 fixed = model[["fixed"]][[hypothesis]])
+                                                 fixed = x[["fixed"]][[hypothesis]])
       prediction <- map(prediction, function(.x) {attr(.x, "step") <- ind; .x})
       prediction
     }) %>%
@@ -734,9 +734,9 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
 
     title <- paste0("Indices", paste0(index, collapse = " "))
     if (length(index) > 1){
-      myvalue <- model[["parframes"]][[hypothesis]][index, "value"]
-      title <- paste0(model[["hypothesis"]][[hypothesis]], "\n",
-                      "value = ", round(model[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
+      myvalue <- x[["parframes"]][[hypothesis]][index, "value"]
+      title <- paste0(x[["hypothesis"]][[hypothesis]], "\n",
+                      "value = ", round(x[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
                       paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))}
   }
 
@@ -747,13 +747,13 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
 
   if (plotErrorBands) {
     predicition_with_error <- NULL
-    if (!is.null(model[["e"]][[hypothesis]])){
+    if (!is.null(x[["e"]][[hypothesis]])){
 
-      errorconds <- getConditions(model[["e"]][[hypothesis]])
-      errorobs <- getEquations(model[["e"]][[hypothesis]])
+      errorconds <- getConditions(x[["e"]][[hypothesis]])
+      errorobs <- getEquations(x[["e"]][[hypothesis]])
 
       predicition_with_error <- prediction[errorconds]
-      predicition_with_error <- dMod:::as.data.frame.prdlist(predicition_with_error, data = data[errorconds], errfn = model[["e"]][[hypothesis]])
+      predicition_with_error <- dMod:::as.data.frame.prdlist(predicition_with_error, data = data[errorconds], errfn = x[["e"]][[hypothesis]])
       predicition_with_error <- subset(predicition_with_error, ...)
 
     }
@@ -765,7 +765,7 @@ plotCombined.tbl_df <- function(model, hypothesis = 1, index = 1, ... , plotErro
 
 #' @export
 #' @rdname plotCombined
-plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
+plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
 
   mynames <- c("time", "name", "value", "sigma", "condition", "step_")
   covtable <- NULL
@@ -786,7 +786,7 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
     if (!is.null(transform)) data <- coordTransform(data, transform)
   }
 
-  if (!is.null(prediction)) {
+  if (!is.null(x)) {
     mywide2long <- function(out, keep = 1, na.rm = FALSE) {
       conditions <- names(out)
       outlong <- do.call(rbind, lapply(1:max(c(length(conditions), 1)), function(cond) {
@@ -797,14 +797,14 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
       }))
       return(outlong)
     }
-    prediction <- cbind(mywide2long(prediction), sigma = NA)
-    if (!is.null(data)) prediction <- base::merge(prediction, covtable, by = "condition", all.x = T)
-    prediction <- as.data.frame(dplyr::filter(prediction, ...), stringsAsFactors = F)
-    prediction$step_ <- as.factor(prediction$step_)
-    if (!is.null(transform)) prediction <- coordTransform(prediction, transform)
+    x <- cbind(mywide2long(x), sigma = NA)
+    if (!is.null(data)) x <- base::merge(x, covtable, by = "condition", all.x = T)
+    x <- as.data.frame(dplyr::filter(x, ...), stringsAsFactors = F)
+    x$step_ <- as.factor(x$step_)
+    if (!is.null(transform)) x <- coordTransform(x, transform)
   }
 
-    total <- rbind(prediction[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
+    total <- rbind(x[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
 
 
   if (facet == "wrap"){
@@ -820,8 +820,8 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
     p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
 
-  if (!is.null(prediction))
-    p <- p +  geom_line(data = prediction)
+  if (!is.null(x))
+    p <- p +  geom_line(data = x)
 
   if (!is.null(data))
     p <- p +
@@ -836,7 +836,7 @@ plotCombined.prdlist <- function(prediction, data = NULL, ..., scales = "free", 
 
   p <- p + theme_dMod() + scale_color_dMod()
 
-  attr(p, "data") <- list(data = data, prediction = prediction)
+  attr(p, "data") <- list(data = data, prediction = x)
   return(p)
 
 }
