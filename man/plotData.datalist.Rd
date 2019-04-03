@@ -2,14 +2,14 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{plotData.datalist}
 \alias{plotData.datalist}
-\title{Title}
+\title{Copied from dMod with additional title showing covariates}
 \usage{
 \method{plotData}{datalist}(data, ..., scales = "free", facet = "wrap",
   transform = NULL, aesthetics = NULL)
 }
 \arguments{
-\item{transform}{}
+\item{data, ..., scales, facet, transform}{see dMod::plotData}
 }
 \description{
-Title
+Copied from dMod with additional title showing covariates
 }

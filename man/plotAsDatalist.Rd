@@ -2,10 +2,19 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{plotAsDatalist}
 \alias{plotAsDatalist}
-\title{Quickly plot a tibble}
+\title{Quickly plot data}
 \usage{
 plotAsDatalist(data, ..., smooth = T, se = FALSE)
 }
+\arguments{
+\item{data}{data.frame at least with standard names name time value sigma and covariates}
+
+\item{...}{arguments going to plotData.datalist}
+
+\item{smooth}{add a geom_smooth layer on top}
+
+\item{se}{TRUE: add the se of the geom_smoothing}
+}
 \description{
-Quickly plot a tibble
+Converts data to datalist and then uses plotData.
 }

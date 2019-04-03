@@ -15,15 +15,25 @@ plotCombined(x, ...)
   facet = "wrap", transform = NULL, aesthetics = NULL)
 }
 \arguments{
-\item{...}{sdf}
+\item{x}{prediction or dMod.frame}
 
-\item{hypothesis}{sdf}
+\item{...}{to plotCombined.prdlist}
 
-\item{index}{sdf}
+\item{hypothesis}{numeric length 1}
 
-\item{plotErrorBands}{sdf}
+\item{index}{numeric refers to the fitrank of the fit stored in parframes of the dMod.frame}
 
-\item{model}{sdf}
+\item{plotErrorBands}{TRUE: plot the errormodel as error bands?}
+
+\item{data}{if x is prdlist, add datalist}
+
+\item{scales}{to facet_wrap or grid}
+
+\item{facet}{"wrap" or "grid"}
+
+\item{transform}{coordinate transform}
+
+\item{aesthetics}{named vector going to aes_() in the first call to ggplot. Allows very complex plots}
 }
 \description{
 Plot a list of model predictions and a list of data points in a combined plot

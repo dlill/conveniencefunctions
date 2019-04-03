@@ -7,6 +7,8 @@
 print_r.df2tribble(df, FLAGround = F)
 }
 \arguments{
+\item{df}{a data.frame}
+
 \item{FLAGround}{round numeric columns}
 }
 \value{

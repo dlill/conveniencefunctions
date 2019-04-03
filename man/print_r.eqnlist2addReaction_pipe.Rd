@@ -19,10 +19,6 @@ Other printtools: \code{\link{print_mathematica.character}},
   \code{\link{print_mathematica.matrix}},
   \code{\link{print_mathematica.name_equals_value}},
   \code{\link{print_r.named_vector}}
-
-Other insertfunctions: \code{\link{insert_tee_operator}},
-  \code{\link{insert_tee_print}},
-  \code{\link{insert_unlink}}, \code{\link{split_chunks}}
 }
 \concept{insertfunctions}
 \concept{printtools}

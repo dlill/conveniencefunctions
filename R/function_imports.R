@@ -20,10 +20,10 @@ dMod::getConditions
 # Dummy imports ----
 
 #' @importFrom tidyverse tidyverse_logo
-#' 
-#' @rdname 
-tidyverse::tidyverse_logo()
+#' @rdname ggly
+tidyverse::tidyverse_logo
 
 #' @importFrom here set_here
-here::set_here()
+#' @rdname ggly
+here::set_here
 

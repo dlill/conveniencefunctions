@@ -2,7 +2,7 @@
 % Please edit documentation in R/dMod_doPlots.R
 \name{get_parcolindices}
 \alias{get_parcolindices}
-\title{Title}
+\title{Get indices of parmaeter columns in a parframe}
 \usage{
 get_parcolindices(myparframe)
 }
@@ -10,5 +10,5 @@ get_parcolindices(myparframe)
 \item{myparframe}{.}
 }
 \description{
-Title
+Get indices of parmaeter columns in a parframe
 }

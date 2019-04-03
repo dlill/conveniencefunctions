@@ -6,6 +6,8 @@
 \alias{reexports}
 \alias{ggplotly}
 \alias{getConditions}
+\alias{tidyverse_logo}
+\alias{set_here}
 \title{Reexports}
 \usage{
 ggly(p = ggplot2::last_plot(), width = NULL, height = NULL,
@@ -20,6 +22,10 @@ below to see their documentation.
 \describe{
   \item{dMod}{\code{\link[dMod]{getConditions}}}
 
+  \item{here}{\code{\link[here]{set_here}}}
+
   \item{plotly}{\code{\link[plotly]{ggplotly}}}
+
+  \item{tidyverse}{\code{\link[tidyverse]{tidyverse_logo}}}
 }}
 

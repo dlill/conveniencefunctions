@@ -1,158 +1,3 @@
-#' Addin to insert tee-operator
-#'
-#' @family insertfunctions
-#'
-#' @export
-insert_tee_operator <- function ()
-{
-  rstudioapi::insertText(" %T>% ")
-}
-
-#' Addin to insert tee-operator
-#'
-#' @family insertfunctions
-#'
-#' @export
-insert_tee_print <- function ()
-{
-  rstudioapi::insertText("{.} %T>% print %>%")
-}
-
-#' Addin to insert tee-operator
-#'
-#' @family insertfunctions
-#'
-#' @export
-split_chunks <- function ()
-{
-  rstudioapi::insertText(
-    "
-```
-
-```{r}
-")
-}
-
-
-#' insert unlink
-#'
-#' @family insertfunctions
-#' @export
-insert_unlink <- function() {
-  rstudioapi::insertText('
-unlink(paste0("*.", c("c", "o", "so", "tex")))
-unlink("Fits/", T)
-')
-}
-
-
-#' Addin to insert map(seq_along(x), function(i))
-#'
-#' @export
-insert_seq_along_x_function_i <- function ()
-{
-  rstudioapi::insertText("seq_along(x), function(i) ")
-}
-
-
-# Name: Describe plotValue
-# Description: Inserts a description of the plot at the cursor position.
-# Binding: describe_plotValue
-# Interactive: false
-#
-# Name: Describe plotCombined
-# Description: Inserts a description of the plot at the cursor position.
-# Binding: describe_plotCombined
-# Interactive: false
-#
-# Name: Describe plotPars
-# Description: Inserts a description of the plot at the cursor position.
-# Binding: describe_plotPars
-# Interactive: false
-#
-# Name: Describe plotProfile
-# Description: Inserts a description of the plot at the cursor position.
-# Binding: describe_plotProfile
-# Interactive: false
-
-#' Insert description template
-#'
-#' Describe results in a Rmd-file with these templates.
-#'
-#' @param dMod.frame
-#'
-#' @export
-describe_plotValue <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": There are good bad steps\n")))
-}
-
-
-#' @export
-#' @rdname describe_plotValue
-describe_plotCombined <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The predictions dont fit well/best.\n")))
-}
-
-#' @export
-#' @rdname describe_plotValue
-describe_plotPars <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
-}
-
-
-#' @export
-#' @rdname describe_plotValue
-describe_plotPars <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars are spread out over a wide range.\n")))
-}
-
-#' @export
-#' @rdname describe_plotValue
-describe_plotProfile <- function(dMod.frame = NULL) {
-  rstudioapi::insertText(paste0(paste0("In hypothesis ", dMod.frame$hypothesis, ": The pars  are structurally non-identifiable.\n  The pars  are practically non-identifiable")))
-}
-
-
-
-#' Roxygenize which automatically git adds stuff
-#'
-#' Adds NAMESPACE and man folder
-#'
-#' @export
-stage_documentation <- function() {
-  print(git2r::repository())
-  git2r::add(git2r::repository(), "man/*")
-  git2r::add(git2r::repository(), "NAMESPACE")
-}
-
-
-#' Insert Wolfgang's unit test template
-#'
-#' @param context The context
-#' @param description The description in test_that(description)
-#'
-#' @export
-insert_unit_test <- function(context = "Context", description= "test_what") {
-  rstudioapi::insertText(paste0('# context("', context, '")
-# test_that("', description ,'", {
-
-  #-!Start example code
-  #-! library(conveniencefunctions)
-  #-! library(dMod)
-
-
-  #-!End example code
-
-
-  # Define your expectations here
-
-#})
-  '))
-}
-
-
-
-
 # insert runbg----
 
 #' Insert a runbg job
@@ -350,35 +195,75 @@ if (is.null(job_type)) {
 }
 
 
-# Insert Fit-analysis ----
 
-#' Insert some common plots after mstrust into your Rmarkdown file
+#' Print a header to your console
+#' 
+#' @param insert_in_script boolean
 #'
-#' @param dMod.frame The dMod.frame you want to analyze
 #' @export
-insert_fit_analysis <- function(dMod.frame = "model") {
-fit_analysis <- '
-```{r}
-model %>% plotValues(1, value < 10^6)
-```
-
-```{r}
-model %>% parframes_summary
-```
-
-```{r}
-model %>% plotPars()
-```
-
-```{r}
-model %>% plotCombined(1,1)
-```
-
-
-' %>%
-    str_replace_all("\\bmodel\\b", dMod.frame)
-
-rstudioapi::insertText(fit_analysis)
+#'
+insert_header <- function(insert_in_script = T){
+  header <- paste0(
+    "# ---------------------------------------------------------- #", "\n",
+    "# Purpose ----",                                                   "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# Dependencies (Scripts) ----",                                 "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "# ", "\n",
+    "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "# Header ----",                                                   "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    "rm(list = ls())",                                             "\n",
+    "library(conveniencefunctions)",                               "\n",
+    "setwd(here())", "\n",
+    "\n",
+    '#source(here("Scripts/S00 Auxiliaries.R"))', "\n",
+    "fast <- TRUE", "\n",
+    "\n",
+    'outdir <- "', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '_outputs"', "\n",
+    "if (!dir.exists(here('Outputs', outdir)))", "\n",
+    "  dir.create(here('Outputs', outdir))", "\n",
+    "\n",
+    '.base_name <- "plots_', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '"', "\n",
+    "next_file(purge = TRUE)", "\n"
+  )
+  if (insert_in_script)
+    rstudioapi::insertText(header)
+  return(invisible(header))
 }
 
+
+#' @export
+#' @rdname insert_header
+insert_exit <- function(insert_in_script = T){
+  exit <- paste0(
+    "# ---------------------------------------------------------- #", "\n",
+    "# Exit ----",                                                   "\n",
+    "# ---------------------------------------------------------- #", "\n",
+    'setwd(here("Outputs", outdir))', "\n",
+    '# save.image("workspace_', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '.rda")', "\n",
+    "unlink_dMod()" , "\n",
+    "while(dev.cur() > 1){", "\n",
+    "  dev.off()", "\n",
+    "}", "\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n"
+    
+  )
+  if (insert_in_script)
+    rstudioapi::insertText(exit)
+  return(invisible(exit))
+}
 

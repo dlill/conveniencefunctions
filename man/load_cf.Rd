@@ -3,12 +3,12 @@
 \name{load_cf}
 \alias{load_cf}
 \alias{load_dMod}
-\title{Title}
+\title{Short call to devtools load_all}
 \usage{
 load_cf()
 
 load_dMod()
 }
 \description{
-Title
+Short call to devtools load_all
 }

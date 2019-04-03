@@ -2,13 +2,36 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{plotMulti}
 \alias{plotMulti}
-\title{Title}
+\alias{plotMulti.tbl_df}
+\alias{plotMulti.prdfn}
+\alias{plotMulti.parframe}
+\title{PlotMulti}
 \usage{
 plotMulti(x, ...)
+
+\method{plotMulti}{tbl_df}(x, parframe_filter = NULL, ...)
+
+\method{plotMulti}{prdfn}(x, times, parframe, data = NULL, ...,
+  colorAsFactor = F)
+
+\method{plotMulti}{parframe}(x, parframe_filter = NULL, dModframe, ...)
 }
 \arguments{
-\item{...}{}
+\item{x}{dMod.frame or prdfn}
+
+\item{...}{additional arguments}
+
+\item{parframe_filter}{dplyr-like arguments to filter rows of the parframe in parframes columns of dMod.frame}
+
+\item{times, parframe}{x = prdfn, additional needed arguments to simulate}
+
+\item{data}{x = prdfn, add data to plots}
+
+\item{colorAsFactor}{when only few different predictions are shown, one can use this to better discrimate prediciotns}
 }
 \description{
-Title
+PlotMulti
+}
+\details{
+plotMulti.parframe: don't know why I implemented it...
 }

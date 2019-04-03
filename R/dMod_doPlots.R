@@ -28,10 +28,9 @@ optimal_cuts <- function(vec, possibilities) {
 }
 
 
-#' Title
+#' Get indices of parmaeter columns in a parframe
 #'
 #' @param myparframe .
-#'
 #'
 #' @export
 get_parcolindices <- function(myparframe) {

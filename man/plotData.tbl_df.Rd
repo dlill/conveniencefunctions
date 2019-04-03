@@ -2,13 +2,17 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{plotData.tbl_df}
 \alias{plotData.tbl_df}
-\title{Title}
+\title{PlotData.tbl_df from dMod}
 \usage{
 \method{plotData}{tbl_df}(data, hypothesis = 1, ...)
 }
 \arguments{
-\item{...}{}
+\item{data}{a dMod.frame, is just called data for S3 consistency}
+
+\item{hypothesis}{1}
+
+\item{...}{to plotData.datalist}
 }
 \description{
-Title
+PlotData.tbl_df from dMod
 }

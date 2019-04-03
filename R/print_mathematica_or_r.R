@@ -163,7 +163,7 @@ print_r.eqnlist2addReaction_pipe <- function(reactions){
 
 #' Print data.frame as tribble-call
 #'
-#' @param df
+#' @param df a data.frame
 #' @param FLAGround round numeric columns
 #'
 #' @return insertion into your script

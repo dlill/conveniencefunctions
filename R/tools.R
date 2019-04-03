@@ -2,12 +2,10 @@
 
 # R -e 'devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = F)'
 
-#' Title
+#' Short call to devtools load_all
 #'
-#' @return
 #' @export
 #'
-#' @examples
 #' @importFrom devtools load_all
 load_cf <- function() {
   devtools::load_all("~/Promotion/Projects/conveniencefunctions/")

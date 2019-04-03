@@ -36,7 +36,7 @@ getParameters.parframe <- function(x) {
 #' @param parf parframe
 #' @param parameters keine ahnung mehr?
 #'
-#'@export
+#' @export
 subsetparameters <- function(parf, parameters) {
   metanames <- setdiff(attr(parf, "names"), getParameters(parf))
   parf %>% as.data.frame() %>% .[c(metanames, parameters)] %>% parframe(.,setdiff(names(.), metanames), metanames)
@@ -582,11 +582,16 @@ plotData  <- function(data,...) {
 }
 
 
-#' Quickly plot a tibble
+#' Quickly plot data
+#' 
+#' Converts data to datalist and then uses plotData. 
+#'
+#' @param data data.frame at least with standard names name time value sigma and covariates
+#' @param ... arguments going to plotData.datalist
+#' @param smooth add a geom_smooth layer on top
+#' @param se TRUE: add the se of the geom_smoothing
 #'
 #' @export
-#'
-#' @examples
 plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
   myplot <- x %>% as.data.frame() %>% as.datalist()
   myplot <- plotData(myplot, ...)
@@ -598,18 +603,11 @@ plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
 
 
 
-#' Title
+#' Copied from dMod with additional title showing covariates
 #'
-#' @param data
-#' @param ...
-#' @param scales
-#' @param facet
-#' @param transform
+#' @param data,...,scales,facet,transform see dMod::plotData
 #'
-#' @return
 #' @export
-#'
-#' @examples
 plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
 
   rownames_to_condition <- function(covtable) {
@@ -659,16 +657,13 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
 
 }
 
-#' Title
+#' PlotData.tbl_df from dMod
 #'
-#' @param dMod.frame
-#' @param hypothesis
-#' @param ...
+#' @param data a dMod.frame, is just called data for S3 consistency
+#' @param hypothesis 1
+#' @param ... to plotData.datalist
 #'
-#' @return
 #' @export
-#'
-#' @examples
 plotData.tbl_df <- function(data, hypothesis = 1, ... ) {
 
   dots <- substitute(alist(...))
@@ -685,11 +680,16 @@ plotData.tbl_df <- function(data, hypothesis = 1, ... ) {
 # ----------------------------------------------- #
 
 #' Plot a list of model predictions and a list of data points in a combined plot
-#' @param model sdf
-#' @param hypothesis sdf
-#' @param index sdf
-#' @param ... sdf
-#' @param plotErrorBands sdf
+#' @param x prediction or dMod.frame
+#' @param hypothesis numeric length 1
+#' @param index numeric refers to the fitrank of the fit stored in parframes of the dMod.frame
+#' @param ... to plotCombined.prdlist
+#' @param plotErrorBands TRUE: plot the errormodel as error bands?
+#' @param data if x is prdlist, add datalist
+#' @param scales to facet_wrap or grid
+#' @param facet "wrap" or "grid"
+#' @param transform coordinate transform
+#' @param aesthetics named vector going to aes_() in the first call to ggplot. Allows very complex plots
 #' @export
 plotCombined <- function(x,...) {
   UseMethod("plotCombined", x)
@@ -847,30 +847,23 @@ plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "
 # .. plotMulti ----
 # ----------------------------------------------- #
 
-#' Title
+#' PlotMulti
 #'
-#' @param x
-#' @param ...
-#'
-#' @return
+#' @param x dMod.frame or prdfn
+#' @param ... additional arguments
+#' @param parframe_filter dplyr-like arguments to filter rows of the parframe in parframes columns of dMod.frame
+#' @param times,parframe x = prdfn, additional needed arguments to simulate
+#' @param data x = prdfn, add data to plots
+#' @param colorAsFactor when only few different predictions are shown, one can use this to better discrimate prediciotns
+#' 
 #' @export
-#'
-#' @examples
 plotMulti <- function(x,...) {
   UseMethod("plotMulti", x)
 }
 
 
-#' Title
-#'
-#' @param x
-#' @param parframe_filter
-#' @param ...
-#'
-#' @return
 #' @export
-#'
-#' @examples
+#' @rdname plotMulti
 plotMulti.tbl_df <- function(x, parframe_filter = NULL, ...) {
 
   prd <- x[["prd"]][[1]]
@@ -886,19 +879,8 @@ plotMulti.tbl_df <- function(x, parframe_filter = NULL, ...) {
   plotMulti.prdfn(prd, times, myparframe, data, ...)
 }
 
-#' Title
-#'
-#' @param x
-#' @param times
-#' @param parframe
-#' @param data
-#' @param ...
-#' @param colorAsFactor
-#'
-#' @return
 #' @export
-#'
-#' @examples
+#' @rdname plotMulti
 plotMulti.prdfn = function(x, times, parframe, data = NULL, ..., colorAsFactor = F) {
   if (!is.null(data)) {
     rownames_to_condition <- function(covtable) {
@@ -940,17 +922,10 @@ plotMulti.prdfn = function(x, times, parframe, data = NULL, ..., colorAsFactor =
   return(p)
 }
 
-#' Title
-#'
-#' @param x
-#' @param parframe_filter
-#' @param dModframe
-#' @param ...
-#'
-#' @return
+
 #' @export
-#'
-#' @examples
+#' @rdname plotMulti
+#' @details plotMulti.parframe: don't know why I implemented it...
 plotMulti.parframe <- function(x, parframe_filter = NULL, dModframe, ...) {
   dModframe$parframes[[1]] <- x
   plotMulti.tbl_df(dModframe, parframe_filter, ...)
