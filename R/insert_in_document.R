@@ -267,3 +267,22 @@ insert_exit <- function(insert_in_script = T){
   return(invisible(exit))
 }
 
+
+
+#' inserts function assignment of an r-function into the sript
+#'
+#' @param f a function as name
+#' @return called for its side effect
+#' 
+#' @export
+#' @importFrom rstudioapi insertText
+insert_function <- function(f) {
+  fname <- as.character(substitute(f))
+  fbody <- capture.output(print(f))
+  fbody <- fbody[- (length(fbody) - 0:1)]
+  fbody[1] <- paste0(fbody[1], "{")
+  fbody[2:length(fbody)] <- paste0("  ", fbody[2:length(fbody)])
+  fbody <- c(fbody, "}")
+  fbody <- paste0(fbody, collapse = "\n")
+  paste0("\n\n", fname, " <- ", fbody, "\n\n") %>% rstudioapi::insertText()
+}
