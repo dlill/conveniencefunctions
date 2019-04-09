@@ -94,8 +94,19 @@ snippet unittest
 	#})
 
 
+snippet notnamesinnm
+	!(names(${1:object}) %in% c("${2:nm}"))
+
+snippet notnamesinnm_subset_object
+	${1:object}[!(names(${1:object}) %in% c("${2:nm}"))]
 
 
+snippet dropfalse
+	drop = FALSE
+
+
+snippet pascollapseinserttext
+	paste0(collapse = "\n") %>% paste0("\n\n\n") %>% rstudioapi::insertText()
 
 
 
