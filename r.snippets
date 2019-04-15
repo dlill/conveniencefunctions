@@ -43,6 +43,7 @@ snippet remark
 	# >>>> ${1:title} <<<<<<<<----
 	# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ----
 
+
 snippet loadIQRtools
 	devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
 
@@ -112,7 +113,11 @@ snippet dropfalse
 snippet pascollapseinserttext
 	paste0(collapse = "\n") %>% paste0("\n\n\n") %>% rstudioapi::insertText()
 
+snippet pipe
+	${1:object} <- ${2:fun}(${1:object})
 
+snippet seqlennrow
+	seq_len(nrow(${1:df}))
 
-
-
+snippet seqalong
+	seq_along(${1:x})

@@ -25,7 +25,12 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 }
 
 
-
+#' Install cf snippets with snippr
+#' @export
+#' @importFrom snippr snippets_install_github
+install_snippets <- function() {
+  snippr::snippets_install_github("dlill/conveniencefunctions")
+}
 
 # diff ----
 
