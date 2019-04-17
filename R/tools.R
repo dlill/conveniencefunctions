@@ -29,6 +29,8 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 #' @export
 #' @importFrom snippr snippets_install_github
 install_snippets <- function() {
+  if (!file.exists("~/.R/snippets/r.snippets"))
+    file.create("~/.R/snippets/r.snippets")
   snippr::snippets_install_github("dlill/conveniencefunctions")
 }
 
