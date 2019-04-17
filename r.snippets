@@ -105,6 +105,7 @@ snippet unittest
 	#})
 
 
+
 snippet notnamesinnm
 	!(names(${1:object}) %in% c("${2:nm}"))
 
@@ -127,3 +128,6 @@ snippet seqlennrow
 
 snippet seqalong
 	seq_along(${1:x})
+
+snippet mapply
+	mapply(${1:function}, ${2:...}, SIMPLIFY = ${3:FALSE})
