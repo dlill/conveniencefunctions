@@ -25,19 +25,15 @@ snippet section
 
 snippet subsection
 	# ----------------------------------------------- #
-	# ${1:title} ----
-	# ----------------------------------------------- #
-
-snippet nsubsection
-	# ----------------------------------------------- #
 	# .. ${1:title} ----
 	# ----------------------------------------------- #
 
-snippet nsubsubsection
-	# ------------------------------------- #
+snippet subsubsectionLIST
 	# .... ${1:title} ----
-	# ------------------------------------- #
 
+snippet subsectionLIST
+	# .. ${1:title} ----
+	
 snippet remark
 	# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ----
 	# >>>> ${1:title} <<<<<<<<----
@@ -45,6 +41,12 @@ snippet remark
 
 snippet clremark
 	# >>>> ${1:Penner} <<<<<<<<<<<
+
+snippet IQRsubsection
+	# -------------------------------------------------------------------------#
+	# .. ${1:title} ----
+	# -------------------------------------------------------------------------#
+
 
 snippet loadIQRtools
 	devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
@@ -75,6 +77,11 @@ snippet hereoutputs
 
 snippet herescripts
 	here("Scripts")
+
+
+snippet teeprintEnd
+	{.} %T>% print %>%
+	{.}
 
 snippet teeprint
 	{.} %T>% print %>%
@@ -123,3 +130,11 @@ snippet seqlennrow
 
 snippet seqalong
 	seq_along(${1:x})
+
+snippet mapply
+	mapply(${1:function}, ${2:...}, SIMPLIFY = ${3:FALSE})
+
+snippet fourseeds
+	`r {set.seed(Sys.time());  paste0(paste0(sample(0:1000000, 4, T), ","), collapse = " ")}`
+
+
