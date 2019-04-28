@@ -29,7 +29,7 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 #' @export
 #' @importFrom snippr snippets_install_github
 install_snippets <- function() {
-  if (!dir.exists("~/.R/snippets")
+  if (!dir.exists("~/.R/snippets"))
       dir.create("~/.R/snippets")
   if (!file.exists("~/.R/snippets/r.snippets")){
     file.create("~/.R/snippets/r.snippets")
