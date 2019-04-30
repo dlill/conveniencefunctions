@@ -235,9 +235,7 @@ insert_header <- function(insert_in_script = T){
     '.base_name <- "plots_', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '"', "\n",
     "next_file(purge = TRUE)", "\n"
   )
-  if (insert_in_script)
-    rstudioapi::insertText(header)
-  return(invisible(header))
+  return(header)
 }
 
 
@@ -262,9 +260,7 @@ insert_exit <- function(insert_in_script = T){
     "\n"
     
   )
-  if (insert_in_script)
-    rstudioapi::insertText(exit)
-  return(invisible(exit))
+  return(exit)
 }
 
 
