@@ -1,3 +1,9 @@
+snippet cf_header
+	`r conveniencefunctions::insert_header()`
+
+snippet cf_exit
+	`r conveniencefunctions::insert_exit()`
+
 snippet comment
 	# ${1:comment}
 	#
@@ -71,6 +77,9 @@ snippet hereout
 
 snippet setwdhereout
 	setwd(here("Outputs", outdir))
+
+snippet setwdhere
+	setwd(here())
 	
 snippet hereoutputs
 	here("Outputs", "S${1:x}_outputs")
