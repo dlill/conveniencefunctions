@@ -26,11 +26,16 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 
 
 #' Install cf snippets with snippr
+#' 
+#' @param remove_old should old snippets be removed? CAREFUL: deletes ALL custom snippets!
+#' 
 #' @export
 #' @importFrom snippr snippets_install_github
-install_snippets <- function() {
+install_snippets <- function(remove_old = FALSE) {
   if (!dir.exists("~/.R/snippets"))
       dir.create("~/.R/snippets")
+  if (remove_old)
+    try(unlink("~/.R/snippets/r.snippets"))
   if (!file.exists("~/.R/snippets/r.snippets")){
     file.create("~/.R/snippets/r.snippets")
     writeLines("", "~/.R/snippets/r.snippets")
