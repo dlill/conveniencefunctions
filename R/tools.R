@@ -106,6 +106,38 @@ meld_folders <- function(folder1, folder2) {
 
 # system/file interactions ----
 
+#' Update the TODO.md file in the base directory
+#' 
+#' Collect all TODO points in the scripts of a project and write them into TODO.md
+#' 
+#' @importFrom tibble tibble
+#' @importFrom dplyr mutate arrange
+#' @importFrom stringr str_detect str_replace_all str_extract
+#' 
+#' @export
+update_todolist <- function() {
+  # grep all scripts in here("Work/Scripts")---- #
+  setwd(here("Work", "Scripts"))
+  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
+  
+  # .. Create todolist and write to todo.md ----#
+  todo_frame <- tibble(gout = gout) %>% 
+    mutate(done = str_detect(gout, fixed("[x]")),
+           script = str_extract(gout, "^S\\d+\\b"),
+           scriptn= str_extract(script, "\\d.*") %>% as.numeric(),
+           task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+           checkbox = str_extract(gout, "\\[x*\\]")
+    ) %>% 
+    arrange(done, scriptn) %>% 
+    mutate(todolist = paste0(checkbox, " ", script, ": ", task))
+  
+  mysplit <- split(todo_frame, todo_frame$done)
+  # .. write ----#
+  c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", "DONE", "", mysplit[["TRUE"]]$todolist, "", "", "", "*Change todos in Scripts, not here*") %>% 
+    writeLines(here("TODO.md"))
+  return(invisible(NULL))
+}
+
 #' Relative path between two absolute paths
 #'
 #' @param from,to absPaths
