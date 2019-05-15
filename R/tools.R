@@ -27,12 +27,18 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 
 #' Install cf snippets with snippr
 #' 
-#' @param remove_old should old snippets be removed? CAREFUL: deletes ALL custom snippets!
+#' problemat
 #' 
+#' @param remove_old should old snippets be removed? CAREFUL: deletes ALL custom snippets!
+#' @param install_snippr install snippr
 #' @export
-#' @importFrom snippr snippets_install_github
-install_snippets <- function(remove_old = FALSE) {
-  if (!dir.exists("~/.R/snippets"))
+#' @importFrom devtools install_github
+install_snippets <- function(remove_old = FALSE, install_snippr = FALSE) {
+  
+  if (install_snippr && (!"snippr" %in% installed.packages()))
+    devtools::install_github("dgrtwo/snippr")
+  
+  txt <- 'if (!dir.exists("~/.R/snippets"))
       dir.create("~/.R/snippets")
   if (remove_old)
     try(unlink("~/.R/snippets/r.snippets"))
@@ -40,7 +46,8 @@ install_snippets <- function(remove_old = FALSE) {
     file.create("~/.R/snippets/r.snippets")
     writeLines("", "~/.R/snippets/r.snippets")
   }
-  snippr::snippets_install_github("dlill/conveniencefunctions")
+  snippr::snippets_install_github("dlill/conveniencefunctions")'
+  eval(parse(text = txt))
 }
 
 # diff ----
