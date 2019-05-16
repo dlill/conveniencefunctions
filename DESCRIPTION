@@ -19,7 +19,6 @@ Imports:
   dplyr,
   git2r,
   GGally,
-  devtools,
-  snippr
-RoxygenNote: 6.1.0
+  devtools
+RoxygenNote: 6.1.1
 Suggests: testthat

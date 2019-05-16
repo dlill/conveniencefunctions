@@ -68,7 +68,7 @@ snippet ggsavenext
 	ggsave(next_file(base_name = .base_name))
 
 snippet plotdir
-	setwd(here("Outputs", outdir))
+	setwd(here("Work", "Outputs", outdir))
 	plotdir <- "${1:plots}"
 	unlink(plotdir, TRUE)
 	dir.create(plotdir)
@@ -76,19 +76,19 @@ snippet plotdir
 	png("${2:plots}%03d.png", 1000, 800)
 
 snippet hereout
-	here("Outputs", outdir)
+	here("Work", "Outputs", outdir)
 
 snippet setwdhereout
-	setwd(here("Outputs", outdir))
+	setwd(here("Work", "Outputs", outdir))
 
 snippet setwdhere
 	setwd(here())
 	
 snippet hereoutputs
-	here("Outputs", "S${1:x}_outputs")
+	here("Work", "Outputs", "S${1:x}_outputs")
 
 snippet herescripts
-	here("Scripts")
+	here("Work", "Scripts")
 
 
 snippet teeprintEnd
@@ -146,8 +146,11 @@ snippet seqalong
 snippet mapply
 	mapply(${1:function}, ${2:...}, SIMPLIFY = ${3:FALSE})
 
+snippet map
+	map(${1:...})
+
 snippet fourseeds
-	`r {set.seed(Sys.time());  paste0(paste0(sample(0:1000000, 4, T), ","), collapse = " ")}`
+	`r {set.seed(Sys.time()); paste0(paste0(sample(0:1000000, 4, T), ","), collapse = " ")}`
 
 
 snippet setwdScripts
