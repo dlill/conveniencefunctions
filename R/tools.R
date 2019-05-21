@@ -156,8 +156,8 @@ todolist <- function(wd = getwd()) {
   # .. Create todolist and write to todo.md ----#
   todo_frame <- tibble(gout = gout) %>% 
     mutate(done = str_detect(gout, fixed("[x]")),
-           script = str_extract(gout, "^S\\d+\\b"),
-           scriptn= str_extract(script, "\\d.*") %>% as.numeric(),
+           script = str_extract(gout, "^S\\d+"),
+           scriptn= str_extract(script, "\\d+") %>% as.numeric(),
            task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
            checkbox = str_extract(gout, "\\[x*\\]")
     ) %>% 
@@ -167,8 +167,7 @@ todolist <- function(wd = getwd()) {
   mysplit <- split(todo_frame, todo_frame$done)
   # .. write ----#
   out <- c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
-    "DONE", "", mysplit[["TRUE"]]$todolist, "", "", "", 
-    "*Change todos in Scripts, not here*")
+    "DONE", "", mysplit[["TRUE"]]$todolist)
   cat(paste0(out, collapse = "\n"))
   return(invisible(out))
 }
