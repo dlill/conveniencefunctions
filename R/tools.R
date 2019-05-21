@@ -145,6 +145,34 @@ update_todolist <- function() {
   return(invisible(NULL))
 }
 
+#' @export 
+#' @rdname update_todolist
+#' @details todolist takes a directory and doesntwrite the todolist to a file
+todolist <- function(wd = getwd()) {
+  # grep all scripts in here("Work/Scripts")---- #
+  setwd(wd)
+  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
+  
+  # .. Create todolist and write to todo.md ----#
+  todo_frame <- tibble(gout = gout) %>% 
+    mutate(done = str_detect(gout, fixed("[x]")),
+           script = str_extract(gout, "^S\\d+\\b"),
+           scriptn= str_extract(script, "\\d.*") %>% as.numeric(),
+           task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+           checkbox = str_extract(gout, "\\[x*\\]")
+    ) %>% 
+    arrange(done, scriptn) %>% 
+    mutate(todolist = paste0(checkbox, " ", script, ": ", task))
+  
+  mysplit <- split(todo_frame, todo_frame$done)
+  # .. write ----#
+  out <- c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
+    "DONE", "", mysplit[["TRUE"]]$todolist, "", "", "", 
+    "*Change todos in Scripts, not here*")
+  cat(paste0(out, collapse = "\n"))
+  return(invisible(out))
+}
+
 #' Relative path between two absolute paths
 #'
 #' @param from,to absPaths
