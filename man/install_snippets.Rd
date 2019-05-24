@@ -4,8 +4,13 @@
 \alias{install_snippets}
 \title{Install cf snippets with snippr}
 \usage{
-install_snippets()
+install_snippets(remove_old = FALSE, install_snippr = FALSE)
+}
+\arguments{
+\item{remove_old}{should old snippets be removed? CAREFUL: deletes ALL custom snippets!}
+
+\item{install_snippr}{install snippr}
 }
 \description{
-Install cf snippets with snippr
+problemat
 }

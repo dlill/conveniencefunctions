@@ -40,7 +40,7 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
 # ---------------------------------------------------------- #
 # Runbg: ',str_replace(job_name, "_job$", ""), ' ----
 # ---------------------------------------------------------- #
-setwd(here("Outputs", outdir))
+setwd(here("Work","Outputs", outdir))
 ', job_name, ' <- runbg({')
 
   rbg_body <- function() "\n\n"
@@ -64,7 +64,7 @@ setwd(here("Outputs", outdir))
 # ----------------------------------------------- #
 # .. get/save/purge ----
 # ----------------------------------------------- #
-setwd(here("Outputs", outdir))
+setwd(here("Work","Outputs", outdir))
 # ',job_name,'$check()
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
 # ',str_replace(job_name, "_job", ""),' %>% str1
@@ -225,19 +225,17 @@ insert_header <- function(insert_in_script = T){
     "library(conveniencefunctions)",                               "\n",
     "setwd(here())", "\n",
     "\n",
-    '#source(here("Scripts/S00 Auxiliaries.R"))', "\n",
+    'source(here("Work","Scripts/S00 Auxiliaries.R"))', "\n",
     "fast <- TRUE", "\n",
     "\n",
     'outdir <- "', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '_outputs"', "\n",
-    "if (!dir.exists(here('Outputs', outdir)))", "\n",
-    "  dir.create(here('Outputs', outdir))", "\n",
+    "if (!dir.exists(here('Work', 'Outputs', outdir)))", "\n",
+    "  dir.create(here('Work', 'Outputs', outdir))", "\n",
     "\n",
     '.base_name <- "plots_', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '"', "\n",
     "next_file(purge = TRUE)", "\n"
   )
-  if (insert_in_script)
-    rstudioapi::insertText(header)
-  return(invisible(header))
+  return(header)
 }
 
 
@@ -248,7 +246,7 @@ insert_exit <- function(insert_in_script = T){
     "# ---------------------------------------------------------- #", "\n",
     "# Exit ----",                                                   "\n",
     "# ---------------------------------------------------------- #", "\n",
-    'setwd(here("Outputs", outdir))', "\n",
+    'setwd(here("Work", "Outputs", outdir))', "\n",
     '# save.image("workspace_', str_extract(basename(rstudioapi::getActiveDocumentContext()$path), "S[0-9]*"), '.rda")', "\n",
     "unlink_dMod()" , "\n",
     "while(dev.cur() > 1){", "\n",
@@ -260,11 +258,8 @@ insert_exit <- function(insert_in_script = T){
     "\n",
     "\n",
     "\n"
-    
   )
-  if (insert_in_script)
-    rstudioapi::insertText(exit)
-  return(invisible(exit))
+  return(exit)
 }
 
 

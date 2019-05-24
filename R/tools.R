@@ -26,12 +26,28 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 
 
 #' Install cf snippets with snippr
+#' 
+#' problemat
+#' 
+#' @param remove_old should old snippets be removed? CAREFUL: deletes ALL custom snippets!
+#' @param install_snippr install snippr
 #' @export
-#' @importFrom snippr snippets_install_github
-install_snippets <- function() {
-  if (!file.exists("~/.R/snippets/r.snippets"))
+#' @importFrom devtools install_github
+install_snippets <- function(remove_old = FALSE, install_snippr = FALSE) {
+  
+  if (install_snippr && (!"snippr" %in% installed.packages()))
+    devtools::install_github("dgrtwo/snippr")
+  
+  txt <- 'if (!dir.exists("~/.R/snippets"))
+      dir.create("~/.R/snippets")
+  if (remove_old)
+    try(unlink("~/.R/snippets/r.snippets"))
+  if (!file.exists("~/.R/snippets/r.snippets")){
     file.create("~/.R/snippets/r.snippets")
-  snippr::snippets_install_github("dlill/conveniencefunctions")
+    writeLines("", "~/.R/snippets/r.snippets")
+  }
+  snippr::snippets_install_github("dlill/conveniencefunctions")'
+  eval(parse(text = txt))
 }
 
 # diff ----
@@ -96,6 +112,66 @@ meld_folders <- function(folder1, folder2) {
 
 
 # system/file interactions ----
+
+#' Update the TODO.md file in the base directory
+#' 
+#' Collect all TODO points in the scripts of a project and write them into TODO.md
+#' 
+#' @importFrom tibble tibble
+#' @importFrom dplyr mutate arrange
+#' @importFrom stringr str_detect str_replace_all str_extract
+#' 
+#' @export
+update_todolist <- function() {
+  # grep all scripts in here("Work/Scripts")---- #
+  setwd(here("Work", "Scripts"))
+  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
+  
+  # .. Create todolist and write to todo.md ----#
+  todo_frame <- tibble(gout = gout) %>% 
+    mutate(done = str_detect(gout, fixed("[x]")),
+           script = str_extract(gout, "^S\\d+\\b"),
+           scriptn= str_extract(script, "\\d.*") %>% as.numeric(),
+           task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+           checkbox = str_extract(gout, "\\[x*\\]")
+    ) %>% 
+    arrange(done, scriptn) %>% 
+    mutate(todolist = paste0(checkbox, " ", script, ": ", task))
+  
+  mysplit <- split(todo_frame, todo_frame$done)
+  # .. write ----#
+  c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", "DONE", "", mysplit[["TRUE"]]$todolist, "", "", "", "*Change todos in Scripts, not here*") %>% 
+    writeLines(here("TODO.md"))
+  return(invisible(NULL))
+}
+
+#' @export 
+#' @rdname update_todolist
+#' @details todolist takes a directory and doesntwrite the todolist to a file
+todolist <- function(wd = getwd()) {
+  # grep all scripts in here("Work/Scripts")---- #
+  setwd(wd)
+  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
+  
+  # .. Create todolist and write to todo.md ----#
+  todo_frame <- tibble(gout = gout) %>% 
+    mutate(done = str_detect(gout, fixed("[x]")),
+           script = str_extract(gout, "^S\\d+\\b"),
+           scriptn= str_extract(script, "\\d.*") %>% as.numeric(),
+           task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+           checkbox = str_extract(gout, "\\[x*\\]")
+    ) %>% 
+    arrange(done, scriptn) %>% 
+    mutate(todolist = paste0(checkbox, " ", script, ": ", task))
+  
+  mysplit <- split(todo_frame, todo_frame$done)
+  # .. write ----#
+  out <- c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
+    "DONE", "", mysplit[["TRUE"]]$todolist, "", "", "", 
+    "*Change todos in Scripts, not here*")
+  cat(paste0(out, collapse = "\n"))
+  return(invisible(out))
+}
 
 #' Relative path between two absolute paths
 #'
