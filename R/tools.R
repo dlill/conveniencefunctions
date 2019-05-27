@@ -149,7 +149,7 @@ update_todolist <- function() {
 #' @rdname update_todolist
 #' @details todolist takes a directory and doesnt write the todolist to a file
 todolist <- function(wd = getwd()) {
-
+  oldwd <- getwd()
   # grep all scripts in here("Work/Scripts")---- #
   setwd(wd)
   gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
@@ -170,6 +170,8 @@ todolist <- function(wd = getwd()) {
   out <- c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
     "DONE", "", mysplit[["TRUE"]]$todolist)
   cat(paste0(out, collapse = "\n"))
+  
+  setwd(oldwd)
   return(invisible(out))
 }
 
