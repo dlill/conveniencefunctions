@@ -13,5 +13,5 @@ todolist(wd = getwd())
 Collect all TODO points in the scripts of a project and write them into TODO.md
 }
 \details{
-todolist takes a directory and doesntwrite the todolist to a file
+todolist takes a directory and doesnt write the todolist to a file
 }

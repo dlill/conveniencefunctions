@@ -119,7 +119,7 @@ meld_folders <- function(folder1, folder2) {
 #' 
 #' @importFrom tibble tibble
 #' @importFrom dplyr mutate arrange
-#' @importFrom stringr str_detect str_replace_all str_extract
+#' @importFrom stringr str_detect str_replace_all str_extract fixed
 #' 
 #' @export
 update_todolist <- function() {
