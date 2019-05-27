@@ -131,7 +131,7 @@ update_todolist <- function() {
   todo_frame <- tibble(gout = gout) %>% 
     mutate(done = str_detect(gout, fixed("[x]")),
            script = str_extract(gout, "^S\\d+\\b"),
-           scriptn= str_extract(script, "\\d.*") %>% as.numeric(),
+           scriptn= as.numeric(str_extract(script, "\\d.*")),
            task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
            checkbox = str_extract(gout, "\\[x*\\]")
     ) %>% 
@@ -158,7 +158,7 @@ todolist <- function(wd = getwd()) {
   todo_frame <- tibble(gout = gout) 
   todo_frame <- mutate(todo_frame, done = str_detect(gout, fixed("[x]")),
            script = str_extract(gout, "^S\\d+"),
-           scriptn= str_extract(script, "\\d+") %>% as.numeric(),
+           scriptn= as.numeric(str_extract(script, "\\d.*")),
            task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
            checkbox = str_extract(gout, "\\[x*\\]")
     )
