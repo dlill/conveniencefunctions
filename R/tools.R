@@ -147,22 +147,23 @@ update_todolist <- function() {
 
 #' @export 
 #' @rdname update_todolist
-#' @details todolist takes a directory and doesntwrite the todolist to a file
+#' @details todolist takes a directory and doesnt write the todolist to a file
 todolist <- function(wd = getwd()) {
+
   # grep all scripts in here("Work/Scripts")---- #
   setwd(wd)
   gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
   
   # .. Create todolist and write to todo.md ----#
-  todo_frame <- tibble(gout = gout) %>% 
-    mutate(done = str_detect(gout, fixed("[x]")),
+  todo_frame <- tibble(gout = gout) 
+  todo_frame <- mutate(todo_frame, done = str_detect(gout, fixed("[x]")),
            script = str_extract(gout, "^S\\d+"),
            scriptn= str_extract(script, "\\d+") %>% as.numeric(),
            task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
            checkbox = str_extract(gout, "\\[x*\\]")
-    ) %>% 
-    arrange(done, scriptn) %>% 
-    mutate(todolist = paste0(checkbox, " ", script, ": ", task))
+    )
+  todo_frame <- arrange(todo_frame, done, scriptn) 
+  todo_frame <- mutate(todo_frame, todolist = paste0(checkbox, " ", script, ": ", task))
   
   mysplit <- split(todo_frame, todo_frame$done)
   # .. write ----#
