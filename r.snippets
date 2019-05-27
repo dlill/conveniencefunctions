@@ -4,58 +4,52 @@ snippet cf_header
 snippet cf_exit
 	`r conveniencefunctions::insert_exit()`
 
-snippet comment
-	# ${1:comment}
-	#
-	#
-	#
-	#
-
 snippet clist
-	# * ${1:item}
+	# * ${0}
 
 snippet cnllist
-	#   ${1:item}
+	#   ${0}
 
 snippet cslist
-	#   * ${1:item}
+	#   * ${0}
 
 snippet csnllist
-	#     ${1:item}
+	#     ${0}
 
 snippet cdodo
-	# [] ${1:todo}
+	# [] ${0}
+
 snippet csdodo
-	#   [] ${1:todo}
+	#   [] ${0}
 
 
 snippet section
 	# ---------------------------------------------------------- #
-	# ${1:title} ----
+	# ${0} ----
 	# ---------------------------------------------------------- #
 
 snippet subsection
 	# ----------------------------------------------- #
-	# .. ${1:title} ----
+	# .. ${0} ----
 	# ----------------------------------------------- #
 
 snippet subsubsectionLIST
-	# .... ${1:title} ----
+	# .... ${0} ----
 
 snippet subsectionLIST
-	# .. ${1:title} ----
+	# .. ${0} ----
 
 snippet remark
 	# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ----
-	# >>>> ${1:title} <<<<<<<<----
+	# >>>> ${0} <<<<<<<<----
 	# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ----
 
 snippet clremark
-	# >>>> ${1:Penner} <<<<<<<<<<<
+	# >>>> ${0} <<<<<<<<<<<
 
 snippet IQRsubsection
 	# -------------------------------------------------------------------------#
-	# .. ${1:title} ----
+	# .. ${0} ----
 	# -------------------------------------------------------------------------#
 
 
@@ -69,13 +63,6 @@ snippet seqlenout
 snippet ggsavenext
 	ggsave(next_file(base_name = .base_name))
 
-snippet plotdir
-	setwd(here("Work", "Outputs", outdir))
-	plotdir <- "${1:plots}"
-	unlink(plotdir, TRUE)
-	dir.create(plotdir)
-	setwd(plotdir)
-	png("${2:plots}%03d.png", 1000, 800)
 
 snippet hereout
 	here("Work", "Outputs", outdir)
@@ -169,5 +156,5 @@ snippet setwdBLOQ
 
 snippet scriptdevelopment
 	# >> Script development. # [] Remove in final script <<
-
+	${0}
 
