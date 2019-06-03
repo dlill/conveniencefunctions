@@ -117,40 +117,20 @@ meld_folders <- function(folder1, folder2) {
 #' 
 #' Collect all TODO points in the scripts of a project and write them into TODO.md
 #' 
+#' @param FLAGpipes Boolean. search for pipe operators?
+#' @param FLAGwrite_md
+#' 
+#' @details todolist takes a directory and doesnt write the todolist to a file
+#' 
+#' @export
+#' 
 #' @importFrom tibble tibble
 #' @importFrom dplyr mutate arrange
 #' @importFrom stringr str_detect str_replace_all str_extract fixed
 #' 
-#' @export
-update_todolist <- function() {
-  # grep all scripts in here("Work/Scripts")---- #
-  setwd(here("Work", "Scripts"))
-  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
-  
-  # .. Create todolist and write to todo.md ----#
-  todo_frame <- tibble(gout = gout) %>% 
-    mutate(done = str_detect(gout, fixed("[x]")),
-           script = str_extract(gout, "^S\\d+\\b"),
-           scriptn= as.numeric(str_extract(script, "\\d.*")),
-           task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
-           checkbox = str_extract(gout, "\\[x*\\]")
-    ) %>% 
-    arrange(done, scriptn) %>% 
-    mutate(todolist = paste0(checkbox, " ", script, ": ", task))
-  
-  mysplit <- split(todo_frame, todo_frame$done)
-  # .. write ----#
-  c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", "DONE", "", mysplit[["TRUE"]]$todolist, "", "", "", "*Change todos in Scripts, not here*") %>% 
-    writeLines(here("TODO.md"))
-  return(invisible(NULL))
-}
-
-#' @export 
-#' @rdname update_todolist
-#' @param FLAGpipes Boolean. search for pipe operators?
-#' @details todolist takes a directory and doesnt write the todolist to a file
-todolist <- function(wd = getwd(), FLAGpipes = TRUE) {
+todolist <- function(wd = getwd(), FLAGpipes = TRUE, FLAGwrite_md = FALSE) {
   oldwd <- getwd()
+  
   # grep all scripts in here("Work/Scripts")---- #
   setwd(wd)
   
@@ -173,23 +153,30 @@ todolist <- function(wd = getwd(), FLAGpipes = TRUE) {
   )
   
   # .. Pipe-operators ----#
-  if (pipes){
+  if (FLAGpipes){
     gout <- system('grep -r "%>%"', intern = TRUE)
     pipe_frame <- tibble(gout = gout) 
     pipe_frame <- mutate(pipe_frame, 
                          done = "PIPE",
                          script = str_extract(gout, "^S\\d+"),
                          scriptn= as.numeric(str_extract(script, "\\d.*")),
-                         task = str_replace_all(gout, "^.*%>% (.*)$", "\\1"),
+                         task = str_replace_all(gout, "^(.*)%>%.*$", "\\1"),
                          checkbox = str_extract(gout, "%>%")
     )
     pipe_frame <- arrange(pipe_frame, done, scriptn) 
     pipe_frame <- mutate(pipe_frame, todolist = paste0(checkbox, " ", script, ": ", task))
-    out <- c(out, "PIPE-OPERATORS", "", pipe_frame, "", "")
+    out <- c(out, "PIPE-OPERATORS", "", pipe_frame$todolist, "", "")
   }
-  # .. write ----#
+  # .. cat ----#
   cat(paste0(out, collapse = "\n"))
+  
   setwd(oldwd)
+  
+  # .. write ----#
+  if (FLAGwrite_md)
+    writeLines(out, "todo.md")
+    
+  # .. return ----#
   return(invisible(out))
 }
 
