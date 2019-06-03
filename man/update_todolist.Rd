@@ -7,7 +7,10 @@
 \usage{
 update_todolist()
 
-todolist(wd = getwd())
+todolist(wd = getwd(), FLAGpipes = TRUE)
+}
+\arguments{
+\item{FLAGpipes}{Boolean. search for pipe operators?}
 }
 \description{
 Collect all TODO points in the scripts of a project and write them into TODO.md

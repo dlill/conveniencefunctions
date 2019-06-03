@@ -147,30 +147,48 @@ update_todolist <- function() {
 
 #' @export 
 #' @rdname update_todolist
+#' @param FLAGpipes Boolean. search for pipe operators?
 #' @details todolist takes a directory and doesnt write the todolist to a file
-todolist <- function(wd = getwd()) {
+todolist <- function(wd = getwd(), FLAGpipes = TRUE) {
   oldwd <- getwd()
   # grep all scripts in here("Work/Scripts")---- #
   setwd(wd)
-  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
   
-  # .. Create todolist and write to todo.md ----#
+  # .. Todolist ----#
+  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
   todo_frame <- tibble(gout = gout) 
   todo_frame <- mutate(todo_frame, done = str_detect(gout, fixed("[x]")),
-           script = str_extract(gout, "^S\\d+"),
-           scriptn= as.numeric(str_extract(script, "\\d.*")),
-           task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
-           checkbox = str_extract(gout, "\\[x*\\]")
-    )
+                       script = str_extract(gout, "^S\\d+"),
+                       scriptn= as.numeric(str_extract(script, "\\d.*")),
+                       task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+                       checkbox = str_extract(gout, "\\[x*\\]")
+  )
   todo_frame <- arrange(todo_frame, done, scriptn) 
   todo_frame <- mutate(todo_frame, todolist = paste0(checkbox, " ", script, ": ", task))
   
   mysplit <- split(todo_frame, todo_frame$done)
-  # .. write ----#
-  out <- c("TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
-    "DONE", "", mysplit[["TRUE"]]$todolist)
-  cat(paste0(out, collapse = "\n"))
+  out <- c(
+    "TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
+    "DONE", "", mysplit[["TRUE"]]$todolist, "", ""
+  )
   
+  # .. Pipe-operators ----#
+  if (pipes){
+    gout <- system('grep -r "%>%"', intern = TRUE)
+    pipe_frame <- tibble(gout = gout) 
+    pipe_frame <- mutate(pipe_frame, 
+                         done = "PIPE",
+                         script = str_extract(gout, "^S\\d+"),
+                         scriptn= as.numeric(str_extract(script, "\\d.*")),
+                         task = str_replace_all(gout, "^.*%>% (.*)$", "\\1"),
+                         checkbox = str_extract(gout, "%>%")
+    )
+    pipe_frame <- arrange(pipe_frame, done, scriptn) 
+    pipe_frame <- mutate(pipe_frame, todolist = paste0(checkbox, " ", script, ": ", task))
+    out <- c(out, "PIPE-OPERATORS", "", pipe_frame, "", "")
+  }
+  # .. write ----#
+  cat(paste0(out, collapse = "\n"))
   setwd(oldwd)
   return(invisible(out))
 }
@@ -187,16 +205,16 @@ todolist <- function(wd = getwd()) {
 relPath_from_1_to_2 <- function(from, to) {
   from <- path.expand(from)
   to <- path.expand(to)
-
+  
   split1 <- str_split(from, "/", simplify = T) %>% `dim<-`(NULL)
   split2 <- str_split(to, "/", simplify = T) %>% `dim<-`(NULL)
-
+  
   minlen <- min(c(length(split1), length(split2)))
   root <- map2_lgl(split1[1:minlen], split2[1:minlen], ~.x == .y) %>% cumsum %>% max
-
+  
   backwards <- rep("../", length(split1) - root) %>% paste0(collapse = "")
   forwards <- split2[-c(1:root)] %>% paste0("/") %>% paste0(collapse = "")
-
+  
   return(paste0(backwards, forwards))
 }
 
@@ -209,7 +227,7 @@ relPath_from_1_to_2 <- function(from, to) {
 setwd_this_doc <- function() {
   path <- dirname(rstudioapi::getSourceEditorContext()$path)
   setwd(path)
-
+  
   print(path)
   return(invisible(path))
 }
@@ -229,18 +247,18 @@ setwd_this_doc <- function() {
 #' @examples
 #' next_file()
 next_file <-  function(addition = "", base_name = '', fileext = 'png', filepath = '.', purge = FALSE){
-
+  
   if (exists(".base_name", .GlobalEnv) & str_length(base_name) == 0){
     base_name <- .base_name
   }
-
+  
   if (purge) {
     files <- list.files(filepath, paste0(base_name,'\\d+.*\\.', fileext,'$'))
     unlink(file.path(filepath, files))
     return(TRUE)
   }
-
-
+  
+  
   old.fnames = grep(paste0(base_name,'\\d+.*\\.', fileext,'$'),
                     list.files(filepath), value = T)
   lastnum = gsub(paste0(base_name,'(\\d+).*\\.', fileext,'$'), '\\1', old.fnames)
@@ -440,7 +458,7 @@ flush_warnings <- function() {
 #' @return .y-.x at the respective positions
 #' @export
 subtract_by_name <- function(.x,.y) {
-
+  
   if(length(dim(.x))!=length(dim(.y)))
     stop("not the same number of dimensions")
   if (is.null(dim(.x))) {
@@ -469,7 +487,7 @@ subtract_by_name <- function(.x,.y) {
 #' c(b = 1, a = 2) %>% sort_by_name
 sort_by_name <- function(x) {
   x[order(names(x))]
-  }
+}
 
 
 #' Pipe-friendly assigning of vectors when their names are known first
@@ -487,10 +505,10 @@ sort_by_name <- function(x) {
 #' letters %>% are_names_of(1)
 #' letters %>% are_names_of(1:26)
 are_names_of <- function(char_vec, value, ...) {
-
+  
   if(is.function(value)) value <- do.call(value, list(n = 1:length(char_vec), ...))
   else if(length(value)==1) value <- rep(value, length(char_vec))
-
+  
   structure(value, names = char_vec)
 }
 
@@ -639,7 +657,7 @@ str_detect_any <- function(vec, pattern) {
 #' @export
 str_replace_in_file <- function(path, pattern, replacement, walkthrough = F, writeout = F) {
   string <- readLines(path)
-
+  
   strsubset <- str_subset(string, pattern)
   if (!writeout){
     cat("original---------------------------\n")
@@ -649,16 +667,16 @@ str_replace_in_file <- function(path, pattern, replacement, walkthrough = F, wri
     # ---------------------------------------------------------- #")
     print(str_replace_all(strsubset, pattern, replacement))
   }
-
+  
   do_replace <- logical(length(strsubset))
   if (walkthrough) {
     for (i in seq_along(do_replace)) {
       do_replace[i] <- readline(paste0("replace in: ", strsubset[i]))
     }
-  strsubset[do_replace] <- str_replace_all(strsubset[do_replace], pattern, replacement)
-  string[str_detect(pattern)] <- strsubset
+    strsubset[do_replace] <- str_replace_all(strsubset[do_replace], pattern, replacement)
+    string[str_detect(pattern)] <- strsubset
   }
-
+  
   if(writeout)
     writeLines(string, path)
   attr(string, "do_replace") <- do_replace
@@ -688,7 +706,7 @@ funnames_in_package <- function(package, as_namespace = F) {
     str_escape %>%
     paste(collapse = "|") %>%
     paste0("\\b(", ., ")\\b")
-  }
+}
 
 
 #' Append a time-stamp before a string
@@ -727,40 +745,40 @@ time_to_seed <- function(){ date() %>% as.character.Date() %>% stringr::str_extr
 #' @export
 #'
 unnest_named <- function(df, key, value) {
-
+  
   key <- enquo(key)
   value <- enquo(value)
-
+  
   key_n <- quo_name(key)
   value_n <- quo_name(value)
-
+  
   myframe_1 <- select(df, - !! value)
-
+  
   myframe_2 <- df %>% select(!!key, !!value)
-
+  
   myframe_2 <- unnest(myframe_2, !!value)
-
+  
   if(!is.null(names(df[[!!key]][[1]])))
     map()
-
+  
   myframe_2 <- map(1:nrow(myframe_2), function(i) {
     df <- myframe_2[i,]
-
+    
     mykey <- select(df, !!key)[[1]]
     myval <- select(df, !!value)[[1]][[1]]
-
+    
     out <- tibble(!! key_n := mykey, !! value_n := myval)
-
+    
     if(!is.null(names(myval))) {
       name_n <- paste0("names_", value_n)
       out <- bind_cols(out, !!name_n := names(myval))
     }
-
+    
     return(out)
   }) %>% bind_rows()
-
+  
   left_join(myframe_1, myframe_2, by = key_n)
-
+  
 }
 
 
