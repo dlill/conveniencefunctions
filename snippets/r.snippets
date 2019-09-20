@@ -39,12 +39,12 @@ snippet IQRsection
 
 snippet IQRsubsection
 	# -------------------------------------------------------------------------#
-	# . ${1:SubsectionTitle} ----
+	# . ${1:SubsectionTitle} -----
 	# -------------------------------------------------------------------------#
 
 snippet IQRsubsubsection
 	# -------------------------------------------------------------------------#
-	# . . ${1:SubsubsectionTitle} ----
+	# . . ${1:SubsubsectionTitle} ------
 	# -------------------------------------------------------------------------#
 
 
@@ -85,6 +85,9 @@ snippet csdodo
 snippet subsectionLIST
 	# .. ${0} -----
 
+snippet subsubsectionLIST
+	# .... ${0} ------
+
 snippet remark
 	# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ----
 	# >>>> ${0} <<<<<<<< ----
@@ -105,4 +108,7 @@ snippet Rprof_profile_line
 	pv___ <- profvis::profvis(prof_input = rp___)
 	htmlwidgets::saveWidget(pv___, paste0(rp___, ".html"))
 	browseURL(paste0(rp___, ".html"))
+
+snippet setwdDocument
+	`r paste0("setwd('", dirname(rstudioapi::getSourceEditorContext()$path), "')")`
 

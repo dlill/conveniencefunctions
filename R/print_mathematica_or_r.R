@@ -134,11 +134,7 @@ print_r.named_vector <- function(myvec, vec_name = "pars", indices = T) {
     paste0("\nvec_name <- ", mytext) %>%
       rstudioapi::insertText()
   }
-
-
 }
-
-
 
 
 #' Print an eqnlist as a pipe of addReaction()-calls and insert them in place

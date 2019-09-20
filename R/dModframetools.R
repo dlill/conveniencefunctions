@@ -291,6 +291,7 @@ construct_parframe <- function(pars, n = 20, seed = 12345, samplefun = rnorm, ..
   parframe(mypars)
 }
 
+
 #' Simluate data with a dMod.frame
 #'
 #' @param model dMod.frame, preferably with columns pars and covtable
@@ -406,108 +407,6 @@ test_dMod.frame <- function(model,
 
 
 
-
-
-
-
-
-
-# Saving/commiting ----
-
-#' Stage a dMod.frame and all of its DLLs
-#'
-#' @param dMod.frame the dMod.frame or a character vector specifying a RDS-file
-#'
-#' @return This function is called for its side-effects.
-#' @export
-#'
-#' @importFrom git2r add repository workdir
-git_add_dMod.frame <- function(dMod.frame) {
-  frame_quo <- enquo(dMod.frame)
-
-  if(is_tibble(dMod.frame)) {
-    rds_file <- tpaste0(quo_name(frame_quo), ".rds")
-    saveRDS(dMod.frame, rds_file)
-  } else if(is.character(dMod.frame)) {
-    rds_file <- dMod.frame
-    dMod.frame <- readRDS(rds_file)
-  } else stop("dMod.frame is neither a file nor a tibble")
-
-  # if (is.null(dMod.frame[["eqnlists"]])) {
-  #   print("If called from RMarkdown document, have a look at your console (ctrl+2)")
-  #   yn <- readline("Would you like to add a column 'eqnlists'? (y = abort / anything else = continue this function to save without eqnlists)")
-  #   if(yn == "y") stop("Commitment has been aborted")
-  # }
-
-
-  models <- do.call(c, dMod.frame) %>%
-    map(function(i) {
-      mymodelname <- try(modelname(i), silent = T)
-      if (!inherits(mymodelname, "try-error")) return(mymodelname)
-      else return(NULL)
-    }) %>%
-    do.call(c,.) %>%
-    unique()
-  .so <- .Platform$dynlib.ext
-  files <- paste0(outer(models, c("", "_s", "_sdcv", "_deriv"), paste0), .so)
-  files <- files[file.exists(files)]
-
-  # for compatibility with Rmd which sets its own workdir
-  mywd <- getwd()
-  mygitrep <- git2r::repository() %>% git2r::workdir()
-  subfolder <- str_replace(mywd, mygitrep, "")
-
-  allfiles <- paste0(subfolder, "/", c(files, rds_file))
-
-  walk(allfiles , function(i) git2r::add(git2r::repository(), i))
-
-  NULL
-}
-
-
-#' Zip a dMod.frame and its DLLs
-#'
-#' This might be useful for collaboration
-#'
-#' @param dMod.frame The dMod.frame you want to zip
-#' @param zipfile If you want to add the files to an existing zipfile, specify the filepath here, else a new file with a timestamp is generated
-#'
-#' @export
-zip_dMod.frame <- function(dMod.frame, zipfile = NULL) {
-  frame_quo <- enquo(dMod.frame)
-
-  if(is_tibble(dMod.frame)) {
-    rds_file <- tpaste0(quo_name(frame_quo), ".rds")
-    saveRDS(dMod.frame, rds_file)
-  } else if(is.character(dMod.frame)) {
-    rds_file <- dMod.frame
-    dMod.frame <- readRDS(rds_file)
-  } else stop("dMod.frame is neither a file nor a tibble")
-
-  # if (is.null(dMod.frame[["eqnlists"]])) {
-  #   yn <- readline("Would you like to add a column 'eqnlists'? (y = stop this function / anything else = continue this function to save without eqnlists)")
-  #   if(yn == "y") stop("Zipping has been aborted")
-  # }
-
-  models <- unlist(dMod.frame) %>%
-    map(function(i) {
-      mymodelname <- try(modelname(i), silent = T)
-      if (!inherits(mymodelname, "try-error")) return(mymodelname)
-      else return(NULL)
-    }) %>%
-    do.call(c,.) %>%
-    unique()
-  .so <- .Platform$dynlib.ext
-  files <- paste0(outer(models, c("", "_s", "_sdcv", "_deriv"), paste0), .so)
-  files <- files[file.exists(files)]
-
-  if (is.null(zipfile)) {zipfile <- str_replace(rds_file, "rds", "zip")}
-
-  zip(zipfile, c(rds_file, files))
-}
-
-
-
 # Saving is already solved by saveRDS
 
 #' Load a saved dMod.frame
@@ -529,9 +428,7 @@ readDMod.frame <- function(filename) {
 }
 
 
-
 # Interaction with runbg ----
-
 #' Title
 #'
 #' @param runbgOutput the .runbgOutput you get when you start a fit_job with insert_runbg on more than one knecht
@@ -566,8 +463,6 @@ uniteFits <- function(runbgOutput, whichUnite = c("fits", "parframes"), return_v
   out
 }
 
-
-
 # Convenience functions for fit result analysis ----
 
 #' Quickly print the number of converged fits
@@ -592,94 +487,6 @@ parframes_summary <- function(dMod.frame, hypothesis = NULL, tol = 1) {
          largest_steps = largest_steps,
          iterations = iterations)
   }) %>% setNames(dMod.frame$hypothesis[hypothesis])
-}
-
-
-# Interaction with "with()" ----
-
-
-#' unlist hypothesis
-#'
-#' @param est dMod.frame
-#' @param hypothesis 1
-#'
-#' @return list
-#' @export
-uh <- function(est, hypothesis = 1) {
-  unlist(est[hypothesis,], F)
-}
-
-
-# Interaction with .GlobalEnv ----
-
-#' Get elements from the .GlobalEnv and turn it into a row of the dMod.frame
-#'
-#' I don't really use this function, so it might not be worth it to keep working on it.
-#'
-#' @param dMod.frame the dMod.frame
-#' @param exclude not yet implemented
-#' @param include not yet implemented
-#' @param prefix prefix
-#' @param suffix suffix
-#'
-#' the dMod.frame augmented by the new row
-#' @export
-#'
-#' @importFrom dplyr bind_rows
-#'
-checkin_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix = "", suffix = "") {
-
-  # possible future feature: set those of variables in exclude to list(NULL)
-  # another way could be to specify include...
-
-  mynames <- names(dMod.frame)
-
-  new_hypothesis <- lapply(mynames, function(n)  {
-    n <- paste0(prefix,n,suffix)
-    myobject <- mget(n, envir = .GlobalEnv, ifnotfound = list(NULL))[[1]]
-    if (!is.atomic(myobject) | is.null(myobject) | length(myobject)>1) {myobject <- list(myobject)}
-    return(myobject)
-  })
-  names(new_hypothesis) <- mynames
-
-  return(bind_rows(dMod.frame, as.tibble(new_hypothesis)))
-}
-
-
-
-
-
-#' Update a hypothesis
-#'
-#' @param dMod.frame bla
-#' @param exclude bla
-#' @param include bla
-#' @param prefix bla
-#' @param suffix bla
-#'
-#'
-#' @export
-#'
-update_hypothesis <- function(dMod.frame, exclude = NULL, include = NULL, prefix = "", suffix = "") {
-
-  # possible future feature: set those of variables in exclude to list(NULL)
-  # another way could be to specify include...
-
-  mynames <- names(dMod.frame)
-
-  new_hypothesis <- lapply(mynames, function(n)  {
-    n <- paste0(prefix,n,suffix)
-    myobject <- mget(n, envir = .GlobalEnv, ifnotfound = list(NULL))[[1]]
-    if (!is.atomic(myobject) | is.null(myobject) | length(myobject)>1) {myobject <- list(myobject)}
-    return(myobject)
-  })
-  names(new_hypothesis) <- mynames
-
-  new_hypothesis <- new_hypothesis[lapply(new_hypothesis, function(i) !is.null(i[[1]])) %>% do.call(c,.)]
-
-  dMod.frame[dMod.frame$hypothesis == new_hypothesis$hypothesis, names(new_hypothesis)] <- new_hypothesis
-
-  return(dMod.frame)
 }
 
 

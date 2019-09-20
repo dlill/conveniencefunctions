@@ -184,27 +184,6 @@ mypublish_matlist2wordtable <- function(x, path, digits = 2) {
 
 
 
-#' @export
-#' @rdname mypublish_eqnvec2wordtable
-print2word_eqnvec <- mypublish_eqnvec2wordtable
-
-#' @export
-#' @rdname mypublish_matlist2wordtable
-print2word_matrixlist <- mypublish_matlist2wordtable
-
-#' @export
-#' @rdname mypublish_matrix2wordmath
-print2word_matrix <- mypublish_matrix2wordmath
-
-#' @export
-#' @rdname mypublish_matrix2wordmath
-print2word_matrixlist2 <- mypublish_matlist2wordmath
-
-
-#' @export
-#' @rdname mypublish_namedvec2wordtable
-print2word_namedvec <- mypublish_namedvec2wordtable
-
 
 
 
