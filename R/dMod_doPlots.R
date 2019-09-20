@@ -56,7 +56,6 @@ get_parcolindices <- function(myparframe) {
 #' @export
 #'
 #' @importFrom dMod getParameters
-#' @importFrom GGally ggpairs
 #'
 doPlots1 <- function(model,
                      # png options
@@ -158,15 +157,15 @@ doPlots1 <- function(model,
   }
 
   if (FLAG_scatterall_step1){
-  p1 <- myparframe %>%
-    as.data.frame %>%
-    filter(step == 1) %>%
-    mutate(val = cut(value, breaks = quantile(value, c(0, 0.05,0.5,1)))) %>%
-    GGally::ggpairs(
-      mapping = aes(color = val),
-      columns = get_parcolindices(myparframe)) +
-    ggtitle("Parameter values of first step")
-  print(p1)
+  #  p1 <- myparframe %>%
+  #    as.data.frame %>%
+  #    filter(step == 1) %>%
+  #    mutate(val = cut(value, breaks = quantile(value, c(0, 0.05,0.5,1)))) %>%
+  #    GGally::ggpairs(
+  #      mapping = aes(color = val),
+  #      columns = get_parcolindices(myparframe)) +
+  #    ggtitle("Parameter values of first step")
+  #  print(p1)
   }
 
   if (FLAG_iterations){

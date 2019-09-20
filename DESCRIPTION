@@ -10,15 +10,11 @@ Encoding: UTF-8
 LazyData: true
 Depends:
   dMod,
-  tidyverse,
-  here
+  tidyverse
 Imports:
   stringr,
-  plotly,
   rlang,
   dplyr,
-  git2r,
-  GGally,
   devtools
 RoxygenNote: 6.1.1
 Suggests: testthat

@@ -247,8 +247,6 @@ as.parvec.tbl_df <- function(x, hypothesis = 1, index = 1) {
 #'
 #' @return The data in long format
 #' @export
-#'
-#' @importFrom rlang syms UQS
 d2d2dMod_data <- function(data, keep = NULL) {
 
   # Add a rownumber to uniquely identify rows, when splitting up the  data into values and sigmas
@@ -268,8 +266,8 @@ d2d2dMod_data <- function(data, keep = NULL) {
     as.data.frame()
 
   vardata <- data %>%
-    select(UQS(syms(c(keep, varnames)))) %>%
-    gather(name, value, UQS(syms(varnames)))
+    .[c(keep, varnames)] %>%
+    gather(name, value, varnames)
 
   if (length(sdnames) == 0) {
     return(vardata %>% clean_for_output)
