@@ -13,7 +13,6 @@ Depends:
   tidyverse
 Imports:
   stringr,
-  rlang,
   dplyr,
   devtools
 RoxygenNote: 6.1.1

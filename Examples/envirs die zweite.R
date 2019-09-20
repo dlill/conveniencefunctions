@@ -1,5 +1,0 @@
-search()
-lapply(c(-1,1:25), . %>% pos.to.env)
-myenv <- pos.to.env(-1)
-ls(pos = -1)
-parent.env(myenv)
