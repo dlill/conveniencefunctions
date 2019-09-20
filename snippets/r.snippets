@@ -1,36 +1,44 @@
 snippet IQRhead
-	#### HEADER ================================================================
+	# -------------------------------------------------------------------------#
+	# 0 Header ----
+	# -------------------------------------------------------------------------#
 	#
 	# `r basename(rstudioapi::getSourceEditorContext()$path)`
 	#
 	# [PURPOSE]
-	# ${2:Purpose}
+	# ${0}
 	#
 	# [AUTHOR]
-	# ${3:Author}
+	# Daniel Lill
 	#
-	# [CLEANING]
-	rm(list = ls(all.names = TRUE))
+	# [Date]
+	# `Sys.time()`
 	#
-	# [INPUT]
-	.inputFolder <- "../"
-	#
-	# [OUTPUT]
-	.outputFolder <- "../Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
-	#
-	# [OTHER]
-	#
-
-	## Preliminaries ====
-
-	# Default packages (do not load other packages, use "::" instead)
+	# .. Libraries -----
+	library(conveniencefunctions)
+	library(tidyverse)
 	library(IQRtools)
-	library(dplyr)
-	library(ggplot2)
+	library(dMod)
+	# .. Default Values -----
+	rm(list = ls(all.names = TRUE))
+	.outputFolder <- "../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
+	
+	
+	
+	# -------------------------------------------------------------------------#
+	# 1 ----
+	# -------------------------------------------------------------------------#
+	
+	
+	
+	
+	
+	
+	# Exit ----
+	
 
+	
 
-	IQRinitCompliance("`r basename(rstudioapi::getSourceEditorContext()$path)`")
-	aux_version("IQRtools", "`r installed.packages()["IQRtools", "Version"]`")
 
 snippet IQRsection
 	# -------------------------------------------------------------------------#
