@@ -25,30 +25,6 @@ open_all_scripts_in_dir <- function(dirname = "Scripts", pattern = "\\.R$"){
 }
 
 
-#' Install cf snippets with snippr
-#' 
-#' problemat
-#' 
-#' @param remove_old should old snippets be removed? CAREFUL: deletes ALL custom snippets!
-#' @param install_snippr install snippr
-#' @export
-#' @importFrom devtools install_github
-install_snippets <- function(remove_old = FALSE, install_snippr = FALSE) {
-  
-  if (install_snippr && (!"snippr" %in% installed.packages()))
-    devtools::install_github("dgrtwo/snippr")
-  
-  txt <- 'if (!dir.exists("~/.R/snippets"))
-      dir.create("~/.R/snippets")
-  if (remove_old)
-    try(unlink("~/.R/snippets/r.snippets"))
-  if (!file.exists("~/.R/snippets/r.snippets")){
-    file.create("~/.R/snippets/r.snippets")
-    writeLines("", "~/.R/snippets/r.snippets")
-  }
-  snippr::snippets_install_github("dlill/conveniencefunctions")'
-  eval(parse(text = txt))
-}
 
 # diff ----
 
@@ -113,72 +89,80 @@ meld_folders <- function(folder1, folder2) {
 
 # system/file interactions ----
 
-#' Update the TODO.md file in the base directory
-#' 
+#' Print a todolist to your console or to a file
+#'
 #' Collect all TODO points in the scripts of a project and write them into TODO.md
-#' 
+#'
+#' @param path path to directory to grep in
 #' @param FLAGpipes Boolean. search for pipe operators?
-#' @param FLAGwrite_md
-#' 
-#' @details todolist takes a directory and doesnt write the todolist to a file
-#' 
+#' @param filename If provided, write the todolist to this file (recommended ending: *.md)
+#'
 #' @export
-#' 
-#' @importFrom tibble tibble
-#' @importFrom dplyr mutate arrange
+#'
+#' @importFrom dplyr mutate arrange case_when
 #' @importFrom stringr str_detect str_replace_all str_extract fixed
-#' 
-todolist <- function(wd = getwd(), FLAGpipes = TRUE, FLAGwrite_md = FALSE) {
-  oldwd <- getwd()
+#'
+todolist <- function(path = getwd(), FLAGpipes = FALSE, filename = NULL) {
   
-  # grep all scripts in here("Work/Scripts")---- #
-  setwd(wd)
-  
-  # .. Todolist ----#
-  gout <- system('grep -r "\\\\[x*\\\\]"', intern = TRUE)
-  todo_frame <- tibble(gout = gout) 
-  todo_frame <- mutate(todo_frame, done = str_detect(gout, fixed("[x]")),
-                       script = str_extract(gout, "^S\\d+"),
-                       scriptn= as.numeric(str_extract(script, "\\d.*")),
-                       task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
-                       checkbox = str_extract(gout, "\\[x*\\]")
-  )
-  todo_frame <- arrange(todo_frame, done, scriptn) 
-  todo_frame <- mutate(todo_frame, todolist = paste0(checkbox, " ", script, ": ", task))
-  
-  mysplit <- split(todo_frame, todo_frame$done)
-  out <- c(
-    "TODO", "", mysplit[["FALSE"]]$todolist, "", "", 
-    "DONE", "", mysplit[["TRUE"]]$todolist, "", ""
-  )
-  
-  # .. Pipe-operators ----#
-  if (FLAGpipes){
-    gout <- system('grep -r "%>%"', intern = TRUE)
-    pipe_frame <- tibble(gout = gout) 
-    pipe_frame <- mutate(pipe_frame, 
-                         done = "PIPE",
-                         script = str_extract(gout, "^S\\d+"),
-                         scriptn= as.numeric(str_extract(script, "\\d.*")),
-                         task = str_replace_all(gout, "^(.*)%>%.*$", "\\1"),
-                         checkbox = str_extract(gout, "%>%")
+  # * Wrap in function so errors can be caught and the working directory can be reset
+  assemble_todolist <- function(FLAGpipes) {
+    # .. Todolist ----#
+    grepout <- system('grep -I -r "\\\\[x*\\\\]"', intern = TRUE)
+    todo_frame <- data.frame(gout = grepout, stringsAsFactors = FALSE)
+    todo_frame <- mutate(todo_frame,
+                         done = str_detect(gout, fixed("[x]")),
+                         script = str_extract(gout, "^.*\\.R"),
+                         script = case_when(!is.na(str_extract(gout, "^S\\d+")) ~ str_extract(gout, "^S\\d+"),
+                                            TRUE ~ script),
+                         scriptn = as.numeric(str_extract(script, "\\d.*")),
+                         task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+                         checkbox = str_extract(gout, "\\[x*\\]")
     )
-    pipe_frame <- arrange(pipe_frame, done, scriptn) 
-    pipe_frame <- mutate(pipe_frame, todolist = paste0(checkbox, " ", script, ": ", task))
-    out <- c(out, "PIPE-OPERATORS", "", pipe_frame$todolist, "", "")
+    todo_frame <- arrange(todo_frame, done, scriptn)
+    todo_frame <- mutate(todo_frame, todolist = paste0(checkbox, " ", script, ": ", task))
+    
+    mysplit <- split(todo_frame, todo_frame$done)
+    out <- c(
+      "TODO", "", mysplit[["FALSE"]]$todolist, "", "",
+      "DONE", "", mysplit[["TRUE"]]$todolist, "", ""
+    )
+    
+    # .. Pipe-operators ----#
+    if (FLAGpipes){
+      grepout <- system('grep -r "%>%"', intern = TRUE)
+      pipe_frame <- tibble(gout = grepout)
+      pipe_frame <- mutate(pipe_frame,
+                           done = "PIPE",
+                           script = str_extract(gout, "^S\\d+"),
+                           scriptn= as.numeric(str_extract(script, "\\d.*")),
+                           task = str_replace_all(gout, "^(.*)%>%.*$", "\\1"),
+                           checkbox = str_extract(gout, "%>%")
+      )
+      pipe_frame <- arrange(pipe_frame, done, scriptn)
+      pipe_frame <- mutate(pipe_frame, todolist = paste0(checkbox, " ", script, ": ", task))
+      out <- c(out, "PIPE-OPERATORS", "", pipe_frame$todolist, "", "")
+    }
+    
+    return(out)
   }
-  # .. cat ----#
-  cat(paste0(out, collapse = "\n"))
   
+  
+  # .. Main body----#
+  oldwd <- getwd()
+  setwd(path)
+  out <- tryCatch(assemble_todolist(FLAGpipes), error = function(e) e)
   setwd(oldwd)
   
+  # .. cat ----#
+  cat(paste0(out, collapse = "\n"))
   # .. write ----#
-  if (FLAGwrite_md)
-    writeLines(out, "todo.md")
-    
+  if (!is.null(filename))
+    writeLines(out, filename)
+  
   # .. return ----#
   return(invisible(out))
 }
+
 
 #' Relative path between two absolute paths
 #'

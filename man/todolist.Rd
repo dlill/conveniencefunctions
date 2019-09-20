@@ -2,18 +2,17 @@
 % Please edit documentation in R/tools.R
 \name{todolist}
 \alias{todolist}
-\title{Update the TODO.md file in the base directory}
+\title{Print a todolist to your console or to a file}
 \usage{
-todolist(wd = getwd(), FLAGpipes = TRUE, FLAGwrite_md = FALSE)
+todolist(path = getwd(), FLAGpipes = FALSE, filename = NULL)
 }
 \arguments{
+\item{path}{path to directory to grep in}
+
 \item{FLAGpipes}{Boolean. search for pipe operators?}
 
-\item{FLAGwrite_md}{}
+\item{filename}{If provided, write the todolist to this file (recommended ending: *.md)}
 }
 \description{
 Collect all TODO points in the scripts of a project and write them into TODO.md
-}
-\details{
-todolist takes a directory and doesnt write the todolist to a file
 }

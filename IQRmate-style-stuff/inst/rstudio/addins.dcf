@@ -1,0 +1,35 @@
+Name: Toggle sections
+Description: Toggles sections in the document outline
+Binding: toggle_section
+Interactive: false
+
+Name: Toggle subsections
+Description: Toggles sections in the document outline
+Binding: toggle_subsection
+Interactive: false
+
+Name: Toggle subsubsections
+Description: Toggles sections in the document outline
+Binding: toggle_subsubsection
+Interactive: false
+
+Name: Align Assign
+Description: Aligns '<-' or '=' assignment operators within a highlighted area.
+Binding: alignAssign
+Interactive: false
+
+Name: Align Cursors
+Description: Aligns all cursors. Use Ctrl/Cmd + Alt + click to insert multiple cursors.
+Binding: alignCursor
+Interactive: false
+
+Name: Align Assign Arrow
+Description: Aligns '<-' assignment operators within a highlighted area.
+Binding: alignAssignArrow
+Interactive: false
+
+Name: Align Assign Equal
+Description: Aligns assignment '=' operators within a highlighted area.
+Binding: alignAssignEqual
+Interactive: false
+
