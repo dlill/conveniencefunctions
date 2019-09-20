@@ -2,12 +2,9 @@
 % Please edit documentation in R/mypublish.R
 \name{mypublish_namedvec2wordtable}
 \alias{mypublish_namedvec2wordtable}
-\alias{print2word_namedvec}
 \title{Print the odes of an eqnvec in a tex and a docx table}
 \usage{
 mypublish_namedvec2wordtable(x, path = "pars", names_in_mathenv = F)
-
-print2word_namedvec(x, path = "pars", names_in_mathenv = F)
 }
 \arguments{
 \item{x}{vector with names}

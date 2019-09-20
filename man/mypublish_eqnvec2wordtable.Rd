@@ -2,12 +2,9 @@
 % Please edit documentation in R/mypublish.R
 \name{mypublish_eqnvec2wordtable}
 \alias{mypublish_eqnvec2wordtable}
-\alias{print2word_eqnvec}
 \title{Print the odes of an eqnvec in a tex and a docx table}
 \usage{
 mypublish_eqnvec2wordtable(x, path = "odes")
-
-print2word_eqnvec(x, path = "odes")
 }
 \arguments{
 \item{x}{eqnvec}

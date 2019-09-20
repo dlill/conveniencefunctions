@@ -2,15 +2,9 @@
 % Please edit documentation in R/mypublish.R
 \name{mypublish_matrix2wordmath}
 \alias{mypublish_matrix2wordmath}
-\alias{print2word_matrix}
-\alias{print2word_matrixlist2}
 \title{Print single matrices as matrices in word math environemt}
 \usage{
 mypublish_matrix2wordmath(x, filename)
-
-print2word_matrix(x, filename)
-
-print2word_matrixlist2(x, filename)
 }
 \arguments{
 \item{x}{a single matrix as xtable \%>\% print(tabluar.environment = "pmatrix)}

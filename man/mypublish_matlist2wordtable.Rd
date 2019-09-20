@@ -2,12 +2,9 @@
 % Please edit documentation in R/mypublish.R
 \name{mypublish_matlist2wordtable}
 \alias{mypublish_matlist2wordtable}
-\alias{print2word_matrixlist}
 \title{Print a list of matrices to a single word file with a table of these matrices}
 \usage{
 mypublish_matlist2wordtable(x, path, digits = 2)
-
-print2word_matrixlist(x, path, digits = 2)
 }
 \arguments{
 \item{x}{list of matrices}
