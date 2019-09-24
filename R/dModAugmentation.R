@@ -380,7 +380,6 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
 #' @return A tibble with rows corresponding to conditions and cols to several results of the objective function, such as value, gradient...
 #' @export
 #'
-#' @example Examples/obj_condition_wise.R
 obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL, conditions = NULL, ...) {
   myconditions <- getConditions(obj)
   if (length(conditions))

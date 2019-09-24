@@ -302,7 +302,6 @@ construct_parframe <- function(pars, n = 20, seed = 12345, samplefun = rnorm, ..
 #'
 #' @return either dMod.frame with data in it and column "truth" or data.frame
 #' @export
-#' @example Examples/SimulateData.R
 simulate_data <- function(model,
                           hypothesis = 1,
                           output = c("dMod.frame", "data.frame", "datalist"),
