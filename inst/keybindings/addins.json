@@ -1,0 +1,6 @@
+{
+    "AlignAssign::alignAssign" : "Ctrl+Q",
+    "AlignAssign::alignCursor" : "Ctrl+Shift+Q",
+    "IQRmate::toggle_subsection" : "Ctrl+Y",
+    "IQRmate::toggle_subsubsection" : "Ctrl+Shift+Y"
+}

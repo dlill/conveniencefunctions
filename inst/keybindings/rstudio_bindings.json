@@ -1,0 +1,8 @@
+{
+    "addCursorAbove" : "Shift+Alt+Up",
+    "addCursorBelow" : "Shift+Alt+Down",
+    "executeCurrentSection" : "Ctrl+Shift+T",
+    "pasteLastYank" : "",
+    "quitSession" : "",
+    "roxygenizePackage" : ""
+}
