@@ -70,10 +70,39 @@ datatimes <- function(data, n = 500){
 #' @export
 #' 
 #' @importFrom dMod as.datalist
-#' 
 as.datalist.datalist <- function(x,...){
   dMod:::as.datalist.list(x,...)
 }
+
+
+#' @export
+#' @rdname as.datalist.datalist
+#' @importFrom dMod sanitizeDate
+cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, ...) 
+{
+  x <- dMod:::sanitizeData(x)
+  dataframe <- x[["data"]]
+  standard.names <- x[["columns"]]
+  all.names <- colnames(dataframe)
+  if (is.null(split.by)) 
+    split.by <- setdiff(all.names, standard.names)
+  keep.covariates <- setdiff(names(dataframe), c(standard.names))
+  conditions <- lapply(split.by, function(n) dataframe[, n])
+  splits <- do.call(paste, c(conditions, list(sep = "_")))
+  conditionframe <- dataframe[!duplicated(splits), union(split.by, 
+                                                         keep.covariates), drop = FALSE]
+  rownames(conditionframe) <- splits[!duplicated(splits)]
+  dataframe <- cbind(data.frame(condition = splits), dataframe[, 
+                                                               standard.names])
+  out <- lapply(unique(splits), function(s) dataframe[dataframe[, 
+                                                                1] == s, -1])
+  names(out) <- as.character(unique(splits))
+  out <- as.datalist(out)
+  attr(out, "condition.grid") <- conditionframe
+  return(out)
+}
+
+
 
 # Compare ----
 
@@ -590,7 +619,7 @@ plotData  <- function(data,...) {
 #'
 #' @export
 plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
-  myplot <- x %>% as.data.frame() %>% as.datalist()
+  myplot <- data %>% as.data.frame() %>% cf_as.datalist()
   myplot <- plotData(myplot, ...)
   if(smooth)
     myplot <- myplot + geom_smooth(se = se)
