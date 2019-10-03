@@ -5,9 +5,11 @@
 #' @export
 install_IQRsnippets <- function(){
   
-  if (!file.exists(snippets_path()))
+  if (!file.exists(snippets_path())){
+    if (!dir.exists(dirname(snippets_path())))
+    dir.create(dirname(snippets_path()), recursive = TRUE)
     writeLines("\n", snippets_path())
-  
+  }
   .snippetlist <- snippets_read("r", "snippets/r.snippets")
   lapply(names(.snippetlist), function(.x) try(snippet_remove(.x)))
   mapply(snippet_add, name = names(.snippetlist), text = .snippetlist, SIMPLIFY = FALSE)

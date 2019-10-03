@@ -77,10 +77,9 @@ as.datalist.datalist <- function(x,...){
 
 #' @export
 #' @rdname as.datalist.datalist
-#' @importFrom dMod sanitizeDate
 cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, ...) 
 {
-  x <- dMod:::sanitizeData(x)
+  x <- dMod:::sanitizeData(x) #hack
   dataframe <- x[["data"]]
   standard.names <- x[["columns"]]
   all.names <- colnames(dataframe)

@@ -2,9 +2,12 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{as.datalist.datalist}
 \alias{as.datalist.datalist}
+\alias{cf_as.datalist}
 \title{Identity function for datalists}
 \usage{
 \method{as.datalist}{datalist}(x, ...)
+
+cf_as.datalist(x, split.by = "condition", keep.covariates = NULL, ...)
 }
 \arguments{
 \item{x}{.}
