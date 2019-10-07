@@ -1,5 +1,7 @@
 #' Create an index-based version of an est_grid
 #'
+#' Used mainly internally in jODE_prepare_matrices
+#'
 #' @param est_grid,est_vec as in IQRtools, but est_vec should be ordered
 #'
 #' @return an est_grid with indices instead of names
@@ -33,7 +35,9 @@ jODE_prepare_matrices <- function(est_grid, fixed_grid, est_vec) {
 #' Generate Julia source code of prediction function
 #'
 #' @param est_mat,fixed_mat output of \link{jODE_prepare_matrices}
-#' @param trafo,odes,obs,err symbolic definitions of functions. Trafo is a general trafo valid for all conditions (as in P_indiv)
+#' @param trafo,odes,obs,err symbolic definitions of functions. 
+#' * Trafo is a general trafo valid for all conditions (as in P_indiv)
+#' * odes need to be in eqnvec format
 #'
 #' @return character vector of the functions p, p2, f, f2, g, e, prd_condition (prd for a signle condition)
 #' @export
@@ -82,7 +86,7 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
   # [] check efficiency with @time -> some time else
   # .. jODE_p2 ----
   # * Old version with indexing
-  trafo_final <- replaceSymbols(names(c(fixed_grid[-1], est_grid[-1])), paste0("pouter[",1:length(c(fixed_grid[-1], est_grid[-1])),",:]"), trafo)
+  trafo_final <- replaceSymbols(c(nm_fixed, nm_pars), paste0("pouter[",1:(length(nm_fixed)+length(nm_pars)),",:]"), trafo)
   trafo_final <- str_replace_all(trafo_final, c( # now it gets ugly: need to transform operators to vectorized form since ForwardDiff.jl needs it
     "\\bexp\\b" = "exp.",
     "\\blog\\b" = "log.",
@@ -97,7 +101,7 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
   jODE_p2 <- paste0(
     "function jODE_p2(pars, fixed)", "\n",
     "    pouter = [pars...; fixed...]", "\n",
-    "    myorder = ", "[",paste0(order(c(names(est_grid)[-1], names(fixed_grid)[-1])), collapse = "; "),"]", "\n",
+    "    myorder = ", "[",paste0(order(c(nm_pars, nm_fixed)), collapse = "; "),"]", "\n",
     "    pouter = [pouter[i] for i in myorder]", "\n",
     "    pinner = convert.(eltype(pars),zeros(", length(trafo_final),"))", "\n",
     "    ", paste0(names(trafo_final), " = ", trafo_final, collapse = "\n    ")," \n",
