@@ -627,7 +627,6 @@ plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
 
 
 
-
 #' Copied from dMod with additional title showing covariates
 #'
 #' @param data,...,scales,facet,transform see dMod::plotData
