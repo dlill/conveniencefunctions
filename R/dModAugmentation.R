@@ -13,13 +13,13 @@ add_stepcolumn <- function(myparframe, tol = 1) {
   steps <- dMod:::stepDetect(myparframe$value, tol)
   bla <- 1:nrow(myparframe)
   stepcol <- cumsum(bla%in%steps)
-
+  
   fitrank <- 1:length(stepcol)
   stepsize <- map_dbl(stepcol, ~sum(stepcol == .x)/length(stepcol)) %>% round(3)
   mydf <- as.data.frame(myparframe)
   mydf <- mydf[!names(mydf)%in%c("fitrank", "step", "stepsize")]
   mydf <- cbind(fitrank = fitrank, step  = stepcol, stepsize = stepsize, mydf)
-
+  
   return(parframe(mydf, parameters = attr(myparframe, "parameters")))
 }
 
@@ -59,7 +59,7 @@ datatimes <- function(data, n = 500){
     c(length.out = n) %>% as.list %>% do.call(seq,.) %>%
     c(mytimes) %>% sort
   return(out)
-
+  
 }
 
 
@@ -105,6 +105,40 @@ cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, .
 
 # Compare ----
 
+
+#' compare two vectors
+#' 
+#' prints some stuff nicely
+#'
+#' @param x,y vectors to be compared 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+compare_vectors <- function(x,y) {
+  cat(
+    "Ordered", "\n",
+    "--------------------\n", 
+    "x:", paste0(identical(x, sort(x)), collapse = ","), "\n",
+    "y:", paste0(identical(y, sort(y)), collapse = ","), "\n",
+    "\n\n", 
+    "intersect(x,y)", "\n",
+    "--------------------\n", 
+    paste0(intersect(x, y), collapse = ","),  "\n",
+    "\n\n", 
+    "setdiff(x,y)", "\n",
+    "--------------------\n", 
+    paste0(setdiff(x, y), collapse = ","),  "\n",
+    "\n\n", 
+    "setdiff(y,x)", "\n",
+    "--------------------\n", 
+    paste0(setdiff(y,x), collapse = ","), "\n",
+    ""
+  )
+}
+
+
 #' Setdiff of names
 #'
 #' @param .x,.y Vectors/matrices with (dim)names
@@ -133,7 +167,7 @@ compare_names <- function(.x,.y) {
 #' @return data.frame with name, diff = (.y-.x), appended output of compare_names
 #' @export
 compare_named_numeric <- function(.x,.y) {
-
+  
   .x <- tibble(name = names(.x),x = .x)
   .y = tibble(name = names(.y), y = .y)
   out <- full_join(.x,.y, "name")
@@ -165,11 +199,11 @@ compare_objlist <- function(.x,.y) {
 #' @export
 trustAna_obj_along_path <- function(est, hypothesis = 1, fit) {
   mypath <- fit$argpath
-
+  
   lapply(1:nrow(mypath), function(i) {
     mypars <- mypath[i,]
     names(mypars) <- names(fit$argument)
-
+    
     with(unlist(est[hypothesis,], F), obj(mypars, fixed = fixed))
   })
 }
@@ -224,7 +258,7 @@ msNarrow <- function(myparframe, n = 5, sd = 0.2, seed = NULL) {
 #' @export
 as.condition.grid <- function(df) {
   mynames <- do.call(paste, c(df, list(sep = "_")))
-
+  
   if (any(duplicated(mynames)))
     stop("Duplicated condition names. Check if conditions can be merged or create additional covariate.")
   `rownames<-`(df, mynames)
@@ -241,7 +275,7 @@ as.condition.grid <- function(df) {
 #' @export
 getConditions.tbl_df <- function(x, hypothesis = 1) {
   getConditions.fn <- dMod:::getConditions.fn
-
+  
   if (!is.null(suppressWarnings(x$obj[[hypothesis]])))
     return(dMod:::getConditions.fn(x$obj[[hypothesis]]))
   if (!is.null(x$data[[hypothesis]]))
@@ -276,39 +310,39 @@ as.parvec.tbl_df <- function(x, hypothesis = 1, index = 1) {
 #' @return The data in long format
 #' @export
 d2d2dMod_data <- function(data, keep = NULL) {
-
+  
   # Add a rownumber to uniquely identify rows, when splitting up the  data into values and sigmas
   data <- data %>%
     mutate(.rownumber = 1:nrow(data))
-
+  
   keep0 <- c("time", ".rownumber")
   keep <- c(keep0, keep)
-
+  
   datanames <- names(data)
   sdnames <- datanames %>% str_subset("_sd$")
   varnames <- datanames[!datanames%in%c(keep, sdnames)]
-
+  
   clean_for_output <- . %>%
     select(-.rownumber) %>%
     filter(!is.na(value)) %>%
     as.data.frame()
-
+  
   vardata <- data %>%
     .[c(keep, varnames)] %>%
     gather(name, value, varnames)
-
+  
   if (length(sdnames) == 0) {
     return(vardata %>% clean_for_output)
   }
-
+  
   sddata <- data %>%
     select(UQS(syms(c(keep, sdnames)))) %>%
     gather(name, sigma, UQS(syms(sdnames))) %>%
     mutate(name = str_replace(name, "_sd$", ""))
-
+  
   out <- full_join(vardata, sddata, by = keep) %>%
     clean_for_output
-
+  
   return(out)
 }
 
@@ -326,7 +360,7 @@ d2d2dMod_data <- function(data, keep = NULL) {
 fit2obj <- function(fit) {
   force(fit)
   outfn <- function(pars, fixed = NULL, ...) {
-
+    
     # if (!identical(names(pars), names(fit$argument)))
     #   stop("Parameters have not the same order as in the fit, please rearrange")
     pars <- c(pars, fixed)[names(fit$argument)]
@@ -334,7 +368,7 @@ fit2obj <- function(fit) {
     value <- fit$value + t(fit$gradient) %*% (pars-fit$argument) + 1/2 * t(pars - fit$argument) %*% fit$hessian %*% (pars - fit$argument)
     gradient <- fit$gradient + fit$hessian %*% (pars - fit$argument)
     gradient <- gradient[,1, drop = TRUE]
-
+    
     out <- objlist(value, gradient[nm], fit$hessian[nm,nm])
     attr(out, "data") <- value
     return(out)
@@ -361,27 +395,27 @@ fit2obj <- function(fit) {
 #' @examples
 #'  \dontrun{DL: To do.}
 id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
-
+  
   # write out objects to this this environment
   lapply(seq_along(model), function(i) {
     value <- model[[i]][[hypothesis]]
     try(assign(x = paste0(names(model)[i]), value = value, pos = 1), silent = T)})
-
+  
   bestfit <- pars
   if(!is.null(model$parframes))
     bestfit <- parframes %>% dMod:::as.parvec
-
-
+  
+  
   r <- bestfit %>% paste0("(", names(.), " - ", ., ")^2") %>% paste0(collapse = " + ") %>% paste0("sqrt(", ., ")") %>% `names<-`("R_BESTFIT")
   p_id <- P(r)
   constr_id <- constraintL2(c(R_BESTFIT = r_test), sigma = 1, attr.name = "prior_id")
   constr_id <- (constr_id*p_id)
-
+  
   obj_id <- obj + constr_id
-
+  
   current_value <- obj(bestfit, fixed = fixed, deriv = F)$value
   myfit <- trust(obj_id, bestfit, 1, 10, fixed = fixed)
-
+  
   out <- tibble(old_value = current_value,
                 new_value = myfit$value,
                 new_value_data = attr(myfit, "data"),
@@ -390,7 +424,7 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
                 old_argument = list(bestfit),
                 new_argument = list(myfit$argument)) %>%
     mutate(identifiable = (new_value-old_value) > thresh)
-
+  
   return(out)
 }
 
@@ -412,25 +446,25 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL, condit
   myconditions <- getConditions(obj)
   if (length(conditions))
     myconditions <- myconditions[myconditions == conditions]
-
+  
   out <- lapply(myconditions, function(cond) {
     myvalues <- obj(pars = pars, conditions = cond, ...)
-
+    
     ndata <- get("data", environment(obj))
     if(is.function(ndata)) ndata <- NULL
     else ndata <- ndata[[cond]] %>% nrow
     if(!is.null(ndata)) reduced_value <- myvalues[["value"]]/ndata
     else reduced_value <- NULL
-
+    
     attrib <- myvalues %>% attributes()
-
+    
     mylist <- c(condition = cond,
                 myvalues[names(myvalues)!="hessian"],
                 ndata = ndata,
                 reduced_value = reduced_value,
                 attrib[!names(attrib)%in%c("env", "class")]) %>%
       lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }}) #make tibble-compatible
-
+    
     return(as_tibble(mylist))
   }) %>% do.call(rbind,.)
   out1 <- out2 <- NULL
@@ -438,9 +472,9 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL, condit
     lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
   # if(!is.null(constr2)) out2 <- c(condition = "Constraint 2", constr2(pars = pars, ...) %>% .[names(.)!="hessian"]) %>%
   #   lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
-
+  
   out <- bind_rows(out, out1)#, out2)
-
+  
 }
 
 
@@ -466,22 +500,22 @@ obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL, condit
 checkSensitivities <- function(prd, times, pars, whichpar, cond = 1, step = 0.1) {
   h <- rep(0, length(pars))
   h[which(names(pars) == whichpar)] <- step
-
-
+  
+  
   M1 <-  prd(times, pars, deriv = TRUE)[[cond]]
   M2 <-  prd(times, pars + h, deriv = TRUE)[[cond]]
   M3 <- attr(prd(times, pars, deriv = TRUE)[[cond]], "deriv")
   print(colnames(M3))
-
+  
   S1 <- cbind(time = M1[, 1], (M2[,-1] - M1[,-1])/step)
   # print(colnames(S1))
   S2 <- cbind(time = M1[, 1], M3[,grep(paste0(".", whichpar), colnames(M3), fixed = TRUE)])
   # print(colnames(S2))
   colnames(S1) <- colnames(S2)
-
+  
   out <- list(numeric = S1, sens = S2)
   return(out)
-
+  
 }
 
 
@@ -501,7 +535,7 @@ do_checkSensitivities <- function(prds, times, pars, path = "checkSensitivities.
   pdf(path)
   map(prds, function(prd) {
     p1 <- plotCombined((prd)(times, pars, deriv = F))
-
+    
     p2 <- map(names(pars) %>% `names<-`(.,.), function(mypar) {
       out <- checkSensitivities((prd), times, pars, mypar, 3, .0001) %>% as.prdlist
     }) %>%
@@ -509,7 +543,7 @@ do_checkSensitivities <- function(prds, times, pars, path = "checkSensitivities.
       map(. %>% do.call(cbind,.) %>% {.[,!duplicated(colnames(.)), drop = F]}) %>%
       as.prdlist() %>%
       plotPrediction()
-
+    
     print(p1)
     print(p2)
     NULL
@@ -540,7 +574,7 @@ do_checkSensitivities <- function(prds, times, pars, path = "checkSensitivities.
 #' @export
 prepare_argpath <- function(fit, ncluster = 1) {
   chisquare_values <- data.frame(iteration = 1:length(fit[["valpath"]]), parameter = "-2LogLikelihood", value = log(abs(fit[["valpath"]])), cluster = 0)
-
+  
   fit %>%
     .$argpath %>%
     { myargpath <- .
@@ -555,7 +589,7 @@ prepare_argpath <- function(fit, ncluster = 1) {
     mutate(parameter = parameter %>% as.factor) %>%
     mutate(cluster = as.factor(cluster)) %>%
     rbind(chisquare_values)
-
+  
 }
 
 #' @rdname prepare_argpath
@@ -591,7 +625,7 @@ fitErrorModel_plot <- function(data) {
     scale_y_log10() +
     theme_dMod() +
     scale_color_continuous( low = "#98f5ff", high = "#4c4cdb")
-
+  
 }
 
 
@@ -633,20 +667,20 @@ plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
 #'
 #' @export
 plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
-
+  
   rownames_to_condition <- function(covtable) {
     out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
     out <- out[!duplicated(names(out))]
     return(out)}
   covtable <- rownames_to_condition(covariates(data))
-
+  
   data <- lbind(data)
   data <- base::merge(data, covtable, by = "condition", all.x = T)
   data <- as.data.frame(dplyr::filter(data, ...), stringsAsFactors = F)
   data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
-
+  
   if (!is.null(transform)) data <- coordTransform(data, transform)
-
+  
   if (facet == "wrap"){
     aes0 <- list(x = "time",
                  y = "value",
@@ -665,20 +699,20 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
     aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", pch = "bloq")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
     p <- ggplot(data, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
-
+  
   p <- p +
     geom_point() +
     geom_errorbar(width = 0) +
     scale_shape_manual(name = "BLoQ", values = c(yes = 4, no = 19))
-
+  
   if (all(data$bloq %in% "no"))
     p <- p + guides(shape = FALSE)
-
+  
   p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
   p <- p + theme_dMod() + scale_color_dMod()
   attr(p, "data") <- data
   return(p)
-
+  
 }
 
 #' PlotData.tbl_df from dMod
@@ -689,10 +723,10 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
 #'
 #' @export
 plotData.tbl_df <- function(data, hypothesis = 1, ... ) {
-
+  
   dots <- substitute(alist(...))
   if(is.character(hypothesis)) hypothesis <- which(data$hypothesis == hypothesis)
-
+  
   plotData.datalist(data[["data"]][[hypothesis]], ...) +
     ggtitle(label = paste0(data[["hypothesis"]][[hypothesis]], "\n",
                            paste0(paste(names(dots), "=", dots )[-1], collapse = "\n")) )
@@ -727,37 +761,37 @@ plotCombined <- function(x,...) {
 #' @details Works with multiple steps (index as a vector). I recommend then using it with \code{aesthetics = c(linetype= "step_")}
 #' to access the step-information
 plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
-
+  
   dots <- substitute(alist(...))
   message("If you want to subset() the plot, specify hypothesis AND index")
   if(is.character(hypothesis)) hypothesis <- which(x$hypothesis == hypothesis)
-
+  
   data <- x[["data"]][[hypothesis]]
   prediction <- title <- NULL
   if (is.null(x[["parframes"]])) {
     prediction <- x[["prd"]][[hypothesis]](x[["times"]][[hypothesis]],
-                                               x[["pars"]][[hypothesis]],
-                                               deriv = F,
-                                               fixed = x[["fixed"]][[hypothesis]])
+                                           x[["pars"]][[hypothesis]],
+                                           deriv = F,
+                                           fixed = x[["fixed"]][[hypothesis]])
     title <- paste(x[["hypothesis"]][[hypothesis]], "initiated with predefined (probably random) parameters")
   }
-
+  
   if (!is.null(x[["parframes"]])) {
-
+    
     # browser()
-
+    
     prediction <- map(index, function(ind) {
       myparvec <- as.parvec(x[["parframes"]][[hypothesis]], index = ind)
       prediction <- x[["prd"]][[hypothesis]](x[["times"]][[hypothesis]],
-                                                 pars = myparvec,
-                                                 deriv = F,
-                                                 fixed = x[["fixed"]][[hypothesis]])
+                                             pars = myparvec,
+                                             deriv = F,
+                                             fixed = x[["fixed"]][[hypothesis]])
       prediction <- map(prediction, function(.x) {attr(.x, "step") <- ind; .x})
       prediction
     }) %>%
       unlist(F) %>%
       `attr<-`("class", c("prdlist", "list"))
-
+    
     title <- paste0("Indices", paste0(index, collapse = " "))
     if (length(index) > 1){
       myvalue <- x[["parframes"]][[hypothesis]][index, "value"]
@@ -765,23 +799,23 @@ plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBan
                       "value = ", round(x[["parframes"]][[hypothesis]][index,"value", drop = T],1), "\n",
                       paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))}
   }
-
-
-
+  
+  
+  
   myplot <- plotCombined.prdlist(prediction, data, ...) +
     ggtitle(label = title)
-
+  
   if (plotErrorBands) {
     predicition_with_error <- NULL
     if (!is.null(x[["e"]][[hypothesis]])){
-
+      
       errorconds <- getConditions(x[["e"]][[hypothesis]])
       errorobs <- getEquations(x[["e"]][[hypothesis]])
-
+      
       predicition_with_error <- prediction[errorconds]
       predicition_with_error <- dMod:::as.data.frame.prdlist(predicition_with_error, data = data[errorconds], errfn = x[["e"]][[hypothesis]])
       predicition_with_error <- subset(predicition_with_error, ...)
-
+      
     }
     myplot <- myplot +
       geom_ribbon(aes(fill = condition), data = predicition_with_error, alpha = 0.15, size = 0) + scale_fill_dMod()
@@ -792,17 +826,17 @@ plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBan
 #' @export
 #' @rdname plotCombined
 plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
-
+  
   mynames <- c("time", "name", "value", "sigma", "condition", "step_")
   covtable <- NULL
-
+  
   if (!is.null(data)) {
     rownames_to_condition <- function(covtable) {
       out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
       out <- out[!duplicated(names(out))]
       return(out)}
     covtable <- rownames_to_condition(covariates(data))
-
+    
     data <- lbind(data)
     data <- base::merge(data, covtable, by = "condition", all.x = T)
     data <- dplyr::filter(data, ...)
@@ -811,7 +845,7 @@ plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "
     data <- cbind(data, step_ = rep(NA, nrow(data)))
     if (!is.null(transform)) data <- coordTransform(data, transform)
   }
-
+  
   if (!is.null(x)) {
     mywide2long <- function(out, keep = 1, na.rm = FALSE) {
       conditions <- names(out)
@@ -829,10 +863,10 @@ plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "
     x$step_ <- as.factor(x$step_)
     if (!is.null(transform)) x <- coordTransform(x, transform)
   }
-
-    total <- rbind(x[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
-
-
+  
+  total <- rbind(x[, unique(c(mynames, names(covtable)))], data[, unique(c(mynames, names(covtable)))])
+  
+  
   if (facet == "wrap"){
     aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma", color = "condition")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
@@ -845,26 +879,26 @@ plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "
     aes0 <- list(x = "time", y = "value", ymin = "value - sigma", ymax = "value + sigma")
     aesthetics <- c(aes0[setdiff(names(aes0), names(aesthetics))], aesthetics)
     p <- ggplot(total, do.call("aes_string", aesthetics)) + facet_wrap(~name*condition, scales = scales)}
-
+  
   if (!is.null(x))
     p <- p +  geom_line(data = x)
-
+  
   if (!is.null(data))
     p <- p +
     geom_point(data = data, aes(pch = bloq)) +
     geom_errorbar(data = data, width = 0) +
     scale_shape_manual(name = "BLoQ", values = c(yes = 4, no = 19))
-
+  
   if (all(data$bloq %in% "no"))
     p <- p + guides(shape = FALSE)
-
+  
   p <- p + labs(subtitle = paste0("Available covariates: ", paste0(names(covtable), collapse = ", ")))
-
+  
   p <- p + theme_dMod() + scale_color_dMod()
-
+  
   attr(p, "data") <- list(data = data, prediction = x)
   return(p)
-
+  
 }
 
 # ----------------------------------------------- #
@@ -889,7 +923,7 @@ plotMulti <- function(x,...) {
 #' @export
 #' @rdname plotMulti
 plotMulti.tbl_df <- function(x, parframe_filter = NULL, ...) {
-
+  
   prd <- x[["prd"]][[1]]
   times <- x[["times"]][[1]]
   myparframe <- x[["parframes"]][[1]]
@@ -913,8 +947,8 @@ plotMulti.prdfn = function(x, times, parframe, data = NULL, ..., colorAsFactor =
       out <- out[!duplicated(names(out))]
       return(out)
     }
-
-
+    
+    
     covtable <- rownames_to_condition(covariates(data))
     data <- lbind(data)
     data <- base::merge(data, covtable, by = "condition",
@@ -923,8 +957,8 @@ plotMulti.prdfn = function(x, times, parframe, data = NULL, ..., colorAsFactor =
     data <- as.data.frame(data, stringsAsFactors = F)
     data$bloq <- ifelse(data$value <= data$lloq, "yes", "no")
   }
-
-
+  
+  
   prediction = dMod:::predict.prdfn(x, times = times, pars = parframe)
   if(!is.null(data)) {
     prediction <- base::merge(prediction, covtable, by = "condition",
@@ -976,29 +1010,29 @@ plotPars <- function(x,...) {
 #' @export
 #' @rdname plotPars
 plotPars.parframe <- function(x, tol = 1, ...){
-
+  
   if (!missing(...)) x <- subset(x, ...)
-
+  
   jumps <- dMod:::stepDetect(x$value, tol)
   jump.index <- approx(jumps, jumps, xout = 1:length(x$value), method = "constant", rule = 2)$y
-
+  
   #values <- round(x$value/tol)
   #unique.values <- unique(values)
   #jumps <- which(!duplicated(values))
   #jump.index <- jumps[match(values, unique.values)]
   x$index <- as.factor(jump.index)
-
+  
   myparframe <- x
   parNames <- attr(myparframe,"parameters")
   parOut <- wide2long.data.frame(out = ((myparframe[, c("index", "value", parNames)])) , keep = 1:2)
   names(parOut) <- c("index", "value", "name", "parvalue")
   plot <- ggplot2::ggplot(parOut, aes(x = name, y = parvalue, color = index)) + geom_boxplot(outlier.alpha = 0) +
     theme_dMod() + scale_color_dMod() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-
+  
   attr(plot, "data") <- parOut
-
+  
   return(plot)
-
+  
 }
 
 
@@ -1006,23 +1040,23 @@ plotPars.parframe <- function(x, tol = 1, ...){
 #' @rdname plotPars
 #' @param nsteps number of steps from the waterfall plot
 plotPars.tbl_df <- function(dMod.frame, hypothesis = 1,  ..., tol = 1 ) {
-
+  
   if (!missing(...)) {dots <- substitute(...)
   } else {
     dots <- T
   }
-
+  
   if(is.character(hypothesis)) hypothesis <- which(dMod.frame$hypothesis == hypothesis)
-
+  
   if (length(hypothesis)>1){
     message("hypothesis must be length 1")
     return(NULL)
-    }
-
+  }
+  
   myparframe <- dMod.frame[["parframes"]][[hypothesis]] %>% add_stepcolumn(tol = tol)
-
+  
   plotPars.parframe(myparframe, tol = tol, ...)
-
+  
 }
 
 
@@ -1156,7 +1190,7 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
       if(!is.null(which_pars)) {
         par_columns <- sapply(which_pars, function(wp) str_detect(mynames, paste0("\\.", wp, "$"))) %>% matrix(ncol = length(which_pars)) %>% apply(1, any)
       }
-
+      
       cols <- state_columns & par_columns
       cols[1] <- TRUE
       return(i[,cols])
