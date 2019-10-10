@@ -112,10 +112,11 @@ cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, .
 #'
 #' @param x,y vectors to be compared 
 #'
-#' @return
+#' @return only for printing
 #' @export
 #'
-#' @examples
+#' @examples 
+#' compare_vectors(letters[1:10], letters[15:5])
 compare_vectors <- function(x,y) {
   cat(
     "Ordered", "\n",

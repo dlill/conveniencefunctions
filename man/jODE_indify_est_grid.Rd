@@ -13,5 +13,5 @@ jODE_indify_est_grid(est_grid, est_vec)
 an est_grid with indices instead of names
 }
 \description{
-Create an index-based version of an est_grid
+Used mainly internally in jODE_prepare_matrices
 }

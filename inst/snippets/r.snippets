@@ -1,4 +1,4 @@
-snippet IQRhead
+snippet cfhead
 	# -------------------------------------------------------------------------#
 	# 0 Header ----
 	# -------------------------------------------------------------------------#
@@ -40,17 +40,17 @@ snippet IQRhead
 	
 
 
-snippet IQRsection
+snippet cfsection
 	# -------------------------------------------------------------------------#
 	# ${1:SectionTitle} ----
 	# -------------------------------------------------------------------------#
 
-snippet IQRsubsection
+snippet cfsubsection
 	# -------------------------------------------------------------------------#
 	# . ${1:SubsectionTitle} -----
 	# -------------------------------------------------------------------------#
 
-snippet IQRsubsubsection
+snippet cfsubsubsection
 	# -------------------------------------------------------------------------#
 	# . . ${1:SubsubsectionTitle} ------
 	# -------------------------------------------------------------------------#
@@ -121,11 +121,8 @@ snippet setwdDocument
 	`r paste0("setwd('", dirname(rstudioapi::getSourceEditorContext()$path), "')")`
 
 
-snippet printn100
-	print(n = 100)
-
 snippet printn500
-	print(n = 500)
+	as_tibble %>% print(n = 500)
 
 snippet printn1000
-	print(n = 1000)
+	as_tibble %>% print(n = 1000)
