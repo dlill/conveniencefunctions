@@ -1,0 +1,103 @@
+#' Simplify with yacas or Mathematica
+#' 
+#' Escapes _ and puts everything into yacas/Mathematica for simplification
+#' 
+#' yac_simplify needs yacas and Ryacas installed. mat_simplify needs wolframscript and Matrhematica installed
+#' 
+#' @param string named vector with equations, not too complicated please. # [] For Mathematica, replacements of sin(x) -> Sin[x] still need to be done
+#' @param FLAGsimplify call yacas::Simplify or rely solely on the conversion string -> yacas -> string for the simplification
+#' @param FLAGverbose print input
+#' 
+#' @return named vector with simplified equations
+#' 
+#' @export
+#' @importFrom Ryacas yacas Simplify
+#' @importFrom cOde getSymbols replaceSymbols
+#' @importFrom stringr str_replace_all
+#' @importFrom purrr map_chr
+yac_simplify <- function(string, FLAGsimplify = TRUE, FLAGverbose = FALSE) {
+  map_chr(string, function(.x) {
+    
+    if (FLAGverbose)
+      print(.x)
+    
+    symbols_old <- getSymbols(.x)
+    symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
+    .y <- replaceSymbols(symbols_old, symbols_new, .x)
+    .y <- yacas(.y)
+    if (FLAGsimplify)
+      .y <- Simplify(.y)
+    .y <- as.character(.y)
+    replaceSymbols(symbols_new, symbols_old, .y)
+  })
+}
+
+#' @rdname yac_simplify
+#' @export
+mat_simplify <- function(string) {
+  symbols_old <- getSymbols(string)
+  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  cmd <- paste0("wolframscript -code Simplify[", paste0("{", paste0(.y, collapse = ","), "}") , "]")
+  cmd <- str_replace_all(cmd, "([()])", "\\\\\\1")
+  .y <- system(cmd, intern = TRUE)
+  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
+  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- setNames(.y, names(string))
+}
+
+#' @rdname yac_simplify
+#' @export
+mat_denom <- function(string) {
+  symbols_old <- getSymbols(string)
+  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  cmd <- paste0("wolframscript -code Denominator[", paste0("{", paste0(.y, collapse = ","), "}") , "]")
+  cmd <- str_replace_all(cmd, "([()])", "\\\\\\1")
+  .y <- system(cmd, intern = TRUE)
+  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
+  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- setNames(.y, names(string))
+}
+
+#' @rdname yac_simplify
+#' @export
+mat_numer <- function(string) {
+  symbols_old <- getSymbols(string)
+  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  cmd <- paste0("wolframscript -code Numerator[", paste0("{", paste0(.y, collapse = ","), "}") , "]")
+  cmd <- str_replace_all(cmd, "([()])", "\\\\\\1")
+  .y <- system(cmd, intern = TRUE)
+  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
+  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- setNames(.y, names(string))
+}
+
+#' @rdname yac_simplify
+#' @export
+mat_replace <- function(string, replacements) {
+  symbols_old <- getSymbols(string)
+  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  
+  repl_symbols_old <- getSymbols(c(replacements, names(replacements)))
+  repl_symbols_new <- str_replace_all(repl_symbols_old, "_", "XXXXXX")
+  .r <- map_chr(replacements, ~replaceSymbols(repl_symbols_old, repl_symbols_new, .x))
+  names(.r) <- map_chr(names(replacements), ~replaceSymbols(repl_symbols_old, repl_symbols_new, .x))
+  .r <- imap_chr(.r, ~paste0("/.", .y, "->", .x))
+  .r <- paste0(.r, collapse = "")
+  
+  cmd <- paste0("Simplify[{", paste0(.y, collapse = ","), "}", .r, "] // Print")
+  tf <- tempfile()
+  cmd %>% writeLines(tf)
+  cmd <- paste0("wolframscript -file ", tf)
+  
+  .y <- system(cmd, intern = TRUE)
+  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
+  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- setNames(.y, names(string))
+}
+
+
+
