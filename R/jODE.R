@@ -187,9 +187,10 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
     names!(df, Symbol.(df_names))
     df = stack(df, 1:',length(obs),', variable_name = :name)
       
+    df_err_names = [', paste0('"', names(err), '"', collapse = "; ") ,'; "time"; "condition"]
     df_err = DataFrame([err datatimes ones(length(datatimes))*condition])
-    names!(df_err, Symbol.(df_names))
-    df_err = stack(df_err, 1:',length(obs),', value_name = :sigma, variable_name = :name)
+    names!(df_err, Symbol.(df_err_names))
+    df_err = stack(df_err, 1:',length(err),', value_name = :sigma, variable_name = :name)
     
     df_out = join(df, df_err, on = [:name,:time,:condition])
     df_out.name = String.(df_out.name)
