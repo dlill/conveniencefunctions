@@ -34,6 +34,20 @@ function jODE_prd_indiv(est_vec, IDs, datatimes,
     [out...;]
 end # Prediction function for multiple IDs
 
+"""
+ensure that data.time and data.sigma is Float64
+in data.sigma, NA are replaced by 0
+"""
+
+function jODE_sanitizeData(data)
+    data = DataFrame(data)
+    data.time = Float64.(data.time)
+    if typeof(data.sigma[1]) == typeof("a")
+        data.sigma[data.sigma .== "NA"] = ["0" for x in data.sigma[data.sigma .== "NA"]]
+        data.sigma = parse.(Float64, data.sigma)
+    end
+    data
+end
 
 """
 Function factory to compute likelihood
@@ -46,7 +60,7 @@ Function factory to compute likelihood
   Choices are jODE_f, jODE_f2 and jODE_p, jODE_p2
 - `data`: DataFrame with :name => String :time => Float64 :value => Float64 :sigma => Float64 :lloq => Float64 and :ID => Float64/Int64
 - `jODE_prd_condition`: prediction function for single condition
-- `sigma`: symbol, choose between :sigma (take sigma from data) and :sigma_1 (take sigma from error model)
+- OLD: now sigma of data is always used except when data.sigma is NA. then, sigma_1 is taken `sigma`: symbol, choose between :sigma (take sigma from data) and :sigma_1 (take sigma from error model)
 ...
 @return A function LL(est_vec) to compute a tuple (value, gradient, hessian) of the objective function
 """
@@ -55,10 +69,9 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
     sigma
     )
     
-    datatimes = convert.(Float64, unique(data.time))
     IDs = unique(data.ID)
     pars, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, 1)
-    
+
     cn = ones(1)*IDs[1]
     
     function jODE_LL_condition(pars)
@@ -71,9 +84,10 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         df_both = @transform(df_both, 
                                 is_bloq = :value .< :lloq, 
                                 objval = convert.(eltype(pars), zeros(length(:lloq))))
+        df_both.sigma[df_both.sigma .== 0.] = df_both.sigma_1[df_both.sigma .== 0.]
         df_both = sort(df_both, :is_bloq)
         # print("df_both defined\n")
-        
+
         # split into aloq and bloq
         if any(df_both.is_bloq)
             df_aloq, df_bloq = groupby(df_both, :is_bloq)
@@ -81,14 +95,13 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
             df_aloq = df_both
         end
         # print("df_aloq and df_bloq defined\n")
-        
-        
+                
         # calculate LL
         # [] Include opt.M4:
-        df_aloq.objval  =  @. log(2π) + 2*log(df_aloq[sigma]) + ((df_aloq[:value_1]-df_aloq[:value])/df_aloq[sigma])^2
+        df_aloq.objval  =  @. log(2π) + 2*log(df_aloq[!, :sigma]) + ((df_aloq[!, :value_1]-df_aloq[!, :value])/df_aloq[!, :sigma])^2
         # print("df_aloq.objval defined\n")
         if @isdefined df_bloq
-            df_bloq.objval = @. -2*StatsFuns.normlogcdf(df_bloq[:value_1], df_bloq[sigma], df_bloq[:lloq])
+            df_bloq.objval = @. -2*StatsFuns.normlogcdf(df_bloq[!, :value_1], df_bloq[!, :sigma], df_bloq[!, :lloq])
         end
         # print("df_bloq.objval defined\n")
         
