@@ -1,7 +1,7 @@
 """
 Function to extract pars,fixed from est_vec, est_mat and fixed_mat for a secific condition
 
-Use with output from R function jODE_v2_01_prepare_mats
+Use with output from R function jODE_01_prepare_mats
 
 ...
 # Arguments
@@ -11,7 +11,7 @@ Use with output from R function jODE_v2_01_prepare_mats
 - `condition`: condition identifier
 ...
 """
-function jODE_v2_make_pars(est_vec, est_mat, fixed_mat, condition)
+function jODE_make_pars(est_vec, est_mat, fixed_mat, condition)
     pars  = est_vec[est_mat[    est_mat[:,1] .== condition, 2:end]]
     fixed =      fixed_mat[fixed_mat[:,1] .== condition, 2:end]
     return(pars, fixed)
@@ -19,20 +19,20 @@ end # Make pars function: Create pars and fixed from pars, est_mat, fixed_mat, c
 
 
 """
-prediction function for all conditions
+prediction function for all IDs
 
-inheritParams jODE_v2_normL2
+inheritParams jODE_normL2
 """
-function jODE_v2_prd_indiv(est_vec, conditions, datatimes, 
-    # Prediction function for multiple conditions
-    est_mat, fixed_mat, jODE_v2_make_pars, jODE_v2_p, jODE_v2_f, jODE_v2_g, jODE_v2_e)
+function jODE_prd_indiv(est_vec, IDs, datatimes, 
+    # Prediction function for multiple IDs
+    est_mat, fixed_mat, jODE_make_pars, jODE_p, jODE_f, jODE_g, jODE_e)
     function prd__(cond__) 
-        pars, fixed = jODE_v2_make_pars(est_vec, est_mat, fixed_mat, cond__)
-        pred = jODE_v2_prd_condition(pars, fixed, cond__, datatimes, jODE_v2_p, jODE_v2_f, jODE_v2_g, jODE_v2_e) 
+        pars, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, cond__)
+        pred = jODE_prd_condition(pars, fixed, cond__, datatimes, jODE_p, jODE_f, jODE_g, jODE_e) 
     end
-    out = [prd__(cond__) for cond__ in conditions]
+    out = [prd__(cond__) for cond__ in IDs]
     [out...;]
-end # Prediction function for multiple conditions
+end # Prediction function for multiple IDs
 
 
 """
@@ -41,30 +41,30 @@ Function factory to compute likelihood
 ...
 # Arguments
 - `est_mat,fixed_mat`: tables containing parameter lookup tables for pars to estimate and fixed pars. 
-- `jODE_v2_make_pars`: function returning two vectors of parameters: pars, fixed
-- `jODE_v2_(f|g|p|e)`: functions named as in dMod, for single condition. f is only the ode, is passed to the ode solver. 
-  Choices are jODE_v2_f, jODE_v2_f2 and jODE_v2_p, jODE_v2_p2
-- `data`: DataFrame with :name => String :time => Float64 :value => Float64 :sigma => Float64 :lloq => Float64 and :condition => Float64/Int64
-- `jODE_v2_prd_condition`: prediction function for single condition
+- `jODE_make_pars`: function returning two vectors of parameters: pars, fixed
+- `jODE_(f|g|p|e)`: functions named as in dMod, for single condition. f is only the ode, is passed to the ode solver. 
+  Choices are jODE_f, jODE_f2 and jODE_p, jODE_p2
+- `data`: DataFrame with :name => String :time => Float64 :value => Float64 :sigma => Float64 :lloq => Float64 and :ID => Float64/Int64
+- `jODE_prd_condition`: prediction function for single condition
 - `sigma`: symbol, choose between :sigma (take sigma from data) and :sigma_1 (take sigma from error model)
 ...
 @return A function LL(est_vec) to compute a tuple (value, gradient, hessian) of the objective function
 """
-function jODE_v2_normL2(data, jODE_v2_prd_condition, est_mat,
-    fixed_mat, jODE_v2_make_pars, jODE_v2_p, jODE_v2_f, jODE_v2_g, jODE_v2_e,
+function jODE_normL2(data, jODE_prd_condition, est_mat,
+    fixed_mat, jODE_make_pars, jODE_p, jODE_f, jODE_g, jODE_e,
     sigma
     )
     
     datatimes = convert.(Float64, unique(data.time))
-    conditions = unique(data.condition)
-    pars, fixed = jODE_v2_make_pars(est_vec, est_mat, fixed_mat, 1)
+    IDs = unique(data.ID)
+    pars, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, 1)
     
-    cn = ones(1)*conditions[1]
+    cn = ones(1)*IDs[1]
     
-    function jODE_v2_LL_condition(pars)
+    function jODE_LL_condition(pars)
         mycn = cn[1]
-        dummy, fixed = jODE_v2_make_pars(est_vec, est_mat, fixed_mat, mycn)
-        pred = jODE_v2_prd_condition(pars, fixed, mycn, datatimes, jODE_v2_p, jODE_v2_f, jODE_v2_g, jODE_v2_e) 
+        dummy, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, mycn)
+        pred = jODE_prd_condition(pars, fixed, mycn, datatimes, jODE_p, jODE_f, jODE_g, jODE_e) 
         # prepare calculations
         # print("pred defined\n")
         df_both = join(data,pred, on = [:name, :time, :condition], kind = :inner, makeunique = true)
@@ -99,27 +99,27 @@ function jODE_v2_normL2(data, jODE_v2_prd_condition, est_mat,
     end
     
     # Calculate with derivs
-    function jODE_v2_LL_deriv(est_vec; verbose = false, deriv = true)
+    function jODE_LL_deriv(est_vec; verbose = false, deriv = true)
         
         val, grd, hes = 0., zeros(length(est_vec)), zeros(length(est_vec),length(est_vec))
-        pars, dummy2 = jODE_v2_make_pars(est_vec, est_mat, fixed_mat, cn)
+        pars, dummy2 = jODE_make_pars(est_vec, est_mat, fixed_mat, cn)
         result = DiffResults.HessianResult(pars)
-        for condition in conditions 
+        for condition in IDs 
             cn[1] = condition
             # verbose&&println("condition $(cn[1])")
-            pars, dummy2 = jODE_v2_make_pars(est_vec, est_mat, fixed_mat, condition)
+            pars, dummy2 = jODE_make_pars(est_vec, est_mat, fixed_mat, condition)
             # [] Play around with chunk size?
             # verbose&&println(pars)
             # verbose&&println(fixed)
-            # condition == 1 && write("wup$(max(conditions...)).txt", "$pars", "$fixed")
+            # condition == 1 && write("wup$(max(IDs...)).txt", "$pars", "$fixed")
             if deriv
-                result = ForwardDiff.hessian!(result, jODE_v2_LL_condition, pars);
+                result = ForwardDiff.hessian!(result, jODE_LL_condition, pars);
                 val += DiffResults.value(result)
                 indices = est_mat[convert(Int64,condition), 2:end]
                 grd[indices] += [DiffResults.gradient(result)...;]
                 hes[indices, indices] += DiffResults.hessian(result)
             else
-                val += jODE_v2_LL_condition(pars)
+                val += jODE_LL_condition(pars)
             end
         end
 
