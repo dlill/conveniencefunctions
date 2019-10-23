@@ -1,21 +1,21 @@
 """
-Function to extract pars,fixed from est_vec, est_mat and fixed_mat for a secific condition
+Function to extract pars,fixed from est_vec, est_mat and fixed_mat for a secific ID
 
 Use with output from R function jODE_01_prepare_mats
 
 ...
 # Arguments
 - `est_vec`: vector containing all outer parameters to be estimated
-- `est_mat`: lookup table for pars to be estimated for specific condition. 
+- `est_mat`: lookup table for pars to be estimated for specific ID. 
 - `fixed_mat`: table containing fixed pars
-- `condition`: condition identifier
+- `ID`: ID identifier
 ...
 """
-function jODE_make_pars(est_vec, est_mat, fixed_mat, condition)
-    pars  = est_vec[est_mat[    est_mat[:,1] .== condition, 2:end]]
-    fixed =      fixed_mat[fixed_mat[:,1] .== condition, 2:end]
+function jODE_make_pars(est_vec, est_mat, fixed_mat, ID)
+    pars  = est_vec[est_mat[    est_mat[:,1] .== ID, 2:end]]
+    fixed =      fixed_mat[fixed_mat[:,1] .== ID, 2:end]
     return(pars, fixed)
-end # Make pars function: Create pars and fixed from pars, est_mat, fixed_mat, condition
+end # Make pars function: Create pars and fixed from pars, est_mat, fixed_mat, ID
 
 
 """
@@ -67,7 +67,7 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         pred = jODE_prd_condition(pars, fixed, mycn, datatimes, jODE_p, jODE_f, jODE_g, jODE_e) 
         # prepare calculations
         # print("pred defined\n")
-        df_both = join(data,pred, on = [:name, :time, :condition], kind = :inner, makeunique = true)
+        df_both = join(data,pred, on = [:name, :time, :ID], kind = :inner, makeunique = true)
         df_both = @transform(df_both, 
                                 is_bloq = :value .< :lloq, 
                                 objval = convert.(eltype(pars), zeros(length(:lloq))))
@@ -104,18 +104,18 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         val, grd, hes = 0., zeros(length(est_vec)), zeros(length(est_vec),length(est_vec))
         pars, dummy2 = jODE_make_pars(est_vec, est_mat, fixed_mat, cn)
         result = DiffResults.HessianResult(pars)
-        for condition in IDs 
-            cn[1] = condition
-            # verbose&&println("condition $(cn[1])")
-            pars, dummy2 = jODE_make_pars(est_vec, est_mat, fixed_mat, condition)
+        for ID in IDs 
+            cn[1] = ID
+            # verbose&&println("ID $(cn[1])")
+            pars, dummy2 = jODE_make_pars(est_vec, est_mat, fixed_mat, ID)
             # [] Play around with chunk size?
             # verbose&&println(pars)
             # verbose&&println(fixed)
-            # condition == 1 && write("wup$(max(IDs...)).txt", "$pars", "$fixed")
+            # ID == 1 && write("wup$(max(IDs...)).txt", "$pars", "$fixed")
             if deriv
                 result = ForwardDiff.hessian!(result, jODE_LL_condition, pars);
                 val += DiffResults.value(result)
-                indices = est_mat[convert(Int64,condition), 2:end]
+                indices = est_mat[convert(Int64,ID), 2:end]
                 grd[indices] += [DiffResults.gradient(result)...;]
                 hes[indices, indices] += DiffResults.hessian(result)
             else

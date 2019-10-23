@@ -165,7 +165,7 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
   
   
   # .. jODE_prd_condition ----
-  jODE_prd_condition <- paste0('function jODE_prd_condition(pars, fixed, condition, datatimes, 
+  jODE_prd_condition <- paste0('function jODE_prd_condition(pars, fixed, ID, datatimes, 
     jODE_p, jODE_f, jODE_g, jODE_e)
     # Prediction function for single condition
     
@@ -182,20 +182,20 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
     err = jODE_e(obs, pinner)
     
     # DataFrame for output 
-    df_names = [', paste0('"', names(obs), '"', collapse = "; ") ,'; "time"; "condition"]
-    df = DataFrame([obs datatimes ones(length(datatimes))*condition])
+    df_names = [', paste0('"', names(obs), '"', collapse = "; ") ,'; "time"; "ID"]
+    df = DataFrame([obs datatimes ones(length(datatimes))*ID])
     names!(df, Symbol.(df_names))
     df = stack(df, 1:',length(obs),', variable_name = :name)
       
-    df_err_names = [', paste0('"', names(err), '"', collapse = "; ") ,'; "time"; "condition"]
-    df_err = DataFrame([err datatimes ones(length(datatimes))*condition])
+    df_err_names = [', paste0('"', names(err), '"', collapse = "; ") ,'; "time"; "ID"]
+    df_err = DataFrame([err datatimes ones(length(datatimes))*ID])
     names!(df_err, Symbol.(df_err_names))
     df_err = stack(df_err, 1:',length(err),', value_name = :sigma, variable_name = :name)
     
-    df_out = join(df, df_err, on = [:name,:time,:condition])
+    df_out = join(df, df_err, on = [:name,:time,:ID])
     df_out.name = String.(df_out.name)
     df_out
-end # Prediction function for single condition
+end # Prediction function for single ID
 ')
   
   # .. return ----  
