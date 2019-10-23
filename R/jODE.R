@@ -192,7 +192,7 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
     names!(df_err, Symbol.(df_err_names))
     df_err = stack(df_err, 1:',length(err),', value_name = :sigma, variable_name = :name)
     
-    df_out = join(df, df_err, on = [:name,:time,:ID])
+    df_out = join(df, df_err, on = [:name,:time,:ID], kind = :outer)
     df_out.name = String.(df_out.name)
     df_out
 end # Prediction function for single ID
