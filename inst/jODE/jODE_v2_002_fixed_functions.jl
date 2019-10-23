@@ -67,7 +67,7 @@ Function factory to compute likelihood
 function jODE_normL2(data, jODE_prd_condition, est_mat,
     fixed_mat, jODE_make_pars, jODE_p, jODE_f, jODE_g, jODE_e)
     
-    IDs = unique(data.ID)
+    IDs = est_mat[:,1]
     pars, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, 1)
 
     cn = ones(1)*IDs[1]
@@ -118,7 +118,7 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         result = DiffResults.HessianResult(pars)
         for ID in IDs 
             cn[1] = ID
-            # verbose&&println("ID $(cn[1])")
+            verbose&&println("ID $(cn[1])")
             pars, dummy2 = jODE_make_pars(est_vec, est_mat, fixed_mat, ID)
             # [] Play around with chunk size?
             # verbose&&println(pars)
@@ -135,7 +135,11 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
             end
         end
 
-        return (val, grd, hes)
+        if deriv
+            return (val, grd, hes)
+        else
+            return val
+        end
     end
   
 end
