@@ -65,9 +65,7 @@ Function factory to compute likelihood
 @return A function LL(est_vec) to compute a tuple (value, gradient, hessian) of the objective function
 """
 function jODE_normL2(data, jODE_prd_condition, est_mat,
-    fixed_mat, jODE_make_pars, jODE_p, jODE_f, jODE_g, jODE_e,
-    sigma
-    )
+    fixed_mat, jODE_make_pars, jODE_p, jODE_f, jODE_g, jODE_e)
     
     IDs = unique(data.ID)
     pars, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, 1)
@@ -84,11 +82,12 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         df_both = @transform(df_both, 
                                 is_bloq = :value .< :lloq, 
                                 objval = convert.(eltype(pars), zeros(length(:lloq))))
+        # choose correct sigma
         df_both.sigma[df_both.sigma .== 0.] = df_both.sigma_1[df_both.sigma .== 0.]
-        df_both = sort(df_both, :is_bloq)
         # print("df_both defined\n")
-
+        
         # split into aloq and bloq
+        df_both = sort(df_both, :is_bloq)
         if any(df_both.is_bloq)
             df_aloq, df_bloq = groupby(df_both, :is_bloq)
         else 
