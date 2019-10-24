@@ -68,9 +68,9 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
   jODE_p <- paste0(
     "function jODE_p(pars, fixed)", "\n",
     "    # Pars \n",
-    "    ", paste0(nm_pars, collapse = ", ") , " = [pars...]", "\n",
+    "    ", paste0(nm_pars, collapse = ", ") , " = pars", "\n",
     "    # Fixed \n",
-    "    ", paste0(nm_fixed, collapse = ", ") , " = [fixed...]", "\n",
+    "    ", paste0(nm_fixed, collapse = ", ") , " = fixed", "\n",
     " \n",
     "    # Trafo Equations \n",
     "    ", paste0(names(trafo), " = ", trafo, collapse = "\n    ")," \n",

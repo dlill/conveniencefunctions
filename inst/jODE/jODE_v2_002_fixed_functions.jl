@@ -79,9 +79,9 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         # prepare calculations
         # print("pred defined\n")
         df_both = join(data,pred, on = [:name, :time, :ID], kind = :inner, makeunique = true)
-        df_both = @transform(df_both, 
-                                is_bloq = :value .< :lloq, 
-                                objval = convert.(eltype(pars), zeros(length(:lloq))))
+        df_both.is_bloq = df_both.value .< df_both.lloq
+        df_both.objval = convert.(eltype(pars), zeros(length(df_both.lloq)))
+        df_both.sigma  = convert.(eltype(pars), df_both.sigma)
         # choose correct sigma
         df_both.sigma[df_both.sigma .== 0.] = df_both.sigma_1[df_both.sigma .== 0.]
         # print("df_both defined\n")
@@ -106,7 +106,7 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         
         # Objective value
         # summing df_both works because df_aloq and df_bloq are not deep copies
-        sum([df_both.objval...])
+        sum(df_both.objval)
         
     end
     
