@@ -18,7 +18,7 @@ jODE_indify_est_grid <- function(est_grid, est_vec) {
 
 #' Turn fixed_grid and est_grid in numerical matrices
 #'
-#' @param est_grid,fixed_grid,fixed_grid as in IQRtools
+#' @param est_grid,fixed_grid,fixed_grid as in IQRtools. "condition" will be removed
 #' 
 #' @return list of est_mat and fixed_mat
 #' 
@@ -26,10 +26,13 @@ jODE_indify_est_grid <- function(est_grid, est_vec) {
 #'   
 #' @export
 jODE_prepare_matrices <- function(est_grid, fixed_grid, est_vec) {
+  
+  est_grid$condition <- fixed.grid$condition <- NULL
+  
   est_grid <- jODE_indify_est_grid(est_grid, est_vec)
   est_mat <- as.matrix(est_grid)
   fixed_mat <- as.matrix(fixed_grid)
-  list(est_mat, fixed_mat)
+  list(est_mat = est_mat, fixed_mat = fixed_mat)
 }
 
 #' Generate Julia source code of prediction function
@@ -83,7 +86,6 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
     "end # might be less efficient but clearer to read. Furthermore, I don't think this part will be the bottleneck", "\n"
   )
   
-  # [] check efficiency with @time -> some time else
   # .. jODE_p2 ----
   # * Old version with indexing
   trafo_final <- replaceSymbols(c(nm_fixed, nm_pars), paste0("pouter[",1:(length(nm_fixed)+length(nm_pars)),",:]"), trafo)
@@ -238,6 +240,88 @@ jODE_write_sourcefile <- function(est_grid, fixed_grid, est_vec, trafo, odes, ob
   
   invisible(jODE_sourcefile)
 }
+
+
+#' Output a little test script to play around with current objects
+#'
+#' @param est_mat,fixed_mat output of \code{\link{jODE_prepare_matrices}}
+#' @param trafo,odes,obs,err symbolic definitions
+#' @param est_vec sorted est_vec
+#'
+#' @return string which you can use to write a file
+#' @export
+jODE_writeTestScript <- function(est_mat, fixed_mat, trafo, odes, obs, err, est_vec) {
+  nm_pars   <- colnames(est_mat)[-1]
+  nm_fixed  <- colnames(fixed_mat)[-1]
+  nm_u0     <- names(odes)
+  nm_pinner <- setdiff(names(trafo), names(odes))
+  
+  jODE_indexInfo <- paste0(
+    "# pars  ------------------------------------------", "\n",
+    "# ", paste0(paste0(1:length(nm_pars),   " = ", nm_pars), collapse = "; "), "\n",
+    "# ", "\n",
+    "# fixed   ------------------------------------------", "\n",
+    "# ", paste0(paste0(1:length(nm_fixed),  " = ", nm_fixed), collapse = "; "), "\n",
+    "# ", "\n",
+    "# u0  ------------------------------------------", "\n",
+    "# ", paste0(paste0(1:length(nm_u0),     " = ", nm_u0), collapse = "; "), "\n",
+    "# ", "\n",
+    "# pinner  ------------------------------------------", "\n",
+    "# ", paste0(paste0(1:length(nm_pinner), " = ", nm_pinner), collapse = "; "), "\n"
+  )
+  jODE_libraries <- paste0(c(
+    "# -------------------------------------------------------------------------#",
+    "# Libraries  ----",
+    "# -------------------------------------------------------------------------#",
+    "using JLD2",
+    "using CSV",
+    "using ParameterizedFunctions",
+    "using DifferentialEquations",
+    "using DataFrames",
+    "using DataFramesMeta",
+    "using StatsFuns",
+    "using ForwardDiff",
+    "using DiffResults"), collapse = "\n")
+  
+  jODE_fixed_functions <-
+    paste0(c(
+      'cd("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/02-Scripts")',
+      'include("/home/daniel/Promotion/Promotion/Projects/conveniencefunctions/inst/jODE/jODE_v2_002_fixed_functions.jl")',
+      'include("S102-Julia01_functions.jl")',
+      'data = CSV.read("../01-Data/001-a-data_full.csv")',
+      'data = jODE_sanitizeData(data)'
+    ), collapse = "\n")
+  
+  jODE_fixed_mat <- fixed_mat %>% apply(1, paste0, collapse = " ") %>% paste0(collapse = "; \n") %>% paste0("fixed_mat = [", . , "]")
+  jODE_est_mat <- est_mat %>% apply(1, paste0, collapse = " ") %>% paste0(collapse = "; \n") %>% paste0("est_mat = [", . , "]")
+  jODE_est_vec <- est_vec %>% paste0(collapse = " ") %>% paste0("est_vec = [", . , "]")
+  
+  jODE_conditions <- est_mat[,1] %>%  paste0(collapse = " ") %>% paste0("IDs = [", . , "]")
+  jODE_condition <- "ID = IDs[1]"
+  
+  
+  jODE_testcode <-
+    paste0(c(
+      "# pars, fixed = jODE_make_pars(est_vec, est_mat, fixed_mat, ID)",
+      "# datatimes = unique(data.time)",
+      "# prob = ODEProblem(jODE_f2, u0, max(datatimes...), pinner)",
+      "# sol  = solve(prob, BS3(), saveat = datatimes)",
+      "# jODE_prd_condition(pars, fixed, ID, datatimes, jODE_p, jODE_f, jODE_g, jODE_e)",
+      "",
+      "obj = jODE_normL2(data, jODE_prd_condition, est_mat,",
+      "                    fixed_mat, jODE_make_pars, jODE_p, jODE_f, ",
+      "                    jODE_g, jODE_e",
+      ")",
+      "@time obj(est_vec, deriv = false, verbose = true)",
+    ), collapse = "\n")
+  
+  
+  c(jODE_indexInfo, jODE_libraries, jODE_fixed_functions, jODE_fixed_mat, jODE_est_mat, jODE_est_vec, jODE_conditions, jODE_condition, jODE_testcode) %>%
+    paste0(collapse = "\n\n")
+  
+}
+
+
 
 
 #' normL2 for julia interface

@@ -1,4 +1,15 @@
 
+#' Extract pars, fixed and parnames from grids
+#'
+#' @param est.vec 
+#' @param est.grid needs condition and ID
+#' @param fixed.grid 
+#' @param ID 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
   parnames  <- unlist(est.grid[est.grid$ID == ID, setdiff(names(est.grid), c("ID", "condition"))])
   pars <- setNames(est.vec[parnames], names(parnames))
@@ -24,6 +35,23 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   prd
 }
 
+
+
+
+#' Fast normL2 
+#'
+#' @param data 
+#' @param prd0 
+#' @param errmodel 
+#' @param est.grid 
+#' @param fixed.grid 
+#' @param times 
+#' @param attr.name 
+#'
+#' @return objective function
+#' @export
+#'
+#' @importFrom parallel mclapply
 cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data") {
   timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
   if (!is.null(times)) 
@@ -34,7 +62,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   controls <- list(times = timesD, attr.name = attr.name, conditions = intersect(x.conditions, 
                                                                                  data.conditions))
   force(errmodel)
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
@@ -69,7 +97,10 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       return(mywrss)
     }
     
-    objlists <- lapply(setNames(nm = conditions), calc_objval)
+    if (simcores == 1)
+      objlists <- lapply(setNames(nm = conditions), calc_objval)
+    if (simcores > 1)
+      objlists <- parallel::mclapply(setNames(nm = conditions), calc_objval, mc.cores = simcores)
     
     out <- objlist(value = 0, 
                         gradient = structure(rep(0, length(names(pars))), names = names(pars)), 
@@ -93,14 +124,28 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
 
   class(myfn) <- c("objfn", "fn")
   attr(myfn, "conditions") <- data.conditions
-  attr(myfn, "parameters") <- attr(x, "parameters")
-  attr(myfn, "modelname") <- modelname(x, errmodel)
+  attr(myfn, "parameters") <- attr(prd0, "parameters")
+  attr(myfn, "modelname") <- modelname(prd0, errmodel)
   return(myfn)
 }
 
 
 
-function (name, time, value, sigma = 1, attr.name = "validation", 
+#' DatapointL2 without the env bullshit
+#'
+#' @param name 
+#' @param time 
+#' @param value 
+#' @param sigma 
+#' @param attr.name 
+#' @param condition 
+#' @param prd_indiv 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validation", 
           condition, prd_indiv) {
   controls <- list(mu = structure(name, names = value)[1], 
                    time = time[1], sigma = sigma[1], attr.name = attr.name)
