@@ -12,6 +12,7 @@ Depends:
   dMod,
   tidyverse
 Imports:
+  Ryacas,
   stringr,
   dplyr,
   devtools
