@@ -1,8 +1,27 @@
-#' Simplify with yacas or Mathematica
+
+# yac_simplify <- function(string, FLAGsimplify = TRUE, FLAGverbose = FALSE) {
+#   map_chr(string, function(.x) {
+#     
+#     if (FLAGverbose)
+#       print(.x)
+#     
+#     symbols_old <- getSymbols(.x)
+#     symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
+#     .y <- replaceSymbols(symbols_old, symbols_new, .x)
+#     .y <- yacas(.y)
+#     if (FLAGsimplify)
+#       .y <- Simplify(.y)
+#     .y <- as.character(.y)
+#     replaceSymbols(symbols_new, symbols_old, .y)
+#   })
+# }
+
+
+#' Simplify with Mathematica
 #' 
 #' Escapes _ and puts everything into yacas/Mathematica for simplification
 #' 
-#' yac_simplify needs yacas and Ryacas installed. mat_simplify needs wolframscript and Matrhematica installed
+#' yac_simplify (currently disabled) needs yacas and Ryacas installed. mat_simplify needs wolframscript and Matrhematica installed
 #' 
 #' @param string named vector with equations, not too complicated please. # [] For Mathematica, replacements of sin(x) -> Sin[x] still need to be done
 #' @param FLAGsimplify call yacas::Simplify or rely solely on the conversion string -> yacas -> string for the simplification
@@ -11,29 +30,9 @@
 #' @return named vector with simplified equations
 #' 
 #' @export
-#' @importFrom Ryacas yacas Simplify
 #' @importFrom cOde getSymbols replaceSymbols
 #' @importFrom stringr str_replace_all
 #' @importFrom purrr map_chr
-yac_simplify <- function(string, FLAGsimplify = TRUE, FLAGverbose = FALSE) {
-  map_chr(string, function(.x) {
-    
-    if (FLAGverbose)
-      print(.x)
-    
-    symbols_old <- getSymbols(.x)
-    symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
-    .y <- replaceSymbols(symbols_old, symbols_new, .x)
-    .y <- yacas(.y)
-    if (FLAGsimplify)
-      .y <- Simplify(.y)
-    .y <- as.character(.y)
-    replaceSymbols(symbols_new, symbols_old, .y)
-  })
-}
-
-#' @rdname yac_simplify
-#' @export
 mat_simplify <- function(string) {
   symbols_old <- getSymbols(string)
   symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
@@ -46,7 +45,7 @@ mat_simplify <- function(string) {
   .y <- setNames(.y, names(string))
 }
 
-#' @rdname yac_simplify
+#' @rdname mat_simplify
 #' @export
 mat_denom <- function(string) {
   symbols_old <- getSymbols(string)
@@ -60,7 +59,7 @@ mat_denom <- function(string) {
   .y <- setNames(.y, names(string))
 }
 
-#' @rdname yac_simplify
+#' @rdname mat_simplify
 #' @export
 mat_numer <- function(string) {
   symbols_old <- getSymbols(string)
@@ -74,7 +73,7 @@ mat_numer <- function(string) {
   .y <- setNames(.y, names(string))
 }
 
-#' @rdname yac_simplify
+#' @rdname mat_simplify
 #' @export
 mat_replace <- function(string, replacements) {
   symbols_old <- getSymbols(string)
