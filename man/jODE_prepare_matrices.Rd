@@ -7,7 +7,7 @@
 jODE_prepare_matrices(est_grid, fixed_grid, est_vec)
 }
 \arguments{
-\item{est_grid, fixed_grid, fixed_grid}{as in IQRtools}
+\item{est_grid, fixed_grid, fixed_grid}{as in IQRtools. "condition" will be removed}
 }
 \value{
 list of est_mat and fixed_mat
