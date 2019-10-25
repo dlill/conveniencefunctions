@@ -18,6 +18,17 @@ cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
 }
 
 
+
+#' Title
+#'
+#' @param prd0 
+#' @param est.grid 
+#' @param fixed.grid 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   
   prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition) {
