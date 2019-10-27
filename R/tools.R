@@ -218,5 +218,27 @@ funnames_in_package <- function(package, as_namespace = F) {
     paste0("\\b(", ., ")\\b")
 }
 
+# -------------------------------------------------------------------------#
+# File interactions ----
+# -------------------------------------------------------------------------#
+#' Write a characeter vector to a file and open it.
+#'
+#' @param .x vector
+#'
+#' @export
+open_in_file <- function(.x) {
+  tf <- tempfile()
+  .x%>% writeLines(tf) %>% file.edit(tf)
+}
 
-
+#' Write an excel file and cat a name to open it.
+#'
+#' @param .x data.frame
+#'
+#' @export
+open_in_calc <- function(.x) {
+  tf <- tempfile()
+  tf <- paste0(tf, ".csv")
+  write_csv(.x, tf)
+  paste0("libreoffice --calc ", tf) %>% cat
+}

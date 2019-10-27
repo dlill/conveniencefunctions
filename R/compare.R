@@ -1,12 +1,8 @@
-#' Title
+#' Compare function
 #'
-#' @param x 
-#' @param y 
+#' @param x,y vectors to compare
 #'
-#' @return
 #' @export
-#'
-#' @examples
 compare <- function(x,y) {
   cat("\n ======= lengths ========== \n")
   cat(length(x), length(y), sep = ", ")

@@ -7,6 +7,7 @@
 #   * fixed.grid + condition_info -> fixed.grid
 # * fixed.grid + est.grid + parameters_df + trafo_info -> trafo + parameters_est_df (with column est_value)
 
+# [] Think of way how to fix one parameter at certain conditions while leaving other conditions free
 
 
 #' Template to build a basic parameters_df
@@ -77,4 +78,6 @@ make_condition_specific <- function(est.grid, parameters_est_df, parname, condit
   
   return(list(est.grid = est.grid, est.vec_df = parameters_est_df))
 }
+
+
 
