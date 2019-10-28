@@ -14,12 +14,7 @@ make_condition_specific(est.grid, parameters_est_df, parname, conditions,
 
 \item{conditions}{character vector of conditions}
 
-\item{FLAGdummifyOtherConds}{replace the other parameters by "dummy". Dummy will have value c(dummy = 1)
-
-conditions <- filter(condition.grid, unit == "a.u.?")$condition
-parname <- "scale_tpS2"
-FLAGdummifyOtherConds = FALSE
-condition_column = "ID"}
+\item{FLAGdummifyOtherConds}{replace the other parameters by "dummy". Dummy will have value c(dummy = 1)}
 }
 \description{
 new parameters will be named parname_"condition_column"

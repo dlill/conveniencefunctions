@@ -51,10 +51,7 @@ build_parameters_df <- function(odes, observables, errormodel) {
 #' @param conditions character vector of conditions
 #' @param FLAGdummifyOtherConds replace the other parameters by "dummy". Dummy will have value c(dummy = 1)
 #' 
-#' conditions <- filter(condition.grid, unit == "a.u.?")$condition
-#' parname <- "scale_tpS2"
-#' FLAGdummifyOtherConds = FALSE
-#' condition_column = "ID"
+#' @export 
 make_condition_specific <- function(est.grid, parameters_est_df, parname, conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE){
   condition_indices <- est.grid[["condition"]] %in% conditions
   

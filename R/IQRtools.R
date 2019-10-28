@@ -14,6 +14,7 @@ rename_script <- function(from, to) {
   writeLines(ln, to)
   # 3 rename output folder
   if (dir.exists(file.path("../04-Output", from_stripped))){
+    dir.create(file.path("../04-Output", to_stripped))
     file.copy(file.path("../04-Output", from_stripped), file.path("../04-Output", to_stripped), recursive = TRUE)
     file.remove(file.path("../04-Output", from_stripped), recursive = TRUE)
   }
