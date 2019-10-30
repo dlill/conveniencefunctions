@@ -3,7 +3,7 @@
 #' @param from,to as in file.rename 
 #'
 #' @export
-rename_script <- function(from, to) {
+cf_rename_script <- function(from, to) {
   # 1 rename file
   file.rename(from, to)
   # 2 rename filename within script
@@ -19,3 +19,24 @@ rename_script <- function(from, to) {
     file.remove(file.path("../04-Output", from_stripped), recursive = TRUE)
   }
 }
+
+
+
+#' Rename a script, change filename occurences within script, rename output folder
+#'
+#' @param from,to as in file.rename 
+#'
+#' @export
+cf_copy_script <- function(from, to) {
+  # 1 rename file
+  file.copy(from, to)
+  # 2 rename filename within script
+  ln <- readLines(to)
+  from_stripped <- str_replace_all(from, "\\.R$", "")
+  to_stripped <- str_replace_all(to, "\\.R$", "")
+  ln <- str_replace_all(ln, from_stripped, to_stripped)
+  writeLines(ln, to)
+}
+
+
+

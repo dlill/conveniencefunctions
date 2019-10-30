@@ -18,7 +18,7 @@
 #' estscale = "L", initpar = F, dynpar = F, obspar = F, errpar = F
 #' @importFrom dplyr bind_rows
 #' @export
-build_parameters_df <- function(odes, observables, errormodel) {
+cf_build_parameters_df <- function(odes, observables, errormodel) {
   pdf_initpars <- names(odes)
   pdf_initpars <- c(names(odes), paste0("init_", names(odes)))
   pdf_dynpars  <- setdiff(getSymbols(odes), pdf_initpars)
@@ -52,7 +52,7 @@ build_parameters_df <- function(odes, observables, errormodel) {
 #' @param FLAGdummifyOtherConds replace the other parameters by "dummy". Dummy will have value c(dummy = 1)
 #' 
 #' @export 
-make_condition_specific <- function(est.grid, parameters_est_df, parname, conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE){
+cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE){
   condition_indices <- est.grid[["condition"]] %in% conditions
   
   parnames <- est.grid[condition_indices, parname, drop = TRUE]
@@ -75,6 +75,11 @@ make_condition_specific <- function(est.grid, parameters_est_df, parname, condit
   
   return(list(est.grid = est.grid, est.vec_df = parameters_est_df))
 }
+
+#' @export
+unclass_parvec <- function(x) {setNames(unclass(x)[1:length(x)], names(x))}
+
+
 
 
 
