@@ -76,6 +76,52 @@ cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, con
   return(list(est.grid = est.grid, est.vec_df = parameters_est_df))
 }
 
+
+#' Make parameters_df parameters condition specific
+#'
+#' will be done like this: parname_condition
+#'
+#' @param parameters_df a typical parameters_df
+#' @param conditions character vector.
+#' @param parnames names of parameters to apply condition specificity to
+#'
+#' @return new paraemters_df with new rows
+#' @export
+cf_parameters_df_condition_specific <- function(parameters_df, conditions = c("C1", "C2"), parnames = parameters_df$name) {
+  # possible options
+  # * keep or drop original parameters?
+  # * ...
+  parnames_new <- outer(parnames, conditions, paste, sep = "_")
+  x <- unique(parnames)[1]
+  for (x in unique(parnames)){
+    parnames_new_x   <- parnames_new[parnames == x]
+    parameters_df_new    <- filter(parameters_df, name == x) %>% 
+      mutate(name = list(parnames_new_x)) %>% unnest(name)
+    parameters_df <- bind_rows(parameters_df, parameters_df_new)
+  }
+  parameters_df
+}
+
+
+#' Merge values into a parameters_df
+#'
+#' @param pars_df_into parameters_df
+#' @param from Either named vector or parameters_df
+#'
+#' @return pars_df_into with updated values
+#' @export
+cf_merge_values_parameters_df <- function(pars_df_into, from) {
+  # possible options
+  # * match name0 instead/as well
+  # * merge scales/upper/lower/FLAGs?
+  if (!is.data.frame(from))
+    from <- data.frame(name = names(from), value = from, stringsAsFactors = F)
+  p <- merge(pars_df_into, select(from, name, VALOLD = value), all.x = TRUE, all.y = FALSE)
+  p <- mutate(p, value = case_when(!is.na(VALOLD) ~ VALOLD, TRUE ~ value))
+  p <- select(p, -VALOLD)
+  p
+}
+
 #' @export
 unclass_parvec <- function(x) {setNames(unclass(x)[1:length(x)], names(x))}
 

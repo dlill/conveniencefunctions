@@ -10,7 +10,7 @@ install_cfsnippets <- function(){
     dir.create(dirname(snippets_path()), recursive = TRUE)
     writeLines("\n", snippets_path())
   }
-  .snippetlist <- snippets_read("r", "inst/snippets/r.snippets")
+  .snippetlist <- snippets_read("r", system.file("snippets/r.snippets", package = "conveniencefunctions"))
   lapply(names(.snippetlist), function(.x) try(snippet_remove(.x)))
   mapply(snippet_add, name = names(.snippetlist), text = .snippetlist, SIMPLIFY = FALSE)
 }
