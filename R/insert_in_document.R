@@ -34,13 +34,12 @@ insert_runbg <- function(job_name = "myrunbg_job", job_type = NULL, dMod.frame =
   input <- 'ls(pos=.GlobalEnv)'
   if(!is.null(dMod.frame)) input <- dMod.frame
 
-
   # Header----
   rbg_header <- function() paste0('
-# ---------------------------------------------------------- #
+# -------------------------------------------------------------------------#
 # Runbg: ',str_replace(job_name, "_job$", ""), ' ----
-# ---------------------------------------------------------- #
-setwd(here("Work","Outputs", outdir))
+# -------------------------------------------------------------------------#
+# ',job_name,' calculates ', job_type, 's for model ...
 ', job_name, ' <- runbg({')
 
   rbg_body <- function() "\n\n"
@@ -54,17 +53,7 @@ setwd(here("Work","Outputs", outdir))
 
   # GetSavePurge ----
   rbg_get_save_purge <- function() paste0('
-# ----------------------------------------------- #
-# .. Description ----
-# ----------------------------------------------- #
-# ',job_name,' calculates ', job_type, 's for model ...
-# The primary goal is to ...
-#
-#
-# ----------------------------------------------- #
-# .. get/save/purge ----
-# ----------------------------------------------- #
-setwd(here("Work","Outputs", outdir))
+# .. get/save/purge -----
 # ',job_name,'$check()
 # ',str_replace(job_name, "_job", ""),' <- ',job_name,'$get()
 # ',str_replace(job_name, "_job", ""),' %>% str1
