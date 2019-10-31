@@ -26,6 +26,7 @@ snippet cfhead
 	.estimationFolder <- file.path(.outputFolder, "02-Estimation")
 	.plotFolder <- file.path(.outputFolder, "03-Plot")
 	.tableFolder <- file.path(.outputFolder, "04-Table")
+	.tempdir <- tempdir()
 	if (!dir.exists(.outputFolder))
 	  dir.create(file.path(.outputFolder))
 	if (!dir.exists(.modelFolder))
@@ -130,9 +131,9 @@ snippet Rprof_profile_line
 	htmlwidgets::saveWidget(pv___, paste0(rp___, ".html"))
 	browseURL(paste0(rp___, ".html"))
 
-snippet setwdestimationFolder
+snippet setwdtempdir
 	.currentwd <- getwd()
-	setwd(.estimationFolder)
+	setwd(.tempdir)
 	$0
 	setwd(.currentwd)
 
