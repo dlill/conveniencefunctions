@@ -21,8 +21,14 @@ snippet cfhead
 	library(dMod)
 	# .. Default Values -----
 	rm(list = ls(all.names = TRUE))
-	.outputFolder <- "../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
-	
+ 	.outputFolder     <-"../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
+ 	.modelFolder      <-file.path(.outputFolder, "01-Model")
+ 	.estimationFolder <-file.path(.outputFolder, "02-Estimation")
+ 	.plotFolder       <-file.path(.outputFolder, "03-Plot")
+ 	.tableFolder      <-file.path(.outputFolder, "04-Table")
+ 	.tempdir          <-tempdir()
+	for (x in c(.outputFolder,.modelFolder,.estimationFolder,.plotFolder,.tableFolder,.tempdir))
+		if (!dir.exists(x)) dir.create(x)
 	
 	
 	# -------------------------------------------------------------------------#
@@ -117,6 +123,12 @@ snippet Rprof_profile_line
 	htmlwidgets::saveWidget(pv___, paste0(rp___, ".html"))
 	browseURL(paste0(rp___, ".html"))
 
+snippet setwdtempdir
+	.currentwd <- getwd()
+	setwd(.tempdir)
+	$0
+	setwd(.currentwd)
+
 snippet setwdDocument
 	`r paste0("setwd('", dirname(rstudioapi::getSourceEditorContext()$path), "')")`
 
@@ -135,6 +147,9 @@ snippet catsep_comman
 
 snippet catsep_quotecomman
 	 cat(sep = '",\n"')
+
+snippet loadcf
+	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
 
 
 

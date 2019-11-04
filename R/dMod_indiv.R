@@ -11,13 +11,28 @@
 #'
 #' @examples
 cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
+  if ("dummy" %in% names(est.vec))
+    stop("'dummy' should not appear in est.vec (parameter vector passed to objective function)\n")
+  est.vec <- c(est.vec, dummy = 1)
   parnames  <- unlist(est.grid[est.grid$ID == ID, setdiff(names(est.grid), c("ID", "condition"))])
   pars <- setNames(est.vec[parnames], names(parnames))
   fixed <- fixed.grid[fixed.grid$ID == ID, setdiff(names(fixed.grid), c("ID", "condition"))]
+  parnames <- parnames[parnames != "dummy"]
   return(list(pars = pars, fixed = fixed, parnames = parnames))
 }
 
 
+
+#' Title
+#'
+#' @param prd0 
+#' @param est.grid 
+#' @param fixed.grid 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   
   prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition) {
@@ -52,7 +67,8 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
 #' @export
 #'
 #' @importFrom parallel mclapply
-cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data") {
+cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data", 
+                             FLAGverbose = FALSE, FLAGbrowser = FALSE) {
   timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
   if (!is.null(times)) 
     timesD <- sort(union(times, timesD))
@@ -70,7 +86,13 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
     pars <- c(pouter, fixed)
     
     calc_objval <- function(cn) {
+      
+      if (FLAGbrowser)
+        browser()
+      
       ID <- est.grid$ID[est.grid$condition == cn]
+      if (FLAGverbose)
+        print(ID)
       dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed

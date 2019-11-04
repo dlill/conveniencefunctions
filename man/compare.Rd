@@ -2,15 +2,13 @@
 % Please edit documentation in R/compare.R
 \name{compare}
 \alias{compare}
-\title{Title}
+\title{Compare function}
 \usage{
 compare(x, y)
 }
 \arguments{
-\item{x}{}
-
-\item{y}{}
+\item{x, y}{vectors to compare}
 }
 \description{
-Title
+Compare function
 }
