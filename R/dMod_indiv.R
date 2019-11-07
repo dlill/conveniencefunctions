@@ -18,7 +18,7 @@ cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
   pars <- setNames(est.vec[parnames], names(parnames))
   fixed <- fixed.grid[fixed.grid$ID == ID, setdiff(names(fixed.grid), c("ID", "condition"))]
   parnames <- parnames[parnames != "dummy"]
-  return(list(pars = pars, fixed = fixed, parnames = parnames))
+  return(list(pars = unlist(pars), fixed = unlist(fixed), parnames = parnames))
 }
 
 
@@ -35,11 +35,19 @@ cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
 #' @examples
 cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   
-  prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition) {
+  prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition, 
+                  FLAGbrowser = FALSE, 
+                  FLAGverbose = FALSE) {
     if (!is.null(fixed))
       stop("fixed cannot be considered at the moment")
     lapply(setNames(nm = conditions), function(cn) {
+      if (FLAGbrowser)
+        browser()
+      
       ID <- est.grid$ID[est.grid$condition == cn]
+      if (FLAGverbose)
+        cat(ID, cn, "\n", sep = " ---- ")
+      
       dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
@@ -67,8 +75,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
 #' @export
 #'
 #' @importFrom parallel mclapply
-cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data", 
-                             FLAGverbose = FALSE, FLAGbrowser = FALSE) {
+cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data") {
   timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
   if (!is.null(times)) 
     timesD <- sort(union(times, timesD))
@@ -78,7 +85,9 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   controls <- list(times = timesD, attr.name = attr.name, conditions = intersect(x.conditions, 
                                                                                  data.conditions))
   force(errmodel)
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1, 
+                   FLAGbrowser = FALSE, 
+                   FLAGverbose = FALSE) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
@@ -92,7 +101,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       
       ID <- est.grid$ID[est.grid$condition == cn]
       if (FLAGverbose)
-        print(ID)
+        cat(ID, cn, "\n", sep = " ---- ")
       dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
@@ -100,7 +109,11 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       timesD <- controls$times
       attr.name <- controls$attr.name
       
-      prediction <- prd0(times = timesD, pars = pars_, fixed = fixed_, deriv = deriv)
+      prediction <- try(prd0(times = timesD, pars = pars_, fixed = fixed_, deriv = deriv))
+      
+      if (inherits(prediction, "try-error"))
+        stop("Prediction failed in condition = ", cn, ", ID = ", ID, ".
+             Try iterating p(pars), (x*p)(pars), ... to find the problem.")
       
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {

@@ -117,13 +117,24 @@ cf_parameters_df_merge_values <- function(pars_df_into, from) {
 #' 
 #' new parameters will be named parname_"condition_column"
 #' 
-#' @param est.grid,parameters_est_df as usual
 #' @param parname character(1L) denoting a column in the est.grid
 #' @param conditions character vector of conditions
 #' @param FLAGdummifyOtherConds replace the other parameters by "dummy". Dummy will have value c(dummy = 1)
+#' @param est.grid 
+#' @param parameters_est_df 
+#' @param condition_column 
+#' @param condition.grid if this is supplied, condition_column can also refer to a column in there
 #' 
 #' @export 
-cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE){
+cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE,
+                                       condition.grid = NULL){
+  
+  FLAGaugment_est.grid <- FALSE
+  if (!is.null(condition.grid) & !condition_column %in% names(est.grid)){
+    FLAGaugment_est.grid <- TRUE
+    est.grid <- merge(est.grid, condition.grid[c("ID", "condition", condition_column)])
+    }
+  
   condition_indices <- est.grid[["condition"]] %in% conditions
   
   parnames <- est.grid[condition_indices, parname, drop = TRUE]
@@ -143,6 +154,12 @@ cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, con
     est.grid[condition_indices, parname] <- "dummy"
     parnames <- unique(est.grid[[parname]])
   }
+  
+  # remove the column again
+  if (FLAGaugment_est.grid)
+    est.grid[[condition_column]] <- NULL
+  
+  parameters_est_df <- unique(parameters_est_df)
   
   return(list(est.grid = est.grid, est.vec_df = parameters_est_df))
 }
