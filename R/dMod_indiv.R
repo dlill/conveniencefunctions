@@ -87,7 +87,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   force(errmodel)
   myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1, 
                    FLAGbrowser = FALSE, 
-                   FLAGverbose = FALSE) {
+                   FLAGverbose = FALSE,
+                   FLAGNaNInfwarnings = FALSE) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
@@ -117,6 +118,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       
       prediction <- prediction[[1]]
       
+      # [] refactor: put the following stuff into own function catch_nonproblematicNanInfs(prediciton, data, cn, FLAGNaNInfWarnings)
       whichcols <- nm <- NULL
       if (any(is.na(prediction))){
         whichcols <- unique(which(is.na(prediction), arr.ind = TRUE)[,2])
@@ -125,7 +127,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         if (length(intersect(names(data[[cn]]$name), nm)))
           stop("Prediction is.na for observables present in data in condition", cn)
         
-        if (FLAGverbose)
+        if (FLAGNaNInfwarnings)
           warning("NaN in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
         prediction[is.na(prediction)] <- 0
         attr(prediction, "deriv")[is.infinite(attr(prediction, "deriv"))|is.na(attr(prediction, "deriv"))] <- 0
@@ -138,14 +140,13 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         if (length(intersect(names(data[[cn]]$name), nm)))
           stop("Prediction is infinite for observables present in data in condition", cn)
         
-        if (FLAGverbose)
+        if (FLAGNaNInfwarnings)
           warning("Inf in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
         
         prediction[is.infinite(prediction)] <- 0
         attr(prediction, "deriv")[is.infinite(attr(prediction, "deriv"))|is.na(attr(prediction, "deriv"))] <- 0
         attr(prediction, "sensitivities")[is.infinite(attr(prediction, "sensitivities"))|is.na(attr(prediction, "sensitivities"))] <- 0
       }
-      
       
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {
@@ -161,6 +162,10 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         mywrss$hessian <- mywrss$hessian[names(dummy$parnames),names(dummy$parnames)]
         dimnames(mywrss$hessian) <- list(unname(dummy$parnames), unname(dummy$parnames))
       }
+      
+      # [] catch conditions with NA value, don't include them in obj-calculation and print out warning
+      
+      
       return(mywrss)
     }
     
