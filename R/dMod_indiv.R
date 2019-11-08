@@ -115,12 +115,44 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         stop("Prediction failed in condition = ", cn, ", ID = ", ID, ".
              Try iterating p(pars), (x*p)(pars), ... to find the problem.")
       
+      prediction <- prediction[[1]]
+      
+      whichcols <- nm <- NULL
+      if (any(is.na(prediction))){
+        whichcols <- unique(which(is.na(prediction), arr.ind = TRUE)[,2])
+        nm <- colnames(prediction)[whichcols]
+        
+        if (length(intersect(names(data[[cn]]$name), nm)))
+          stop("Prediction is.na for observables present in data in condition", cn)
+        
+        if (FLAGverbose)
+          warning("NaN in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
+        prediction[is.na(prediction)] <- 0
+        attr(prediction, "deriv")[is.infinite(attr(prediction, "deriv"))|is.na(attr(prediction, "deriv"))] <- 0
+        attr(prediction, "sensitivities")[is.infinite(attr(prediction, "sensitivities"))|is.na(attr(prediction, "sensitivities"))] <- 0
+      }
+      if (any(is.infinite(prediction))){
+        whichcols <- unique(which(is.infinite(prediction), arr.ind = TRUE)[,2])
+        nm <- colnames(prediction)[whichcols]
+        
+        if (length(intersect(names(data[[cn]]$name), nm)))
+          stop("Prediction is infinite for observables present in data in condition", cn)
+        
+        if (FLAGverbose)
+          warning("Inf in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
+        
+        prediction[is.infinite(prediction)] <- 0
+        attr(prediction, "deriv")[is.infinite(attr(prediction, "deriv"))|is.na(attr(prediction, "deriv"))] <- 0
+        attr(prediction, "sensitivities")[is.infinite(attr(prediction, "sensitivities"))|is.na(attr(prediction, "sensitivities"))] <- 0
+      }
+      
+      
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {
-        err <- errmodel(out = prediction[[1]], pars = getParameters(prediction[[1]]), conditions = cn)
-        mywrss <- nll(res(data[[cn]], prediction[[1]], err[[1]]))
+        err <- errmodel(out = prediction, pars = getParameters(prediction), conditions = cn)
+        mywrss <- nll(res(data[[cn]], prediction, err[[1]]))
       } else {
-        mywrss <- wrss(res(data[[cn]], prediction[[1]]))
+        mywrss <- wrss(res(data[[cn]], prediction))
       }
       if (deriv) {
         mywrss$gradient <- mywrss$gradient[names(dummy$parnames)]
