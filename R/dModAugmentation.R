@@ -90,8 +90,8 @@ cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, .
   splits <- do.call(paste, c(conditions, list(sep = "_")))
   conditionframe <- dataframe[!duplicated(splits), union(split.by, keep.covariates), drop = FALSE]
   rownames(conditionframe) <- splits[!duplicated(splits)]
-  if (! "condition" %in% names(conditionframe))
-    conditionframe$condition <- rownames(conditionframe)
+  conditionframe$condition <- rownames(conditionframe)
+  
   dataframe <- cbind(data.frame(condition = splits), dataframe[, standard.names])
   out <- lapply(unique(splits), function(s) dataframe[dataframe[, 1] == s, -1])
   names(out) <- as.character(unique(splits))
