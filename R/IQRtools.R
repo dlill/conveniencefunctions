@@ -28,12 +28,10 @@ cf_rename_script <- function(from, to) {
 #'
 #' @export
 cf_copy_script <- function(from, to) {
-  # 1 rename file
-  file.copy(from, to)
-  # 2 rename filename within script
-  ln <- readLines(to)
+  ln <- readLines(from)
   from_stripped <- str_replace_all(from, "\\.R$", "")
   to_stripped <- str_replace_all(to, "\\.R$", "")
+  message("Number of replaced filename references: ", sum(str_count(ln, from_stripped)), "-------\n")
   ln <- str_replace_all(ln, from_stripped, to_stripped)
   writeLines(ln, to)
 }
