@@ -124,7 +124,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         whichcols <- unique(which(is.na(prediction), arr.ind = TRUE)[,2])
         nm <- colnames(prediction)[whichcols]
         
-        if (length(intersect(names(data[[cn]]$name), nm)))
+        if (length(intersect(data[[cn]]$name, nm)))
           stop("Prediction is.na for observables present in data in condition", cn)
         
         if (FLAGNaNInfwarnings)
@@ -137,7 +137,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         whichcols <- unique(which(is.infinite(prediction), arr.ind = TRUE)[,2])
         nm <- colnames(prediction)[whichcols]
         
-        if (length(intersect(names(data[[cn]]$name), nm)))
+        if (length(intersect(data[[cn]]$name, nm)))
           stop("Prediction is infinite for observables present in data in condition", cn)
         
         if (FLAGNaNInfwarnings)
