@@ -5,8 +5,7 @@
 \title{Fast normL2}
 \usage{
 cf_normL2_indiv(data, prd0, errmodel = NULL, est.grid, fixed.grid,
-  times = NULL, attr.name = "data", FLAGverbose = FALSE,
-  FLAGbrowser = FALSE)
+  times = NULL, attr.name = "data")
 }
 \arguments{
 \item{data}{}

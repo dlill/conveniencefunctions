@@ -18,7 +18,7 @@ cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
   pars <- setNames(est.vec[parnames], names(parnames))
   fixed <- fixed.grid[fixed.grid$ID == ID, setdiff(names(fixed.grid), c("ID", "condition"))]
   parnames <- parnames[parnames != "dummy"]
-  return(list(pars = pars, fixed = fixed, parnames = parnames))
+  return(list(pars = unlist(pars), fixed = unlist(fixed), parnames = parnames))
 }
 
 
@@ -35,11 +35,19 @@ cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
 #' @examples
 cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   
-  prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition) {
+  prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition, 
+                  FLAGbrowser = FALSE, 
+                  FLAGverbose = FALSE) {
     if (!is.null(fixed))
       stop("fixed cannot be considered at the moment")
     lapply(setNames(nm = conditions), function(cn) {
+      if (FLAGbrowser)
+        browser()
+      
       ID <- est.grid$ID[est.grid$condition == cn]
+      if (FLAGverbose)
+        cat(ID, cn, "\n", sep = " ---- ")
+      
       dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
@@ -67,8 +75,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
 #' @export
 #'
 #' @importFrom parallel mclapply
-cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data", 
-                             FLAGverbose = FALSE, FLAGbrowser = FALSE) {
+cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data") {
   timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
   if (!is.null(times)) 
     timesD <- sort(union(times, timesD))
@@ -78,7 +85,9 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   controls <- list(times = timesD, attr.name = attr.name, conditions = intersect(x.conditions, 
                                                                                  data.conditions))
   force(errmodel)
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1, 
+                   FLAGbrowser = FALSE, 
+                   FLAGverbose = FALSE) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
@@ -92,7 +101,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       
       ID <- est.grid$ID[est.grid$condition == cn]
       if (FLAGverbose)
-        print(ID)
+        cat(ID, cn, "\n", sep = " ---- ")
       dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
@@ -100,7 +109,11 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       timesD <- controls$times
       attr.name <- controls$attr.name
       
-      prediction <- prd0(times = timesD, pars = pars_, fixed = fixed_, deriv = deriv)
+      prediction <- try(prd0(times = timesD, pars = pars_, fixed = fixed_, deriv = deriv))
+      
+      if (inherits(prediction, "try-error"))
+        stop("Prediction failed in condition = ", cn, ", ID = ", ID, ".
+             Try iterating p(pars), (x*p)(pars), ... to find the problem.")
       
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {
@@ -234,3 +247,90 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
   attr(myfn, "parameters") <- value[1]
   return(myfn)
 }
+
+
+#' DatapointL2 without the env bullshit
+#'
+#' @param name 
+#' @param time 
+#' @param value 
+#' @param sigma 
+#' @param attr.name 
+#' @param condition 
+#' @param prd_indiv 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_timepointL2 <- function(name, time, value, sigma = 1, attr.name = "timepointL2", 
+                            condition, prd_indiv) {
+  
+  # [] mu needs to be numeric and time needs tocharacter
+    controls <- list(mu = structure(name, names = value)[1], 
+                   time = time[1], sigma = sigma[1], attr.name = attr.name)
+  
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, 
+                   env = NULL) {
+    
+    mu        <- controls$mu
+    time      <- controls$time
+    timepar <- 
+    sigma     <- controls$sigma
+    attr.name <- controls$attr.name
+    
+    arglist <- list(...)
+    arglist <- arglist[match.fnargs(arglist, c("times", "pars"))]
+    # ensure time point has prediction
+    times      <- arglist[[1]]
+    times      <- sort(c(unique(times, time)))
+    pouter     <- arglist[[2]]
+    prediction <- prd_indiv(times, pouter, condition = condition)
+    if (!is.null(conditions) && !condition %in% conditions) 
+      return()
+    
+    if (is.null(conditions) && !condition %in% names(prediction)) 
+      stop("datapointL2 requests unavailable condition. Call the objective function explicitly stating the conditions argument.")
+    
+    datapar    <- setdiff(names(mu), names(fixed))
+    parapar    <- setdiff(names(pouter), c(datapar, names(fixed)))
+    time.index <- which(prediction[[condition]][, "time"] == time)
+    
+    withDeriv <- !is.null(attr(prediction[[condition]], "deriv"))
+    pred      <- prediction[[condition]][time.index, ]
+    deriv     <- NULL
+    if (withDeriv) 
+      deriv <- attr(prediction[[condition]], "deriv")[time.index,]
+    
+    pred <- pred[mu]
+    if (withDeriv) {
+      mu.para <- intersect(paste(mu, parapar, sep = "."), names(deriv))
+      deriv <- deriv[mu.para]
+    }
+    
+    res <- as.numeric(pred - c(fixed, pouter)[names(mu)])
+    val <- as.numeric((res/sigma)^2)
+    gr <- NULL
+    hs <- NULL
+    if (withDeriv) {
+      dres.dp <- structure(rep(0, length(pouter)), names = names(pouter))
+      if (length(parapar) > 0) 
+        dres.dp[parapar] <- as.numeric(deriv)
+      if (length(datapar) > 0) 
+        dres.dp[datapar] <- -1
+      gr <- 2 * res * dres.dp/sigma^2
+      hs <- 2 * outer(dres.dp, dres.dp, "*")/sigma^2
+      colnames(hs) <- rownames(hs) <- names(pouter)
+    }
+    out <- objlist(value = val, gradient = gr, hessian = hs)
+    attr(out, controls$attr.name) <- out$value
+    attr(out, "prediction") <- pred
+    attr(out, "env") <- env
+    return(out)
+  }
+  class(myfn) <- c("objfn", "fn")
+  attr(myfn, "conditions") <- condition
+  attr(myfn, "parameters") <- value[1]
+  return(myfn)
+}
+

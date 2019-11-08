@@ -5,7 +5,8 @@
 \title{Make a column of an est.grid condition specific and augment est.vec}
 \usage{
 cf_make_condition_specific(est.grid, parameters_est_df, parname,
-  conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE)
+  conditions, condition_column = "ID", FLAGdummifyOtherConds = FALSE,
+  condition.grid = NULL)
 }
 \arguments{
 \item{est.grid, parameters_est_df}{as usual}

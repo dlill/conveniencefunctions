@@ -21,12 +21,14 @@ snippet cfhead
 	library(dMod)
 	# .. Default Values -----
 	rm(list = ls(all.names = TRUE))
- 	.outputFolder     <-"../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
- 	.modelFolder      <-file.path(.outputFolder, "01-Model")
- 	.estimationFolder <-file.path(.outputFolder, "02-Estimation")
- 	.plotFolder       <-file.path(.outputFolder, "03-Plot")
- 	.tableFolder      <-file.path(.outputFolder, "04-Table")
- 	.tempdir          <-tempdir()
+	.fast = FALSE
+	.currentwd <- getwd()
+	.outputFolder     <-"../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
+	.modelFolder      <-file.path(.outputFolder, "01-Model")
+	.estimationFolder <-file.path(.outputFolder, "02-Estimation")
+	.plotFolder       <-file.path(.outputFolder, "03-Plot")
+	.tableFolder      <-file.path(.outputFolder, "04-Table")
+	.tempdir          <-tempdir()
 	for (x in c(.outputFolder,.modelFolder,.estimationFolder,.plotFolder,.tableFolder,.tempdir))
 		if (!dir.exists(x)) dir.create(x)
 	
@@ -152,4 +154,57 @@ snippet loadcf
 	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
 
 
+snippet cfrunbgmstrust
+	setwd(.tempdir)
+	fit_job <- runbg({
+	  ncores <- dMod::detectFreeCores()
+	  startpars <- msParframe(cf_est.vec, 200, sd = 2) %>% as.data.frame()
+	  startpars <- mutate_at(startpars, vars(matches("offset")), abs)
+	  class(startpars) <- c("parframe", "data.frame")
+	  fitlist <- mstrust(obj, startpars, 1,10, 
+	                     parupper = cf_est.vec * 0 + log(1000), # [] integrate parameters_df better
+	                     parlower = cf_est.vec * 0 + log(1e-5), 
+	                     iterlim = 200, output = TRUE,
+	                     cores = ncores)
+	  fitlist
+	   # >>                                                             # >>
+	}, machine = c(paste0("knecht", 1)), input = c("obj", "cf_est.vec"), filename = "S111-fit_job"
+	, recover = T
+	)
+	setwd(.currentwd)
+	# .. get/save/purge -----
+	# setwd(file.path(.outputFolder, "02-Estimation"))
+	# fit_job\$check()
+	# fit <- fit_job\$get()
+	# setwd(.currentwd)
+	# fit <- unlist(fit, FALSE, use.names = FALSE)
+	# fit %>% str1
+	# fit <- fit %>% as.parlist() %>% as.parframe() %>% add_stepcolumn()
+	# saveRDS(fit, file = file.path(.estimationFolder, "fit.rds"))
+	# fit_job\$purge()
+
+
+
+snippet cfrunbgmstrust
+	setwd(.tempdir)
+	profile_job <- runbg({
+	  ncores <- dMod::detectFreeCores()
+	  
+	  profile(obj, bestfit, names(bestfit), cores = ncores)
+	  
+	  # >>                                                            # >>
+	}, machine = c(paste0("knecht", 1)), input = c("obj", "bestfit"), filename = "S111-profile_job"
+	# , recover = T
+	)
+	setwd(.currentwd)
+	# .. get/save/purge -----
+	# setwd(file.path(.outputFolder, "02-Estimation"))
+	# profile_job\$check()
+	# profile <- profile_job\$get()
+	# setwd(.currentwd)
+	# profile <- bind_rows(profile)
+	# profile %>% str1
+	# saveRDS(profile, file = file.path(.estimationFolder, "profile.rds"))
+	# write_csv(profile, file = file.path(.estimationFolder, "profile.csv"))
+	# profile_job\$purge()
 
