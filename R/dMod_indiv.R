@@ -40,7 +40,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
                   FLAGverbose = FALSE) {
     if (!is.null(fixed))
       stop("fixed cannot be considered at the moment")
-    lapply(setNames(nm = conditions), function(cn) {
+    out <- lapply(setNames(nm = conditions), function(cn) {
       if (FLAGbrowser)
         browser()
       
@@ -53,6 +53,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
       fixed_ <- dummy$fixed
       pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
     })
+    dMod::as.prdlist(out)
   }
   class(prd) <- c("prdfn", "fn")
   prd
