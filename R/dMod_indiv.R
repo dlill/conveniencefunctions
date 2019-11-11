@@ -10,14 +10,23 @@
 #' @export
 #'
 #' @examples
-cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
-  if ("dummy" %in% names(est.vec))
+cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
+  if ("dummy" %in% names(pars))
     stop("'dummy' should not appear in est.vec (parameter vector passed to objective function)\n")
-  est.vec <- c(est.vec, dummy = 1)
+  
+  pars_outer <- pars
+  fixed_outer <- fixed
+  
+  pars <- c(pars, fixed)
+  pars <- c(pars, dummy = 1)
   parnames  <- unlist(est.grid[est.grid$ID == ID, setdiff(names(est.grid), c("ID", "condition"))])
-  pars <- setNames(est.vec[parnames], names(parnames))
+  pars <- setNames(pars[parnames], names(parnames))
   fixed <- fixed.grid[fixed.grid$ID == ID, setdiff(names(fixed.grid), c("ID", "condition"))]
   parnames <- parnames[parnames != "dummy"]
+  
+  fixed <- c(fixed, pars[parnames %in% names(fixed_outer)])
+  pars <- pars[!parnames %in% names(fixed_outer)]
+  parnames <- parnames[!parnames %in% names(fixed_outer)]
   return(list(pars = unlist(pars), fixed = unlist(fixed), parnames = parnames))
 }
 
@@ -38,8 +47,6 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition, 
                   FLAGbrowser = FALSE, 
                   FLAGverbose = FALSE) {
-    if (!is.null(fixed))
-      stop("fixed cannot be considered at the moment")
     out <- lapply(setNames(nm = conditions), function(cn) {
       if (FLAGbrowser)
         browser()
@@ -48,7 +55,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
       if (FLAGverbose)
         cat(ID, cn, "\n", sep = " ---- ")
       
-      dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
+      dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
       pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
@@ -93,9 +100,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
-    pouter <- arglist[[1]]
-    pars <- c(pouter, fixed)
-    
+    pars <- arglist[[1]]
     calc_objval <- function(cn) {
       
       if (FLAGbrowser)
@@ -104,7 +109,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       ID <- est.grid$ID[est.grid$condition == cn]
       if (FLAGverbose)
         cat(ID, cn, "\n", sep = " ---- ")
-      dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
+      dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
       
@@ -187,8 +192,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       }
     
     # consider fixed: return only derivs wrt pouter
-    out$gradient <- out$gradient[names(pouter)]
-    out$hessian <- out$hessian[names(pouter), names(pouter)]
+    out$gradient <- out$gradient[names(pars)]
+    out$hessian <- out$hessian[names(pars), names(pars)]
     
     attr(out, controls$attr.name) <- out$value
     attr(out, "condition_obj") <- vapply(objlists, function(.x) .x$value, 1)
