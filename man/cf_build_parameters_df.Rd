@@ -4,10 +4,13 @@
 \alias{cf_build_parameters_df}
 \title{Template to build a basic parameters_df}
 \usage{
-cf_build_parameters_df(odes, observables, errormodel)
+cf_build_parameters_df(odes, observables, errormodel,
+  FLAGguessEstScale = TRUE)
 }
 \arguments{
 \item{odes, observables, errormodel}{symbolic definitions of functions}
+
+\item{FLAGguessEstScale}{Set estscale to "N" for parameters with certain regexes, e.g. "^offset_"}
 }
 \value{
 data.frame with columns name0,name = name0, value = 1, unit = "a.u.", upper = 1e3 ,lower = 1e-5, 
