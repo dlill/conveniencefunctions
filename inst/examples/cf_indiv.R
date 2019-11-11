@@ -1,3 +1,7 @@
+# This is work in progress to have a test-model setup with cf_indiv
+# It also reveals the difficulties in setting up a general individualization-language
+
+
 library(conveniencefunctions)
 setwd(tempdir())  
 

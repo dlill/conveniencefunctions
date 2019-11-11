@@ -222,19 +222,21 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
   controls <- list(mu = structure(name, names = value)[1], 
                    time = time[1], sigma = sigma[1], attr.name = attr.name)
   
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, 
-                   env = NULL) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, FLAGbrowser = FALSE, SIMOPT.times = seq(0,time, length.out = 100)) {
+    
+    if (FLAGbrowser)
+      browser()
+    
     mu <- controls$mu
     time <- controls$time
     sigma <- controls$sigma
     attr.name <- controls$attr.name
     arglist <- list(...)
-    arglist <- arglist[match.fnargs(arglist, c("times", 
-                                               "pars"))]
-    times <- arglist[[1]]
-    times <- sort(c(unique(times, time)))
-    pouter <- arglist[[2]]
-    prediction <- prd_indiv(times, pouter, condition = condition)
+    arglist <- arglist[match.fnargs(arglist, c("pars"))]
+    
+    times <- sort(c(unique(SIMOPT.times, time)))
+    pouter <- arglist[[1]]
+    prediction <- prd_indiv(times, pouter, condition = condition, deriv = deriv)
     if (!is.null(conditions) && !condition %in% conditions) 
       return()
     
@@ -276,7 +278,6 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
     out <- objlist(value = val, gradient = gr, hessian = hs)
     attr(out, controls$attr.name) <- out$value
     attr(out, "prediction") <- pred
-    attr(out, "env") <- env
     return(out)
   }
   class(myfn) <- c("objfn", "fn")
@@ -307,8 +308,7 @@ cf_timepointL2 <- function(name, time, value, sigma = 1, attr.name = "timepointL
     controls <- list(mu = structure(name, names = value)[1], 
                    time = time[1], sigma = sigma[1], attr.name = attr.name)
   
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, 
-                   env = NULL) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, env = NULL) {
     
     mu        <- controls$mu
     time      <- controls$time
@@ -322,7 +322,7 @@ cf_timepointL2 <- function(name, time, value, sigma = 1, attr.name = "timepointL
     times      <- arglist[[1]]
     times      <- sort(c(unique(times, time)))
     pouter     <- arglist[[2]]
-    prediction <- prd_indiv(times, pouter, condition = condition)
+    prediction <- prd_indiv(times, pouter, condition = condition, deriv = deriv)
     if (!is.null(conditions) && !condition %in% conditions) 
       return()
     
