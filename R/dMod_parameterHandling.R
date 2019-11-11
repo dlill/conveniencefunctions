@@ -27,7 +27,7 @@ cf_build_parameters_df <- function(odes, observables, errormodel, FLAGguessEstSc
   pdf_initpars <- names(odes)
   pdf_dynpars  <- setdiff(getSymbols(odes), pdf_initpars)
   pdf_obspars  <- setdiff(getSymbols(observables), c(names(observables), pdf_initpars, pdf_dynpars))
-  pdf_errpars  <- setdiff(getSymbols(errormodel), c(pdf_initpars, pdf_dynpars, pdf_obspars))
+  pdf_errpars  <- setdiff(getSymbols(errormodel), c(pdf_initpars, pdf_dynpars, pdf_obspars, names(errormodel)))
   
   build_parameters_df_basic <- function(name0,name = name0, value = 1, unit = "a.u.", upper = 1e3 ,lower = 1e-5, 
                                         estscale = "L", FLAGinitpar = F, FLAGdynpar = F, FLAGobspar = F, FLAGerrpar = F,
