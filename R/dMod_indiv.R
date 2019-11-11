@@ -125,7 +125,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         nm <- colnames(prediction)[whichcols]
         
         if (length(intersect(data[[cn]]$name, nm)))
-          stop("Prediction is.na for observables present in data in condition", cn)
+          stop("Prediction is.na for observables present in data in condition ", cn, "\n",
+               "The following observables are affected: ", paste0(intersect(data[[cn]]$name, nm), collapse = ", "))
         
         if (FLAGNaNInfwarnings)
           warning("NaN in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
@@ -138,7 +139,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         nm <- colnames(prediction)[whichcols]
         
         if (length(intersect(data[[cn]]$name, nm)))
-          stop("Prediction is infinite for observables present in data in condition", cn)
+          stop("Prediction is infinite for observables present in data in condition ", cn, "\n",
+               "The following observables are affected: ", paste0(intersect(data[[cn]]$name, nm), collapse = ", "))
         
         if (FLAGNaNInfwarnings)
           warning("Inf in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
@@ -164,8 +166,6 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       }
       
       # [] catch conditions with NA value, don't include them in obj-calculation and print out warning
-      
-      
       return(mywrss)
     }
     
