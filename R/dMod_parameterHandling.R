@@ -13,14 +13,16 @@
 #' Template to build a basic parameters_df
 #'
 #' @param odes,observables,errormodel symbolic definitions of functions
-#'
+#' @param FLAGguessEstScale Set estscale to "N" for parameters with certain regexes, e.g. "^offset_"
+#' 
+#' 
 #' @return data.frame with columns name0,name = name0, value = 1, unit = "a.u.", upper = 1e3 ,lower = 1e-5, 
 #' estscale = "L", initpar = F, dynpar = F, obspar = F, errpar = F
 #' @importFrom dplyr bind_rows
 #' @export
-cf_build_parameters_df <- function(odes, observables, errormodel) {
-  # possible options
-  # [] guess scale based on parname: "offset" -> "N"
+cf_build_parameters_df <- function(odes, observables, errormodel, FLAGguessEstScale = TRUE) {
+  
+  # [] implement getting parameters from events
   
   pdf_initpars <- names(odes)
   pdf_dynpars  <- setdiff(getSymbols(odes), pdf_initpars)
@@ -28,17 +30,31 @@ cf_build_parameters_df <- function(odes, observables, errormodel) {
   pdf_errpars  <- setdiff(getSymbols(errormodel), c(pdf_initpars, pdf_dynpars, pdf_obspars))
   
   build_parameters_df_basic <- function(name0,name = name0, value = 1, unit = "a.u.", upper = 1e3 ,lower = 1e-5, 
-                                        estscale = "L", FLAGinitpar = F, FLAGdynpar = F, FLAGobspar = F, FLAGerrpar = F){
+                                        estscale = "L", FLAGinitpar = F, FLAGdynpar = F, FLAGobspar = F, FLAGerrpar = F,
+                                        FLAGindividualized = FALSE){
+    if (!length(name0))
+      return(NULL)
     data.frame(name0 = name0, name = name, value = value, upper = upper, lower = lower, 
-               estscale = estscale, FLAGinitpar = FLAGinitpar, FLAGdynpar = FLAGdynpar, FLAGobspar = FLAGobspar, FLAGerrpar = FLAGerrpar, 
+               estscale = estscale, FLAGinitpar = FLAGinitpar, FLAGdynpar = FLAGdynpar, 
+               FLAGobspar = FLAGobspar, FLAGerrpar = FLAGerrpar, 
+               FLAGindividualized = FLAGindividualized,
                stringsAsFactors = FALSE)}
   
-  dplyr::bind_rows(
+  parameters_df <- dplyr::bind_rows(
     build_parameters_df_basic(pdf_initpars, FLAGinitpar = T),
     build_parameters_df_basic(pdf_dynpars, FLAGdynpar = T),
     build_parameters_df_basic(pdf_obspars, FLAGobspar = T),
     build_parameters_df_basic(pdf_errpars, FLAGerrpar = T)
   )
+  
+  # Default modifications
+  # .. Remove inits
+  parameters_df <- filter(parameters_df, !str_detect(name0, "^init_"))
+  # .. Set estscale to "N" for offsets
+  if (FLAGguessEstScale) 
+    parameters_df <- mutate(parameters_df, estscale = case_when(str_detect(name, "^offset_") ~ "N", TRUE ~ estscale))
+  
+  parameters_df
 }
 
 #' Make parameters_df parameters condition specific
@@ -78,7 +94,7 @@ cf_parameters_df_duplicate_inits <- function(parameters_df) {
 #' @export
 cf_parameters_df_condition_specific <- function(parameters_df, conditions = c("C1", "C2"), parnames = parameters_df$name) {
   # possible options
-  # [] keep or drop original parameters?
+  # [] keep or drop original parameters? => keep
   # [] condition is now always only the latest supplied conditions supplied to this parameter...
   parnames_new <- outer(parnames, conditions, paste, sep = "_")
   x <- unique(parnames)[1]
@@ -135,7 +151,7 @@ cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, con
     est.grid <- merge(est.grid, condition.grid[c("ID", "condition", condition_column)])
     }
   
-  condition_indices <- est.grid[["condition"]] %in% conditions
+  condition_indices <- which(est.grid[[condition_column]] %in% conditions)
   
   parnames <- est.grid[condition_indices, parname, drop = TRUE]
   est.grid[condition_indices, parname] <- paste0(est.grid[condition_indices, parname], "_", est.grid[condition_indices, condition_column])
@@ -144,7 +160,7 @@ cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, con
   .x <- unique(parnames)[1]
   for (.x in unique(parnames)){
     parnames_new_.x   <- parnames_new[parnames == .x]
-    est.vec_df_new    <- filter(parameters_est_df, name == .x) %>% mutate(name = list(parnames_new_.x)) %>% unnest(name)
+    est.vec_df_new    <- filter(parameters_est_df, name == .x) %>% mutate(name = list(parnames_new_.x)) %>% unnest(name) %>% mutate(FLAGindividualized = TRUE)
     parameters_est_df <- bind_rows(parameters_est_df, est.vec_df_new)
   }
   
