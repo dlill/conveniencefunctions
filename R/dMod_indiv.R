@@ -10,14 +10,23 @@
 #' @export
 #'
 #' @examples
-cf_make_pars <- function(est.vec, est.grid, fixed.grid, ID){
-  if ("dummy" %in% names(est.vec))
+cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
+  if ("dummy" %in% names(pars))
     stop("'dummy' should not appear in est.vec (parameter vector passed to objective function)\n")
-  est.vec <- c(est.vec, dummy = 1)
+  
+  pars_outer <- pars
+  fixed_outer <- fixed
+  
+  pars <- c(pars, fixed)
+  pars <- c(pars, dummy = 1)
   parnames  <- unlist(est.grid[est.grid$ID == ID, setdiff(names(est.grid), c("ID", "condition"))])
-  pars <- setNames(est.vec[parnames], names(parnames))
+  pars <- setNames(pars[parnames], names(parnames))
   fixed <- fixed.grid[fixed.grid$ID == ID, setdiff(names(fixed.grid), c("ID", "condition"))]
   parnames <- parnames[parnames != "dummy"]
+  
+  fixed <- c(fixed, pars[parnames %in% names(fixed_outer)])
+  pars <- pars[!parnames %in% names(fixed_outer)]
+  parnames <- parnames[!parnames %in% names(fixed_outer)]
   return(list(pars = unlist(pars), fixed = unlist(fixed), parnames = parnames))
 }
 
@@ -38,9 +47,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition, 
                   FLAGbrowser = FALSE, 
                   FLAGverbose = FALSE) {
-    if (!is.null(fixed))
-      stop("fixed cannot be considered at the moment")
-    lapply(setNames(nm = conditions), function(cn) {
+    out <- lapply(setNames(nm = conditions), function(cn) {
       if (FLAGbrowser)
         browser()
       
@@ -48,11 +55,12 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
       if (FLAGverbose)
         cat(ID, cn, "\n", sep = " ---- ")
       
-      dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
+      dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
       pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
     })
+    dMod::as.prdlist(out)
   }
   class(prd) <- c("prdfn", "fn")
   prd
@@ -87,13 +95,12 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   force(errmodel)
   myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1, 
                    FLAGbrowser = FALSE, 
-                   FLAGverbose = FALSE) {
+                   FLAGverbose = FALSE,
+                   FLAGNaNInfwarnings = FALSE) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
-    pouter <- arglist[[1]]
-    pars <- c(pouter, fixed)
-    
+    pars <- arglist[[1]]
     calc_objval <- function(cn) {
       
       if (FLAGbrowser)
@@ -102,7 +109,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       ID <- est.grid$ID[est.grid$condition == cn]
       if (FLAGverbose)
         cat(ID, cn, "\n", sep = " ---- ")
-      dummy <- cf_make_pars(pars, est.grid, fixed.grid, ID)
+      dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
       
@@ -115,12 +122,46 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         stop("Prediction failed in condition = ", cn, ", ID = ", ID, ".
              Try iterating p(pars), (x*p)(pars), ... to find the problem.")
       
+      prediction <- prediction[[1]]
+      
+      # [] refactor: put the following stuff into own function catch_nonproblematicNanInfs(prediciton, data, cn, FLAGNaNInfWarnings)
+      whichcols <- nm <- NULL
+      if (any(is.na(prediction))){
+        whichcols <- unique(which(is.na(prediction), arr.ind = TRUE)[,2])
+        nm <- colnames(prediction)[whichcols]
+        
+        if (length(intersect(data[[cn]]$name, nm)))
+          stop("Prediction is.na for observables present in data in condition ", cn, "\n",
+               "The following observables are affected: ", paste0(intersect(data[[cn]]$name, nm), collapse = ", "))
+        
+        if (FLAGNaNInfwarnings)
+          warning("NaN in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
+        prediction[is.na(prediction)] <- 0
+        attr(prediction, "deriv")[is.infinite(attr(prediction, "deriv"))|is.na(attr(prediction, "deriv"))] <- 0
+        attr(prediction, "sensitivities")[is.infinite(attr(prediction, "sensitivities"))|is.na(attr(prediction, "sensitivities"))] <- 0
+      }
+      if (any(is.infinite(prediction))){
+        whichcols <- unique(which(is.infinite(prediction), arr.ind = TRUE)[,2])
+        nm <- colnames(prediction)[whichcols]
+        
+        if (length(intersect(data[[cn]]$name, nm)))
+          stop("Prediction is infinite for observables present in data in condition ", cn, "\n",
+               "The following observables are affected: ", paste0(intersect(data[[cn]]$name, nm), collapse = ", "))
+        
+        if (FLAGNaNInfwarnings)
+          warning("Inf in condition ", cn , " for the following names: ", paste0(nm, collapse = ", "))
+        
+        prediction[is.infinite(prediction)] <- 0
+        attr(prediction, "deriv")[is.infinite(attr(prediction, "deriv"))|is.na(attr(prediction, "deriv"))] <- 0
+        attr(prediction, "sensitivities")[is.infinite(attr(prediction, "sensitivities"))|is.na(attr(prediction, "sensitivities"))] <- 0
+      }
+      
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {
-        err <- errmodel(out = prediction[[1]], pars = getParameters(prediction[[1]]), conditions = cn)
-        mywrss <- nll(res(data[[cn]], prediction[[1]], err[[1]]))
+        err <- errmodel(out = prediction, pars = getParameters(prediction), conditions = cn)
+        mywrss <- nll(res(data[[cn]], prediction, err[[1]]))
       } else {
-        mywrss <- wrss(res(data[[cn]], prediction[[1]]))
+        mywrss <- wrss(res(data[[cn]], prediction))
       }
       if (deriv) {
         mywrss$gradient <- mywrss$gradient[names(dummy$parnames)]
@@ -129,6 +170,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         mywrss$hessian <- mywrss$hessian[names(dummy$parnames),names(dummy$parnames)]
         dimnames(mywrss$hessian) <- list(unname(dummy$parnames), unname(dummy$parnames))
       }
+      
+      # [] catch conditions with NA value, don't include them in obj-calculation and print out warning
       return(mywrss)
     }
     
@@ -149,8 +192,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       }
     
     # consider fixed: return only derivs wrt pouter
-    out$gradient <- out$gradient[names(pouter)]
-    out$hessian <- out$hessian[names(pouter), names(pouter)]
+    out$gradient <- out$gradient[names(pars)]
+    out$hessian <- out$hessian[names(pars), names(pars)]
     
     attr(out, controls$attr.name) <- out$value
     attr(out, "condition_obj") <- vapply(objlists, function(.x) .x$value, 1)
@@ -185,19 +228,21 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
   controls <- list(mu = structure(name, names = value)[1], 
                    time = time[1], sigma = sigma[1], attr.name = attr.name)
   
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, 
-                   env = NULL) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, FLAGbrowser = FALSE, SIMOPT.times = seq(0,time, length.out = 100)) {
+    
+    if (FLAGbrowser)
+      browser()
+    
     mu <- controls$mu
     time <- controls$time
     sigma <- controls$sigma
     attr.name <- controls$attr.name
     arglist <- list(...)
-    arglist <- arglist[match.fnargs(arglist, c("times", 
-                                               "pars"))]
-    times <- arglist[[1]]
-    times <- sort(c(unique(times, time)))
-    pouter <- arglist[[2]]
-    prediction <- prd_indiv(times, pouter, condition = condition)
+    arglist <- arglist[match.fnargs(arglist, c("pars"))]
+    
+    times <- sort(c(unique(SIMOPT.times, time)))
+    pouter <- arglist[[1]]
+    prediction <- prd_indiv(times, pouter, condition = condition, deriv = deriv)
     if (!is.null(conditions) && !condition %in% conditions) 
       return()
     
@@ -239,7 +284,6 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
     out <- objlist(value = val, gradient = gr, hessian = hs)
     attr(out, controls$attr.name) <- out$value
     attr(out, "prediction") <- pred
-    attr(out, "env") <- env
     return(out)
   }
   class(myfn) <- c("objfn", "fn")
@@ -270,8 +314,7 @@ cf_timepointL2 <- function(name, time, value, sigma = 1, attr.name = "timepointL
     controls <- list(mu = structure(name, names = value)[1], 
                    time = time[1], sigma = sigma[1], attr.name = attr.name)
   
-  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, 
-                   env = NULL) {
+  myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = NULL, env = NULL) {
     
     mu        <- controls$mu
     time      <- controls$time
@@ -285,7 +328,7 @@ cf_timepointL2 <- function(name, time, value, sigma = 1, attr.name = "timepointL
     times      <- arglist[[1]]
     times      <- sort(c(unique(times, time)))
     pouter     <- arglist[[2]]
-    prediction <- prd_indiv(times, pouter, condition = condition)
+    prediction <- prd_indiv(times, pouter, condition = condition, deriv = deriv)
     if (!is.null(conditions) && !condition %in% conditions) 
       return()
     

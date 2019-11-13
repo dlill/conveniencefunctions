@@ -88,13 +88,12 @@ cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, .
   keep.covariates <- setdiff(names(dataframe), c(standard.names))
   conditions <- lapply(split.by, function(n) dataframe[, n])
   splits <- do.call(paste, c(conditions, list(sep = "_")))
-  conditionframe <- dataframe[!duplicated(splits), union(split.by, 
-                                                         keep.covariates), drop = FALSE]
+  conditionframe <- dataframe[!duplicated(splits), union(split.by, keep.covariates), drop = FALSE]
   rownames(conditionframe) <- splits[!duplicated(splits)]
-  dataframe <- cbind(data.frame(condition = splits), dataframe[, 
-                                                               standard.names])
-  out <- lapply(unique(splits), function(s) dataframe[dataframe[, 
-                                                                1] == s, -1])
+  conditionframe$condition <- rownames(conditionframe)
+  
+  dataframe <- cbind(data.frame(condition = splits), dataframe[, standard.names])
+  out <- lapply(unique(splits), function(s) dataframe[dataframe[, 1] == s, -1])
   names(out) <- as.character(unique(splits))
   out <- as.datalist(out)
   attr(out, "condition.grid") <- conditionframe

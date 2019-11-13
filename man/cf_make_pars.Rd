@@ -4,16 +4,16 @@
 \alias{cf_make_pars}
 \title{Extract pars, fixed and parnames from grids}
 \usage{
-cf_make_pars(est.vec, est.grid, fixed.grid, ID)
+cf_make_pars(pars, fixed = NULL, est.grid, fixed.grid, ID)
 }
 \arguments{
-\item{est.vec}{}
-
 \item{est.grid}{needs condition and ID}
 
 \item{fixed.grid}{}
 
 \item{ID}{}
+
+\item{est.vec}{}
 }
 \description{
 Extract pars, fixed and parnames from grids
