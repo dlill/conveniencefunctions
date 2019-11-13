@@ -9,13 +9,19 @@ cf_make_condition_specific(est.grid, parameters_est_df, parname,
   condition.grid = NULL)
 }
 \arguments{
-\item{est.grid, parameters_est_df}{as usual}
+\item{est.grid}{}
+
+\item{parameters_est_df}{}
 
 \item{parname}{character(1L) denoting a column in the est.grid}
 
 \item{conditions}{character vector of conditions}
 
+\item{condition_column}{}
+
 \item{FLAGdummifyOtherConds}{replace the other parameters by "dummy". Dummy will have value c(dummy = 1)}
+
+\item{condition.grid}{if this is supplied, condition_column can also refer to a column in there}
 }
 \description{
 new parameters will be named parname_"condition_column"
