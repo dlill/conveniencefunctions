@@ -14,7 +14,9 @@ cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
   if ("dummy" %in% names(pars))
     stop("'dummy' should not appear in est.vec (parameter vector passed to objective function)\n")
   
-  pars_outer <- pars
+  pars        <- unclass_parvec(pars)
+  fixed       <- unclass_parvec(fixed)
+  pars_outer  <- pars
   fixed_outer <- fixed
   
   pars <- c(pars, fixed)
@@ -207,6 +209,47 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   return(myfn)
 }
 
+#' predict.prdfn with options bowser and verbose
+#'
+#' @param object 
+#' @param times 
+#' @param pars 
+#' @param ... 
+#' @param data 
+#' @param FLAGverbose 
+#' @param FLAGbrowser 
+#'
+#' @return
+#' @export
+#' 
+#' @importFrom dplyr bind_rows
+#'
+#' @examples
+cf_predict <- function (object, times, pars, ..., data = NULL, FLAGverbose = FALSE, FLAGbrowser = FALSE) {
+  x <- object
+  arglist <- list(...)
+  if (any(names(arglist) == "conditions")) {
+    C <- arglist[["conditions"]]
+  }
+  prediction <- lapply(1:nrow(pars), function(i) {
+    if (FLAGverbose) cat("Parameter set", i, "\n")
+    if (FLAGbrowser) browser()
+    
+    mypar <- as.parvec(pars, i)
+    prediction <- x(times, mypar, deriv = FALSE, ...)
+    if (is.null(names(prediction))) { conditions <- 1 } else { conditions <- names(prediction) }
+    condition.grid <- data.frame(row.names = conditions)
+    mygrid <- pars[i, !colnames(pars) %in% attr(pars, "parameters")]
+    mynames <- colnames(mygrid)
+    if (length(mynames) > 0) {
+      mynames <- paste0(".", mynames)
+      colnames(mygrid) <- mynames
+      condition.grid <- cbind(condition.grid, mygrid)
+    }
+    as.data.frame(prediction)
+  })
+  dplyr::bind_rows(prediction)
+}
 
 
 #' DatapointL2 without the env bullshit
