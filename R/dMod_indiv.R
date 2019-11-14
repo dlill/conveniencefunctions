@@ -50,12 +50,9 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
                   FLAGbrowser = FALSE, 
                   FLAGverbose = FALSE) {
     out <- lapply(setNames(nm = conditions), function(cn) {
-      if (FLAGbrowser)
-        browser()
-      
+      if (FLAGbrowser) browser()
       ID <- est.grid$ID[est.grid$condition == cn]
-      if (FLAGverbose)
-        cat(ID, cn, "\n", sep = " ---- ")
+      if (FLAGverbose) cat(ID, cn, "\n", sep = " ---- ")
       
       dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
@@ -105,12 +102,10 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
     pars <- arglist[[1]]
     calc_objval <- function(cn) {
       
-      if (FLAGbrowser)
-        browser()
+      if (FLAGbrowser) browser()
       
       ID <- est.grid$ID[est.grid$condition == cn]
-      if (FLAGverbose)
-        cat(ID, cn, "\n", sep = " ---- ")
+      if (FLAGverbose) cat(ID, cn, "\n", sep = " ---- ")
       dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
@@ -225,31 +220,33 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
 #' @importFrom dplyr bind_rows
 #'
 #' @examples
-cf_predict <- function (object, times, pars, ..., data = NULL, FLAGverbose = FALSE, FLAGbrowser = FALSE) {
-  x <- object
-  arglist <- list(...)
-  if (any(names(arglist) == "conditions")) {
-    C <- arglist[["conditions"]]
-  }
-  prediction <- lapply(1:nrow(pars), function(i) {
+cf_predict <- function (prd, times, pars, keep_names = NULL, FLAGverbose = FALSE, FLAGverbose2 = FALSE, FLAGbrowser = FALSE, ...) {
+    if (FLAGverbose2) cat("Simulating", "\n")
+  out <- lapply(1:nrow(pars), function(i) {
     if (FLAGverbose) cat("Parameter set", i, "\n")
     if (FLAGbrowser) browser()
-    
     mypar <- as.parvec(pars, i)
-    prediction <- x(times, mypar, deriv = FALSE, ...)
-    if (is.null(names(prediction))) { conditions <- 1 } else { conditions <- names(prediction) }
-    condition.grid <- data.frame(row.names = conditions)
-    mygrid <- pars[i, !colnames(pars) %in% attr(pars, "parameters")]
-    mynames <- colnames(mygrid)
-    if (length(mynames) > 0) {
-      mynames <- paste0(".", mynames)
-      colnames(mygrid) <- mynames
-      condition.grid <- cbind(condition.grid, mygrid)
-    }
-    as.data.frame(prediction)
+    prediction <- prd(times, mypar, deriv = FALSE, ...)
+    prediction <- imap(prediction, function(.x,.y){
+      .x <- data.table(.x)
+      if (!is.null(keep_names))
+        .x[, (setdiff(names(.x), c(keep_names, "time"))) := NULL]
+      .x[, `:=`(condition = .y, parframe_rowid = i)]
+      .x
+      })
+    melt(rbindlist(prediction), variable.name = "name", value.name = "value", id.vars = c("time", "condition", "parframe_rowid"))
   })
-  dplyr::bind_rows(prediction)
+    if (FLAGverbose2) cat("postprocessing", "\n")
+  out <- rbindlist(out)
+  
+  pars <- cf_parf_getMeta(pars)
+  pars <- data.table(pars)[, `:=`(parframe_rowid = 1:length(fitrank))]
+  
+  out <- merge(pars, out, by = "parframe_rowid")
+  out$parframe_rowid <- NULL
+  out
 }
+
 
 
 #' DatapointL2 without the env bullshit

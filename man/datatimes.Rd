@@ -4,7 +4,7 @@
 \alias{datatimes}
 \title{create vector of times from min to max}
 \usage{
-datatimes(data, n = 500)
+datatimes(data, n = 100)
 }
 \arguments{
 \item{data}{datalist}

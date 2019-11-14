@@ -4,23 +4,23 @@
 \alias{cf_predict}
 \title{predict.prdfn with options bowser and verbose}
 \usage{
-cf_predict(object, times, pars, ..., data = NULL, FLAGverbose = FALSE,
-  FLAGbrowser = TRUE)
+cf_predict(prd, times, pars, keep_names = NULL, FLAGverbose = FALSE,
+  FLAGverbose2 = FALSE, FLAGbrowser = FALSE, ...)
 }
 \arguments{
-\item{object}{}
-
 \item{times}{}
 
 \item{pars}{}
 
-\item{...}{}
-
-\item{data}{}
-
 \item{FLAGverbose}{}
 
 \item{FLAGbrowser}{}
+
+\item{...}{}
+
+\item{object}{}
+
+\item{data}{}
 }
 \description{
 predict.prdfn with options bowser and verbose
