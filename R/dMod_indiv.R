@@ -57,6 +57,9 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
       dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
+      
+      if (length(setdiff(getParameters(prd0), names(c(pars_, fixed_)))))
+        stop("The following parameters are missing: ", paste0(setdiff(getParameters(prd0), names(c(pars_, fixed_))), collapse = ", "))
       pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
     })
     dMod::as.prdlist(out)
