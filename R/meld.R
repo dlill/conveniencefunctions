@@ -17,3 +17,12 @@ meld_dfs <- function(f1,f2) {
   
   
 }
+
+#' Meld two files/dirs
+#' 
+#' @param f1,f2 two file paths
+#'
+#' @export
+meld_files <- function(f1,f2) {
+  system(paste("meld", f1, f2), wait = FALSE)
+}
