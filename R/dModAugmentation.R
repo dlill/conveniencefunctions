@@ -15,7 +15,7 @@ add_stepcolumn <- function(myparframe, tol = 1) {
   stepcol <- cumsum(bla%in%steps)
   
   fitrank <- 1:length(stepcol)
-  stepsize <- map_dbl(stepcol, ~sum(stepcol == .x)/length(stepcol)) %>% round(3)
+  stepsize <- map_dbl(stepcol, ~sum(stepcol == .x)) 
   mydf <- as.data.frame(myparframe)
   mydf <- mydf[!names(mydf)%in%c("fitrank", "step", "stepsize")]
   mydf <- cbind(fitrank = fitrank, step  = stepcol, stepsize = stepsize, mydf)
@@ -26,10 +26,35 @@ add_stepcolumn <- function(myparframe, tol = 1) {
 #' get Parameter names of a parframe
 #' @param x parframe
 #' @export
-getParameters.parframe <- function(x) {
+cf_parf_parNames <- function(x) {
   attr(x, "parameters")
 }
 
+#' Title
+#'
+#' @param pars 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_parf_getMeta <- function(pars){
+  pars <- as.data.frame(pars)[setdiff(names(pars), attr(pars, "parameters"))]
+  pars <- cbind(pars, parframe_rowid = 1:nrow(pars))
+  rename(pars, objvalue = value)
+  }
+
+#' Title
+#'
+#' @param pars 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_parf_metaNames <- function(pars){
+  setdiff(names(pars), attr(pars, "parameters"))
+}
 
 #' Select parameter columns of parframe
 #'
@@ -37,9 +62,8 @@ getParameters.parframe <- function(x) {
 #' @param parameters keine ahnung mehr?
 #'
 #' @export
-subsetparameters <- function(parf, parameters) {
-  metanames <- setdiff(attr(parf, "names"), getParameters(parf))
-  parf %>% as.data.frame() %>% .[c(metanames, parameters)] %>% parframe(.,setdiff(names(.), metanames), metanames)
+cf_parf_getPars <- function(parf) {
+  as.data.frame(parf)[attr(pars, "parameters")] 
 }
 
 
@@ -53,13 +77,12 @@ subsetparameters <- function(parf, parameters) {
 #' @param data datalist
 #'
 #' @export
-datatimes <- function(data, n = 500){
+datatimes <- function(data, n = 100){
   mytimes <- data %>% as.data.frame() %>% .$time %>% unique
   out <- mytimes %>% range %>% setNames(c("from", "to")) %>%
     c(length.out = n) %>% as.list %>% do.call(seq,.) %>%
     c(mytimes) %>% sort
   return(out)
-  
 }
 
 
@@ -226,8 +249,6 @@ trustAna_getArg <- function(fit, i = 1, whichPath = "argpath") {
 }
 
 # helper functions ----
-
-
 
 
 #' Construct a parframe with tightly sampled parameters around other parameters stored in a parframe
@@ -429,57 +450,6 @@ id_test <- function(model, hypothesis = 1, r_test = log(10), thresh = 1) {
 }
 
 # analysis ----
-
-#' Evaluate an objective function condition-wise
-#'
-#' Easily see which condition contributes how much.
-#' Be careful to use this in an actual calculation, as in adding the results back together, because then the prior is evaluated multiple times
-#'
-#' @param obj objfn
-#' @param pouter pars at which obj is evaluated
-#' @param conditions vector of conditions to be evaluated. if null, all conditions are evaluated
-#'
-#' @return A tibble with rows corresponding to conditions and cols to several results of the objective function, such as value, gradient...
-#' @export
-#'
-obj_condition_wise <- function(obj, pars, constr1 = NULL, constr2 = NULL, conditions = NULL, ...) {
-  myconditions <- getConditions(obj)
-  if (length(conditions))
-    myconditions <- myconditions[myconditions == conditions]
-  
-  out <- lapply(myconditions, function(cond) {
-    myvalues <- obj(pars = pars, conditions = cond, ...)
-    
-    ndata <- get("data", environment(obj))
-    if(is.function(ndata)) ndata <- NULL
-    else ndata <- ndata[[cond]] %>% nrow
-    if(!is.null(ndata)) reduced_value <- myvalues[["value"]]/ndata
-    else reduced_value <- NULL
-    
-    attrib <- myvalues %>% attributes()
-    
-    mylist <- c(condition = cond,
-                myvalues[names(myvalues)!="hessian"],
-                ndata = ndata,
-                reduced_value = reduced_value,
-                attrib[!names(attrib)%in%c("env", "class")]) %>%
-      lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }}) #make tibble-compatible
-    
-    return(as_tibble(mylist))
-  }) %>% do.call(rbind,.)
-  out1 <- out2 <- NULL
-  if(!is.null(constr1)) out1 <- c(condition = "Constraint 1", constr1(pars = pars, ...) %>% .[names(.)!="hessian"]) %>%
-    lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
-  # if(!is.null(constr2)) out2 <- c(condition = "Constraint 2", constr2(pars = pars, ...) %>% .[names(.)!="hessian"]) %>%
-  #   lapply(function(i) {if(length(i)==1) {return(i) } else {return(list(i)) }})
-  
-  out <- bind_rows(out, out1)#, out2)
-  
-}
-
-
-
-
 
 #' Check function to check sensitivities
 #'

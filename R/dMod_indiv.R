@@ -14,7 +14,9 @@ cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
   if ("dummy" %in% names(pars))
     stop("'dummy' should not appear in est.vec (parameter vector passed to objective function)\n")
   
-  pars_outer <- pars
+  pars        <- unclass_parvec(pars)
+  fixed       <- unclass_parvec(fixed)
+  pars_outer  <- pars
   fixed_outer <- fixed
   
   pars <- c(pars, fixed)
@@ -48,16 +50,16 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
                   FLAGbrowser = FALSE, 
                   FLAGverbose = FALSE) {
     out <- lapply(setNames(nm = conditions), function(cn) {
-      if (FLAGbrowser)
-        browser()
-      
+      if (FLAGbrowser) browser()
       ID <- est.grid$ID[est.grid$condition == cn]
-      if (FLAGverbose)
-        cat(ID, cn, "\n", sep = " ---- ")
+      if (FLAGverbose) cat(ID, cn, "\n", sep = " ---- ")
       
       dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
+      
+      if (length(setdiff(getParameters(prd0), names(c(pars_, fixed_)))))
+        stop("The following parameters are missing: ", paste0(setdiff(getParameters(prd0), names(c(pars_, fixed_))), collapse = ", "))
       pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
     })
     dMod::as.prdlist(out)
@@ -103,12 +105,10 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
     pars <- arglist[[1]]
     calc_objval <- function(cn) {
       
-      if (FLAGbrowser)
-        browser()
+      if (FLAGbrowser) browser()
       
       ID <- est.grid$ID[est.grid$condition == cn]
-      if (FLAGverbose)
-        cat(ID, cn, "\n", sep = " ---- ")
+      if (FLAGverbose) cat(ID, cn, "\n", sep = " ---- ")
       dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
       pars_ <- dummy$pars
       fixed_ <- dummy$fixed
@@ -205,6 +205,49 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   attr(myfn, "parameters") <- attr(prd0, "parameters")
   attr(myfn, "modelname") <- modelname(prd0, errmodel)
   return(myfn)
+}
+
+#' predict.prdfn with options bowser and verbose
+#'
+#' @param object 
+#' @param times 
+#' @param pars 
+#' @param ... 
+#' @param data 
+#' @param FLAGverbose 
+#' @param FLAGbrowser 
+#'
+#' @return
+#' @export
+#' 
+#' @importFrom dplyr bind_rows
+#'
+#' @examples
+cf_predict <- function (prd, times, pars, keep_names = NULL, FLAGverbose = FALSE, FLAGverbose2 = FALSE, FLAGbrowser = FALSE, ...) {
+    if (FLAGverbose2) cat("Simulating", "\n")
+  out <- lapply(1:nrow(pars), function(i) {
+    if (FLAGverbose) cat("Parameter set", i, "\n")
+    if (FLAGbrowser) browser()
+    mypar <- as.parvec(pars, i)
+    prediction <- prd(times, mypar, deriv = FALSE, ...)
+    prediction <- imap(prediction, function(.x,.y){
+      .x <- data.table(.x)
+      if (!is.null(keep_names))
+        .x[, (setdiff(names(.x), c(keep_names, "time"))) := NULL]
+      .x[, `:=`(condition = .y, parframe_rowid = i)]
+      .x
+      })
+    melt(rbindlist(prediction), variable.name = "name", value.name = "value", id.vars = c("time", "condition", "parframe_rowid"))
+  })
+    if (FLAGverbose2) cat("postprocessing", "\n")
+  out <- rbindlist(out)
+  
+  pars <- cf_parf_getMeta(pars)
+  pars <- data.table(pars)[, `:=`(parframe_rowid = 1:length(fitrank))]
+  
+  out <- merge(pars, out, by = "parframe_rowid")
+  out$parframe_rowid <- NULL
+  out
 }
 
 
