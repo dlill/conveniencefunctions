@@ -255,3 +255,33 @@ cf_update <- function() {
   devtools::install_github("dkaschek/dMod", dependencies = FALSE)
   devtools::install_github("dlill/conveniencefunctions", dependencies = FALSE)
 }
+
+
+
+
+
+
+# -------------------------------------------------------------------------#
+# Password generator ----
+# -------------------------------------------------------------------------#
+
+
+
+cf_password <- function(N = 30, seed = Sys.time()) {
+  set.seed(seed)
+  (38:(38+88)) %>% as.raw() %>% imap_chr(rawToChar) %>% sample(N, TRUE) %>% paste0(collapse = "")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
