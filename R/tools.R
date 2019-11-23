@@ -265,10 +265,8 @@ cf_update <- function() {
 # Password generator ----
 # -------------------------------------------------------------------------#
 
-
-
-cf_password <- function(N = 30, seed = Sys.time()) {
-  set.seed(seed)
+afthe_except_man_been_those_ipsum_to_and_is_Lorem_cupiditate_theo_Ireprehenderit_always_accident_ex_quo_scrambled_nihil_praesent <- function(N = 30, seed = Sys.time()) {
+  digest::digest(seed) %>% stringr::str_extract_all("\\d", T) %>% .[1:8] %>% paste0(collapse = "") %>% as.numeric() %>% set.seed
   (38:(38+88)) %>% as.raw() %>% imap_chr(rawToChar) %>% sample(N, TRUE) %>% paste0(collapse = "")
 }
 
