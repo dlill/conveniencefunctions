@@ -1,3 +1,16 @@
+snippet slideTC
+	.slides = cf_slide_titlecontent(.slide, title = $1, $2, basename(.outputFolder))
+
+snippet slideTTC
+	.slides = cf_slide_titlecontent(.slide, title = $1, $2, $3, basename(.outputFolder))
+
+snippet slideSEC
+	.slides = cf_slide_section(.slide, title = $1, basename(.outputFolder))
+
+snippet inplace
+	,`:=`($0)
+
+
 snippet cfhead
 	# -------------------------------------------------------------------------#
 	# 0 Header ----
@@ -6,7 +19,7 @@ snippet cfhead
 	# `r basename(rstudioapi::getSourceEditorContext()$path)`
 	#
 	# [PURPOSE]
-	# ${0}
+	# $0
 	#
 	# [AUTHOR]
 	# Daniel Lill
@@ -15,6 +28,7 @@ snippet cfhead
 	# `Sys.time()`
 	#
 	# .. Libraries -----
+	library(officer)
 	library(conveniencefunctions)
 	library(tidyverse)
 	library(IQRtools)
@@ -23,16 +37,16 @@ snippet cfhead
 	rm(list = ls(all.names = TRUE))
 	.fast = FALSE
 	.currentwd <- getwd()
-	.outputFolder     <-"../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
-	.modelFolder      <-file.path(.outputFolder, "01-Model")
-	.estimationFolder <-file.path(.outputFolder, "02-Estimation")
-	.plotFolder       <-file.path(.outputFolder, "03-Plot")
-	.tableFolder      <-file.path(.outputFolder, "04-Table")
-	.tempdir          <-tempdir()
+	.outputFolder     <- "../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
+	.modelFolder      <- file.path(.outputFolder, "01-Model")
+	.estimationFolder <- file.path(.outputFolder, "02-Estimation")
+	.plotFolder       <- file.path(.outputFolder, "03-Plot")
+	.tableFolder      <- file.path(.outputFolder, "04-Table")
+	.tempdir          <- tempdir()
 	for (x in c(.outputFolder,.modelFolder,.estimationFolder,.plotFolder,.tableFolder,.tempdir))
-		if (!dir.exists(x)) dir.create(x)
+		if (!dir.exists(x)) dir.create(x
 	
-	
+	.slides = officer::read_pptx(system.file(package = "conveniencefunctions", "templates/template1.pptx"))
 	# -------------------------------------------------------------------------#
 	# 1 ----
 	# -------------------------------------------------------------------------#
@@ -43,6 +57,7 @@ snippet cfhead
 	
 	
 	# Exit ----
+	print(.slides)
 	
 
 	

@@ -4,7 +4,7 @@
 \alias{proj_create_folders}
 \title{Create the basic project folder structure}
 \usage{
-proj_create_folders(path)
+proj_create_folders(path = "Work")
 }
 \arguments{
 \item{path}{the path of the project folder}

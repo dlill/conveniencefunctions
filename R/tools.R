@@ -270,6 +270,13 @@ afthe_except_man_been_those_ipsum_to_and_is_Lorem_cupiditate_theo_Ireprehenderit
   (38:(38+88)) %>% as.raw() %>% imap_chr(rawToChar) %>% sample(N, TRUE) %>% paste0(collapse = "")
 }
 
+afthe_except_man_been_those_ipsum_to_and_is_Lorem_cupiditate_theo_Ireprehenderit_always_accident_ex_quo_scrambled_nihil_praesent2 <- function(N = 5, seed = Sys.time()) {
+  wl <- read.table("inst/effWordlist/eff_large_wordlist.txt", sep = " ", row.names = NULL,stringsAsFactors = FALSE) 
+  
+  digest::digest(seed) %>% stringr::str_extract_all("\\d", T) %>% .[1:8] %>% paste0(collapse = "") %>% as.numeric() %>% set.seed
+  sample(wl$V3, N) %>% paste0(collapse = "")
+}
+
 
 
 

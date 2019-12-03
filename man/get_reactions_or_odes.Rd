@@ -4,9 +4,13 @@
 \alias{get_reactions_or_odes}
 \title{Read REACTIONS}
 \usage{
-get_reactions_or_odes(def_content, derived = get_derived(def_content),
+get_reactions_or_odes(
+  def_content,
+  derived = get_derived(def_content),
   compartments = get_compartments(def_content),
-  states = get_states(def_content), inputs = get_inputs(def_content))
+  states = get_states(def_content),
+  inputs = get_inputs(def_content)
+)
 }
 \arguments{
 \item{def_content}{The def_content data.frame returned by read_def_content}
