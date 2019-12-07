@@ -40,6 +40,8 @@ cf_parf_parNames <- function(x) {
 #' @examples
 cf_parf_getMeta <- function(pars){
   pars <- as.data.frame(pars)[setdiff(names(pars), attr(pars, "parameters"))]
+  if (length(pars) == 0)
+    return(NULL)
   pars <- cbind(pars, parframe_rowid = 1:nrow(pars))
   rename(pars, objvalue = value)
   }

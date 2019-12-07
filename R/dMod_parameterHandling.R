@@ -103,7 +103,7 @@ cf_build_parameters_df <- function(odes, observables, errormodel, FLAGguessEstSc
                stringsAsFactors = FALSE)}
   
   parameters_df <- dplyr::bind_rows(
-    build_parameters_df_basic(pdf_initpars, FLAGinitpar = T),
+    build_parameters_df_basic(pdf_initpars, FLAGinitpar = T, value = 0),
     build_parameters_df_basic(pdf_dynpars, FLAGdynpar = T),
     build_parameters_df_basic(pdf_obspars, FLAGobspar = T),
     build_parameters_df_basic(pdf_errpars, FLAGerrpar = T)

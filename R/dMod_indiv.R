@@ -229,7 +229,11 @@ cf_predict <- function (prd, times, pars, keep_names = NULL, FLAGverbose = FALSE
     if (FLAGverbose) cat("Parameter set", i, "\n")
     if (FLAGbrowser) browser()
     mypar <- as.parvec(pars, i)
-    prediction <- prd(times, mypar, deriv = FALSE, ...)
+    prediction <- try(prd(times, mypar, deriv = FALSE, ...))
+    if (inherits(prediction, "try-error")) {
+      warning("parameter set ", i, " failed\n")
+      return(NULL)
+      }
     prediction <- imap(prediction, function(.x,.y){
       .x <- data.table(.x)
       if (!is.null(keep_names))
@@ -240,13 +244,14 @@ cf_predict <- function (prd, times, pars, keep_names = NULL, FLAGverbose = FALSE
     melt(rbindlist(prediction), variable.name = "name", value.name = "value", id.vars = c("time", "condition", "parframe_rowid"))
   })
     if (FLAGverbose2) cat("postprocessing", "\n")
-  out <- rbindlist(out)
+  out <- rbindlist(out[!is.null(out)])
   
   pars <- cf_parf_getMeta(pars)
+  if (!is.null(pars)){
   pars <- data.table(pars)[, `:=`(parframe_rowid = 1:length(fitrank))]
-  
   out <- merge(pars, out, by = "parframe_rowid")
   out$parframe_rowid <- NULL
+  }
   out
 }
 
