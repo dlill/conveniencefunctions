@@ -4,7 +4,7 @@
 \alias{compare}
 \title{Compare function}
 \usage{
-compare(x, y)
+compare(x, y, FLAGnames = FALSE)
 }
 \arguments{
 \item{x, y}{vectors to compare}

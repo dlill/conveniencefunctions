@@ -15,6 +15,7 @@ Depends:
 Imports:
   stringr,
   dplyr,
-  devtools
+  devtools,
+  reshape2
 RoxygenNote: 7.0.0
 Suggests: testthat

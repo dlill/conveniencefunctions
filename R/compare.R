@@ -3,7 +3,8 @@
 #' @param x,y vectors to compare
 #'
 #' @export
-compare <- function(x,y) {
+compare <- function(x,y, FLAGnames = FALSE) {
+  if (FLAGnames) {x <- names(x); y <- names(y)}
   cat("\n ======= lengths ========== \n")
   cat(length(x), length(y), sep = ", ")
   cat("\n ======= intersect(x,y) ========== \n")
@@ -12,4 +13,8 @@ compare <- function(x,y) {
   cat(setdiff(x,y), sep = ", ")
   cat("\n ======= setdiff(y,x) ========== \n")
   cat(setdiff(y,x), sep = ", ")
+  out <- list(lengths = c(x = length(x), y = length(y)),
+              intersect = intersect(x,y),
+              setdiffxy = setdiff(x,y),
+              setdiffyx = setdiff(y,x))
 }

@@ -102,6 +102,7 @@ as.datalist.datalist <- function(x,...){
 #' @rdname as.datalist.datalist
 cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, ...) 
 {
+  x <- as.data.frame(x)
   x <- dMod:::sanitizeData(x) #hack
   dataframe <- x[["data"]]
   standard.names <- x[["columns"]]

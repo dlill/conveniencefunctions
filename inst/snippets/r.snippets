@@ -44,7 +44,7 @@ snippet cfhead
 	.tableFolder      <- file.path(.outputFolder, "04-Table")
 	.tempdir          <- tempdir()
 	for (x in c(.outputFolder,.modelFolder,.estimationFolder,.plotFolder,.tableFolder,.tempdir))
-		if (!dir.exists(x)) dir.create(x
+		if (!dir.exists(x)) dir.create(x, recursive = TRUE)
 	
 	.slides = officer::read_pptx(system.file(package = "conveniencefunctions", "templates/template1.pptx"))
 	# -------------------------------------------------------------------------#

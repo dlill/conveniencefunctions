@@ -10,6 +10,68 @@
 # [] Think of way how to fix one parameter at certain conditions while leaving other conditions free
 
 
+#' Build basic fixed.grid, est.grid, est.vec_df
+#'
+#' @param parameters_df 
+#' @param parameters_estimate 
+#' @param condition.grid 
+#' @param condition.grid_parcolumns names of cols which have parameter values in them
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_build_pargrids <- function(parameters_df, parameters_estimate, condition.grid, condition.grid_parcolumns = NULL) {
+  fixed.grid <- parameters_df %>%
+    filter(!name0 %in% c(parameters_estimate, intersect(name0, names(condition.grid)))) %>%
+    reshape2::dcast(. ~ name, value.var = "value") %>% .[-1] %>% 
+    cbind(condition.grid[c("ID", "condition", condition.grid_parcolumns)], .)
+  
+  est.grid <- parameters_df %>%
+    filter(name0 %in% parameters_estimate) %>%
+    reshape2::dcast(. ~ name0, value.var = "name") %>%
+    select(-1) %>%
+    cbind(condition.grid[c("ID", "condition")], .)
+  est.vec_df <- parameters_df %>% filter(name0 %in% parameters_estimate)
+  list(fixed.grid = fixed.grid, est.grid = est.grid, est.vec_df = est.vec_df)
+}
+
+
+#' Title
+#'
+#' @param condition_specific tibble with columns 
+#'   char "parname", 
+#'   list of chars "conditions" 
+#'   char "condition_column" => refers to colname in condition.grid
+#'   lgl FLAGdummifyOtherConds
+#' @param est.grid 
+#' @param est.vec_df 
+#' @param condition.grid 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_condition_specific_wrapper <- function(condition_specific, est.grid, est.vec_df, condition.grid) {
+  # Make replacements for condition specificity
+  for  (i in 1:nrow(condition_specific)) {
+    wup <- cf_make_condition_specific(est.grid, est.vec_df, 
+                                      parname = condition_specific$parname[[i]], 
+                                      conditions = condition_specific$conditions[[i]], 
+                                      condition_column = condition_specific$condition_column[[i]],
+                                      FLAGdummifyOtherConds = condition_specific$FLAGdummifyOtherConds[[i]],
+                                      condition.grid = condition.grid
+    )
+    est.grid <- wup$est.grid
+    est.vec_df  <- wup$est.vec_df
+  }
+  # Subset est.vec_df to pars existing in the est.grid
+  est.vec_df <- est.vec_df %>% 
+    filter(name %in% unique(do.call(c, select(est.grid, -ID, -condition))))
+  list(est.grid = est.grid, est.vec_df = est.vec_df)
+}
+
+
 #' Template to build a basic parameters_df
 #'
 #' @param odes,observables,errormodel symbolic definitions of functions
@@ -108,6 +170,7 @@ cf_parameters_df_condition_specific <- function(parameters_df, conditions = c("C
   parameters_df
 }
 
+
 #' Merge values into a parameters_df
 #'
 #' @param pars_df_into parameters_df
@@ -165,7 +228,7 @@ cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, con
   }
   
   if (FLAGdummifyOtherConds) {
-    condition_indices <- !(est.grid[["condition"]] %in% conditions)
+    condition_indices <- !(est.grid[[condition_column]] %in% conditions)
     parnames <- unique(est.grid[[parname]])
     est.grid[condition_indices, parname] <- "dummy"
     parnames <- unique(est.grid[[parname]])
