@@ -95,12 +95,17 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   controls <- list(times = timesD, attr.name = attr.name, conditions = intersect(x.conditions, 
                                                                                  data.conditions))
   force(errmodel)
+  force(fixed.grid)
+  force(est.grid)
+  
+  
   myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1, 
                    FLAGbrowser = FALSE, 
                    FLAGverbose = FALSE,
                    FLAGNaNInfwarnings = FALSE) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
+    
     
     pars <- arglist[[1]]
     calc_objval <- function(cn) {
@@ -197,6 +202,8 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
     
     attr(out, controls$attr.name) <- out$value
     attr(out, "condition_obj") <- vapply(objlists, function(.x) .x$value, 1)
+    attr(out, "AIC") <- out$value + length(pars) * 2
+    attr(out, "BIC") <- out$value + length(pars) * log(nrow(as.data.frame(data)))
     return(out)
   }
 
