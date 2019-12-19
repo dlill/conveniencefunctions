@@ -44,7 +44,7 @@ cf_parf_getMeta <- function(pars){
     return(NULL)
   pars <- cbind(pars, parframe_rowid = 1:nrow(pars))
   rename(pars, objvalue = value)
-  }
+}
 
 #' Title
 #'
@@ -68,6 +68,73 @@ cf_parf_getPars <- function(parf) {
   as.data.frame(parf)[attr(pars, "parameters")] 
 }
 
+
+
+#' Better as_parframe
+#' 
+#' Adds AIC and BIC automatically, adds stepcolumn automatically
+#'
+#' @param x 
+#' @param sort.by 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_as.parframe <- function (x, sort.by = "value", ...) {
+  m_stat <- dMod:::stat.parlist(x)
+  m_metanames <- c("index", "value", "converged", "iterations")
+  m_idx <- which("error" != m_stat)
+  m_parframe <- data.frame(index = m_idx, 
+                           value = vapply(x[m_idx], function(.x) .x$value, 1), 
+                           converged = vapply(x[m_idx], function(.x) .x$converged, TRUE), 
+                           iterations = vapply(x[m_idx], function(.x) as.integer(.x$iterations), 1L))
+  
+  if (!is.null(attr(x[[m_idx[[1]]]], "BIC"))){
+    m_parframe <- cbind(m_parframe, 
+                        AIC = vapply(x[m_idx], function(.x) attr(.x, "AIC"), 1),
+                        BIC = vapply(x[m_idx], function(.x) attr(.x, "BIC"), 1))
+    m_metanames <- c(m_metanames, c("AIC", "BIC"))
+  }
+  
+  m_parframe <- cbind(m_parframe, 
+                      as.data.frame(t(vapply(x[m_idx], function(.x) .x$argument, x[[1]]$argument))))
+  m_parframe <- m_parframe[order(m_parframe[sort.by]), ]
+  
+  cf_parframe(m_parframe, parameters = names(x[[m_idx[1]]]$argument), 
+              metanames = m_metanames)
+}
+
+#' Improved version of parframe
+#' 
+#' Fits coerces to data.frame and guesses metanames. Adds stepcolumn automatically
+#' 
+#' @param x 
+#' @param parameters 
+#' @param metanames 
+#' @param obj.attributes 
+#' @param tol 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_parframe <- function(x = NULL, parameters = NULL, metanames = NULL, 
+                        obj.attributes = NULL, tol = 1) {
+  x <- as.data.frame(x) 
+  if (is.null(metanames))
+    metanames <- intersect(names(x), c("index", "value", "converged", "iterations",
+                                       "fitrank", "step", "stepsize", "AIC", "BIC",
+                                       "constraint", "stepsize", "gamma", "valueData", 
+                                       "valueObj", "whichPar"))
+  if (is.null(parameters))
+    parameters <- setdiff(names(x),metanames)
+  x <- dMod::parframe(x,parameters, metanames, obj.attributes)
+  if ("converged" %in% metanames & !"fitrank" %in% metanames)
+    x <- add_stepcolumn(x, tol)
+  x
+}
 
 # ---------------------------------------------------------- #
 # Data ----

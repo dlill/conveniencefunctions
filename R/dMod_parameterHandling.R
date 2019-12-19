@@ -178,15 +178,27 @@ cf_parameters_df_condition_specific <- function(parameters_df, conditions = c("C
 #'
 #' @return pars_df_into with updated values
 #' @export
-cf_parameters_df_merge_values <- function(pars_df_into, from) {
-  # possible options
-  # [] match name0 instead/as well
-  # [] merge scales/upper/lower/FLAGs?
-  if (!is.data.frame(from))
-    from <- data.frame(name = names(from), value = from, stringsAsFactors = F)
-  p <- merge(pars_df_into, select(from, name, VALOLD = value), all.x = TRUE, all.y = FALSE)
-  p <- mutate(p, value = case_when(!is.na(VALOLD) ~ VALOLD, TRUE ~ value))
-  p <- select(p, -VALOLD)
+cf_parameters_df_merge_values <- function(pars_df_into, from, scale = c("outer", "inner")) {
+  
+  scale <- scale[1]
+  scalenm <- c("outer" = "outer_value", "inner" = "value")
+  scalenm <- scalenm[scale]
+  if (is.vector(from)|"parvec" %in% class(from)){
+    from <- unclass(from)
+    from_dt <- data.table(name = names(from))
+    from_dt[,scalenm[scale] := from[1:length(from)]]
+  }
+  
+  pars_df_into <- data.table(pars_df_into)
+  nm_dt <- copy(pars_df_into[,.(name)])
+  
+  pold <- pars_df_into[!from_dt, on = "name"]
+  pnew <- copy(pars_df_into)[,(scalenm):=NULL][from_dt, on = "name"]
+  p <- rbindlist(list(pold, pnew), fill = TRUE, use.names = TRUE)[nm_dt, on = "name"]
+  
+  if (scale == "outer") p[,`:=`(value = case_when(estscale == "L"~ exp(outer_value), TRUE ~ outer_value))]
+  if (scale == "inner") p[,`:=`(outer_value = case_when(estscale == "L"~ log(value), TRUE ~ value))]
+  
   p
 }
 

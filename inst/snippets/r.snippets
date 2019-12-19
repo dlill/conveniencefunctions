@@ -1,3 +1,7 @@
+snippet saveRDSreadRDS
+	saveRDS($1, file.path(.outputFolder, $2))
+	$1 <- readRDS(file.path(.outputFolder, $2))
+
 snippet slideTC
 	.slides = cf_slide_titlecontent(.slide, title = $1, $2, basename(.outputFolder))
 
@@ -197,22 +201,19 @@ snippet cfrunbgmstrust
 	# fit_job\$check()
 	# fit <- fit_job\$get()
 	# setwd(.currentwd)
-	# fit <- unlist(fit, FALSE, use.names = FALSE)
+	# fit <- unlist(fit, FALSE, FALSE)
 	# fit %>% str1
-	# fit <- fit %>% as.parlist() %>% as.parframe() %>% add_stepcolumn()
+	# fit <- fit %>% cf_as.parframe()
 	# saveRDS(fit, file = file.path(.estimationFolder, "fit.rds"))
+	# fit <- readRDS(file.path(.estimationFolder, "fit.rds"))
 	# fit_job\$purge()
 
 
-
-snippet cfrunbgmstrust
+snippet cfrunbgprofile
 	setwd(.tempdir)
 	profile_job <- runbg({
 	  ncores <- dMod::detectFreeCores()
-	  
 	  profile(obj, bestfit, names(bestfit), cores = ncores)
-	  
-	  # >>                                                            # >>
 	}, machine = c(paste0("knecht", 1)), input = c("obj", "bestfit"), filename = "S111-profile_job"
 	# , recover = T
 	)
@@ -225,6 +226,6 @@ snippet cfrunbgmstrust
 	# profile <- bind_rows(profile)
 	# profile %>% str1
 	# saveRDS(profile, file = file.path(.estimationFolder, "profile.rds"))
-	# write_csv(profile, file = file.path(.estimationFolder, "profile.csv"))
+	# profile = readRDS(file = file.path(.estimationFolder, "profile.rds"))
 	# profile_job\$purge()
 
