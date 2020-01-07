@@ -7,7 +7,7 @@ install_cfsnippets <- function(){
   
   if (!file.exists(snippets_path())){
     if (!dir.exists(dirname(snippets_path())))
-    dir.create(dirname(snippets_path()), recursive = TRUE)
+      dir.create(dirname(snippets_path()), recursive = TRUE)
     writeLines("\n", snippets_path())
   }
   .snippetlist <- snippets_read("r", system.file("snippets/r.snippets", package = "conveniencefunctions"))
@@ -43,7 +43,9 @@ install_cfsnippets <- function(){
 snippets_path <- function (language = "r"){
   path <- file.path("~/.R/snippets", paste0(language, ".snippets"))
   if (!(file.exists(path))) {
-    stop("snippets file ", path, "not found")
+    if (!dir.exists(dirname(snippets_path())))
+      dir.create(dirname(snippets_path()), recursive = TRUE)
+    writeLines("\n", snippets_path())
   }
   path
 }
