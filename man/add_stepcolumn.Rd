@@ -4,7 +4,7 @@
 \alias{add_stepcolumn}
 \title{Add step column and fitrank}
 \usage{
-add_stepcolumn(myparframe, tol = 1, obj = NULL)
+add_stepcolumn(myparframe, tol = 1)
 }
 \arguments{
 \item{myparframe}{a parframe}

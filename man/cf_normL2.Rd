@@ -24,9 +24,9 @@ Not sure if I still need it, it was mainly for the convenient use in methatcetin
 }
 \examples{
 \dontrun{
-obj_apap <- cf_normL2(data_apap %>% as.datalist, (g_apap*x_apap*p_apap))
+obj_apap <- cf_normL2(data_apap \%>\% as.datalist, (g_apap*x_apap*p_apap))
 obj_apap <- cf_normL2(NULL, (g_apap*x_apap*p_apap))
-obj_apap <- cf_normL2(data_apap %>% as.datalist, NULL)
+obj_apap <- cf_normL2(data_apap \%>\% as.datalist, NULL)
 obj_apap(pars_apap)
 
 # why is this?

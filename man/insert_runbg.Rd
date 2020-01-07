@@ -4,14 +4,8 @@
 \alias{insert_runbg}
 \title{Insert a runbg job}
 \usage{
-insert_runbg(
-  job_name = "myrunbg_job",
-  job_type = NULL,
-  dMod.frame = NULL,
-  tol = 1,
-  nsteps = 3,
-  distribute = NULL
-)
+insert_runbg(job_name = "myrunbg_job", job_type = NULL,
+  dMod.frame = NULL, tol = 1, nsteps = 3, distribute = NULL)
 }
 \arguments{
 \item{job_name}{character with "_job" at the end}
@@ -35,7 +29,7 @@ insert_runbg()
 
 insert_runbg(job_name = "myrunbg_job", job_type = "fit", dMod.frame = "myframe")
 insert_runbg(job_name = "myrunbg_job", job_type = "profile", dMod.frame = "myframe")
-myframe <- readRDS("~/Promotion/Projects/methacetin_fitting/Fit_model_41/2018_05_24_15_27_fit_krumbiegel_results.rds") %>% do.call(rbind,.)
+myframe <- readRDS("~/Promotion/Projects/methacetin_fitting/Fit_model_41/2018_05_24_15_27_fit_krumbiegel_results.rds") \%>\% do.call(rbind,.)
 insert_runbg(job_name = "myrunbg_job", job_type = "profile_steps", dMod.frame = "myframe", distribute = paste0("knecht", 1:5))
 }
 
