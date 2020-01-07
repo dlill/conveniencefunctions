@@ -4,12 +4,7 @@
 #' @return called for its side-effects. Restart RStudio afterwards
 #' @export
 install_cfsnippets <- function(){
-  
-  if (!file.exists(snippets_path())){
-    if (!dir.exists(dirname(snippets_path())))
-      dir.create(dirname(snippets_path()), recursive = TRUE)
-    writeLines("\n", snippets_path())
-  }
+  snippets_path() # checks for existence and creates empty file if necessary
   .snippetlist <- snippets_read("r", system.file("snippets/r.snippets", package = "conveniencefunctions"))
   lapply(names(.snippetlist), function(.x) try(snippet_remove(.x)))
   mapply(snippet_add, name = names(.snippetlist), text = .snippetlist, SIMPLIFY = FALSE)
@@ -43,9 +38,9 @@ install_cfsnippets <- function(){
 snippets_path <- function (language = "r"){
   path <- file.path("~/.R/snippets", paste0(language, ".snippets"))
   if (!(file.exists(path))) {
-    if (!dir.exists(dirname(snippets_path())))
-      dir.create(dirname(snippets_path()), recursive = TRUE)
-    writeLines("\n", snippets_path())
+    if (!dir.exists(dirname(path)))
+      dir.create(dirname(path), recursive = TRUE)
+    writeLines("\n", path)
   }
   path
 }
