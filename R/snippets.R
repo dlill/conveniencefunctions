@@ -40,7 +40,7 @@ snippets_path <- function (language = "r"){
   if (!(file.exists(path))) {
     if (!dir.exists(dirname(path)))
       dir.create(dirname(path), recursive = TRUE)
-    writeLines("\n", path)
+    writeLines("\n\n", path)
   }
   path
 }
