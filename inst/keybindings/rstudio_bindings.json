@@ -4,5 +4,6 @@
     "executeCurrentSection" : "Ctrl+Shift+T",
     "pasteLastYank" : "",
     "quitSession" : "",
-    "roxygenizePackage" : ""
+    "roxygenizePackage" : "",
+    "showShellDialog" : "Ctrl+Shift+A"
 }
