@@ -4,8 +4,7 @@
 \alias{snippet_add}
 \title{copied from snippr}
 \usage{
-snippet_add(name, text, language = "r",
-  path = "~/.R/snippets/r.snippets")
+snippet_add(name, text, language = "r", path = "~/.R/snippets/r.snippets")
 }
 \description{
 copied from snippr

@@ -4,8 +4,12 @@
 \alias{snippet_remove}
 \title{copied from snippr}
 \usage{
-snippet_remove(name, language = "r", path = "~/.R/snippets/r.snippets",
-  error = TRUE)
+snippet_remove(
+  name,
+  language = "r",
+  path = "~/.R/snippets/r.snippets",
+  error = TRUE
+)
 }
 \description{
 copied from snippr
