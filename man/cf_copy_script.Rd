@@ -4,7 +4,7 @@
 \alias{cf_copy_script}
 \title{Rename a script, change filename occurences within script, rename output folder}
 \usage{
-cf_copy_script(from, to)
+cf_copy_script(from, to, FLAGremoveOld = FALSE)
 }
 \arguments{
 \item{from, to}{as in file.rename}

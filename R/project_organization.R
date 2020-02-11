@@ -20,16 +20,21 @@ proj_create_folders <- function(path = "Work") {
 #' @param scriptname character
 #'
 #' @export
-assign_folders <- function(scriptname) {
-  folders <- c(.currentwd        = rstudioapi::getSourceEditorContext()$path,
+assign_folders <- function(
+  additional = NULL,
+  scriptname = gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))
+                           ) {
+  folders <- c(.currentwd        = dirname(rstudioapi::getSourceEditorContext()$path),
                .outputFolder     = paste0("../04-Output/",scriptname),
                .modelFolder      = file.path(paste0("../04-Output/", scriptname), "01-Model"),
                .estimationFolder = file.path(paste0("../04-Output/", scriptname), "02-Estimation"),
                .plotFolder       = file.path(paste0("../04-Output/", scriptname), "03-Plot"),
                .tableFolder      = file.path(paste0("../04-Output/", scriptname), "04-Table"),
                .tempdir          = tempdir())
-  for (x in folders){
-    if (!dir.exists(x)) dir.create(x)
-    assign(names(x), x, .GlobalEnv)
+  folders <- c(folders, additional)
+  
+  for (x in seq_along(folders)){
+    if (!dir.exists(folders[x])) dir.create(folders[x])
+    assign(names(folders[x]), folders[x], .GlobalEnv)
   }
 }

@@ -27,13 +27,15 @@ cf_rename_script <- function(from, to) {
 #' @param from,to as in file.rename 
 #'
 #' @export
-cf_copy_script <- function(from, to) {
+cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
   ln <- readLines(from)
   from_stripped <- stringr::str_replace_all(from, "\\.R$", "")
   to_stripped <- stringr::str_replace_all(to, "\\.R$", "")
   message("Number of replaced filename references: ", sum(stringr::str_count(ln, from_stripped)), "-------\n")
   ln <- stringr::str_replace_all(ln, from_stripped, to_stripped)
   writeLines(ln, to)
+  if(FLAGremoveOld) unlink(from)
+  NULL
 }
 
 

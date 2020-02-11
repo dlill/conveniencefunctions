@@ -16,3 +16,24 @@ install_cfrstudio <- function(theme_name = "pastel on dark") {
   file.copy(system.file("bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE)
   
 }
+
+
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_rstudioThemes_pastelOnDark = function() {
+  rstudioapi::applyTheme("pastel on dark")
+}
+
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_rstudioThemes_textmateDefault = function() {
+  rstudioapi::applyTheme("textmate (default)")
+}
