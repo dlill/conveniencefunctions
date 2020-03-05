@@ -1,50 +1,0 @@
-
-R version 3.5.3 (2019-03-11) -- "Great Truth"
-Copyright (C) 2019 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
-
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
-
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
-
-> devtools::install_github("dlill/conveniencefunctions")
-Downloading GitHub repo dlill/conveniencefunctions@master
-
-Skipping 20 packages ahead of CRAN: callr, cOde, data.table, digest, dMod, evaluate, htmltools, knitr, markdown, mime, officer, processx, R6, Rcpp, rlang, rmarkdown, tinytex, xfun, xml2, zip
-     checking for file ‘/tmp/RtmpoDckrB/remotesb543500d448/dlill-conveniencefunctions-c4fa511/DESCRIPTION’ ...  ✔  checking for file ‘/tmp/RtmpoDckrB/remotesb543500d448/dlill-conveniencefunctions-c4fa511/DESCRIPTION’
-  ─  preparing ‘conveniencefunctions’:
-     checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-  ─  checking for LF line-endings in source and make files and shell scripts
-  ─  checking for empty or unneeded directories
-   Removed empty directory ‘conveniencefunctions/inst/examples’
-─  building ‘conveniencefunctions_0.1.0.tar.gz’
-     
-Installing package into ‘/home/daniel2/R/x86_64-pc-linux-gnu-library/3.5’
-(as ‘lib’ is unspecified)
-* installing *source* package ‘conveniencefunctions’ ...
-** R
-** inst
-** byte-compile and prepare package for lazy loading
-Note: ... may be used in an incorrect context 
-** help
-*** installing help indices
-** building package indices
-** testing if installed package can be loaded
-* DONE (conveniencefunctions)
-> conveniencefunctions::install_cfkeybindings()
-list()
-> conveniencefunctions::install_cfsnippets()
-Error in names(snippets) <- d$snippet[!is.na(d$snippet)] : 
-  'names' attribute [1] must be the same length as the vector [0]
-Calls: <Anonymous> ... mapply -> <Anonymous> -> snippets_read -> snippets_parse
-Execution halted

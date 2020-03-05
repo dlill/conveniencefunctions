@@ -4,7 +4,7 @@
 #' 
 #' @return called for side-effect
 #' @export
-install_cfrstudio <- function(theme_name = "pastel on dark") {
+cf_install_rstudio <- function(theme_name = c("pastel on dark", "textmate (default)")[1]) {
   # 1. Theme name
   if (theme_name %in% names(rstudioapi::getThemes())) rstudioapi::applyTheme(theme_name)
   # 2. Keybindings
@@ -12,8 +12,10 @@ install_cfrstudio <- function(theme_name = "pastel on dark") {
   # 3. Snippets
   install_cfsnippets()  #update
   # 4. Bash alias for git
-  file.copy(system.file("bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE) #update
-  # 5. install shortcuts
+  file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE) 
+  # 5. Install shortcuts for Thunar
+  file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/config/gtk-3.0/bookmarks", overwrite = TRUE) 
+  
 }
 
 
