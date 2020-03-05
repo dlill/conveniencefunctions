@@ -5,7 +5,7 @@
 #' @return called for side-effect
 #' @export
 cf_install_rstudio <- function(theme_name = c("pastel on dark", "textmate (default)")[1]) {
-  # 1. Theme name
+  # 1. Theme 
   if (theme_name %in% names(rstudioapi::getThemes())) rstudioapi::applyTheme(theme_name)
   # 2. Keybindings
   install_cfkeybindings() #update
@@ -15,7 +15,8 @@ cf_install_rstudio <- function(theme_name = c("pastel on dark", "textmate (defau
   file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE) 
   # 5. Install shortcuts for Thunar
   file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/config/gtk-3.0/bookmarks", overwrite = TRUE) 
-  
+  # # 6. IQRmate
+  # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
 }
 
 
