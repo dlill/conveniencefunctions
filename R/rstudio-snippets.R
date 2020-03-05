@@ -5,15 +5,17 @@
 #' @export
 install_cfsnippets <- function(){
   if (!file.exists(file.path("~/.R/snippets/r.snippets"))) {
-    dir.create("~/.R/snippets/r.snippets", recursive = TRUE)
+    dir.create("~/.R/snippets/", recursive = TRUE)
     file.copy(system.file("setup_IQDesktop/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"))
-    return("snippets were installed fresh")
+    cat("snippets were installed fresh\n")
+    return()
   }
   snippets_path() # checks for existence and creates empty file if necessary
   .snippetlist <- snippets_read("r", system.file("setup_IQDesktop/snippets/r.snippets", package = "conveniencefunctions"))
   lapply(names(.snippetlist), function(.x) try(snippet_remove(.x)))
   mapply(snippet_add, name = names(.snippetlist), text = .snippetlist, SIMPLIFY = FALSE)
-  return("snippets were updated")
+  cat("snippets were updated\n")
+  return()
 }
 
 

@@ -8,13 +8,15 @@ cf_install_rstudio <- function(theme_name = c("pastel on dark", "textmate (defau
   # 1. Theme 
   if (theme_name %in% names(rstudioapi::getThemes())) rstudioapi::applyTheme(theme_name)
   # 2. Keybindings
-  install_cfkeybindings() #update
+  install_cfkeybindings()
   # 3. Snippets
-  install_cfsnippets()  #update
+  install_cfsnippets()  
   # 4. Bash alias for git
-  file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE) 
+  wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = FALSE) 
+  if (wup) cat("Bash aliases installed \n")
   # 5. Install shortcuts for Thunar
-  file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/config/gtk-3.0/bookmarks", overwrite = TRUE) 
+  wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FALSE) 
+  if (wup) cat("Explorer shortcuts installed \n")
   # # 6. IQRmate
   # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
 }
@@ -45,11 +47,12 @@ cf_rstudioThemes_textmateDefault = function() {
 #' Install keybindings
 #'
 #' @export
+#' @importFrom stats setNames
 install_cfkeybindings <- function(){
   keybindings_path <- "~/.R/rstudio/keybindings"
   if (!dir.exists(keybindings_path)) dir.create(keybindings_path, FALSE, TRUE)
   keybindings_files <- list.files(system.file("setup_IQDesktop/keybindings", package = "conveniencefunctions"), "json$", F, T)
-  lapply(keybindings_files, file.copy, to = keybindings_path, overwrite = TRUE)
-  "keybindings installed"
+  wup <- vapply(stats::setNames(nm = keybindings_files), file.copy, to = keybindings_path, overwrite = TRUE, FUN.VALUE = TRUE)
+  cat(paste0(names(wup)[wup], collapse = " .... \n"),  "installed\n")
 }
 
