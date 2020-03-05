@@ -36,3 +36,17 @@ cf_rstudioThemes_pastelOnDark = function() {
 cf_rstudioThemes_textmateDefault = function() {
   rstudioapi::applyTheme("textmate (default)")
 }
+
+
+
+#' Install keybindings
+#'
+#' @export
+install_cfkeybindings <- function(){
+  keybindings_path <- "~/.R/rstudio/keybindings"
+  if (!dir.exists(keybindings_path)) dir.create(keybindings_path, FALSE, TRUE)
+  keybindings_files <- list.files(system.file("setup_IQDesktop/keybindings", package = "conveniencefunctions"), "json$", F, T)
+  lapply(keybindings_files, file.copy, to = keybindings_path, overwrite = TRUE)
+  "keybindings installed"
+}
+
