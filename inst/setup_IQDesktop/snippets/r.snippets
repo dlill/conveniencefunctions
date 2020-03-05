@@ -1,3 +1,6 @@
+snippet ggly
+	plotly::ggplotly()
+
 snippet devdoc
 	devtools::document()
 
@@ -5,26 +8,11 @@ snippet saveRDSreadRDS
 	saveRDS($1, file.path(.outputFolder, $2))
 	$1 <- readRDS(file.path(.outputFolder, $2))
 
-snippet slideTC
-	.slides = cf_slide_titlecontent(.slide, title = $1, $2, basename(.outputFolder))
-
-snippet slideTTC
-	.slides = cf_slide_titlecontent(.slide, title = $1, $2, $3, basename(.outputFolder))
-
-snippet slideSEC
-	.slides = cf_slide_section(.slide, title = $1, basename(.outputFolder))
-
 snippet inplace
 	,`:=`($0)
 
 snippet formatMb
 	format(units = "Mb")
-
-snippet devdoc
-	devtools::document()
-
-
-
 
 snippet cfhead
 	# -------------------------------------------------------------------------#
@@ -34,34 +22,21 @@ snippet cfhead
 	# `r basename(rstudioapi::getSourceEditorContext()$path)`
 	#
 	# [PURPOSE]
+	# 
 	# $0
+	#
 	#
 	# [AUTHOR]
 	# Daniel Lill
 	#
 	# [Date]
-	# `Sys.time()`
+	# `r Sys.time()`
 	#
-	# .. Libraries -----
-	library(officer)
+	setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 	library(conveniencefunctions)
-	library(tidyverse)
-	library(IQRtools)
-	library(dMod)
-	# .. Default Values -----
 	rm(list = ls(all.names = TRUE))
-	.fast = FALSE
-	.currentwd <- getwd()
-	.outputFolder     <- "../04-Output/`r sub("^SCRIPT", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
-	.modelFolder      <- file.path(.outputFolder, "01-Model")
-	.estimationFolder <- file.path(.outputFolder, "02-Estimation")
-	.plotFolder       <- file.path(.outputFolder, "03-Plot")
-	.tableFolder      <- file.path(.outputFolder, "04-Table")
-	.tempdir          <- tempdir()
-	for (x in c(.outputFolder,.modelFolder,.estimationFolder,.plotFolder,.tableFolder,.tempdir))
-		if (!dir.exists(x)) dir.create(x, recursive = TRUE)
+	assign_folders(`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
 	
-	.slides = officer::read_pptx(system.file(package = "conveniencefunctions", "templates/template1.pptx"))
 	# -------------------------------------------------------------------------#
 	# 1 ----
 	# -------------------------------------------------------------------------#
@@ -72,42 +47,15 @@ snippet cfhead
 	
 	
 	# Exit ----
-	print(.slides)
 	
 
 	
 
 
-snippet cfsection
+snippet IQRsection
 	# -------------------------------------------------------------------------#
-	# ${1:SectionTitle} ----
+	# $0 ----
 	# -------------------------------------------------------------------------#
-
-snippet cfsubsection
-	# -------------------------------------------------------------------------#
-	# . ${1:SubsectionTitle} -----
-	# -------------------------------------------------------------------------#
-
-snippet cfsubsubsection
-	# -------------------------------------------------------------------------#
-	# . . ${1:SubsubsectionTitle} ------
-	# -------------------------------------------------------------------------#
-
-
-
-snippet unittest
-	# context("', ${1:context}, '")
-	# test_that("', ${2:description} ,'", {
-
-	#-!Start example code
-	${0}
-
-	#-!End example code
-
-
-	# Define your expectations here
-
-	#})
 
 
 snippet clist
@@ -140,7 +88,7 @@ snippet remark
 	# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ----
 
 snippet clremark
-	# >>>> ${0} <<<<<<<<<<<
+	# >>>> ${0} <<<<<<<<<<< ----
 
 snippet scriptdevelopment
 	# >> Script development. # [] Remove in final script <<
@@ -156,14 +104,13 @@ snippet Rprof_profile_line
 	browseURL(paste0(rp___, ".html"))
 
 snippet setwdtempdir
-	.currentwd <- getwd()
+	.tempdir = tempdir()
+	.currentdir <- getwd()
 	setwd(.tempdir)
 	$0
-	setwd(.currentwd)
 
 snippet setwdDocument
 	`r paste0("setwd('", dirname(rstudioapi::getSourceEditorContext()$path), "')")`
-
 
 snippet printn500
 	as_tibble %>% print(n = 500)
@@ -171,18 +118,20 @@ snippet printn500
 snippet printn1000
 	as_tibble %>% print(n = 1000)
 
+snippet printn500dt
+	print(nrows = 500)
+
+snippet printn1000dt
+	print(nrows = 1000)
+
 snippet catsep_n
 	 cat(sep = '\n')
 
 snippet catsep_comman
 	 cat(sep = ',\n')
 
-snippet catsep_quotecomman
-	 cat(sep = '",\n"')
-
 snippet loadcf
 	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
-
 
 snippet cfrunbgmstrust
 	setwd(.tempdir)

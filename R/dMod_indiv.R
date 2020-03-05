@@ -68,6 +68,37 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   prd
 }
 
+#' Title
+#'
+#' @param p0 
+#' @param est.grid 
+#' @param fixed.grid 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_P_indiv <- function(p0, est.grid, fixed.grid) {
+  
+  prd <- function(pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition, 
+                  FLAGbrowser = FALSE, 
+                  FLAGverbose = FALSE) {
+    out <- lapply(setNames(nm = conditions), function(cn) {
+      if (FLAGbrowser) browser()
+      ID <- est.grid$ID[est.grid$condition == cn]
+      if (FLAGverbose) cat(ID, cn, "\n", sep = " ---- ")
+      dummy <- cf_make_pars(pars, fixed, est.grid, fixed.grid, ID)
+      pars_ <- dummy$pars
+      fixed_ <- dummy$fixed
+      
+      if (length(setdiff(getParameters(prd0), names(c(pars_, fixed_)))))
+        stop("The following parameters are missing: ", paste0(setdiff(getParameters(prd0), names(c(pars_, fixed_))), collapse = ", "))
+      p0(pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
+    })
+  }
+  class(prd) <- c("parfn", "fn")
+  prd
+}
 
 
 

@@ -5,16 +5,15 @@
 #' @return called for side-effect
 #' @export
 install_cfrstudio <- function(theme_name = "pastel on dark") {
-  
   # 1. Theme name
   if (theme_name %in% names(rstudioapi::getThemes())) rstudioapi::applyTheme(theme_name)
   # 2. Keybindings
-  install_cfkeybindings()
+  install_cfkeybindings() #update
   # 3. Snippets
-  install_cfsnippets()
+  install_cfsnippets()  #update
   # 4. Bash alias for git
-  file.copy(system.file("bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE)
-  
+  file.copy(system.file("bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = TRUE) #update
+  # 5. install shortcuts
 }
 
 

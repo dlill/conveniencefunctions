@@ -37,4 +37,7 @@ assign_folders <- function(
     if (!dir.exists(folders[x])) dir.create(folders[x])
     assign(names(folders[x]), folders[x], .GlobalEnv)
   }
+    assign(".tempfile", tempfile(), .GlobalEnv)
+  
+    cat("Assigned the following variables: ", paste0(c(names(folders), ".tempfile"), collapse = ", "), "\n")
 }
