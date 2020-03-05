@@ -6,4 +6,8 @@ gall() {
   git add --all && git commit -m "$1" && git pull && git push && exit
 }
 
+gclone() {
+  echo git clone $1 $(basename ${1%/GIT})
+}
+
 alias ll="ls -lh"

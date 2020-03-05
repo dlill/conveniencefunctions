@@ -4,10 +4,7 @@
 \alias{cf_install_rstudio}
 \title{Quick setup of RStudio on a new machine}
 \usage{
-cf_install_rstudio(theme_name = c("pastel on dark", "textmate (default)")[1])
-}
-\arguments{
-\item{theme_name}{default: "pastel on dark"}
+cf_install_rstudio()
 }
 \value{
 called for side-effect
