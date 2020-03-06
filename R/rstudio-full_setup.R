@@ -12,6 +12,10 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE) {
   install_cfsnippets(FLAGoverwrite = FLAGoverwrite)  
   # 4. Bash alias for git
   wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = FLAGoverwrite) 
+  if (Sys.info()["sysname"] == "Windows"){
+    wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/../.bash_aliases", overwrite = FLAGoverwrite) 
+    writeLines("source ~/.bash_aliases", "~/../.bashrc")
+  }
   if (wup) cat("Bash aliases installed \n")
   # 5. Install shortcuts for Thunar
   wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
@@ -44,7 +48,7 @@ install_cfkeybindings <- function(FLAGoverwrite = FALSE){
 #' @examples
 install_cfsnippets <- function(FLAGoverwrite = FALSE){
   if(!dir.exists("~/.R/snippets/")) dir.create("~/.R/snippets/", recursive = TRUE)
-  wup <- file.copy(system.file("setup_IQDesktop/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"), overwrite = FALSE)
+  wup <- file.copy(system.file("setup_IQDesktop/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"), overwrite = FLAGoverwrite)
   if (wup) cat("Snippets were overwritten \n")
   NULL
 }
