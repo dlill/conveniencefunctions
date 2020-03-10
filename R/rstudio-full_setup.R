@@ -12,8 +12,8 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE) {
   install_cfsnippets(FLAGoverwrite = FLAGoverwrite)  
   # 4. Bash alias for git
   if (Sys.info()["sysname"] == "Windows"){
-  wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = FLAGoverwrite) 
-  system("sed -i 's/\\\\r//' ~/.bash_aliases")
+    wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = FLAGoverwrite) 
+    system("sed -i 's/\r//' ~/.bash_aliases")
   }
   if (Sys.info()["sysname"] == "Windows"){
     wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/../.bash_aliases", overwrite = FLAGoverwrite) 
