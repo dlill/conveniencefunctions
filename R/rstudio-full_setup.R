@@ -31,9 +31,22 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
       "git clone git@github.com:dlill/conveniencefunctions",
+      "",
+      
+      "git clone git@github.com:IntiQuan/IQRmalaria IQRmalariaGIT",
       "git clone git@github.com:IntiQuan/MMVIsoboles",
+      "",
       "cd ~/PROJECTS",
-      "gclone /IQDESKTOP/SHARE/",
+      "gclone /IQDESKTOP/SHARE/ (drop final /)",
+      "",
+      "setup_IQRtools(local = TRUE)",
+      '.RESERVED_WORD_IQRMODELS                 <- c( 
+  "T","F","PK","G","H","gt","ge","lt","le","mod","and","or", 
+  "piecewise","interp0","interp1","interpcs", "default", "F1", "F2", "Tlag", "eps", "eta", "theta", "sigma", 
+  "a","b","b1","b2","b3","d","Intercept", 
+  "time", "y", "ydot", "RPAR", "IPAR" 
+)',
+      "install.packages('akima')",
       sep = "\n"
       )  
 }
