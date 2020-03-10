@@ -28,6 +28,14 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   if (wup) cat("Explorer shortcuts installed \n")
   # # 6. IQRmate
   # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
+  
+  cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
+      "git clone git@github.com:dlill/conveniencefunctions",
+      "git clone git@github.com:IntiQuan/MMVIsoboles",
+      "cd ~/PROJECTS",
+      "gclone /IQDESKTOP/SHARE/",
+      sep = "\n"
+      )  
 }
 
 
