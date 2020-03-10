@@ -18,7 +18,7 @@ The align argument of xtable outside of mypublish mat needs to be ncol(mat) \+ 1
 \dontrun{
 list(r_0 = matrix(1:9, ncol = 3),
      r_1 = matrix(0,ncol = 3, nrow = 3),
-     r_opt_1 = matrix(2:10, nrow = 3)) %>%
-  imap(~.x %>% round(2) %>% mypublish_mat(.y))
+     r_opt_1 = matrix(2:10, nrow = 3)) \%>\%
+  imap(~.x \%>\% round(2) \%>\% mypublish_mat(.y))
 }
 }

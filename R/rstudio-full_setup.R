@@ -11,13 +11,17 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE) {
   # 3. Snippets
   install_cfsnippets(FLAGoverwrite = FLAGoverwrite)  
   # 4. Bash alias for git
+  if (Sys.info()["sysname"] == "Windows"){
   wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = FLAGoverwrite) 
+  system("sed -i 's/\\\\r//' ~/.bash_aliases")
+  }
   if (Sys.info()["sysname"] == "Windows"){
     wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/../.bash_aliases", overwrite = FLAGoverwrite) 
     writeLines("source ~/.bash_aliases", "~/../.bashrc")
   }
   if (wup) cat("Bash aliases installed \n")
   # 5. Install shortcuts for Thunar
+  if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
   wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
   if (wup) cat("Explorer shortcuts installed \n")
   # # 6. IQRmate

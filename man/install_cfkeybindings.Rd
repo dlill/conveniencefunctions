@@ -4,7 +4,7 @@
 \alias{install_cfkeybindings}
 \title{Install keybindings}
 \usage{
-install_cfkeybindings()
+install_cfkeybindings(FLAGoverwrite = FALSE)
 }
 \description{
 Install keybindings
