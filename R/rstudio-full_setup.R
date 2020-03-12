@@ -31,8 +31,7 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
       "git clone git@github.com:dlill/conveniencefunctions",
       "",
-      
-      "git clone git@github.com:IntiQuan/IQRmalaria IQRmalariaGIT",
+      "git clone git@github.com:IntiQuan/iqrmalaria IQRmalariaGIT",
       "git clone git@github.com:IntiQuan/MMVIsoboles",
       "",
       "cd ~/PROJECTS",
