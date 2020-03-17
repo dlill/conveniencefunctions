@@ -9,11 +9,7 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   # 2. Keybindings
   install_cfkeybindings(FLAGoverwrite = FLAGoverwrite)
   # 3. Snippets
-<<<<<<< HEAD
   install_cfsnippets(FLAGoverwrite = FLAGoverwrite)  
-=======
-  install_cfsnippets(FLAGoverwrite = TRUE)  
->>>>>>> 6cef049190368b69da505c761c98fbd1f0df07d3
   wup <- FLAGoverwrite
   # 4. Bash alias for git
   if (Sys.info()["sysname"] == "Linux"){
@@ -33,10 +29,10 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   # # 6. IQRmate
   # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
-      "git clone git@github.com:dlill/conveniencefunctions",
       "",
       "git clone git@github.com:IntiQuan/iqrmalaria IQRmalariaGIT",
-      "git clone git@github.com:IntiQuan/MMVIsoboles",
+      "sudo apt-get update",
+      "sudo apt-get install  libx11-dev mesa-common-dev libglu1-mesa-dev",
       "",
       "cd ~/PROJECTS",
       "gclone /IQDESKTOP/SHARE/ (drop final /)",
@@ -48,15 +44,11 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   "a","b","b1","b2","b3","d","Intercept", 
   "time", "y", "ydot", "RPAR", "IPAR" 
 )',
-      "install.packages('akima')",
-<<<<<<< HEAD
-=======
       "",
-      "sudo apt-get install  libx11-dev mesa-common-dev libglu1-mesa-dev",
+      "install.packages('akima')",
       "install.packages('kmlShape')",
->>>>>>> 6cef049190368b69da505c761c98fbd1f0df07d3
       sep = "\n"
-      )  
+  )  
 }
 
 
