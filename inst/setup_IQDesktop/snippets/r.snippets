@@ -1,4 +1,17 @@
+snippet IQDsetwdA100
+	setwd("/IQDESKTOP/PROJECTS/A100_OZ439-PQP_Isobole/Work/02-Scripts")
 
+snippet IQDsetwdMMVIsoboles
+	setwd("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
+
+snippet IQDloadIsoboles
+	devtools::load_all("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
+
+snippet IQDloadIQRtools
+	devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
+
+snippet IQDsetwdA09
+	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
 
 snippet compare
 	conveniencefunctions::compare($0)
@@ -17,10 +30,6 @@ snippet ggly
 
 snippet devdoc
 	devtools::document()
-
-snippet saveRDSreadRDS
-	saveRDS($1, file.path(.outputFolder, $2))
-	$1 <- readRDS(file.path(.outputFolder, $2))
 
 snippet inplace
 	,`:=`($0)
@@ -143,6 +152,9 @@ snippet catsep_n
 
 snippet catsep_comman
 	 cat(sep = ',\n')
+
+snippet catsep_comma
+	 cat(sep = ', ')
 
 snippet loadcf
 	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
