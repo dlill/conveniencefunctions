@@ -17,6 +17,7 @@ Imports:
   stringr,
   dplyr,
   devtools,
+  git2r,
   reshape2,
   officer
 RoxygenNote: 7.0.0

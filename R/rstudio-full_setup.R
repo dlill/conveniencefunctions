@@ -3,6 +3,9 @@
 #' 
 #' @return called for side-effect
 #' @export
+#' @importFrom git2r cred_ssh_key
+#' @importFrom devtools install_git
+#' 
 cf_install_rstudio <- function(FLAGoverwrite = FALSE) {
   # 1. Theme 
   rstudioapi::applyTheme("pastel on dark")
@@ -17,7 +20,8 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE) {
   wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
   if (wup) cat("Explorer shortcuts installed \n")
   # # 6. IQRmate
-  # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
+  wup <- try(devtools::install_git("git@github.com:IntiQuan/IQRtools", subdir = "IQRmate", credentials = git2r::cred_ssh_key()))
+  if (!inherits(wup, "try-error")) cat("IQRmate successfully installed")
 }
 
 

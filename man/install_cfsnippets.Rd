@@ -4,7 +4,7 @@
 \alias{install_cfsnippets}
 \title{Title}
 \usage{
-install_cfsnippets()
+install_cfsnippets(FLAGoverwrite = FALSE)
 }
 \value{
 
