@@ -249,46 +249,6 @@ funnames_in_package <- function(package, as_namespace = F) {
 # File interactions ----
 # -------------------------------------------------------------------------#
 
-#' fwrite and zip it
-#'
-#' @param x 
-#' @param file 
-#' @param ... 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-zwrite <- function(x, file, ...) {
-  if (!grepl("\\.zip$", file)) stop(".zip-file expected.")
-  filecsv <- gsub("zip", "csv", basename(file))
-  curwd <- getwd()
-  setwd(dirname(file))
-  out <- data.table::fwrite(x, filecsv, ...)
-  utils::zip(file, filecsv)
-  unlink(filecsv)
-  setwd(curwd)
-  invisible(out)
-}
-
-#' @export
-#' @rdname zwrite
-zread <- function(file, ...) {
-  if (!grepl("\\.zip$", file)) stop(".zip-file expected.")
-  td <- tempdir()
-  curwd <- getwd()
-  setwd(td)
-  filecsv <- gsub("zip", "csv", basename(file))
-  utils::unzip(file.path(curwd, file))
-  out <- data.table::fread(filecsv, ...)
-  unlink(filecsv)
-  setwd(curwd)
-  out
-}
-
-
-
-
 #' Write a characeter vector to a file and open it.
 #'
 #' @param .x vector
