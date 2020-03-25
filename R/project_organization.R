@@ -26,10 +26,10 @@ assign_folders <- function(
                            ) {
   folders <- c(.currentwd        = dirname(rstudioapi::getSourceEditorContext()$path),
                .outputFolder     = paste0("../04-Output/",scriptname),
-               .modelFolder      = file.path(paste0("../04-Output/", scriptname), "01-Model"),
-               .estimationFolder = file.path(paste0("../04-Output/", scriptname), "02-Estimation"),
-               .plotFolder       = file.path(paste0("../04-Output/", scriptname), "03-Plot"),
-               .tableFolder      = file.path(paste0("../04-Output/", scriptname), "04-Table"),
+               # .modelFolder      = file.path(paste0("../04-Output/", scriptname), "01-Model"),
+               # .estimationFolder = file.path(paste0("../04-Output/", scriptname), "02-Estimation"),
+               # .plotFolder       = file.path(paste0("../04-Output/", scriptname), "03-Plot"),
+               # .tableFolder      = file.path(paste0("../04-Output/", scriptname), "04-Table"),
                .tempdir          = tempdir())
   folders <- c(folders, additional)
   

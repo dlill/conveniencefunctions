@@ -197,6 +197,33 @@ insert_values_by_name <- function(vec, values) {
 
 # Other useful stuff ----
 
+#' Run expression and print OK/FAILED if expression returns TRUE/FALSE
+#' 
+#' Daniel Kaschek's check function
+#' @param message character, e.g., "if all subjects are in data".
+#' @param expr the expression to be evaluated
+#' @param nchar integer, maximum number of character for message (for nicer print-out)
+#' @export 
+check <- function(message, expr, nchar = 80, FLAGthrowError = FALSE) {
+  
+  dots <- paste(rep(".", nchar), collapse = "")
+  message <- paste(crayon::bold("Checking"), message)
+  message <- paste(message, dots)
+  message <- substr(message, 1, nchar)
+  
+  cat(message)
+  check_passed <- eval(expr)
+  
+  if (check_passed) 
+    cat(crayon::green(" OK\n"))
+  else
+    cat(crayon::red(" FAILED\n"))
+  if (!check_passed & FLAGthrowError) 
+    stop("Check failed: ", message)
+  
+  invisible()
+}
+
 
 #' Write a regex to search for all function names in a package
 #'

@@ -4,8 +4,14 @@
 \alias{plotData.datalist}
 \title{Copied from dMod with additional title showing covariates}
 \usage{
-\method{plotData}{datalist}(data, ..., scales = "free", facet = "wrap",
-  transform = NULL, aesthetics = NULL)
+\method{plotData}{datalist}(
+  data,
+  ...,
+  scales = "free",
+  facet = "wrap",
+  transform = NULL,
+  aesthetics = NULL
+)
 }
 \arguments{
 \item{data, ..., scales, facet, transform}{see dMod::plotData}
