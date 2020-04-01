@@ -5,10 +5,12 @@ snippet IQDsetwdMMVIsoboles
 	setwd("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIsoboles
-	devtools::load_all("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
+	if (Sys.info()["sysname"] == "Linux") devtools::load_all("~/PROJTOOLS/MMVIsoboles")
+	if (Sys.info()["sysname"] == "Windows") devtools::load_all("c:/PROJTOOLS/MMVIsoboles/")
 
 snippet IQDloadIQRtools
-	devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
+	if (Sys.info()["sysname"] == "Linux") devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
+	if (Sys.info()["sysname"] == "Windows") devtools::load_all("c:/PROJTOOLS/IQRtools/IQRtools/")
 
 snippet IQDsetwdA09
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
