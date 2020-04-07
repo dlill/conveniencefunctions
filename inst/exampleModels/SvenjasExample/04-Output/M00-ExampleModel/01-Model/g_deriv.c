@@ -1,6 +1,6 @@
 #include <R.h>
  #include <math.h>
- void g_deriv_a1la8kxh ( double * x, double * y, double * p, int * n, int * k, int * l ) {
+ void g_deriv_z5485d1b ( double * x, double * y, double * p, int * n, int * k, int * l ) {
  for(int i = 0; i< *n; i++) {
  y[0+i**l] = (p[0])*(x[5+i**k]) ;
 y[1+i**l] = (p[0])*(x[9+i**k]) ;

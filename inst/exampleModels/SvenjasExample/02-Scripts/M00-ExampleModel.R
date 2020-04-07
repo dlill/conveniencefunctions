@@ -42,7 +42,7 @@ mydata <- data.frame(name = c("pAKT_obs"),
                      sample = c("T47D", "MCF7"),
                      inhibitor = c("no_inhibitor", "no_inhibitor", "lumretuzumab", "lumretuzumab"),
                      ligand = ("HRG"),
-                     time = c(0,10),
+                     time = c(10),
                      value = c(0.6, 2.3, 0.3, 1.2),
                      sigma = c(NA)) %>% 
   as.datalist(split.by = c("inhibitor", "sample", "ligand"))
@@ -164,7 +164,7 @@ est.grid  <- est_df %>% mutate(ID = 1:length(myconditions)) %>%
   select(ID, condition, everything()) %>% as_tibble()
 
 # .. 6 trafo p -----
-trafoP <- trafo[estpars] %>% 
+trafoP <- trafo %>% 
   # insert("x~y", x = names(mySS_eqns_est), y = mySS_eqns_est) %>% 
   insert("x ~ exp(x)", x = .currentSymbols) %>%
   {.}
@@ -219,7 +219,7 @@ if (.build){
 
 prd0 <- (g*x*p)
 prd <- cf_PRD_indiv(prd0, est.grid, fixed.grid)
-prd(seq(0,1,0.1), pouter, FLAGbrowser = T)
+prd(seq(0,1,0.1), pouter, FLAGbrowser = F)
 obj <- cf_normL2_indiv(mydata, prd0, e, est.grid, fixed.grid)
 obj(pouter)
 
