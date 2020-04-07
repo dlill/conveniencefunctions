@@ -60,7 +60,19 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
       
       if (length(setdiff(getParameters(prd0), names(c(pars_, fixed_)))))
         stop("The following parameters are missing: ", paste0(setdiff(getParameters(prd0), names(c(pars_, fixed_))), collapse = ", "))
-      pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
+      pred0 <-try(prd0(times, pars_, fixed = fixed_, deriv = deriv, conditions = NULL)[[1]])
+      if (inherits(pred0, "try-error")) {
+        browser()
+        # Try this code to debug your model
+        # 1 Parameters
+        pinner <- p(pars_, fixed = fixed_)
+        compare(names(pinner[[1]]), getParameters(x)) #setdiff(y,x) should be empty!
+        # 2 ode-model
+        pinner_test <- setNames(runif(length(getParameters(x))),getParameters(x))
+        x(times, pinner_test, deriv = FALSE)
+      }
+      pred0
+      
     })
     dMod::as.prdlist(out)
   }
