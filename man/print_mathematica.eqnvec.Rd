@@ -13,10 +13,10 @@ print_mathematica.eqnvec(myeqnvec)
 Print ode vector in mathematica format
 }
 \examples{
-\dontrun{NULL %>%
-  addReaction("A", "B", "k1*A", "conversion A to B") %>%
-  addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
-  as.eqnvec %>%
+\dontrun{NULL \%>\%
+  addReaction("A", "B", "k1*A", "conversion A to B") \%>\%
+  addReaction("B", "", "k2*B*A", "dedradation of B induced by A") \%>\%
+  as.eqnvec \%>\%
   print_mathematica.eqnlist}
 }
 \seealso{

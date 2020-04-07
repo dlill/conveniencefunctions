@@ -20,5 +20,5 @@ Imports:
   git2r,
   reshape2,
   officer
-RoxygenNote: 7.0.0
+RoxygenNote: 7.0.2
 Suggests: testthat
