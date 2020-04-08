@@ -100,7 +100,7 @@ rownames(condition.grid) <- myconditions
 # .. 2 trafo original -----
 innerpars <- unique(c(getParameters(reactions), getSymbols(observables), getSymbols(errors)))
 trafo <- define(NULL, "x~y", x = innerpars, y = innerpars) %>% 
-  insert("x~0", x = c("ligand","pAKT")) %>% 
+  insert("x~-50", x = c("ligand","pAKT")) %>% # exp(-50) ~ 0
   {.}
 
 ## SS-Test
@@ -111,7 +111,7 @@ trafo <- define(NULL, "x~y", x = innerpars, y = innerpars) %>%
 trafoL <- branch(trafo, condition.grid)
 
 # Specify cell line differences
-trafoL <- insert(trafoL, "x~1", 
+trafoL <- insert(trafoL, "x~0", # exp(0) = 1
                  x = c("mutation_on", "mutation_off"), 
                  sample == "MCF7") %>% 
   # Specify SS 

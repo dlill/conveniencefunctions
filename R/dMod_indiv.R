@@ -29,9 +29,16 @@ cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
   # remove NAs
   fixed <- fixed[!is.na(fixed)]
   
-  
-  
   fixed <- c(fixed, pars[parnames %in% names(fixed_outer)])
+  # fixednames <- names(fixed)
+  # if(logTransform){
+  # doesn't work for log(0) = -Inf
+  #   logfixed <- paste0("log(", fixed, ")")
+  #   eval_vec <-  Vectorize(eval.parent, vectorize.args = "expr")
+  #   logfixed <- eval_vec(parse(text = logfixed))
+  #   names(logfixed) <- fixednames
+  #   fixed <- logfixed
+  # }
   pars <- pars[!parnames %in% names(fixed_outer)]
   parnames <- parnames[!parnames %in% names(fixed_outer)]
   return(list(pars = unlist(pars), fixed = unlist(fixed), parnames = parnames))
