@@ -22,12 +22,13 @@ cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
   pars <- c(pars, fixed)
   pars <- c(pars, dummy = 1)
   parnames  <- unlist(est.grid[est.grid$ID == ID, setdiff(names(est.grid), c("ID", "condition"))])
+  # remove dummy
+  parnames <- parnames[parnames != "dummy"]
   pars <- setNames(pars[parnames], names(parnames))
   fixed <- unlist(fixed.grid[fixed.grid$ID == ID, setdiff(names(fixed.grid), c("ID", "condition"))])
   # remove NAs
   fixed <- fixed[!is.na(fixed)]
-  # remove dummy
-  parnames <- parnames[parnames != "dummy"]
+  
   
   
   fixed <- c(fixed, pars[parnames %in% names(fixed_outer)])
