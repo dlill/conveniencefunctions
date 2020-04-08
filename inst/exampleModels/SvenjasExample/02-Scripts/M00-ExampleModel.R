@@ -164,7 +164,7 @@ est.grid  <- est_df %>% mutate(ID = 1:length(myconditions)) %>%
   select(ID, condition, everything()) %>% as_tibble()
 
 # .. 6 trafo p -----
-trafoP <- trafo %>% 
+trafoP <- define(NULL, "x~y", x = innerpars, y = innerpars) %>% 
   # insert("x~y", x = names(mySS_eqns_est), y = mySS_eqns_est) %>% 
   insert("x ~ exp(x)", x = .currentSymbols) %>%
   {.}
