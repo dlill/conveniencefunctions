@@ -64,6 +64,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
       
       if (length(setdiff(getParameters(prd0), names(c(pars_, fixed_)))))
         stop("The following parameters are missing: ", paste0(setdiff(getParameters(prd0), names(c(pars_, fixed_))), collapse = ", "))
+      
       pred0 <-try(prd0(times, pars_, fixed = fixed_, deriv = deriv, conditions = NULL)[[1]])
       if (inherits(pred0, "try-error")) {
         browser()
@@ -76,7 +77,7 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
         x(times, pinner_test, deriv = FALSE)
       }
       pred0
-      
+      # pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
     })
     dMod::as.prdlist(out)
   }
@@ -211,7 +212,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {
         err <- errmodel(out = prediction, pars = getParameters(prediction), conditions = cn)
-        mywrss <- nll(res(data[[cn]], prediction, err[[1]]))
+        mywrss <- nll(res(data[[cn]], prediction, err[[1]]), deriv = deriv, pars = pars)
       } else {
         mywrss <- wrss(res(data[[cn]], prediction))
       }
