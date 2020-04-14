@@ -19,9 +19,10 @@ snippet compare
 	conveniencefunctions::compare($0)
 
 snippet IQRoutputFig
-	IQRoutputFigure($0, filename = file.path(.outputFolder, paste0("$0", ".png")))
+	if (!file.exists(file.path(.outputFolder, $1)))
+	  IQRoutputFigure($2, filename = file.path(.outputFolder, $1))
 
-snippet filepathoutputFolder
+snippet file.pathoutputFolder
 	file.path(.outputFolder, $0)
 
 snippet rstudioapi
