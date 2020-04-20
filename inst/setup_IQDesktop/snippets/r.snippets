@@ -10,10 +10,14 @@ snippet IQDloadIsoboles
 
 snippet IQDloadIQRtools
 	if (Sys.info()["sysname"] == "Linux") devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
+	if (Sys.info()["sysname"] == "Linux") devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
 	if (Sys.info()["sysname"] == "Windows") devtools::load_all("c:/PROJTOOLS/IQRtools/IQRtools/")
 
-snippet IQDsetwdA09
+snippet IQDsetwdA09_Phase3
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
+
+snippet IQDsetwdA09_Phase2
+	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase2_ProofOfConcept/Scripts/")
 
 snippet compare
 	conveniencefunctions::compare($0)
