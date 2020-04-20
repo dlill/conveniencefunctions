@@ -30,6 +30,9 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
       "",
+      "unzip /IQDESKTOP/PROJTOOLS/IQDesktop/id_rsa.zip -d .ssh",
+      "chmod 600 .ssh/id_rsa",
+      "",
       "git clone git@github.com:IntiQuan/iqrmalaria IQRmalariaGIT",
       "sudo apt-get update",
       "sudo apt-get install  libx11-dev mesa-common-dev libglu1-mesa-dev",
