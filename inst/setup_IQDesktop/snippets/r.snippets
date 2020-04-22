@@ -10,18 +10,29 @@ snippet IQDloadIsoboles
 
 snippet IQDloadIQRtools
 	if (Sys.info()["sysname"] == "Linux") devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
+	if (Sys.info()["sysname"] == "Linux") devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
 	if (Sys.info()["sysname"] == "Windows") devtools::load_all("c:/PROJTOOLS/IQRtools/IQRtools/")
 
-snippet IQDsetwdA09
+snippet IQDsetwdA09_Phase3
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
+
+snippet IQDsetwdA09_Phase2
+	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase2_ProofOfConcept/Scripts/")
 
 snippet compare
 	conveniencefunctions::compare($0)
 
-snippet IQRoutputFig
-	IQRoutputFigure($0, filename = file.path(.outputFolder, paste0("$0", ".png")))
+snippet cfcopyscript
+	conveniencefunctions::cf_copy_script($0)
 
-snippet filepathoutputFolder
+snippet cfrenamescript
+	conveniencefunctions::cf_copy_script($0)
+	
+snippet IQRoutputFig
+	if (!file.exists(file.path(.outputFolder, $1)))
+	  IQRoutputFigure($2, filename = file.path(.outputFolder, $1))
+
+snippet file.pathoutputFolder
 	file.path(.outputFolder, $0)
 
 snippet rstudioapi
