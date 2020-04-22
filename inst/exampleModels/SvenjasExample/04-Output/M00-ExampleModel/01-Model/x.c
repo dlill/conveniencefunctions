@@ -2,7 +2,7 @@
 #include <R.h> 
  #include <math.h> 
 
-static double parms[7];
+static double parms[9];
 static double forc[0];
 static double cons[0];
 static double eventcounter[1];
@@ -12,19 +12,21 @@ static double range[2];
 #define nSplines 0 
 #define precision 1e-05 
 
-#define phospho_AKT_R1R1 parms[0] 
- #define mutation_on parms[1] 
- #define dephospho_pAKT parms[2] 
- #define mutation_off parms[3] 
- #define y0_0 parms[4] 
- #define y1_0 parms[5] 
- #define y2_0 parms[6] 
+#define phospho_AKT parms[0] 
+ #define phospho_AKT_add parms[1] 
+ #define mutation_on parms[2] 
+ #define dephospho_AKT parms[3] 
+ #define dephospho_AKT_add parms[4] 
+ #define mutation_off parms[5] 
+ #define y0_0 parms[6] 
+ #define y1_0 parms[7] 
+ #define y2_0 parms[8] 
 #define tmin range[0]
 #define tmax range[1]
 
 
 void x_initmod(void (* odeparms)(int *, double *)) {
-	 int N=7;
+	 int N=9;
 	 odeparms(&N, parms);
 	 for(int i=0; i<1; ++i) eventcounter[i] = 0;
 }
@@ -39,8 +41,8 @@ void x_derivs (int *n, double *t, double *y, double *ydot, double *RPAR, int *IP
 
 	 double time = *t;
 
-	 ydot[0] = -1.0*((phospho_AKT_R1R1*mutation_on)*y[0]*y[2])+1.0*(dephospho_pAKT*y[1]*mutation_off);
- 	 ydot[1] = 1.0*((phospho_AKT_R1R1*mutation_on)*y[0]*y[2])-1.0*(dephospho_pAKT*y[1]*mutation_off);
+	 ydot[0] = -1.0*((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]*y[2]);
+ 	 ydot[1] = 1.0*((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]*y[2])-1.0*((dephospho_AKT+dephospho_AKT_add*mutation_off)*y[1]);
  	 ydot[2] = 1.0*(0.0);
 
 }

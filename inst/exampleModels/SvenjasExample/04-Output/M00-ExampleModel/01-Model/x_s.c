@@ -2,7 +2,7 @@
 #include <R.h> 
  #include <math.h> 
 
-static double parms[25];
+static double parms[33];
 static double forc[0];
 static double cons[0];
 static double eventcounter[1];
@@ -12,37 +12,45 @@ static double range[2];
 #define nSplines 0 
 #define precision 1e-05 
 
-#define phospho_AKT_R1R1 parms[0] 
- #define mutation_on parms[1] 
- #define dephospho_pAKT parms[2] 
- #define mutation_off parms[3] 
- #define y0_0 parms[4] 
- #define y1_0 parms[5] 
- #define y2_0 parms[6] 
- #define y3_0 parms[7] 
- #define y4_0 parms[8] 
- #define y5_0 parms[9] 
- #define y6_0 parms[10] 
- #define y7_0 parms[11] 
- #define y8_0 parms[12] 
- #define y9_0 parms[13] 
- #define y10_0 parms[14] 
- #define y11_0 parms[15] 
- #define y12_0 parms[16] 
- #define y13_0 parms[17] 
- #define y14_0 parms[18] 
- #define y15_0 parms[19] 
- #define y16_0 parms[20] 
- #define y17_0 parms[21] 
- #define y18_0 parms[22] 
- #define y19_0 parms[23] 
- #define y20_0 parms[24] 
+#define phospho_AKT parms[0] 
+ #define phospho_AKT_add parms[1] 
+ #define mutation_on parms[2] 
+ #define dephospho_AKT parms[3] 
+ #define dephospho_AKT_add parms[4] 
+ #define mutation_off parms[5] 
+ #define y0_0 parms[6] 
+ #define y1_0 parms[7] 
+ #define y2_0 parms[8] 
+ #define y3_0 parms[9] 
+ #define y4_0 parms[10] 
+ #define y5_0 parms[11] 
+ #define y6_0 parms[12] 
+ #define y7_0 parms[13] 
+ #define y8_0 parms[14] 
+ #define y9_0 parms[15] 
+ #define y10_0 parms[16] 
+ #define y11_0 parms[17] 
+ #define y12_0 parms[18] 
+ #define y13_0 parms[19] 
+ #define y14_0 parms[20] 
+ #define y15_0 parms[21] 
+ #define y16_0 parms[22] 
+ #define y17_0 parms[23] 
+ #define y18_0 parms[24] 
+ #define y19_0 parms[25] 
+ #define y20_0 parms[26] 
+ #define y21_0 parms[27] 
+ #define y22_0 parms[28] 
+ #define y23_0 parms[29] 
+ #define y24_0 parms[30] 
+ #define y25_0 parms[31] 
+ #define y26_0 parms[32] 
 #define tmin range[0]
 #define tmax range[1]
 
 
 void x_s_initmod(void (* odeparms)(int *, double *)) {
-	 int N=25;
+	 int N=33;
 	 odeparms(&N, parms);
 	 for(int i=0; i<1; ++i) eventcounter[i] = 0;
 }
@@ -57,27 +65,33 @@ void x_s_derivs (int *n, double *t, double *y, double *ydot, double *RPAR, int *
 
 	 double time = *t;
 
-	 ydot[0] = -1.0*((phospho_AKT_R1R1*mutation_on)*y[0]*y[2])+1.0*(dephospho_pAKT*y[1]*mutation_off);
- 	 ydot[1] = 1.0*((phospho_AKT_R1R1*mutation_on)*y[0]*y[2])-1.0*(dephospho_pAKT*y[1]*mutation_off);
+	 ydot[0] = -1.0*((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]*y[2]);
+ 	 ydot[1] = 1.0*((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]*y[2])-1.0*((dephospho_AKT+dephospho_AKT_add*mutation_off)*y[1]);
  	 ydot[2] = 1.0*(0.0);
- 	 ydot[3] = (-((phospho_AKT_R1R1*mutation_on)*y[2]))*(y[3])+(dephospho_pAKT*mutation_off)*(y[4])+(-((phospho_AKT_R1R1*mutation_on)*y[0]))*(y[5]);
- 	 ydot[4] = ((phospho_AKT_R1R1*mutation_on)*y[2])*(y[3])+(-(dephospho_pAKT*mutation_off))*(y[4])+((phospho_AKT_R1R1*mutation_on)*y[0])*(y[5]);
+ 	 ydot[3] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[3])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[5]);
+ 	 ydot[4] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[3])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[4])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[5]);
  	 ydot[5] = 0;
- 	 ydot[6] = (-((phospho_AKT_R1R1*mutation_on)*y[2]))*(y[6])+(dephospho_pAKT*mutation_off)*(y[7])+(-((phospho_AKT_R1R1*mutation_on)*y[0]))*(y[8]);
- 	 ydot[7] = ((phospho_AKT_R1R1*mutation_on)*y[2])*(y[6])+(-(dephospho_pAKT*mutation_off))*(y[7])+((phospho_AKT_R1R1*mutation_on)*y[0])*(y[8]);
+ 	 ydot[6] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[6])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[8]);
+ 	 ydot[7] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[6])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[7])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[8]);
  	 ydot[8] = 0;
- 	 ydot[9] = (-((phospho_AKT_R1R1*mutation_on)*y[2]))*(y[9])+(dephospho_pAKT*mutation_off)*(y[10])+(-((phospho_AKT_R1R1*mutation_on)*y[0]))*(y[11])-(mutation_on*y[0]*y[2]);
- 	 ydot[10] = ((phospho_AKT_R1R1*mutation_on)*y[2])*(y[9])+(-(dephospho_pAKT*mutation_off))*(y[10])+((phospho_AKT_R1R1*mutation_on)*y[0])*(y[11])+mutation_on*y[0]*y[2];
+ 	 ydot[9] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[9])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[11])-(y[0]*y[2]);
+ 	 ydot[10] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[9])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[10])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[11])+y[0]*y[2];
  	 ydot[11] = 0;
- 	 ydot[12] = (-((phospho_AKT_R1R1*mutation_on)*y[2]))*(y[12])+(dephospho_pAKT*mutation_off)*(y[13])+(-((phospho_AKT_R1R1*mutation_on)*y[0]))*(y[14])-(phospho_AKT_R1R1*y[0]*y[2]);
- 	 ydot[13] = ((phospho_AKT_R1R1*mutation_on)*y[2])*(y[12])+(-(dephospho_pAKT*mutation_off))*(y[13])+((phospho_AKT_R1R1*mutation_on)*y[0])*(y[14])+phospho_AKT_R1R1*y[0]*y[2];
+ 	 ydot[12] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[12])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[14])-(mutation_on*y[0]*y[2]);
+ 	 ydot[13] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[12])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[13])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[14])+mutation_on*y[0]*y[2];
  	 ydot[14] = 0;
- 	 ydot[15] = (-((phospho_AKT_R1R1*mutation_on)*y[2]))*(y[15])+(dephospho_pAKT*mutation_off)*(y[16])+(-((phospho_AKT_R1R1*mutation_on)*y[0]))*(y[17])+y[1]*mutation_off;
- 	 ydot[16] = ((phospho_AKT_R1R1*mutation_on)*y[2])*(y[15])+(-(dephospho_pAKT*mutation_off))*(y[16])+((phospho_AKT_R1R1*mutation_on)*y[0])*(y[17])-(y[1]*mutation_off);
+ 	 ydot[15] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[15])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[17])-(phospho_AKT_add*y[0]*y[2]);
+ 	 ydot[16] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[15])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[16])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[17])+phospho_AKT_add*y[0]*y[2];
  	 ydot[17] = 0;
- 	 ydot[18] = (-((phospho_AKT_R1R1*mutation_on)*y[2]))*(y[18])+(dephospho_pAKT*mutation_off)*(y[19])+(-((phospho_AKT_R1R1*mutation_on)*y[0]))*(y[20])+dephospho_pAKT*y[1];
- 	 ydot[19] = ((phospho_AKT_R1R1*mutation_on)*y[2])*(y[18])+(-(dephospho_pAKT*mutation_off))*(y[19])+((phospho_AKT_R1R1*mutation_on)*y[0])*(y[20])-(dephospho_pAKT*y[1]);
+ 	 ydot[18] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[18])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[20]);
+ 	 ydot[19] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[18])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[19])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[20])-y[1];
  	 ydot[20] = 0;
+ 	 ydot[21] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[21])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[23]);
+ 	 ydot[22] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[21])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[22])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[23])-(mutation_off*y[1]);
+ 	 ydot[23] = 0;
+ 	 ydot[24] = (-((phospho_AKT+phospho_AKT_add*mutation_on)*y[2]))*(y[24])+(-((phospho_AKT+phospho_AKT_add*mutation_on)*y[0]))*(y[26]);
+ 	 ydot[25] = ((phospho_AKT+phospho_AKT_add*mutation_on)*y[2])*(y[24])+(-(dephospho_AKT+dephospho_AKT_add*mutation_off))*(y[25])+((phospho_AKT+phospho_AKT_add*mutation_on)*y[0])*(y[26])-(dephospho_AKT_add*y[1]);
+ 	 ydot[26] = 0;
 
 }
 
@@ -93,6 +107,8 @@ void x_s_myevent(int *n, double *t, double *y) {
 		y[14] = 0;
 		y[17] = 0;
 		y[20] = 0;
+		y[23] = 0;
+		y[26] = 0;
 		y[2] = 1.0;
 		eventcounter[0] = eventcounter[0] + 1.;
 	 }
