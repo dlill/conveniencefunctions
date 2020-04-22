@@ -22,6 +22,7 @@ try(setwd(dirname(rstudioapi::getSourceEditorContext()$path)))
 .currentwd <- getwd()
 .build <- TRUE
 .outputFolder     <- "../04-Output/M00-ExampleModel/"
+.dataFolder       <- "../01-ExampleData"
 .modelFolder      <- file.path(.outputFolder, "01-Model")
 
 # .. Load Libraries -----
@@ -38,15 +39,9 @@ library(parallel)
 # 1 Load data ----
 # -------------------------------------------------------------------------#
 
-mydata <- data.frame(name = c("pAKT_obs"), 
-                     sample = c("T47D", "MCF7"),
-                     inhibitor = c("no_inhibitor", "no_inhibitor", "lumretuzumab", "lumretuzumab"),
-                     ligand = ("HRG"),
-                     time = c(10),
-                     value = c(0.6, 2.3, 0.3, 1.2),
-                     sigma = c(NA)) %>% 
+mydata <- fread(file.path(.dataFolder, "ExampleData.csv")) %>% 
   as.datalist(split.by = c("inhibitor", "sample", "ligand"))
-
+  
 # -------------------------------------------------------------------------#
 # 2 Model definition ----
 # -------------------------------------------------------------------------#
@@ -58,8 +53,8 @@ observables <- eqnvec(
 
 # .. 2 Reactions -----
 reactions <- NULL %>% 
-  addReaction("AKT", "pAKT", rate = "(phospho_AKT_R1R1*mutation_on)*AKT*ligand", description = "AKT to pAKT by R1R1 (NISS)") %>% 
-  addReaction("pAKT", "AKT", rate = "dephospho_pAKT*pAKT*mutation_off", description = "pAKT to AKT") %>% 
+  addReaction("AKT", "pAKT", rate = "(phospho_AKT+phospho_AKT_add*mutation_on)*AKT*ligand", description = "AKT to pAKT by R1R1 (NISS)") %>% 
+  addReaction("pAKT", "", rate = "(dephospho_AKT+dephospho_AKT_add*mutation_off)*pAKT", description = "pAKT degradation") %>% 
   {.}
 
 # .... Define ODEs ------ #
@@ -90,7 +85,7 @@ parameters_df <- cf_build_parameters_df(myODEs, observables, errors)
 # -------------------------------------------------------------------------#
 # .. 1 condition.grid -----
 cg <- attr(mydata, "condition.grid") 
-condition.grid <- cg %>% mutate(condition = rownames(cg)) %>% 
+condition.grid <- as.data.frame(cg) %>% mutate(condition = rownames(cg)) %>% 
   mutate(ID = 1:nrow(cg)) %>% 
   .[ , c("ID", "condition", "inhibitor", "sample", "ligand")]
 
@@ -117,7 +112,11 @@ trafoL <- insert(trafoL, "x~0", # exp(0) = 1
   # Specify SS 
   insert("x~x_samp", 
          x =c("AKT", "mutation_on", "mutation_off"), 
-         samp = sample)
+         samp = sample) %>% 
+  # Specify drug effect
+  insert("x~x_drug", 
+         x =c("phospho_AKT", "dephospho_AKT"), 
+         drug = inhibitor) 
 
 # Specify scale and offset according to experiment/ligand
 trafoL <- insert(trafoL, "x~x_lig", 
@@ -169,14 +168,14 @@ trafoP <- define(NULL, "x~y", x = innerpars, y = innerpars) %>%
   insert("x ~ exp(x)", x = .currentSymbols) %>%
   {.}
 
-# .. 7 est.vec -----
+# .. 7 pouter -----
 outerpars <- unlist(est.grid[, setdiff(names(est.grid), c("ID", "condition"))]) %>% unique()
 # remove "dummy" :)
 outerpars <- outerpars[outerpars != "dummy"] 
-pouter <- structure(rep(-1, length(outerpars)), names = outerpars)
+pouter <- structure(rnorm(length(outerpars)), names = outerpars)
 
 # -------------------------------------------------------------------------#
-# Build dMod objects ----
+# 4 Build dMod objects ----
 # -------------------------------------------------------------------------#
 
 if (.build){
@@ -201,7 +200,7 @@ if (.build){
   p <- P(trafoP, modelname = "p")
   
   # .. 5 Compile and Export -----
-  soname <- str_remove_all(paste0(basename(.outputFolder),".so"), c("-|_"))
+  soname <- str_remove_all(paste0(basename(.outputFolder)), c("-|_"))
   compile(x, g, p, e, output = soname, cores  = detectFreeCores())
   save(x, g, p, e, file = "001-model.rds")
   setwd(.currentwd)
@@ -217,11 +216,78 @@ if (.build){
 # pinner <- setNames(rep(exp(-1), length(getParameters(x))),getParameters(x))
 # x(seq(0,1,0.1), pinner)
 
+# -------------------------------------------------------------------------#
+# 5 Build prd & obj ----
+# -------------------------------------------------------------------------#
+
+times <- seq(0,250,1)
 prd0 <- (g*x*p)
 prd <- cf_PRD_indiv(prd0, est.grid, fixed.grid)
-prd(seq(0,1,0.1), pouter, FLAGbrowser = F)
+prd(times, pouter, FLAGbrowser = F)
 obj <- cf_normL2_indiv(mydata, prd0, e, est.grid, fixed.grid)
 obj(pouter)
+
+prediction <- prd(times, pouter)
+plotCombined(prediction, mydata)
+
+# -------------------------------------------------------------------------#
+# 6 Fit model ----
+# -------------------------------------------------------------------------#
+
+# .. 1 mstrust -----
+if(FALSE){
+  out <- mstrust(obj, pouter, rinit = 1, rmax = 10, 
+                 sd = 3, parupper = 12, parlower = -12, 
+                 fits = 20, cores = detectFreeCores(), fixed = NULL)
+  
+  fitlist <- as.parframe(out)
+  plotValues(fitlist)
+  bestfit <- as.parvec(fitlist,1)
+  
+  prediction <- prd(times, bestfit)
+  plotCombined(prediction, mydata)
+}
+
+# .. 2 profiles -----
+if(FALSE){
+  profiles <- NULL
+  profiles <- do.call(
+    rbind, 
+    lapply(1:2, function(i) {
+      profile(obj, bestfit, whichPar = i, limits = c(-3, 3),
+              method = "integrate")
+    })
+  )
+  plotProfile(profiles)
+  
+  
+}
+# -------------------------------------------------------------------------#
+# Use normIndiv ----
+# -------------------------------------------------------------------------#
+if(FALSE){
+  # .. 1 Transpose fixed.grid -----
+  fixed.gridT <- fixed_df2 %>% select(-"ID") %>% as.data.table()
+  fixed.gridT <- dcast(melt(fixed.gridT, id.vars = "condition", variable.name = "parname"), parname ~ condition)
+  fixed.gridT[, `:=`(partask = parname)]
+  setcolorder(fixed.gridT, c("parname", "partask"))
+  
+  # .. 2 Define non-conditional pouter -----
+  outerpars.raw <- setdiff(names(est.grid), c("ID", "condition"))
+  pouter.raw <- structure(rep(-1, length(outerpars.raw)), names = outerpars.raw)
+  
+  # .. 3 Try normIndiv -----
+  obj <- normIndiv(data = mydata, 
+                   prd0 = prd0, 
+                   errmodel = e,
+                   iiv = NULL,
+                   conditional = NULL,
+                   fixed.grid = fixed.gridT)
+  # obj(pouter.raw)
+}
+
+
+
 
 # Exit ----
 
