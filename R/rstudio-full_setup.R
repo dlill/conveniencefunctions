@@ -40,6 +40,9 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
       "cd ~/PROJECTS",
       "gclone /IQDESKTOP/SHARE/ (drop final /)",
       "",
+      "cd /IQDESKTOP/SHARE/IQRtools",
+      "R CMD INSTALL --no-multiarch --with-keep.source IQRtools",
+      "",
       "IQRtools::setup_IQRtools(local = TRUE)",
       '.RESERVED_WORD_IQRMODELS                 <- c( 
   "T","F","PK","G","H","gt","ge","lt","le","mod","and","or", 
