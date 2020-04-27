@@ -44,7 +44,7 @@ cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
       "* Produce quality plots from the start and explain them, IQslides with plot and IQbulletlist might help.",
       "* Don't tune hyperparameters too often without abstracting the problem",
       "  * Try to understand the hyperparameters but realize when you're wasting time",
-      "* Create a data.table 'ID' containing all factors of the data", 
+      "* Create a data.table 'ID' containing all factors of the data and think of additional columns", 
       "* Copy these tips into the script to not forget them :)",
       sep = "\n")
   
