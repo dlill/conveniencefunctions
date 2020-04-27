@@ -36,6 +36,18 @@ cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
   ln <- readLines(from)
   message("Number of replaced filename references: ", sum(stringr::str_count(ln, from_stripped)), "-------\n")
   ln <- stringr::str_replace_all(ln, from_stripped, to_stripped)
+  
+  cat("Starting a new analysis? Here are some strategies", 
+      "* Divide and conquer ",
+      "  * Don't try to solve everything at once ",
+      "  * First look at the factors of the data and search for sensible lines to divide",
+      "* Produce quality plots from the start and explain them, IQslides with plot and IQbulletlist might help.",
+      "* Don't tune hyperparameters too often without abstracting the problem",
+      "  * Try to understand the hyperparameters but realize when you're wasting time",
+      "* Create a data.table 'ID' containing all factors of the data", 
+      "* Copy these tips into the script to not forget them :)",
+      sep = "\n")
+  
   writeLines(ln, to)
   }
 }
