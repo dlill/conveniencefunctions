@@ -39,12 +39,16 @@ cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
   
   cat("Starting a new analysis? Here are some strategies", 
       "* Divide and conquer ",
-      "  * Don't try to solve everything at once ",
+      "  * Don't try to solve everything at once",
       "  * First look at the factors of the data and search for sensible lines to divide",
-      "* Produce quality plots from the start and explain them, IQslides with plot and IQbulletlist might help.",
-      "* Don't tune hyperparameters too often without abstracting the problem",
-      "  * Try to understand the hyperparameters but realize when you're wasting time",
-      "* Create a data.table 'ID' containing all factors of the data and think of additional columns", 
+      "* Overview",
+      "  * Create a data.table 'ID' containing all factors of the data and think of additional columns", 
+      "* Abstraction", 
+      "  * Don't tune hyperparameters of an algorithm too often without abstracting the problem",
+      "    * Try to understand the hyperparameters but realize when you're wasting time",
+      "* Results",
+      "  * Produce quality plots from the start and explain them, IQslides with plot and IQbulletlist might help.",
+      "  * Results are single, specific statements. They are not endless pdf files full of plots.",
       "* Copy these tips into the script to not forget them :)",
       sep = "\n")
   
