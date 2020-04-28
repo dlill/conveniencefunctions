@@ -2,5 +2,6 @@
     "conveniencefunctions::alignAssign" : "Ctrl+Q",
     "conveniencefunctions::alignCursor" : "Ctrl+Shift+Q",
     "conveniencefunctions::toggle_subsection" : "Ctrl+Y",
-    "conveniencefunctions::toggle_subsubsection" : "Ctrl+Shift+Y"
+    "conveniencefunctions::toggle_subsubsection" : "Ctrl+Shift+Y",
+    "conveniencefunctions::transform_subsection" : "Ctrl+Shift+J"
 }

@@ -3,6 +3,7 @@ Description: Toggles sections in the document outline
 Binding: toggle_section
 Interactive: false
 
+
 Name: Toggle subsections
 Description: Toggles sections in the document outline
 Binding: toggle_subsection
@@ -12,6 +13,12 @@ Name: Toggle subsubsections
 Description: Toggles sections in the document outline
 Binding: toggle_subsubsection
 Interactive: false
+
+Name: Transform subsection
+Description: Turn subsection into subsubsection
+Binding: transform_subsection
+Interactive: false
+
 
 Name: Align Assign
 Description: Aligns '<-' or '=' assignment operators within a highlighted area.

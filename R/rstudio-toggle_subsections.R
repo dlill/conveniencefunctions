@@ -50,3 +50,23 @@ toggle_subsection <- function() toggle("-----")
 toggle_subsubsection <- function() toggle("------")
 
 
+#' @export
+#' @rdname toggle
+transform_subsection <- function(line, text, editor) {
+  e <- rstudioapi::getSourceEditorContext()
+  line <- e$selection[[1]]$range$start[[1]]
+  text <- readLines(e$path)
+  linetext <- text[line]
+  if (grepl(" -----$", linetext)) {
+    linetext <- gsub("\\.\\.", "....", linetext)
+    linetext <- gsub("-----", "------", linetext)
+    } else   if (grepl(" ------$", linetext)) {
+      linetext <- gsub("\\.\\.\\.\\.", "..", linetext)
+      linetext <- gsub("------", "-----", linetext)
+    } 
+  text <- c(text[1:(line-1)], linetext, text[(line + 1):length(text)])
+  writeLines(text, e$path)
+  NULL
+}
+
+
