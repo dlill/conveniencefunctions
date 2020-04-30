@@ -19,6 +19,14 @@ snippet IQDsetwdA09_Phase3
 snippet IQDsetwdA09_Phase2
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase2_ProofOfConcept/Scripts/")
 
+
+snippet ggsav
+	ggsave(file.path(.outputFolder, $0), pl, scale = 1, width = 10, height = 8)
+
+
+snippet melt
+	melt($0, variable.name = "VARIABLE", variable.factor = FALSE, value.name = "VALUE")
+
 snippet compare
 	conveniencefunctions::compare($0)
 
@@ -27,6 +35,9 @@ snippet FLASE
 
 snippet funciton
 	function
+
+snippet is.na
+	is.na
 
 snippet unique
 	unique
