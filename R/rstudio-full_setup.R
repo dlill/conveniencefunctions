@@ -37,6 +37,8 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
       "sudo apt-get update",
       "sudo apt-get install  libx11-dev mesa-common-dev libglu1-mesa-dev",
       "",
+      "git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short",
+      "",
       "cd ~/PROJECTS",
       "gclone /IQDESKTOP/SHARE/ (drop final /)",
       "",
