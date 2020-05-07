@@ -19,6 +19,7 @@ Imports:
   devtools,
   git2r,
   reshape2,
-  officer
+  officer,
+  knitr
 RoxygenNote: 7.0.2
 Suggests: testthat
