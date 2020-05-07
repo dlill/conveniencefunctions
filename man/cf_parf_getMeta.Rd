@@ -9,9 +9,6 @@ cf_parf_getMeta(pars)
 \arguments{
 \item{pars}{}
 }
-\value{
-
-}
 \description{
 Title
 }

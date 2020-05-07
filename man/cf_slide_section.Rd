@@ -15,9 +15,6 @@ cf_slide_section(.slides, title, footer = "", slide_num = "")
 
 \item{slide_num}{}
 }
-\value{
-
-}
 \description{
 Title
 }

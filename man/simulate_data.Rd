@@ -4,17 +4,10 @@
 \alias{simulate_data}
 \title{Simluate data with a dMod.frame}
 \usage{
-simulate_data(
-  model,
-  hypothesis = 1,
-  output = c("dMod.frame", "data.frame", "datalist"),
-  timesD = 0:10,
-  s0 = 0.1,
-  srel = 0.1,
-  observables = getObservables(model, hypothesis),
-  seed_pars = 1,
-  seed_data = 1
-)
+simulate_data(model, hypothesis = 1, output = c("dMod.frame",
+  "data.frame", "datalist"), timesD = 0:10, s0 = 0.1, srel = 0.1,
+  observables = getObservables(model, hypothesis), seed_pars = 1,
+  seed_data = 1)
 }
 \arguments{
 \item{model}{dMod.frame, preferably with columns pars and covtable}

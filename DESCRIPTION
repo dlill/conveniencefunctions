@@ -20,6 +20,7 @@ Imports:
   git2r,
   reshape2,
   officer,
-  knitr
+  knitr,
+  beepr
 RoxygenNote: 7.0.2
 Suggests: testthat
