@@ -175,13 +175,12 @@ snippet scriptdevelopment
 	${0}
 
 snippet Rprof_profile_line
-	rp___ <- tempfile()
-	Rprof(rp___)
+	rp <- tempfile()
+	Rprof(rp)
 	${0}
 	Rprof(NULL)
-	pv___ <- profvis::profvis(prof_input = rp___)
-	htmlwidgets::saveWidget(pv___, paste0(rp___, ".html"))
-	browseURL(paste0(rp___, ".html"))
+	summaryRprof(rp)
+	pv <- profvis::profvis(prof_input = rp); htmlwidgets::saveWidget(pv, paste0(rp, ".html")); browseURL(paste0(rp, ".html"))
 
 snippet setwdtempdir
 	.tempdir = tempdir()
