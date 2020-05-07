@@ -1,4 +1,23 @@
-# [] install_keybindings
+#' Flexzirkel Stoppuhr
+#'
+#' "coin" = trainieren, "work complete" = aufhö?ren, "bing" = gleich gehts wieder los
+#'
+#' @export
+#' @importFrom beepr beep
+flexZirkel <- function() {
+  for (i in 1:100) {
+    beepr::beep(2)
+    Sys.sleep(15)
+    beepr::beep(2)
+    Sys.sleep(10)
+    beepr::beep(2)
+    Sys.sleep(10)
+    beepr::beep(4)
+    Sys.sleep(10)
+    beepr::beep(1)
+    Sys.sleep(5)
+  }
+}
 
 
 
