@@ -5,6 +5,8 @@
 #' @export
 #' @importFrom beepr beep
 flexZirkel <- function() {
+  print(Sys.time())
+  on.exit(print(Sys.time()))
   for (i in 1:100) {
     beepr::beep(2)
     Sys.sleep(15)
