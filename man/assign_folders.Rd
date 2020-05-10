@@ -4,8 +4,10 @@
 \alias{assign_folders}
 \title{Create output folders and assign names to variables}
 \usage{
-assign_folders(additional = NULL, scriptname = gsub(".R$", "",
-  basename(rstudioapi::getSourceEditorContext()$path)))
+assign_folders(
+  additional = NULL,
+  scriptname = gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))
+)
 }
 \arguments{
 \item{scriptname}{character}

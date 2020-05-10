@@ -4,20 +4,22 @@
 #'
 #' @export
 #' @importFrom beepr beep
-flexZirkel <- function() {
+flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
   print(Sys.time())
   on.exit(print(Sys.time()))
   for (i in 1:100) {
+    # train
     beepr::beep(2)
-    Sys.sleep(15)
+    Sys.sleep(t1)
     beepr::beep(2)
-    Sys.sleep(10)
+    Sys.sleep(t2)
     beepr::beep(2)
-    Sys.sleep(10)
+    Sys.sleep(t3)
     beepr::beep(4)
-    Sys.sleep(10)
+    # change
+    Sys.sleep(t4)
     beepr::beep(1)
-    Sys.sleep(5)
+    Sys.sleep(t5)
   }
 }
 

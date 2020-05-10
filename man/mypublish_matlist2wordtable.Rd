@@ -20,14 +20,14 @@ Print a list of matrices to a single word file with a table of these matrices
 \dontrun{
 list(r_0 = matrix(1:9, ncol = 3),
      r_1 = matrix(0,ncol = 3, nrow = 3),
-     r_opt_1 = matrix(2:10, nrow = 3)) \%>\%
-  imap( ~.x \%>\% round(2) \%>\%
-          xtable(align = rep("",4)) \%>\%
+     r_opt_1 = matrix(2:10, nrow = 3)) %>%
+  imap( ~.x %>% round(2) %>%
+          xtable(align = rep("",4)) %>%
           print(tabular.environment="pmatrix",
                 include.colnames = F,
                 include.rownames = F,
                 floating = F,
-                hline.after = NULL)) \%>\%
+                hline.after = NULL)) %>%
           mypublish_mat("matrices")
 }
 }
