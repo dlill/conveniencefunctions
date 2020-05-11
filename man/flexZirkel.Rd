@@ -4,7 +4,7 @@
 \alias{flexZirkel}
 \title{Flexzirkel Stoppuhr}
 \usage{
-flexZirkel()
+flexZirkel(t1 = 15, t2 = 10, t3 = 10, t4 = 7, t5 = 5)
 }
 \description{
 "coin" = trainieren, "work complete" = aufhö?ren, "bing" = gleich gehts wieder los

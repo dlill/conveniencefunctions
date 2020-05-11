@@ -3,7 +3,6 @@
 * PETab support
 * outputting functions which create the directory if not existent
 * theme_cf, scale_colorfill_cf(aesthetics = c("color", "fill"))
-* rework cf_head snippet
 * more debugging power for dMod models. Whenever anything helped you debugging a model, just dump it here
 * Good functionality to handle fit/profile results
 * Folder structure for models like sysProject: Copy the data which went into the fit, consistent fitting

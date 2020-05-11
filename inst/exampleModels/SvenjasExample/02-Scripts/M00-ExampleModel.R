@@ -58,7 +58,7 @@ reactions <- NULL %>%
   {.}
 
 # .... Define ODEs ------ #
-myODEs <- as.eqnvec(reactions) %>% unclass() %>% mat_simplify()
+myODEs <- as.eqnvec(reactions) %>% unclass() #%>% mat_simplify()
 
 # .. 3 Events -----
 # add event pars to reactions
@@ -177,7 +177,8 @@ pouter <- structure(rnorm(length(outerpars)), names = outerpars)
 # -------------------------------------------------------------------------#
 # 4 Build dMod objects ----
 # -------------------------------------------------------------------------#
-
+events <- as.eventlist(events)
+events$root <- NA
 if (.build){
   setwd(.modelFolder)
   
@@ -223,7 +224,7 @@ if (.build){
 times <- seq(0,250,1)
 prd0 <- (g*x*p)
 prd <- cf_PRD_indiv(prd0, est.grid, fixed.grid)
-prd(times, pouter, FLAGbrowser = F)
+prd(times, pouter, FLAGbrowser = T)
 obj <- cf_normL2_indiv(mydata, prd0, e, est.grid, fixed.grid)
 obj(pouter)
 

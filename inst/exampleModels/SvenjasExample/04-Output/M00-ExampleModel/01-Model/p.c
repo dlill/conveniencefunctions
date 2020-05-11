@@ -1,6 +1,6 @@
 #include <R.h>
  #include <math.h>
- void p_h7bz2u1y ( double * x, double * y, double * p, int * n, int * k, int * l ) {
+ void p_opinb8k7 ( double * x, double * y, double * p, int * n, int * k, int * l ) {
  for(int i = 0; i< *n; i++) {
  y[0+i**l] = exp(p[0]) ;
 y[1+i**l] = exp(p[1]) ;
