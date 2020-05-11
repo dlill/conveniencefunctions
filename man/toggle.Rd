@@ -8,6 +8,7 @@
 \alias{toggle_subsection}
 \alias{toggle_subsubsection}
 \alias{transform_subsection}
+\alias{initiate_or_delete_subsection}
 \title{Toggle sections}
 \usage{
 toggle_off(line, text, editor)
@@ -23,6 +24,8 @@ toggle_subsection()
 toggle_subsubsection()
 
 transform_subsection(line, text, editor)
+
+initiate_or_delete_subsection(line, text, editor)
 }
 \value{
 called for side-effect

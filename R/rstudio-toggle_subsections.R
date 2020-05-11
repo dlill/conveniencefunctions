@@ -60,10 +60,27 @@ transform_subsection <- function(line, text, editor) {
   if (grepl(" -----$", linetext)) {
     linetext <- gsub("\\.\\.", "....", linetext)
     linetext <- gsub("-----", "------", linetext)
-    } else   if (grepl(" ------$", linetext)) {
+    } else if (grepl(" ------$", linetext)) {
       linetext <- gsub("\\.\\.\\.\\.", "..", linetext)
       linetext <- gsub("------", "-----", linetext)
-    } 
+    }
+  text <- c(text[1:(line-1)], linetext, text[(line + 1):length(text)])
+  writeLines(text, e$path)
+  NULL
+}
+
+#' @export
+#' @rdname toggle
+initiate_or_delete_subsection <- function(line, text, editor) {
+  e <- rstudioapi::getSourceEditorContext()
+  line <- e$selection[[1]]$range$start[[1]]
+  text <- readLines(e$path)
+  linetext <- text[line]
+  if (grepl(" -{6}$", linetext)) {
+    linetext <- gsub("^# \\.{4} (.*) -{6}$", "\\1", linetext)
+  } else if (grepl(" -{5}$", linetext)) {
+    linetext <- gsub("^# \\.{2} (.*) -{5}$", "\\1", linetext)
+  } else linetext <- paste0("# .. ", linetext, " -----")
   text <- c(text[1:(line-1)], linetext, text[(line + 1):length(text)])
   writeLines(text, e$path)
   NULL

@@ -7,5 +7,6 @@
     "quitSession" : "",
     "roxygenizePackage" : "",
     "showShellDialog" : "Ctrl+Shift+A",
-    "sourceActiveDocument" : ""
+    "sourceActiveDocument" : "",
+    "splitline" : ""
 }
