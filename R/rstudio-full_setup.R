@@ -3,7 +3,7 @@
 #' 
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("local", "Ueli")) {
+cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE, IQdesktopVersion = c("local", "Ueli")) {
   # 1. Theme 
   rstudioapi::applyTheme("pastel on dark")
   # 2. Keybindings
@@ -22,10 +22,11 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   }
   if (wup) cat("Bash aliases installed \n")
   # 5. Install shortcuts for Thunar
+  if (FLAGShortcuts){
   if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
   thunarfile <- switch(IQdesktopVersion[1], "local" = "setup_IQDesktop/thunar_shortcuts/bookmarks", "Ueli" = "setup_IQDesktop/thunar_shortcuts/bookmarksUeli")
   wup <- file.copy(system.file(thunarfile, package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
-  if (wup) cat("Explorer shortcuts installed \n")
+  if (wup) cat("Explorer shortcuts installed \n")}
   # # 6. IQRmate
   # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
