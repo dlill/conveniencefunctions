@@ -5,6 +5,11 @@
 #' @export
 #' @importFrom beepr beep
 flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
+  cat("Tipps",
+      "* Auch die Fußverschraubung trainieren",
+      "* Bei Übung 1 die Beine durchstrecken",
+      sep = "\n")
+  
   print(Sys.time())
   on.exit(print(Sys.time()))
   for (i in 1:100) {
