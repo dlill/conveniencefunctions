@@ -77,20 +77,20 @@ initiate_or_delete_subsection <- function(line, text, editor) {
   linetext <- text[line]
   if (grepl(" -{6}$", linetext)) {
     # Remove
-    rstudioapi::modifyRange(c(line, nchar(linetext)-5, line, Inf), "")
+    rstudioapi::modifyRange(c(line, nchar(linetext)-6, line, Inf), "")
     rstudioapi::modifyRange(c(line, 1, line, 8), "")
   } else if (grepl(" -{5}$", linetext)) {
     # Remove
-    rstudioapi::modifyRange(c(line, nchar(linetext)-4, line, Inf), "")
+    rstudioapi::modifyRange(c(line, nchar(linetext)-5, line, Inf), "")
     rstudioapi::modifyRange(c(line, 1, line, 6), "")
   } else if (grepl("^# ", linetext)) {
     # Turn comment into subsection
     rstudioapi::insertText(c(line, 3), ".. ")
-    rstudioapi::insertText(c(line, Inf), "-----")
+    rstudioapi::insertText(c(line, Inf), " -----")
   } else {
     # Turn code into subsection
     rstudioapi::insertText(c(line, 1), "# .. ")
-    rstudioapi::insertText(c(line, Inf), "-----")
+    rstudioapi::insertText(c(line, Inf), " -----")
   }
   rstudioapi::documentSave(e$id)
   NULL
