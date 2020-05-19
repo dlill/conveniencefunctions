@@ -77,9 +77,9 @@ initiate_or_delete_subsection <- function(line, text, editor) {
   text <- readLines(e$path)
   linetext <- text[line]
   if (grepl(" -{6}$", linetext)) {
-    linetext <- gsub("^# \\.{4} (.*) -{6}$", "\\1", linetext)
+    linetext <- gsub("^ *# \\.{4} (.*) -{6}$", "\\1", linetext)
   } else if (grepl(" -{5}$", linetext)) {
-    linetext <- gsub("^# \\.{2} (.*) -{5}$", "\\1", linetext)
+    linetext <- gsub("^ *# \\.{2} (.*) -{5}$", "\\1", linetext)
   } else linetext <- paste0("# .. ", linetext, " -----")
   text <- c(text[1:(line-1)], linetext, text[(line + 1):length(text)])
   writeLines(text, e$path)
