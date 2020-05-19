@@ -141,7 +141,7 @@ createExampleEnzymaticReaction <- function() {
   
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  (Species1) Creates a Species object ("ES") -----
+  # ....  (Species1) Creates a Species object ("ES") ------
   # -------------------------------------------------------------------------------#-#-
   #  Create the Species objects inside the Model object. 
 
@@ -169,7 +169,7 @@ createExampleEnzymaticReaction <- function() {
   Species_setInitialAmount(sp,0);
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  (Species2) Creates a Species object ("P") -----
+  # ....  (Species2) Creates a Species object ("P") ------
   # -------------------------------------------------------------------------------#-#-
    
   sp = Model_createSpecies(model);
@@ -179,7 +179,7 @@ createExampleEnzymaticReaction <- function() {
   Species_setInitialAmount(sp,0);
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  (Species3) Creates a Species object ("S") -----
+  # ....  (Species3) Creates a Species object ("S") ------
   # -------------------------------------------------------------------------------#-#-
 
   sp = Model_createSpecies(model);
@@ -189,7 +189,7 @@ createExampleEnzymaticReaction <- function() {
   Species_setInitialAmount(sp,1e-20);
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  (Species4) Creates a Species object ("E") -----
+  # ....  (Species4) Creates a Species object ("E") ------
   # -------------------------------------------------------------------------------#-#-
 
   sp = Model_createSpecies(model);
@@ -232,7 +232,7 @@ createExampleEnzymaticReaction <- function() {
   SimpleSpeciesReference_setSpecies(spr, "ES");
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  Creates a KineticLaw object inside the Reaction object ("veq").  -----
+  # ....  Creates a KineticLaw object inside the Reaction object ("veq").  ------
   # -------------------------------------------------------------------------------#-#-
 
   kl = Reaction_createKineticLaw(reaction);
@@ -419,7 +419,7 @@ createExampleEnzymaticReaction <- function() {
   Reaction_setReversible(reaction, 0);
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  Creates Reactant objects inside the Reaction object ("vcat").  -----
+  # ....  Creates Reactant objects inside the Reaction object ("vcat").  ------
   # -------------------------------------------------------------------------------#-#-
   #  (Reactant1) Creates a Reactant object that references Species "ES" in the
   #  model.
@@ -428,7 +428,7 @@ createExampleEnzymaticReaction <- function() {
   SimpleSpeciesReference_setSpecies(spr, "ES");
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  Creates a Product object inside the Reaction object ("vcat").  -----
+  # ....  Creates a Product object inside the Reaction object ("vcat").  ------
   # -------------------------------------------------------------------------------#-#-
   #  (Product1) Creates a Product object that references Species "E" in the model.
 
@@ -441,7 +441,7 @@ createExampleEnzymaticReaction <- function() {
   SimpleSpeciesReference_setSpecies(spr,"P");
 
   # -------------------------------------------------------------------------------#-#-
-  # ..  Creates a KineticLaw object inside the Reaction object ("vcat").  -----
+  # ....  Creates a KineticLaw object inside the Reaction object ("vcat").  ------
   # -------------------------------------------------------------------------------#-#-
   
   kl = Reaction_createKineticLaw(reaction);
