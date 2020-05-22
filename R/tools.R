@@ -7,19 +7,24 @@
 flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
   cat("Tipps",
       "* Auch die Fußverschraubung trainieren",
+      "* Auch Pinguin trainieren",
+      "* Auch Krebs trainieren",
+      "* Auch Kniebeuge trainieren",
       "* Bei Übung 1 die Beine durchstrecken",
+      "* Bei Übung 2 den oberen Arm langziehen",
+      "* Bei Rollbrett nach vorne Beine durchstrecken",
       sep = "\n")
   
   print(Sys.time())
   on.exit(print(Sys.time()))
   for (i in 1:100) {
     # train
-    beepr::beep(2)
-    Sys.sleep(t1)
-    beepr::beep(2)
-    Sys.sleep(t2)
-    beepr::beep(2)
-    Sys.sleep(t3)
+    if (t1) {beepr::beep(2)
+    Sys.sleep(t1)}
+    if (t2) {beepr::beep(2)
+    Sys.sleep(t2)}
+    if (t3) {beepr::beep(2)
+    Sys.sleep(t3)}
     beepr::beep(4)
     # change
     Sys.sleep(t4)
