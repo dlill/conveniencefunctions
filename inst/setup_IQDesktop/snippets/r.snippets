@@ -142,7 +142,44 @@ snippet cfhead
 	# Exit ----
 	
 
-	
+snippet IQRhead
+	#### HEADER ================================================================
+	#
+	# `r basename(rstudioapi::getSourceEditorContext()$path)`
+	#
+	# [PURPOSE]
+	# ${2:Purpose}
+	#
+	# [AUTHOR]
+	# ${3:Author}
+	#
+	# [CLEANING]
+	rm(list = grep("^(\\\.input|\\\.output)", ls(all.names = TRUE), value = TRUE))
+	rm(list = ls())
+	#
+	# [INPUT]
+	.inputFolder <- "../"
+	#
+	# [OUTPUT]
+	.outputFolder <- "../Output/`r sub("^SCRIPT_", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
+	#
+	# [OTHER]
+	#
+
+	## Preliminaries ====
+
+	setwd(dirname(rstudioapi::getSourceEditorContext()\$path))
+
+	# Default packages (do not load other packages, use "::" instead)
+	library(IQRtools)
+	library(dplyr)
+	library(ggplot2)
+
+
+	IQRinitCompliance("`r basename(rstudioapi::getSourceEditorContext()$path)`")
+	aux_version("IQRtools", minVersion = "`r sub("\\.9000$", "", installed.packages()["IQRtools", "Version"])`")
+
+
 
 
 snippet IQRsection
