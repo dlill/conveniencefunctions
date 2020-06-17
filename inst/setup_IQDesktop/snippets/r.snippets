@@ -35,9 +35,19 @@ snippet IQDloadIQRtools
 snippet IQDsetwdA09_Phase3
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
 
+snippet IQDsetwdA11_91SampleSize
+	setwd("/IQDESKTOP/PROJECTS/A11_Teva_QSP_IL15_PART2/Work/T91_Sample_Size_Calc/Scripts/")
+
+snippet IQDsetwdA09_Phase5
+	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase5_SampleSize/Scripts/")
+
 snippet IQDsetwdA09_Phase2
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase2_ProofOfConcept/Scripts/")
 
+
+snippet authormd
+	#' @author Daniel Lill (daniel.lill@intiquan.com)
+	#' @md
 
 snippet ggsav
 	ggsave(file.path(.outputFolder, $0), pl, scale = 1, width = 10, height = 8)
@@ -103,7 +113,7 @@ snippet cfhead
 	# 0 Header ----
 	# -------------------------------------------------------------------------#
 	#
-	# `r basename(rstudioapi::getSourceEditorContext()\$path)`
+	# `r basename(rstudioapi::getSourceEditorContext()$path)`
 	#
 	# [PURPOSE]
 	# 
@@ -116,10 +126,10 @@ snippet cfhead
 	# [Date]
 	# `r date()`
 	#
-	setwd(dirname(rstudioapi::getSourceEditorContext()\$path))
+	setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 	library(conveniencefunctions)
 	rm(list = ls(all.names = TRUE))
-	assign_folders(`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()\$path))`)
+	assign_folders(`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
 	# -------------------------------------------------------------------------#
 	# 1 ----
 	# -------------------------------------------------------------------------#
@@ -131,6 +141,44 @@ snippet cfhead
 	
 	# Exit ----
 	
+
+snippet IQRhead
+	#### HEADER ================================================================
+	#
+	# `r basename(rstudioapi::getSourceEditorContext()$path)`
+	#
+	# [PURPOSE]
+	# ${2:Purpose}
+	#
+	# [AUTHOR]
+	# ${3:Author}
+	#
+	# [CLEANING]
+	rm(list = grep("^(\\\.input|\\\.output)", ls(all.names = TRUE), value = TRUE))
+	rm(list = ls())
+	#
+	# [INPUT]
+	.inputFolder <- "../"
+	#
+	# [OUTPUT]
+	.outputFolder <- "../Output/`r sub("^SCRIPT_", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
+	#
+	# [OTHER]
+	#
+
+	## Preliminaries ====
+
+	setwd(dirname(rstudioapi::getSourceEditorContext()\$path))
+
+	# Default packages (do not load other packages, use "::" instead)
+	library(IQRtools)
+	library(dplyr)
+	library(ggplot2)
+
+
+	IQRinitCompliance("`r basename(rstudioapi::getSourceEditorContext()$path)`")
+	aux_version("IQRtools", minVersion = "`r sub("\\.9000$", "", installed.packages()["IQRtools", "Version"])`")
+
 
 
 
