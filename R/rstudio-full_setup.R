@@ -27,8 +27,8 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE, IQd
   thunarfile <- switch(IQdesktopVersion[1], "local" = "setup_IQDesktop/thunar_shortcuts/bookmarks", "Ueli" = "setup_IQDesktop/thunar_shortcuts/bookmarksUeli")
   wup <- file.copy(system.file(thunarfile, package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
   if (wup) cat("Explorer shortcuts installed \n")}
-  # # 6. IQRmate
-  # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
+  # 6. .Rprofile
+  file.copy(system.file("setup_IQDesktop/.Rprofile"), "~/.Rprofile")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
       "",
       "cd",
