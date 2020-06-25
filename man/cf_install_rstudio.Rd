@@ -6,6 +6,7 @@
 \usage{
 cf_install_rstudio(
   FLAGoverwrite = FALSE,
+  FLAGshortcuts = FALSE,
   IQdesktopVersion = c("local", "Ueli")
 )
 }
