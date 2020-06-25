@@ -113,7 +113,7 @@ snippet cfhead
 	# 0 Header ----
 	# -------------------------------------------------------------------------#
 	#
-	# `r basename(rstudioapi::getSourceEditorContext()\$path)`
+	# `r basename(rstudioapi::getSourceEditorContext()$path)`
 	#
 	# [PURPOSE]
 	# 
@@ -126,10 +126,10 @@ snippet cfhead
 	# [Date]
 	# `r date()`
 	#
-	setwd(dirname(rstudioapi::getSourceEditorContext()\$path))
+	setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 	library(conveniencefunctions)
 	rm(list = ls(all.names = TRUE))
-	assign_folders(`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()\$path))`)
+	assign_folders(`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
 	# -------------------------------------------------------------------------#
 	# 1 ----
 	# -------------------------------------------------------------------------#
