@@ -307,6 +307,36 @@ open_in_calc <- function(.x) {
 #' @export
 tpaste0 <- function(...) {paste0(format(Sys.time(), "%y%d%m_%H%M%S-"), ...)}
 
+
+#' Create a script to copy files
+#'
+#' @return Cats the script to the console
+#' @export
+#'
+#' @examples
+#' copyFilesScript()
+copyFilesScript <- function(){
+  scriptString <-   c(
+'try(setwd(dirname(rstudioapi::getSourceEditorContext()$path)))',
+'FROM <- c(',
+paste0('"', list.files(".", full.names = TRUE, recursive = TRUE),'"'),
+')',
+'TO <- file.path("TO_PATH", FROM)',
+'',
+'safe_file.copy <- function(FROM, TO) {',
+'  lapply(seq_along(FROM), function(x) {',
+'    file <- TO[x]',
+'    if (!dir.exists(dirname(file))) dir.create(dirname(file), recursive = TRUE)',
+'    file.copy(FROM[x], TO[x], overwrite = TRUE)',
+'  })',
+'}',
+'',
+'safe_file.copy(FROM, TO)'
+)
+  cat(scriptString, sep = "\n")
+}
+
+
 # -------------------------------------------------------------------------#
 # Install ----
 # -------------------------------------------------------------------------#

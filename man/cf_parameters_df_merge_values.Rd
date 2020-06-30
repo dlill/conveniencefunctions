@@ -4,7 +4,8 @@
 \alias{cf_parameters_df_merge_values}
 \title{Merge values into a parameters_df}
 \usage{
-cf_parameters_df_merge_values(pars_df_into, from, scale = c("outer", "inner"))
+cf_parameters_df_merge_values(pars_df_into, from, scale = c("outer",
+  "inner"))
 }
 \arguments{
 \item{pars_df_into}{parameters_df}
