@@ -336,6 +336,7 @@ cf_predict <- function (prd, times, pars, keep_names = NULL, FLAGverbose = FALSE
 #' @examples
 cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validation", 
           condition, prd_indiv) {
+  
   controls <- list(mu = structure(name, names = value)[1], 
                    time = time[1], sigma = sigma[1], attr.name = attr.name)
   
