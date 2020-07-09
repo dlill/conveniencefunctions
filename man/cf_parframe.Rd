@@ -4,13 +4,8 @@
 \alias{cf_parframe}
 \title{Improved version of parframe}
 \usage{
-cf_parframe(
-  x = NULL,
-  parameters = NULL,
-  metanames = NULL,
-  obj.attributes = NULL,
-  tol = 1
-)
+cf_parframe(x = NULL, parameters = NULL, metanames = NULL,
+  obj.attributes = NULL, tol = 1)
 }
 \arguments{
 \item{x}{}
@@ -22,9 +17,6 @@ cf_parframe(
 \item{obj.attributes}{}
 
 \item{tol}{}
-}
-\value{
-
 }
 \description{
 Fits coerces to data.frame and guesses metanames. Adds stepcolumn automatically

@@ -4,11 +4,8 @@
 \alias{cf_parameters_df_condition_specific}
 \title{Make parameters_df parameters condition specific}
 \usage{
-cf_parameters_df_condition_specific(
-  parameters_df,
-  conditions = c("C1", "C2"),
-  parnames = parameters_df$name
-)
+cf_parameters_df_condition_specific(parameters_df, conditions = c("C1",
+  "C2"), parnames = parameters_df$name)
 }
 \arguments{
 \item{parameters_df}{a typical parameters_df}

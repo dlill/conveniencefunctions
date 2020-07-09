@@ -4,13 +4,8 @@
 \alias{update_version}
 \title{Update versions}
 \usage{
-update_version(
-  cOde = T,
-  dMod = T,
-  cf = T,
-  MRAr = F,
-  upgrade_dependencies = FALSE
-)
+update_version(cOde = T, dMod = T, cf = T, MRAr = F,
+  upgrade_dependencies = FALSE)
 }
 \arguments{
 \item{cOde, dMod, cf, MRAr}{Logicals which packages are updated}

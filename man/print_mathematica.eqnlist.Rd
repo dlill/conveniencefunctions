@@ -13,18 +13,17 @@ print_mathematica.eqnlist(myeqnlist)
 Print ode vector in mathematica format
 }
 \examples{
-\dontrun{NULL %>%
-  addReaction("A", "B", "k1*A", "conversion A to B") %>%
-  addReaction("B", "", "k2*B*A", "dedradation of B induced by A") %>%
+\dontrun{NULL \%>\%
+  addReaction("A", "B", "k1*A", "conversion A to B") \%>\%
+  addReaction("B", "", "k2*B*A", "dedradation of B induced by A") \%>\%
   print_mathematica.eqnlist}
 }
 \seealso{
-Other printtools: 
-\code{\link{print_mathematica.character}()},
-\code{\link{print_mathematica.eqnvec}()},
-\code{\link{print_mathematica.matrix}()},
-\code{\link{print_mathematica.name_equals_value}()},
-\code{\link{print_r.eqnlist2addReaction_pipe}()},
-\code{\link{print_r.named_vector}()}
+Other printtools: \code{\link{print_mathematica.character}},
+  \code{\link{print_mathematica.eqnvec}},
+  \code{\link{print_mathematica.matrix}},
+  \code{\link{print_mathematica.name_equals_value}},
+  \code{\link{print_r.eqnlist2addReaction_pipe}},
+  \code{\link{print_r.named_vector}}
 }
 \concept{printtools}

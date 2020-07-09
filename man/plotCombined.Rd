@@ -8,17 +8,11 @@
 \usage{
 plotCombined(x, ...)
 
-\method{plotCombined}{tbl_df}(x, hypothesis = 1, index = 1, ..., plotErrorBands = F)
+\method{plotCombined}{tbl_df}(x, hypothesis = 1, index = 1, ...,
+  plotErrorBands = F)
 
-\method{plotCombined}{prdlist}(
-  x,
-  data = NULL,
-  ...,
-  scales = "free",
-  facet = "wrap",
-  transform = NULL,
-  aesthetics = NULL
-)
+\method{plotCombined}{prdlist}(x, data = NULL, ..., scales = "free",
+  facet = "wrap", transform = NULL, aesthetics = NULL)
 }
 \arguments{
 \item{x}{prediction or dMod.frame}

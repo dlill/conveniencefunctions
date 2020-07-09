@@ -13,9 +13,6 @@ cf_PRD_indiv(prd0, est.grid, fixed.grid)
 
 \item{fixed.grid}{}
 }
-\value{
-
-}
 \description{
 Title
 }

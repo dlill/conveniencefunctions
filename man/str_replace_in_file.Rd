@@ -4,7 +4,8 @@
 \alias{str_replace_in_file}
 \title{Title}
 \usage{
-str_replace_in_file(path, pattern, replacement, walkthrough = F, writeout = F)
+str_replace_in_file(path, pattern, replacement, walkthrough = F,
+  writeout = F)
 }
 \arguments{
 \item{path}{filepath}

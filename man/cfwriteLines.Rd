@@ -11,9 +11,6 @@ cfwriteLines(x, filename)
 
 \item{filename}{}
 }
-\value{
-
-}
 \description{
 Title
 }

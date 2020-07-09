@@ -4,23 +4,13 @@
 \alias{doPlots1}
 \title{do Plots}
 \usage{
-doPlots1(
-  model,
-  pngname = "plots\%03d.png",
-  height = 1000,
-  width = 1200,
-  FLAGdev.off = TRUE,
-  tol = 1,
-  FLAG_waterfalls = TRUE,
-  FLAG_plotPars = TRUE,
-  FLAG_scatterall_step1 = FALSE,
-  FLAG_iterations = TRUE,
-  nm = NULL,
+doPlots1(model, pngname = "plots\%03d.png", height = 1000,
+  width = 1200, FLAGdev.off = TRUE, tol = 1,
+  FLAG_waterfalls = TRUE, FLAG_plotPars = TRUE,
+  FLAG_scatterall_step1 = FALSE, FLAG_iterations = TRUE, nm = NULL,
   FLAG_predictions_conds_states_observables = TRUE,
   FLAG_predictions_states_conds = TRUE,
-  FLAG_predictions_observables_conds = TRUE,
-  FLAG_profiles = TRUE
-)
+  FLAG_predictions_observables_conds = TRUE, FLAG_profiles = TRUE)
 }
 \arguments{
 \item{model}{a dMod.frame .}
