@@ -58,6 +58,7 @@ inspire <- function() {
       "  * Separate data programming and modeling", 
       "  * If you develop a modeling script along with data pgroamming, that's fine, but the script should be split afterwards.",
       "  * Don't handle more than 3 data.tables at once. If more, go back and think, is it necessary?",
+      "  * Use check()",
       "* Results",
       "  * Produce quality plots from the start and explain them, IQslides with plot and IQbulletlist might help.",
       "  * Results are single, specific statements. They are not endless pdf files full of plots.",

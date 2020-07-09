@@ -282,6 +282,11 @@ funnames_in_package <- function(package, as_namespace = F) {
 # File interactions ----
 # -------------------------------------------------------------------------#
 
+gitall <- function(string) {
+  system(paste0('git add --all & git commit -m "', string, '" & git pull & git push'))
+}
+
+
 #' Write a characeter vector to a file and open it.
 #'
 #' @param .x vector
