@@ -4,8 +4,16 @@
 \alias{jODE_write_sourcefile}
 \title{Conveniencefunction to output source file without having to know the data yet}
 \usage{
-jODE_write_sourcefile(est_grid, fixed_grid, est_vec, trafo, odes, obs, err,
-  jODE_sourcefile = tempfile("jODE_source_file", fileext = ".jl"))
+jODE_write_sourcefile(
+  est_grid,
+  fixed_grid,
+  est_vec,
+  trafo,
+  odes,
+  obs,
+  err,
+  jODE_sourcefile = tempfile("jODE_source_file", fileext = ".jl")
+)
 }
 \arguments{
 \item{est_grid, fixed_grid, fixed_grid}{as in IQRtools}

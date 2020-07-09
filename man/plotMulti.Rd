@@ -11,8 +11,7 @@ plotMulti(x, ...)
 
 \method{plotMulti}{tbl_df}(x, parframe_filter = NULL, ...)
 
-\method{plotMulti}{prdfn}(x, times, parframe, data = NULL, ...,
-  colorAsFactor = F)
+\method{plotMulti}{prdfn}(x, times, parframe, data = NULL, ..., colorAsFactor = F)
 
 \method{plotMulti}{parframe}(x, parframe_filter = NULL, dModframe, ...)
 }

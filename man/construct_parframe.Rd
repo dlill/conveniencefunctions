@@ -4,8 +4,7 @@
 \alias{construct_parframe}
 \title{Helper function to reproducibly construct parframes}
 \usage{
-construct_parframe(pars, n = 20, seed = 12345, samplefun = rnorm,
-  ...)
+construct_parframe(pars, n = 20, seed = 12345, samplefun = rnorm, ...)
 }
 \arguments{
 \item{pars}{Named vector. Values don't play a role, only names}

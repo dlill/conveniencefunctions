@@ -4,9 +4,12 @@
 \alias{get_conditions}
 \title{Read CONDITIONS}
 \usage{
-get_conditions(def_content, states = get_states(def_content),
+get_conditions(
+  def_content,
+  states = get_states(def_content),
   derived = get_derived(def_content),
-  substitutions = get_substitutions(def_content))
+  substitutions = get_substitutions(def_content)
+)
 }
 \arguments{
 \item{def_content}{The def_content data.frame returned by read_def_content}

@@ -13,6 +13,9 @@ cf_as.parframe(x, sort.by = "value", ...)
 
 \item{...}{}
 }
+\value{
+
+}
 \description{
 Adds AIC and BIC automatically, adds stepcolumn automatically
 }

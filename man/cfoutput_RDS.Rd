@@ -13,6 +13,9 @@ cfoutput_RDS(object, filename, ...)
 
 \item{...}{}
 }
+\value{
+
+}
 \description{
 Title
 }

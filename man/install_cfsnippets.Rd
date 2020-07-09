@@ -6,6 +6,9 @@
 \usage{
 install_cfsnippets(FLAGoverwrite = FALSE)
 }
+\value{
+
+}
 \description{
 Title
 }

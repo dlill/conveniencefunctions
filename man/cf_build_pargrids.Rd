@@ -4,8 +4,12 @@
 \alias{cf_build_pargrids}
 \title{Build basic fixed.grid, est.grid, est.vec_df}
 \usage{
-cf_build_pargrids(parameters_df, parameters_estimate, condition.grid,
-  condition.grid_parcolumns = NULL)
+cf_build_pargrids(
+  parameters_df,
+  parameters_estimate,
+  condition.grid,
+  condition.grid_parcolumns = NULL
+)
 }
 \arguments{
 \item{parameters_df}{}
@@ -15,6 +19,9 @@ cf_build_pargrids(parameters_df, parameters_estimate, condition.grid,
 \item{condition.grid}{}
 
 \item{condition.grid_parcolumns}{names of cols which have parameter values in them}
+}
+\value{
+
 }
 \description{
 Build basic fixed.grid, est.grid, est.vec_df

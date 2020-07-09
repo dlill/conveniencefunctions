@@ -9,6 +9,9 @@ cf_parf_metaNames(pars)
 \arguments{
 \item{pars}{}
 }
+\value{
+
+}
 \description{
 Title
 }

@@ -4,13 +4,21 @@
 \alias{cfoutput_MdTable}
 \title{Title}
 \usage{
-cfoutput_MdTable(dt, filename = NULL, format = c("markdown", "pandoc"),
-  caption = NULL, ...)
+cfoutput_MdTable(
+  dt,
+  filename = NULL,
+  format = c("markdown", "pandoc"),
+  caption = NULL,
+  ...
+)
 }
 \arguments{
 \item{dt}{}
 
 \item{filename}{}
+}
+\value{
+
 }
 \description{
 Title

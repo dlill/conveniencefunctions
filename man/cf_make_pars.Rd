@@ -15,6 +15,9 @@ cf_make_pars(pars, fixed = NULL, est.grid, fixed.grid, ID)
 
 \item{est.vec}{}
 }
+\value{
+
+}
 \description{
 Extract pars, fixed and parnames from grids
 }

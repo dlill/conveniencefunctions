@@ -4,8 +4,15 @@
 \alias{cf_timepointL2}
 \title{DatapointL2 without the env bullshit}
 \usage{
-cf_timepointL2(name, time, value, sigma = 1, attr.name = "timepointL2",
-  condition, prd_indiv)
+cf_timepointL2(
+  name,
+  time,
+  value,
+  sigma = 1,
+  attr.name = "timepointL2",
+  condition,
+  prd_indiv
+)
 }
 \arguments{
 \item{name}{}
@@ -21,6 +28,9 @@ cf_timepointL2(name, time, value, sigma = 1, attr.name = "timepointL2",
 \item{condition}{}
 
 \item{prd_indiv}{}
+}
+\value{
+
 }
 \description{
 DatapointL2 without the env bullshit

@@ -282,7 +282,13 @@ funnames_in_package <- function(package, as_namespace = F) {
 # File interactions ----
 # -------------------------------------------------------------------------#
 
-gitall <- function(string) {
+#' gitall from R command line
+#'
+#' @param string commit message
+#'
+#' @return
+#' @export
+gall <- function(string) {
   system(paste0('git add --all & git commit -m "', string, '" & git pull & git push'))
 }
 

@@ -4,9 +4,18 @@
 \alias{jODE_normL2}
 \title{normL2 for julia interface}
 \usage{
-jODE_normL2(est_grid, fixed_grid, est_vec, trafo, odes, obs, err,
-  jODE_sourcefile = tempfile("jODE_source_file", fileext = ".jl"), data,
-  sigma = ":sigma_1")
+jODE_normL2(
+  est_grid,
+  fixed_grid,
+  est_vec,
+  trafo,
+  odes,
+  obs,
+  err,
+  jODE_sourcefile = tempfile("jODE_source_file", fileext = ".jl"),
+  data,
+  sigma = ":sigma_1"
+)
 }
 \arguments{
 \item{est_grid, fixed_grid, est_vec}{as in IQRtools}

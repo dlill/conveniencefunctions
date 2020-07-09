@@ -4,12 +4,17 @@
 \alias{cf_slides}
 \title{Title}
 \usage{
-cf_slides(template = 1,
-  templatelist = system.file("templates/Uni_Praesentation_E1_RGB_16_9.potx",
-  package = "conveniencefunctions"))
+cf_slides(
+  template = 1,
+  templatelist = system.file("templates/Uni_Praesentation_E1_RGB_16_9.potx", package =
+    "conveniencefunctions")
+)
 }
 \arguments{
 \item{template}{}
+}
+\value{
+
 }
 \description{
 Title
