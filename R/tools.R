@@ -20,11 +20,11 @@ flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
   for (i in 1:100) {
     # train
     if (t1) {beepr::beep(2)
-    Sys.sleep(t1)}
+      Sys.sleep(t1)}
     if (t2) {beepr::beep(2)
-    Sys.sleep(t2)}
+      Sys.sleep(t2)}
     if (t3) {beepr::beep(2)
-    Sys.sleep(t3)}
+      Sys.sleep(t3)}
     beepr::beep(4)
     # change
     Sys.sleep(t4)
@@ -289,7 +289,10 @@ funnames_in_package <- function(package, as_namespace = F) {
 #' @return
 #' @export
 gall <- function(string) {
-  system(paste0('git add --all & git commit -m "', string, '" & git pull & git push'))
+  system(paste0('git add --all'))
+  system(paste0('git commit -m "', string, '"'))
+  system(paste0('git pull'))
+  system(paste0('git push'))
 }
 
 
