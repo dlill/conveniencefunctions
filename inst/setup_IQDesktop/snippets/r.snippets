@@ -57,17 +57,16 @@ snippet opencf
 	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("/IQDESKTOP/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
 
 snippet openIQRmate
-	rstudioapi::openProject("~/PROJTOOLS/IQRmate/IQRmate.Rproj" $0)
+	rstudioapi::openProject("~/PROJTOOLS/IQRmate/IQRmate" $0)
 
 snippet openIQRtools
-	rstudioapi::openProject("~/PROJTOOLS/IQRtools/IQRtools.Rproj" $0)
+	rstudioapi::openProject("~/PROJTOOLS/IQRtools/IQRtools" $0)
 
 snippet openIQRexamples
-	rstudioapi::openProject("~/PROJTOOLS/IQRexamples/IQRexamples.Rproj" $0)
+	rstudioapi::openProject("~/PROJTOOLS/IQRexamples/IQRexamples" $0)
 
-snippet openIQRexamples
-	rstudioapi::openProject("~/PROJTOOLS/IQRexamples/IQRexamples.Rproj" $0)
-
+snippet pull
+	system("git pull")
 
 snippet gall
 	conveniencefunctions::gall("$1")
