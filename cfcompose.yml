@@ -1,0 +1,170 @@
+version '2.4'
+services: 
+    conveniencefunctions:
+        ports:
+            - "8787:8787"
+        volumes:
+            - /home/daniel/Promotion/Promotion:/home/rstudio/Promotion
+        command: "R CMD INSTALL --no-multiarch --with-keep.source /home/rstudio/Promotion/Projects/conveniencefunctions"
+
+
+# Example 1 https://riptutorial.com/de/docker-compose
+# version: '2.0'
+# services:
+#   web:
+#     build: .
+#     ports:
+#     - "5000:5000"
+#     volumes:
+#     - .:/code
+#     - logvolume01:/var/log
+#     links:
+#     - redis
+#   redis:
+#     image: redis
+# volumes:
+#   logvolume01: {}
+
+# Example 2 IQdesktop
+# version: '2.4'
+# services:
+#   IQdesktop:
+#   
+#     # Define the image version to run "latest" might need to be replaced, depending on 
+#     # which version you have downloaded from Docker Hub with the "docker pull" command
+#     image: intiquan/iqdesktop:latest
+#   
+#     # Naming - you should keep it as is
+#     hostname: IQdesktop
+#   
+#     # Set MAC address as needed (keep on default if unsure what you need it for)
+#     mac_address: 00:00:28:06:19:71     
+#   
+#     # Swap space. 2gb is reasonable - keep as is
+#     shm_size: '2gb'
+#     
+#     # Define the number of cores to which your IQdesktop container should have access.
+#     # On Windows you can safely remove this line as the docker-desktop software allows
+#     # these settings. On multi-user systems it should be set.
+#     cpus: 4
+# 
+#     # Define the amount of memory to which your IQdesktop container should have access.
+#     # On Windows you can safely remove this line as the docker-desktop software allows
+#     # these settings. On multi-user systems it should be set.
+#     mem_limit: "8gb"
+#     
+#     # Define the folder on the host computer to be mapped to the /IQDESKTOP/SHARE
+#     # folder within the IQdesktop container. Here an example for Windows is made.
+#     # You can change "C:\IQDESKTOP" to something else if desired. For Mac and Linux
+#     # host systems you also need to change "C:\IQDESKTOP" to a path on your host system
+#     # Note that the contents of this folder will then be available within 
+#     # IQDESKTOP within /IQDESKTOP/SHARE. In theory you can add additional shared volumes
+#     # by adding additional lines.
+#     # IMPORTANT: The folder on your local computer (here in this example "C:\IQDESKTOP")
+#     # needs to exist. Otherwise the container will not start and you will see an error
+#     # message.
+#     volumes:
+#       - C:\IQDESKTOP:/IQDESKTOP/SHARE
+#       
+#     # Define port mapping. On single user host systems nothing needs to be changed.
+#     # On multi-user host systems each IQdesktop container needs to have a unique external
+#     # port mapping. Ports 5901, 22, and 3838 are used internally in IQdesktop for VNC, 
+#     # SSH, and Shiny-server, respectively. Access from outside of the container to these
+#     # services is pre-configured to ports 5900, 6900, and 7900, respectivey
+#     ports:
+#       - "5900:5901"   # VNC port mapping
+#       - "6900:22"     # SSH port mapping
+#       - "7900:3838"   # Shiny-server port mapping
+#     
+#     environment:
+#     
+#       # Set your timezone to allow correct display of time. You can find valid entries for this 
+#       # field here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+#       - TIMEZONE=Europe/Zurich
+#     
+#       # Set your desired username that you would like to use in IQdesktop
+#       # You ideally want to change this field. A good setting is the username that you 
+#       # already use on your local computer
+#       - USER=username
+#       
+#       # Set your initial password. This password is used for both SSH and VNC 
+#       # connections. Since this password is written down in the config file it is not
+#       # secret and should be changed once logged in the first time to IQdesktop.
+#       # More about that in the "Using IQdesktop" part of the documentation.
+#       - PASSWORD=password
+#       
+#       # Numerical user ID. No meaning on Windows - so you can keep it on default.
+#       # On Mac set it to: 501. On multi-user systems your Sysadmin will have his or her own
+#       # opinion and set it for you. In any case it is the user ID of the user within IQdesktop.
+#       # When allowing for shared volumes this is also the user ID with which files on the 
+#       # host system are accessed.
+#       - USER_ID=1002
+#   
+#       # You can define if your user in IQdesktop should have sudo rights or not.
+#       # You decide for yourself by setting "true" or "false". On multi-user systems in 
+#       # production the Sysadmin will likely set a "false" here for you.
+#       - ALLOW_SUDO=false    
+#     
+#       # When running IQdesktop on multiple different host systems at the same time it can
+#       # be interesting to check on which host a particular container is running. For this 
+#       # you can provide a host ID here. This information is purely informative in nature
+#       # and displayed when opening a terminal in IQdesktop or executing the terminal
+#       # command "version". When running IQdesktop on your local computer the default is fine
+#       - HOST_ID=Local Computer
+#       
+#       # IQdesktop comes with two themes - one dark and one light. Choose your preference
+#       # by defining "dark" or "light" below.
+#       - THEME=light
+#       
+#       # IQdesktop allows access to the container via SSH if the following is set to "true".
+#       # If you do not need SSH then set it to "false"
+#       - SSH_SERVER=true
+#       
+#       # Shiny is a cool thing but Shiny-servers are sometimes annoying to set up and maintain.
+#       # In order to allow easy deployment of Shiny-apps and sharing of results with colleagues
+#       # IQdesktop contains a Shiny-server that can be started and stopped with a Play/Stop button.
+#       # More information about that in the part "Using IQdesktop" of the documentation.
+#       # You also can define here in the config file if this feature should be enabled "true"
+#       # or disabled "false". By default it is enabled and only on multi-user systems the 
+#       # Sysadmin might decide differerntly.
+#       - ALLOW_SHINY_SERVER=true  
+#       
+#       # If you use IQdesktop on your local computer you can safely ignore the next two 
+#       # options. If you access IQdesktop remotely via VPN you can ignore them as well. 
+#       # If, however, you access IQdesktop remotely via an unsecured connection you might want to 
+#       # consider securing the connection with a certificate based approach. The relevant 
+#       # certificate information will be added here below in the two fields. More information 
+#       # about this is available in part "Accessing IQdesktop" of this documentation and 
+#       # also explaining how you can generate your own certificates.
+#       # Note that private keys and certificates are typically multi line text files.
+#       # Here this information needs to be entered as single lines using "\n" instead of 
+#       # a line break.
+#       - VNC_PRIVATE_KEY=
+#       - VNC_CERTIFICATE=
+#       
+#       # Some of the software packages available in IQdesktop require license keys. These can 
+#       # conveniently be defined already in this configuration file. For MONOLIX 2 options exist:
+#       # You either can define here a cloud based license. Or you can provide your activation 
+#       # key when you start MONOLIX in IQdesktop and it asks for it. In the latter case you can 
+#       # remove the line with MONOLIX_LICENSE in this config file.
+#       - NONMEM_LICENSE_KEY=The contents of the nonmem.lic file
+#       - MONOLIX_LICENSE_KEY=Monolix cloud licenses can be added here
+#       
+#       # License keys for IQR Tools and IQReport can be provided here. The ones below will work
+#       # with the default config file. If you need your own license keys - please contact
+#       # info@intiquan.com. Keys are free for academia, non-profit, governmental use.
+#       - IQREPORT_LICENSE_KEY=89B7429C-B436D222-49516465736B746F70-B90E4447-33BD928
+#       - IQRTOOLS_LICENSE_KEY=afee66a7183cbd2b-444c5f606e666f6a6b-5fedaf46-bb3663882f8c1ad6
+# 
+#       # Finally, some settings for IQR Tools and IQReport. The "compliance mode" in IQR Tools
+#       # allows to automatically generate traceability information when conducting an analysis.
+#       # You can enable it by setting "IQRTOOLS_COMPLIANCE=true". More info about it 
+#       # on https://iqrtools.intiquan.com.
+#       # IQReport is the Word reporting tool from IntiQuan. The option "IQREPORT_TEMPLATE" 
+#       # allows to activate specific Word templates to be used in IQdesktop. Keep it as is,
+#       # which will give you access to the Default template. If you are interested in being 
+#       # able to autogenerate Word reports in your organizations Word Style ... we could make 
+#       # that happen and then you can define here the identifier for your specific template.
+#       - IQRTOOLS_COMPLIANCE=false
+#       - IQREPORT_TEMPLATE=
+# 
