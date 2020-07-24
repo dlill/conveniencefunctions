@@ -142,6 +142,9 @@ snippet devdoc
 snippet inplace
 	,`:=`($0)
 
+snippet aestheticsfillcolor
+	aesthetics = c("fill", "color")
+
 snippet formatMb
 	format(units = "Mb")
 
@@ -163,10 +166,14 @@ snippet cfhead
 	# [Date]
 	# `r date()`
 	#
-	setwd(dirname(rstudioapi::getSourceEditorContext()$path))
+	setwd(dirname(rstudioapi::getSourceEditorContext()\$path))
 	library(conveniencefunctions)
 	rm(list = ls(all.names = TRUE))
-	assign_folders(`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
+	
+	.outputFolder <- paste0("../04-Output/", "`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`")
+	for(folder in c(.outputFolder)) 
+	if(!dir.exists(folder)) dir.create(folder)
+	
 	# -------------------------------------------------------------------------#
 	# 1 ----
 	# -------------------------------------------------------------------------#
@@ -178,6 +185,19 @@ snippet cfhead
 	
 	# Exit ----
 	
+
+
+snippet assign_folder_output_data
+	.outputFolder <- paste0("../04-Output/", `r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
+	.dataFolder <- paste0("../01-Data/", `r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
+	for(folder in c(.outputFolder, .dataFolder)) 
+	if(!dir.exists(folder)) dir.create(folder)
+
+
+snippet assign_folder_output
+	.outputFolder <- paste0("../04-Output/", "`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`")
+	for(folder in c(.outputFolder)) 
+	if(!dir.exists(folder)) dir.create(folder)
 
 snippet date_cf
 	`r format(Sys.time(), "%a %b %d %Y")`
