@@ -2,6 +2,7 @@
     "addCursorAbove" : "Shift+Alt+Up",
     "addCursorBelow" : "Shift+Alt+Down",
     "executeCurrentSection" : "Ctrl+Shift+T",
+    "insertSection" : "",
     "newTerminal" : "",
     "pasteLastYank" : "",
     "quitSession" : "",
@@ -10,3 +11,4 @@
     "sourceActiveDocument" : "",
     "splitline" : ""
 }
+

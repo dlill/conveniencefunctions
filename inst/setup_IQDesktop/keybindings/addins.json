@@ -4,5 +4,6 @@
     "conveniencefunctions::toggle_subsection" : "Ctrl+Y",
     "conveniencefunctions::toggle_subsubsection" : "Ctrl+Shift+Y",
     "conveniencefunctions::transform_subsection" : "Ctrl+J",
-    "conveniencefunctions::initiate_or_delete_subsection" : "Ctrl+Shift+J"
+    "conveniencefunctions::initiate_or_delete_subsection" : "Ctrl+Shift+J",
+    "conveniencefunctions::renumber_sections" : "Ctrl+Shift+R"
 }

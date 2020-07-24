@@ -9,6 +9,7 @@
 \alias{toggle_subsubsection}
 \alias{transform_subsection}
 \alias{initiate_or_delete_subsection}
+\alias{renumber_sections}
 \title{Toggle sections}
 \usage{
 toggle_off(line, text, editor)
@@ -26,10 +27,34 @@ toggle_subsubsection()
 transform_subsection(line, text, editor)
 
 initiate_or_delete_subsection(line, text, editor)
+
+renumber_sections(FLAGfunctionAsSection = TRUE)
+}
+\arguments{
+\item{FLAGfunctionAsSection}{Start subsections within functions with 1. Switch off if the function is just a small part of a bigger logic}
 }
 \value{
 called for side-effect
 }
 \description{
 In the document outline, toggle a section on or off by adding or removing a #
+}
+\author{
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
+
+Daniel Lill (daniel.lill@intiquan.com)
 }
