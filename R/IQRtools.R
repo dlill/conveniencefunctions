@@ -54,6 +54,7 @@ inspire <- function() {
       "* Abstraction", 
       "  * Don't tune hyperparameters of an algorithm too often without abstracting the problem",
       "    * Try to understand the hyperparameters but realize when you're wasting time",
+      "  * Step back and think: How much time is the data really worth investing? Is it better to draw a line?",
       "* Coding",
       "  * Separate data programming and modeling", 
       "  * If you develop a modeling script along with data pgroamming, that's fine, but the script should be split afterwards.",
