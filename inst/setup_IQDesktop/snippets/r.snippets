@@ -68,6 +68,9 @@ snippet openIQRexamples
 snippet pull
 	system("git pull")
 
+snippet code 
+	system("code .", wait = FALSE)
+
 snippet gall
 	conveniencefunctions::gall("$1")
 
@@ -139,8 +142,12 @@ snippet ggly
 snippet devdoc
 	devtools::document()
 
+snippet inplacenocomma
+	,`:=`($0)
+
 snippet inplace
 	,`:=`($0)
+
 
 snippet aestheticsfillcolor
 	aesthetics = c("fill", "color")
