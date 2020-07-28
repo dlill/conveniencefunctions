@@ -119,7 +119,7 @@ initiate_or_delete_subsection <- function(line, text, editor) {
 #' @export
 #' @rdname toggle
 #' @importFrom data.table data.table
-renumber_sections <- function(FLAGfunctionAsSection = TRUE) {
+renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
   e <- rstudioapi::getSourceEditorContext()
   text <- readLines(e$path)
   
