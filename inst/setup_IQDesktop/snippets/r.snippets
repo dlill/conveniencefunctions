@@ -83,12 +83,15 @@ snippet cfgall
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
+snippet authormdheader
+	# Daniel Lill (daniel.lill@intiquan.com)
+
 snippet authormd
 	#' @author Daniel Lill (daniel.lill@intiquan.com)
 	#' @md
 
 snippet ggsav
-	ggsave(file.path(.outputFolder, $0), pl, scale = 1, width = 10, height = 8)
+	ggsave(file.path(.outputFolder, $0), pl, width = 14, height = 10, scale = 0.6)
 
 
 snippet melt
