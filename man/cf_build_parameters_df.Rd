@@ -4,7 +4,8 @@
 \alias{cf_build_parameters_df}
 \title{Template to build a basic parameters_df}
 \usage{
-cf_build_parameters_df(odes, observables, errormodel, FLAGguessEstScale = TRUE)
+cf_build_parameters_df(odes, observables, errormodel,
+  FLAGguessEstScale = TRUE)
 }
 \arguments{
 \item{odes, observables, errormodel}{symbolic definitions of functions}

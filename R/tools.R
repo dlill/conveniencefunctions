@@ -296,6 +296,20 @@ gall <- function(string) {
 }
 
 
+#' Git pull all projects in the PROJTOOLS fodler
+#'
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#'
+#' @examples
+pullJobs <- function() {
+  setwd("~")
+  f <- list.files("PROJTOOLS/", full.names = TRUE)
+  system(paste0(paste0("cd && cd ",f, " && git pull"), collapse = "&"))
+}
+
+
+
 #' Write a characeter vector to a file and open it.
 #'
 #' @param .x vector

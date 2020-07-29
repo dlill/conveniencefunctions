@@ -28,7 +28,7 @@ transform_subsection(line, text, editor)
 
 initiate_or_delete_subsection(line, text, editor)
 
-renumber_sections(FLAGfunctionAsSection = TRUE)
+renumber_sections(FLAGfunctionAsSection = FALSE)
 }
 \arguments{
 \item{FLAGfunctionAsSection}{Start subsections within functions with 1. Switch off if the function is just a small part of a bigger logic}
