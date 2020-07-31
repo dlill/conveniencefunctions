@@ -28,6 +28,11 @@ Description: renumber the subsections
 Binding: renumber_sections
 Interactive: false
 
+Name: Insert loopdebugger
+Description: Insert loopdebugger
+Binding: insert_loopdebugger
+Interactive: false
+
 Name: Align Assign
 Description: Aligns '<-' or '=' assignment operators within a highlighted area.
 Binding: alignAssign

@@ -172,6 +172,68 @@ renumber_sections <- function(FLAGfunctionAsSection = TRUE) {
 }
 
 
+# -------------------------------------------------------------------------#
+# Loopdebugger ----
+# -------------------------------------------------------------------------#
 
+#' @rdname extract_loopargs
+#' @export
+extract_for <- function(textline) {
+  loopvar <- gsub("for ?\\((.*) in.*", "\\1", textline)
+  loopval <- gsub("for ?\\(.* in (.*)\\) ?\\{.*", "\\1", textline)
+  list(loopvar = loopvar, loopval = loopval)
+}
 
+#' @rdname extract_loopargs
+#' @export
+extract_apply <- function(textline) {
+  loopval <- trimws(gsub(".*apply\\((.*),.*", "\\1", textline))
+  loopvar <- gsub(".*apply\\(.*, ?function\\( *(\\w+) *\\).*", "\\1", textline)
+  list(loopvar = loopvar, loopval = loopval)
+}
+
+#' Get the arguments of a for loop or of lapply
+#'
+#' @param textline Line of code
+#'
+#' @return list(looparg = "loopingvariable", loopval = "list:ofValues")
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#' @export
+#'
+#' @examples
+#' extract_loopargs("lapply(names(alpha), function(x) 1)")
+extract_loopargs <- function(textline) {
+  if (grepl("apply\\(", textline)) return(extract_apply(textline))
+  if (grepl("for ?\\(", textline)) return(extract_for(textline))
+}
+
+#' Insert the arguments of a loop into the script
+#' 
+#' for (a in 1:3) gets turned into
+#' 
+#' a <- (1:3)[[1]]
+#' for (a in 1:3)
+#' 
+#' This is handy for developing and debugging a loop
+#' 
+#' @return NULL. Modifies the document
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#' @export
+insert_loopdebugger <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  current_row <- e$selection[[1]]$range$start[1]
+  text <- readLines(e$path)
+  textline <- text[current_row]
+  loopargs <- extract_loopargs(textline)
+  
+  newline <-   paste0(loopargs$loopvar, " <- (", loopargs$loopval, ")[[1]]\n")
+  
+  rstudioapi::insertText(location = rstudioapi::document_position(current_row, 1), newline, id = e$id)
+  rstudioapi::documentSave(id = e$id)
+  
+  sink <- NULL
+  
+}
 
