@@ -179,16 +179,16 @@ renumber_sections <- function(FLAGfunctionAsSection = TRUE) {
 #' @rdname extract_loopargs
 #' @export
 extract_for <- function(textline) {
-  loopvar <- gsub("for ?\\((.*) in.*", "\\1", textline)
-  loopval <- gsub("for ?\\(.* in (.*)\\) ?\\{.*", "\\1", textline)
+  loopvar <- gsub(".*for ?\\((.+) in.*", "\\1", textline)
+  loopval <- gsub(".*for ?\\(.+ in (.+)\\) ?\\{?.*", "\\1", textline)
   list(loopvar = loopvar, loopval = loopval)
 }
 
 #' @rdname extract_loopargs
 #' @export
 extract_apply <- function(textline) {
-  loopval <- trimws(gsub(".*apply\\((.*),.*", "\\1", textline))
-  loopvar <- gsub(".*apply\\(.*, ?function\\( *(\\w+) *\\).*", "\\1", textline)
+  loopval <- trimws(gsub(".*apply\\((.+),.*", "\\1", textline))
+  loopvar <- gsub(".*apply\\(.+, ?function\\( *(.+) *\\).*", "\\1", textline)
   list(loopvar = loopvar, loopval = loopval)
 }
 
@@ -236,4 +236,3 @@ insert_loopdebugger <- function() {
   sink <- NULL
   
 }
-

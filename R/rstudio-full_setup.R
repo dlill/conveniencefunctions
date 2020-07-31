@@ -23,10 +23,12 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE, IQd
   if (wup) cat("Bash aliases installed \n")
   # 5. Install shortcuts for Thunar
   if (FLAGshortcuts){
-  if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
-  thunarfile <- switch(IQdesktopVersion[1], "local" = "setup_IQDesktop/thunar_shortcuts/bookmarks", "Ueli" = "setup_IQDesktop/thunar_shortcuts/bookmarksUeli")
-  wup <- file.copy(system.file(thunarfile, package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
-  if (wup) cat("Explorer shortcuts installed \n")}
+    if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
+    thunarfile <- switch(IQdesktopVersion[1], "local" = "setup_IQDesktop/thunar_shortcuts/bookmarks", 
+                         "Ueli" = "setup_IQDesktop/thunar_shortcuts/bookmarksUeli")
+    wup <- file.copy(system.file(thunarfile, package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
+    if (wup) cat("Explorer shortcuts installed \n")
+  }
   # 6. .Rprofile
   file.copy(system.file("setup_IQDesktop/.Rprofile"), "~/.Rprofile")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
