@@ -35,9 +35,6 @@ snippet IQDloadIQRtools
 	devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
 	devtools::load_all("c:/PROJTOOLS/IQRtools/IQRtools/")
 
-snippet IQDsetwdA09_Phase3
-	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
-
 snippet IQDsetwdA11_91SampleSize
 	setwd("/IQDESKTOP/PROJECTS/A11_Teva_QSP_IL15_PART2/Work/T91_Sample_Size_Calc/Scripts/")
 
@@ -52,6 +49,9 @@ snippet IQDsetwdA09_Phase5
 
 snippet IQDsetwdA09_Phase2
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase2_ProofOfConcept/Scripts/")
+
+snippet IQDsetwdA09_Phase3
+	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
 
 snippet opencf
 	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("/IQDESKTOP/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
@@ -68,6 +68,12 @@ snippet openIQRexamples
 snippet pull
 	system("git pull")
 
+snippet pullJobs
+	conveniencefunctions::pullJobs()
+
+snippet code 
+	system("code .", wait = FALSE)
+
 snippet gall
 	conveniencefunctions::gall("$1")
 
@@ -77,12 +83,15 @@ snippet cfgall
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
+snippet authormdheader
+	# Daniel Lill (daniel.lill@intiquan.com)
+
 snippet authormd
 	#' @author Daniel Lill (daniel.lill@intiquan.com)
 	#' @md
 
 snippet ggsav
-	ggsave(file.path(.outputFolder, $0), pl, scale = 1, width = 10, height = 8)
+	ggsave(file.path(.outputFolder, $0), pl, width = 14, height = 10, scale = 0.6)
 
 
 snippet melt
@@ -90,6 +99,9 @@ snippet melt
 
 snippet compare
 	conveniencefunctions::compare($0)
+
+snippet IQRtools:::
+	IQRtools:::
 
 snippet FLASE
 	FALSE
@@ -118,8 +130,7 @@ snippet cfrenamescript
 	conveniencefunctions::cf_copy_script($0)
 	
 snippet IQRoutputFig
-	if (!file.exists(file.path(.outputFolder, $1)))
-	  IQRoutputFigure($2, filename = file.path(.outputFolder, $1))
+	IQRoutputFigure(pl, filename = file.path(.outputFolder, $0), width = 14, height = 10, scale = 0.6)
 
 snippet file.pathoutputFolder
 	file.path(.outputFolder, $0)
@@ -139,8 +150,12 @@ snippet ggly
 snippet devdoc
 	devtools::document()
 
+snippet inpllace
+	`:=`($0)
+
 snippet inplace
 	,`:=`($0)
+
 
 snippet aestheticsfillcolor
 	aesthetics = c("fill", "color")
@@ -285,7 +300,7 @@ snippet clremark
 	# >>>> ${0} <<<<<<<<<<< ----
 
 snippet scriptdevelopment
-	# >> Script development. # [] Remove in final script << ----
+	# >> Remove in final script << ----
 	${0}
 
 snippet Rprof_profile_line
