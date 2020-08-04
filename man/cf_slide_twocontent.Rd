@@ -4,14 +4,8 @@
 \alias{cf_slide_twocontent}
 \title{Title}
 \usage{
-cf_slide_twocontent(
-  .slides,
-  title,
-  content1,
-  content2,
-  footer = "",
-  slide_num = ""
-)
+cf_slide_twocontent(.slides, title, content1, content2, footer = "",
+  slide_num = "")
 }
 \arguments{
 \item{.slides}{}
@@ -25,9 +19,6 @@ cf_slide_twocontent(
 \item{footer}{}
 
 \item{slide_num}{}
-}
-\value{
-
 }
 \description{
 Title
