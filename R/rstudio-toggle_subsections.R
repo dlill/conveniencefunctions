@@ -68,6 +68,7 @@ toggle_subsubsection <- function() toggle("------")
 #' @rdname toggle
 transform_subsection <- function(line, text, editor) {
   e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
   line <- e$selection[[1]]$range$start[[1]]
   text <- readLines(e$path)
   linetext <- text[line]
@@ -88,6 +89,7 @@ transform_subsection <- function(line, text, editor) {
 #' @rdname toggle
 initiate_or_delete_subsection <- function(line, text, editor) {
   e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
   line <- e$selection[[1]]$range$start[[1]]
   text <- readLines(e$path)
   linetext <- text[line]
@@ -121,6 +123,7 @@ initiate_or_delete_subsection <- function(line, text, editor) {
 #' @importFrom data.table data.table
 renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
   e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
   text <- readLines(e$path)
   
   # .. 1 Get lines -----
@@ -168,6 +171,7 @@ renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
       rstudioapi::modifyRange(c(line, reg, line, reg + attr(reg, "match.length")), paste0("# ", n, " "))
     }
   }
+  rstudioapi::documentSave(id = e$id)
   NULL
 }
 
@@ -223,6 +227,7 @@ extract_loopargs <- function(textline) {
 #' @export
 insert_loopdebugger <- function() {
   e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
   current_row <- e$selection[[1]]$range$start[1]
   text <- readLines(e$path)
   textline <- text[current_row]
