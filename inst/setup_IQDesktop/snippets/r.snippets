@@ -18,7 +18,7 @@ snippet IQDsetwdA100
 	setwd("/IQDESKTOP/PROJECTS/A100_OZ439-PQP_Isobole/Work/02-Scripts")
 
 snippet IQDsetwdMMVIsoboles
-	setwd("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
+	setwd("~/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIsoboles
 	devtools::load_all("~/PROJTOOLS/MMVIsoboles")
@@ -51,7 +51,7 @@ snippet IQDsetwdA09_Phase3
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
 
 snippet opencf
-	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("/IQDESKTOP/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
+	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("~/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
 
 snippet openIQRmate
 	rstudioapi::openProject("~/PROJTOOLS/IQRmate/IQRmate" $0)

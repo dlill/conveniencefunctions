@@ -1,9 +1,11 @@
 #' Quick setup of RStudio on a new machine
 #'
 #' 
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE, IQdesktopVersion = c("local", "Ueli")) {
+cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE) {
   # 1. Theme 
   rstudioapi::applyTheme("pastel on dark")
   # 2. Keybindings
@@ -24,9 +26,8 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE, IQd
   # 5. Install shortcuts for Thunar
   if (FLAGshortcuts){
     if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
-    thunarfile <- switch(IQdesktopVersion[1], "local" = "setup_IQDesktop/thunar_shortcuts/bookmarks", 
-                         "Ueli" = "setup_IQDesktop/thunar_shortcuts/bookmarksUeli")
-    wup <- file.copy(system.file(thunarfile, package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
+    wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
+                     "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
     if (wup) cat("Explorer shortcuts installed \n")
   }
   # 6. .Rprofile
