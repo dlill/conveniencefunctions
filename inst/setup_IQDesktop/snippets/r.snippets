@@ -21,8 +21,7 @@ snippet IQDsetwdMMVIsoboles
 	setwd("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIsoboles
-	if (Sys.info()["sysname"] == "Linux") devtools::load_all("~/PROJTOOLS/MMVIsoboles")
-	if (Sys.info()["sysname"] == "Windows") devtools::load_all("c:/PROJTOOLS/MMVIsoboles/")
+	devtools::load_all("~/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIQRmalaria
 	devtools::load_all("~/PROJTOOLS/IQRmalaria/IQRmalaria")
@@ -32,8 +31,6 @@ snippet IQDloadIQRexamples
 
 snippet IQDloadIQRtools
 	devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
-	devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
-	devtools::load_all("c:/PROJTOOLS/IQRtools/IQRtools/")
 
 snippet IQDsetwdA11_91SampleSize
 	setwd("/IQDESKTOP/PROJECTS/A11_Teva_QSP_IL15_PART2/Work/T91_Sample_Size_Calc/Scripts/")
@@ -343,6 +340,9 @@ snippet catsep_comma
 
 snippet loadcf
 	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
+
+snippet load_all
+	devtools::load_all()
 
 snippet cfrunbgmstrust
 	setwd(.tempdir)

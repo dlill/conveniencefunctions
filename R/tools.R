@@ -306,7 +306,7 @@ gall <- function(string) {
 pullJobs <- function() {
   setwd("~")
   f <- list.files("PROJTOOLS/", full.names = TRUE)
-  system(paste0(paste0("cd && cd ",f, " && git pull"), collapse = "&"))
+  system(paste0(paste0("cd && cd ",f, " && git pull && echo ", f), collapse = "&"))
 }
 
 
