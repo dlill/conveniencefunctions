@@ -80,11 +80,18 @@ snippet cfgall
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
+snippet whiledevlist
+	while(length(dev.list())) dev.off()
+
 snippet authormdheader
 	# Daniel Lill (daniel.lill@intiquan.com)
 
 snippet authormd
 	#' @author Daniel Lill (daniel.lill@intiquan.com)
+	#' @md
+
+snippet authormduni
+	#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 	#' @md
 
 snippet ggsav
@@ -96,6 +103,9 @@ snippet melt
 
 snippet compare
 	conveniencefunctions::compare($0)
+
+snippet tempfile
+	tempfile(fileext = "$0")
 
 snippet IQRtools:::
 	IQRtools:::
