@@ -298,6 +298,7 @@ gall <- function(string) {
 
 #' Git pull all projects in the PROJTOOLS fodler
 #'
+#' @export
 #' @author Daniel Lill (daniel.lill@intiquan.com)
 #' @md
 #'
