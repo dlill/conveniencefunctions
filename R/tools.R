@@ -289,10 +289,10 @@ funnames_in_package <- function(package, as_namespace = F) {
 #' @return
 #' @export
 gall <- function(string) {
-  system(paste0('git add --all'))
-  system(paste0('git commit -m "', string, '"'))
-  system(paste0('git pull'))
-  system(paste0('git push'))
+  system(paste0('git add --all && 
+  git commit -m "', string, '" && 
+  git pull && 
+  git push'), wait = FALSE)
 }
 
 
