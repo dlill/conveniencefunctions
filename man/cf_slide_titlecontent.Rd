@@ -4,7 +4,8 @@
 \alias{cf_slide_titlecontent}
 \title{Title}
 \usage{
-cf_slide_titlecontent(.slides, title, content, footer = "", slide_num = "")
+cf_slide_titlecontent(.slides, title, content, footer = "",
+  slide_num = "")
 }
 \arguments{
 \item{.slides}{}
@@ -16,9 +17,6 @@ cf_slide_titlecontent(.slides, title, content, footer = "", slide_num = "")
 \item{footer}{}
 
 \item{slide_num}{}
-}
-\value{
-
 }
 \description{
 Title

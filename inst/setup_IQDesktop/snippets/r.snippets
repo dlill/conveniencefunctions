@@ -18,11 +18,10 @@ snippet IQDsetwdA100
 	setwd("/IQDESKTOP/PROJECTS/A100_OZ439-PQP_Isobole/Work/02-Scripts")
 
 snippet IQDsetwdMMVIsoboles
-	setwd("/IQDESKTOP/PROJTOOLS/MMVIsoboles")
+	setwd("~/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIsoboles
-	if (Sys.info()["sysname"] == "Linux") devtools::load_all("~/PROJTOOLS/MMVIsoboles")
-	if (Sys.info()["sysname"] == "Windows") devtools::load_all("c:/PROJTOOLS/MMVIsoboles/")
+	devtools::load_all("~/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIQRmalaria
 	devtools::load_all("~/PROJTOOLS/IQRmalaria/IQRmalaria")
@@ -32,8 +31,6 @@ snippet IQDloadIQRexamples
 
 snippet IQDloadIQRtools
 	devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
-	devtools::load_all("/IQDESKTOP/PROJTOOLS/IQRtools/IQRtools")
-	devtools::load_all("c:/PROJTOOLS/IQRtools/IQRtools/")
 
 snippet IQDsetwdA11_91SampleSize
 	setwd("/IQDESKTOP/PROJECTS/A11_Teva_QSP_IL15_PART2/Work/T91_Sample_Size_Calc/Scripts/")
@@ -54,7 +51,7 @@ snippet IQDsetwdA09_Phase3
 	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
 
 snippet opencf
-	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("/IQDESKTOP/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
+	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("~/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
 
 snippet openIQRmate
 	rstudioapi::openProject("~/PROJTOOLS/IQRmate/IQRmate" $0)
@@ -83,11 +80,18 @@ snippet cfgall
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
+snippet whiledevlist
+	while(length(dev.list())) dev.off()
+
 snippet authormdheader
 	# Daniel Lill (daniel.lill@intiquan.com)
 
 snippet authormd
 	#' @author Daniel Lill (daniel.lill@intiquan.com)
+	#' @md
+
+snippet authormduni
+	#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 	#' @md
 
 snippet ggsav
@@ -99,6 +103,9 @@ snippet melt
 
 snippet compare
 	conveniencefunctions::compare($0)
+
+snippet tempfile
+	tempfile(fileext = "$0")
 
 snippet IQRtools:::
 	IQRtools:::
@@ -343,6 +350,12 @@ snippet catsep_comma
 
 snippet loadcf
 	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
+
+snippet load_all
+	devtools::load_all()
+
+snippet thunar
+	system("thunar .")
 
 snippet cfrunbgmstrust
 	setwd(.tempdir)

@@ -6,9 +6,6 @@
 \usage{
 inspire()
 }
-\value{
-
-}
 \description{
 Get some inspiration
 }

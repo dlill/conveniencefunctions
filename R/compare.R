@@ -18,7 +18,7 @@ compare <- function(x,y, FLAGnames = FALSE, FLAGlengthsOnly = FALSE) {
   if (!FO) cat(setdiff(y,x), sep = ", ")
   
   # Short summary at bottom
-  if (!FO) cat("\n ======= lengths       : ",length(x), ", ", length(y), "==========\n")
+  if (!FO) cat("\n ======= lengths       : x = ",length(x), ", y = ", length(y), "==========\n")
   if (!FO) cat("\n ======= intersect(x,y): ",length(intersect(x,y))," ========== \n")
   if (!FO) cat("\n ======= setdiff(x,y)  : ",length(setdiff(x,y))," ========== \n")
   if (!FO) cat("\n ======= setdiff(y,x)  : ",length(setdiff(y,x))," ========== \n")
