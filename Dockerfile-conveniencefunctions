@@ -1,4 +1,0 @@
-FROM cfbase
-
-COPY ./ /home/rstudio/conveniencefunctions
-RUN R CMD INSTALL --no-multiarch --with-keep.source /home/rstudio/conveniencefunctions
