@@ -65,67 +65,21 @@ inspire <- function() {
       "  * Results are single, specific statements. They are not endless pdf files full of plots.",
       "  * Produce communicatable results",
       "* Copy these tips into the script to not forget them :)",
-      "# Principles of data programming
-      # *** Think before you do anything
-      #     * What is the dimensionality of the problem. Name all variables:
-      #       * CELL, TIME, TGFB, VALUE, MAJORPROTEINID
-      #       * MAJORPROTEINID, PROTEINIDS, PROTEIN, GENE
-      #     * For which tasks is long data better
-      #     * For which tasks is wide data better
-      #       * In this case, I need a wide format for calculating the normalized data, because I want to normalize per row.
-      #       * Furthermore, Limma takes wide input
-      #       * Also, I can merge the two cell lines based on MAJORPROTEINID or PROTEIN or GENE or PROTEINIDS, since all other information is in the column name
-      #     * How can two or more tables be merged
-      #       * Also, I can merge the two cell lines based on MAJORPROTEINID or PROTEIN or GENE or PROTEINIDS, since all other information is in the column name
-      #         [] Find out which of the four options works best! => Section 1 of this script
-      
-      # *** First work through the column names
-      #     * Which ones to keep? Drop all the others! 
-      #         * DONE
-      #     * The keept ones: Rename them to the most simple descriptive tag
-      #       * Example: rename(GENE = `Gene names` )
-      #         * DONE
-      #     * Which information is still missing? add it!
-      #       * Example: mutate(CELL = '# *** Think before you do anything
-#     * What is the dimensionality of the problem. Name all variables:
-#       * CELL, TIME, TGFB, VALUE, MAJORPROTEINID
-#       * MAJORPROTEINID, PROTEINIDS, PROTEIN, GENE
-#     * For which tasks is long data better
-#     * For which tasks is wide data better
-#       * In this case, I need a wide format for calculating the normalized data, because I want to normalize per row.
-#       * Furthermore, Limma takes wide input
-#       * Also, I can merge the two cell lines based on MAJORPROTEINID or PROTEIN or GENE or PROTEINIDS, since all other information is in the column name
-#     * How can two or more tables be merged
-#       * Also, I can merge the two cell lines based on MAJORPROTEINID or PROTEIN or GENE or PROTEINIDS, since all other information is in the column name
-#         [] Find out which of the four options works best! => Section 1 of this script
+      "
+# Principles of data programming
+# *** Think before you do anything
+#   * What is the dimensionality of the problem. Name all variables!
+#   * For which tasks is long/wide data better
+#   * How can two or more tables be merged
 
 # *** First work through the column names
-#     * Which ones to keep? Drop all the others! 
-#         * DONE
-#     * The keept ones: Rename them to the most simple descriptive tag
-#       * Example: rename(GENE = `Gene names` )
-#         * DONE
-#     * Which information is still missing? add it!
-#       * Example: mutate(CELL = 'Hepa16')
-#         * DONE
+#   * Which ones to keep? Drop all the others! 
+#   * The kept ones: Rename them to the most simple descriptive tag
+#   * Which information is still missing? add it!
 
-#     * Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')
-#         * DONE, there is none
-
+# *** Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')
 # *** Malformed original values can also be replaced manually in the excel sheet (make a copy)
-#       * Example: HEPA_0_I (lacks fourth element for condition _-) ==> HEPA_0_I_-
-#         * DONE
-#       * Example: HEPA_0_I_-/HEPA_0_I_+ => HEPA_0_I_0/HEPA_0_I_1
-)
-      #         * DONE
-      
-      #     * Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')
-      #         * DONE, there is none
-      
-      # *** Malformed original values can also be replaced manually in the excel sheet (make a copy)
-      #       * Example: HEPA_0_I (lacks fourth element for condition _-) ==> HEPA_0_I_-
-      #         * DONE
-      #       * Example: HEPA_0_I_-/HEPA_0_I_+ => HEPA_0_I_0/HEPA_0_I_1
+
       ",
   sep = "\n")
 }
