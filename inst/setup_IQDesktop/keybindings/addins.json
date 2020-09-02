@@ -7,5 +7,5 @@
     "conveniencefunctions::initiate_or_delete_subsection" : "Ctrl+Shift+J",
     "conveniencefunctions::renumber_sections" : "Ctrl+Shift+R",
     "conveniencefunctions::insert_loopdebugger" : "Ctrl+Shift+I",
-    "conveniencefunctions::insert_argument" : "Ctrl+Shift+Alt+I"
+    "conveniencefunctions::insert_argument" : "Ctrl+Alt+Shift+I"
 }

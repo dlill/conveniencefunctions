@@ -254,9 +254,20 @@ insert_loopdebugger <- function() {
 insert_arguments <- function() {
   e <- rstudioapi::getSourceEditorContext()
   rstudioapi::documentSave(id = e$id)
+  
+  # Allow one-line statements with cursor or selections
+  if (identical(e$selection[[1]]$range$start,e$selection[[1]]$range$start)){
+    text <- readLines(e$path)[e$selection[[1]]$range$start[1]]
+  } else {
   text <- paste0(e$selection[[1]]$text, collapse = " ")
+  }
   text <- gsub("\\n", "", text)
   text <- gsub(" +", " ", text)
+  # handle function assignments
+  if (grepl("function", text)) 
+    text <- gsub(" *(<-|=) *function", "", text)
+  # handle assignments
+  text <- gsub("(.*) *<- *", "", text)
   
   funname <- gsub("(\\w+)\\(.*", "\\1", text)
   r1 <- r0 <- regmatches(text, regexec("\\(([^()]|(?R))*\\)", text, perl = TRUE))[[1]]
@@ -284,7 +295,7 @@ insert_arguments <- function() {
   
   rstudioapi::insertText(
     location = rstudioapi::as.document_position(c(e$selection[[1]]$range[["start"]][[1]],1)),
-    paste0("\n", paste0(d$call, collapse = "\n"), "\n"),
+    paste0(paste0(d$call, collapse = "\n"), "\n"),
     id = e$id)
   rstudioapi::documentSave(id = e$id)
   bla <- NULL
