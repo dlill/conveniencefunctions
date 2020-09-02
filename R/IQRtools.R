@@ -57,6 +57,7 @@ inspire <- function() {
       "  * Step back and think: How much time is the data really worth investing? Is it better to draw a line?",
       "* Coding",
       "  * Separate data programming and modeling", 
+      "  * When fitting, collect all information about the fitting in a list first",
       "  * If you develop a modeling script along with data programming, that's fine, but the script should be split afterwards.",
       "  * Don't handle more than 3 data.tables at once. If more, go back and think, is it necessary?",
       "  * Use check()",
