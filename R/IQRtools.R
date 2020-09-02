@@ -65,21 +65,18 @@ inspire <- function() {
       "  * Results are single, specific statements. They are not endless pdf files full of plots.",
       "  * Produce communicatable results",
       "* Copy these tips into the script to not forget them :)",
-      "
-# Principles of data programming
-# *** Think before you do anything
-#   * What is the dimensionality of the problem. Name all variables!
-#   * For which tasks is long/wide data better
-#   * How can two or more tables be merged
-
-# *** First work through the column names
-#   * Which ones to keep? Drop all the others! 
-#   * The kept ones: Rename them to the most simple descriptive tag
-#   * Which information is still missing? add it!
-
-# *** Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')
-# *** Malformed original values can also be replaced manually in the excel sheet (make a copy)
-
-      ",
+      
+      "* Principles of data programming",
+      "  * Think before you do anything",
+      "    * What is the dimensionality of the problem. Name all variables!",
+      "    * For which tasks is long/wide data better",
+      "    * How can two or more tables be merged",
+      "  * First work through the column names",
+      "    * Which ones to keep? Drop all the others! ",
+      "    * The kept ones: Rename them to the most simple descriptive tag",
+      "    * Which information is still missing? add it!",
+      "  * Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')",
+      "  * Malformed original values can also be replaced manually in the excel sheet (make a copy)",
+      
   sep = "\n")
 }
