@@ -72,12 +72,13 @@ transform_subsection <- function(line, text, editor) {
   line <- e$selection[[1]]$range$start[[1]]
   text <- readLines(e$path)
   linetext <- text[line]
+  ws <- nchar(regmatches(linetext, regexpr(" *", linetext)))
   if (grepl(" -----$", linetext)) {
     rstudioapi::insertText(c(line, Inf), "-")
-    rstudioapi::insertText(c(line, 3), "..")
+    rstudioapi::insertText(c(line, ws+3), "..")
   } else if (grepl(" ------$", linetext)) {
     rstudioapi::modifyRange(c(line, nchar(linetext), line, Inf), "")
-    rstudioapi::modifyRange(c(line, 1, line, 7), "# ..")
+    rstudioapi::modifyRange(c(line, ws+1, line, ws+7), "# ..")
   }
   rstudioapi::documentSave(e$id)
   NULL
@@ -93,21 +94,22 @@ initiate_or_delete_subsection <- function(line, text, editor) {
   line <- e$selection[[1]]$range$start[[1]]
   text <- readLines(e$path)
   linetext <- text[line]
+  ws <- nchar(regmatches(linetext, regexpr(" *", linetext)))
   if (grepl(" -{6}$", linetext)) {
     # Remove
     rstudioapi::modifyRange(c(line, nchar(linetext)-6, line, Inf), "")
-    rstudioapi::modifyRange(c(line, 1, line, 8), "")
+    rstudioapi::modifyRange(c(line, ws+1, line, ws+8), "")
   } else if (grepl(" -{5}$", linetext)) {
     # Remove
     rstudioapi::modifyRange(c(line, nchar(linetext)-5, line, Inf), "")
-    rstudioapi::modifyRange(c(line, 1, line, 6), "")
-  } else if (grepl("^# ", linetext)) {
+    rstudioapi::modifyRange(c(line, ws+1, line, ws+6), "")
+  } else if (grepl("^ *# ", linetext)) {
     # Turn comment into subsection
-    rstudioapi::insertText(c(line, 3), ".. ")
+    rstudioapi::insertText(c(line, ws+3), ".. ")
     rstudioapi::insertText(c(line, Inf), " -----")
   } else {
     # Turn code into subsection
-    rstudioapi::insertText(c(line, 1), "# .. ")
+    rstudioapi::insertText(c(line, ws+1), "# .. ")
     rstudioapi::insertText(c(line, Inf), " -----")
   }
   rstudioapi::documentSave(e$id)
@@ -135,7 +137,7 @@ renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
   s2 <- grep(" -{5}$", text)
   s3 <- grep(" -{6}$", text)
   
-  # .. 1  # Associate subsubs to subs -----
+  # .. 2  # Associate subsubs to subs -----
   if (length(s3)){
     ds3 <- data.table::data.table(s = s3)
     ds3[,`:=`(s2associated = which.min(s > s2) ), by = (1:nrow(ds3))]
@@ -147,7 +149,7 @@ renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
       rstudioapi::modifyRange(c(line, reg, line, reg + attr(reg, "match.length")), paste0("# .... ", n, " "))
     }
   }
-  # .. 2  # Associate subs to s -----
+  # .. 3  # Associate subs to s -----
   if (length(s2)){
     ds2 <- data.table::data.table(s = s2)
     ds2[,`:=`(s1associated = which.min(s > s1all) ), by = (1:nrow(ds2))]
@@ -160,7 +162,7 @@ renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
     }
   }
   
-  # .. 3 Number sections -----
+  # .. 4 Number sections -----
   if (length(s1)){
     ds1 <- data.table::data.table(s = s1)
     ds1[,`:=`(number = 1:.N - 1)]  
@@ -177,7 +179,7 @@ renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
 
 
 # -------------------------------------------------------------------------#
-# Loopdebugger ----
+# 0 Loopdebugger ----
 # -------------------------------------------------------------------------#
 
 #' @rdname extract_loopargs
@@ -241,3 +243,50 @@ insert_loopdebugger <- function() {
   sink <- NULL
   
 }
+
+
+#' Extract arguments from a function call
+#'
+#' @return
+#' @export
+#'
+#' @examples
+insert_arguments <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  text <- paste0(e$selection[[1]]$text, collapse = " ")
+  text <- gsub("\\n", "", text)
+  text <- gsub(" +", " ", text)
+  
+  funname <- gsub("(\\w+)\\(.*", "\\1", text)
+  r1 <- r0 <- regmatches(text, regexec("\\(([^()]|(?R))*\\)", text, perl = TRUE))[[1]]
+  r1 <- setNames(r1, paste0("XXXX", seq_along(r0)))
+  r <- r1[1]
+  if (length(r1) > 1)
+    for (i  in 2:length(r1)){
+      r <- gsub(r1[i], names(r1)[i], r, fixed = TRUE)
+      }
+  r <- gsub("\\(|\\)", "", r)
+  splits <- strsplit(r, ",")[[1]]
+  d <- data.table(string = splits)
+  d[,`:=`(pos = 1:.N)]
+  d[,`:=`(formal = gsub("(\\w+) *=.*", "\\1", string))]
+  d[grep("=", string, invert = TRUE),`:=`(formal =formalArgs(funname)[pos])]
+  d[,`:=`(arg = gsub(paste0(formal, " *= *"), "", string)), by = 1:nrow(d)]
+  d[,`:=`(arg = {
+    if (length(r1) > 1)
+      for (i  in 2:length(r1)){
+        arg <- gsub(names(r1)[i], r1[i], arg, fixed = TRUE)
+      }
+    arg
+  })]
+  d[,`:=`(call = paste0(formal, " = ", arg))]
+  
+  rstudioapi::insertText(
+    location = rstudioapi::as.document_position(c(e$selection[[1]]$range[["start"]][[1]],1)),
+    paste0("\n", paste0(d$call, collapse = "\n"), "\n"),
+    id = e$id)
+  rstudioapi::documentSave(id = e$id)
+  bla <- NULL
+}
+
