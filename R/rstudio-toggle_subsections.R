@@ -275,8 +275,8 @@ insert_arguments <- function() {
   text1 <- substr(text, nchar(funname)+ 2, nchar(text)-1)
   text1 <- strsplit(text1, "=")[[1]]
   text1 <- trimws(text1)
-  argnames1 <- unlist(regmatches(text1[1:(length(text1)-1)], gregexpr("\\w+$", text1)))
-  args1 <- gsub("(.*), *\\w+$", "\\1", text1)
+  argnames1 <- unlist(regmatches(text1[1:(length(text1)-1)], gregexpr("(\\w|\\.)+$", text1[1:(length(text1) - 1)])))
+  args1 <- gsub("(.*), *(\\w|\\.)+$", "\\1", text1[2:length(text1)])
   
   call <- paste0(argnames1, " = ", args1)
   
