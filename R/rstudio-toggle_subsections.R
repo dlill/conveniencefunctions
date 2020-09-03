@@ -256,13 +256,14 @@ insert_arguments <- function() {
   rstudioapi::documentSave(id = e$id)
   
   # Allow one-line statements with cursor or selections
-  if (identical(e$selection[[1]]$range$start,e$selection[[1]]$range$start)){
+  if (identical(e$selection[[1]]$range$start,e$selection[[1]]$range$end)){
     text <- readLines(e$path)[e$selection[[1]]$range$start[1]]
   } else {
   text <- paste0(e$selection[[1]]$text, collapse = " ")
   }
   text <- gsub("\\n", "", text)
   text <- gsub(" +", " ", text)
+  text <- trimws(text)
   # handle function assignments
   if (grepl("function", text)) 
     text <- gsub(" *(<-|=) *function", "", text)
@@ -270,32 +271,18 @@ insert_arguments <- function() {
   text <- gsub("(.*) *<- *", "", text)
   
   funname <- gsub("(\\w+)\\(.*", "\\1", text)
-  r1 <- r0 <- regmatches(text, regexec("\\(([^()]|(?R))*\\)", text, perl = TRUE))[[1]]
-  r1 <- setNames(r1, paste0("XXXX", seq_along(r0)))
-  r <- r1[1]
-  if (length(r1) > 1)
-    for (i  in 2:length(r1)){
-      r <- gsub(r1[i], names(r1)[i], r, fixed = TRUE)
-      }
-  r <- gsub("\\(|\\)", "", r)
-  splits <- strsplit(r, ",")[[1]]
-  d <- data.table(string = splits)
-  d[,`:=`(pos = 1:.N)]
-  d[,`:=`(formal = gsub("(\\w+) *=.*", "\\1", string))]
-  d[grep("=", string, invert = TRUE),`:=`(formal =formalArgs(funname)[pos])]
-  d[,`:=`(arg = gsub(paste0(formal, " *= *"), "", string)), by = 1:nrow(d)]
-  d[,`:=`(arg = {
-    if (length(r1) > 1)
-      for (i  in 2:length(r1)){
-        arg <- gsub(names(r1)[i], r1[i], arg, fixed = TRUE)
-      }
-    arg
-  })]
-  d[,`:=`(call = paste0(formal, " = ", arg))]
+  
+  text1 <- substr(text, nchar(funname)+ 2, nchar(text)-1)
+  text1 <- strsplit(text1, "=")[[1]]
+  text1 <- trimws(text1)
+  argnames1 <- unlist(regmatches(text1[1:(length(text1)-1)], gregexpr("\\w+$", text1)))
+  args1 <- gsub("(.*), *\\w+$", "\\1", text1)
+  
+  call <- paste0(argnames1, " = ", args1)
   
   rstudioapi::insertText(
     location = rstudioapi::as.document_position(c(e$selection[[1]]$range[["start"]][[1]],1)),
-    paste0(paste0(d$call, collapse = "\n"), "\n"),
+    paste0(paste0(call, collapse = "\n"), "\n"),
     id = e$id)
   rstudioapi::documentSave(id = e$id)
   bla <- NULL
