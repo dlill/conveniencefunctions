@@ -4,8 +4,12 @@
 \alias{cf_condition_specific_wrapper}
 \title{Title}
 \usage{
-cf_condition_specific_wrapper(condition_specific, est.grid, est.vec_df,
-  condition.grid)
+cf_condition_specific_wrapper(
+  condition_specific,
+  est.grid,
+  est.vec_df,
+  condition.grid
+)
 }
 \arguments{
 \item{condition_specific}{tibble with columns 
@@ -19,6 +23,9 @@ lgl FLAGdummifyOtherConds}
 \item{est.vec_df}{}
 
 \item{condition.grid}{}
+}
+\value{
+
 }
 \description{
 Title

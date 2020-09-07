@@ -684,6 +684,7 @@ cf_plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", tra
 # .. PlotCombined ----
 # ----------------------------------------------- #
 
+#' bla
 #' @export
 #' @rdname plotCombined
 #'
@@ -750,6 +751,7 @@ cf_plotCombined.dMod.frame <- function(x, hypothesis = 1, index = 1, ... , plotE
   return(myplot)
 }
 
+#' bla
 #' @export
 #' @rdname plotCombined
 cf_plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {

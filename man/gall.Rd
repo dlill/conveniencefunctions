@@ -9,6 +9,9 @@ gall(string)
 \arguments{
 \item{string}{commit message}
 }
+\value{
+
+}
 \description{
 gitall from R command line
 }

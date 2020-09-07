@@ -63,7 +63,7 @@ snippet openIQRexamples
 	rstudioapi::openProject("~/PROJTOOLS/IQRexamples/IQRexamples" $0)
 
 snippet pull
-	system("git pull")
+	system("git pull", wait = FALSE)
 
 snippet pullJobs
 	conveniencefunctions::pullJobs()
