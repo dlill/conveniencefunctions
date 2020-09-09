@@ -38,6 +38,11 @@ Description: Insert arguments of a function call
 Binding: insert_arguments
 Interactive: false
 
+Name: Toggle mclappply
+Description: Toggle mclapple/lapply on or off
+Binding: toggle_mclapply
+Interactive: false
+
 Name: Align Assign
 Description: Aligns '<-' or '=' assignment operators within a highlighted area.
 Binding: alignAssign

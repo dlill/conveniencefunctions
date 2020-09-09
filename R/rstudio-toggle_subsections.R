@@ -1,3 +1,7 @@
+# -------------------------------------------------------------------------#
+# Subsection ----
+# -------------------------------------------------------------------------#
+
 #' @rdname toggle
 #' @author Daniel Lill (daniel.lill@intiquan.com)
 #' @md
@@ -179,7 +183,7 @@ renumber_sections <- function(FLAGfunctionAsSection = FALSE) {
 
 
 # -------------------------------------------------------------------------#
-# 0 Loopdebugger ----
+# Loopdebugger ----
 # -------------------------------------------------------------------------#
 
 #' @rdname extract_loopargs
@@ -245,6 +249,11 @@ insert_loopdebugger <- function() {
 }
 
 
+
+# -------------------------------------------------------------------------#
+# Function arguments ----
+# -------------------------------------------------------------------------#
+
 #' Extract arguments from a function call
 #'
 #' @return
@@ -287,4 +296,93 @@ insert_arguments <- function() {
   rstudioapi::documentSave(id = e$id)
   bla <- NULL
 }
+
+# -------------------------------------------------------------------------#
+# Toggle mclapply/lapply ----
+# -------------------------------------------------------------------------#
+
+#' Title
+#'
+#' @param textline 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' textline <- "fuck <- lapply(1:n, function(x) {"
+#' toggle_mclapply_on(textline)
+toggle_mclapply_on <- function(textline) {
+  loopargs <- extract_apply(textline = textline)
+  newline <- textline
+  newline <- paste0("ncores <- 4\n", newline)
+  newline <- gsub("lapply", "parallel::mclapply", newline)
+  newline <- gsub(loopargs$loopval, paste0("X = ", loopargs$loopval, ", mc.cores = ncores"), newline, fixed = TRUE)
+  newline <- gsub("function", "FUN = function", newline)
+  newline
+}
+
+#' Title
+#'
+#' @param textline 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' textline <- "fuck <- mclapply(X = 1:n, mc.cores = ncores, FUN = function(x) {"
+#' toggle_mclapply_off(textline)
+toggle_mclapply_off <- function(textline) {
+  newline <- textline
+  newline <- gsub("(parallell::)?mclapply", "lapply", newline)
+  newline <- gsub("X = ", "", newline)
+  newline <- gsub(", mc.cores = ncores", "", newline)
+  newline <- gsub("FUN = ", "", newline)
+  newline
+}
+
+
+
+#' Insert the arguments of a loop into the script
+#' 
+#' for (a in 1:3) gets turned into
+#' 
+#' a <- (1:3)[[1]]
+#' for (a in 1:3)
+#' 
+#' This is handy for developing and debugging a loop
+#' 
+#' @return NULL. Modifies the document
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#' @export
+toggle_mclapply <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  current_row <- e$selection[[1]]$range$start[1]
+  text <- readLines(e$path)
+  textline <- text[current_row]
+  
+  rng <- newline <- NULL
+  if (grepl("mclapply", textline)) {
+    newline <- toggle_mclapply_off(textline)
+    rng <- rstudioapi::document_range(
+      rstudioapi::document_position(current_row - 1, 1), 
+      rstudioapi::document_position(current_row, Inf))
+  } else {
+    newline <- toggle_mclapply_on(textline)
+    rng <- rstudioapi::document_range(
+      rstudioapi::document_position(current_row, 1), 
+      rstudioapi::document_position(current_row, Inf))
+  }
+  
+  rstudioapi::modifyRange(location = rng, text = newline, id = e$id)
+  rstudioapi::documentSave(id = e$id)
+  
+  sink <- NULL
+}
+
+
+
+
+
 
