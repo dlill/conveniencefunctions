@@ -360,8 +360,17 @@ snippet loadcf
 snippet load_all
 	devtools::load_all()
 
+snippet thunarHERE
+	system("thunar .", wait = FALSE)
+
 snippet thunar
-	system("thunar .")
+	system(paste0("thunar ", $0), wait = FALSE)
+
+snippet nautilusHERE
+	system("nautilus .", wait = FALSE)
+
+snippet nautilus
+	system(paste0("nautilus ", $0), wait = FALSE)
 
 snippet cfrunbgmstrust
 	setwd(.tempdir)
