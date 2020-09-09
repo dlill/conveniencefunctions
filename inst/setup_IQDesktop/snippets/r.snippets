@@ -143,7 +143,8 @@ snippet cfrenamescript
 	conveniencefunctions::cf_copy_script($0)
 	
 snippet IQRoutputFig
-	IQRoutputFigure(pl, filename = file.path(.outputFolder, $0), width = 14, height = 10, scale = 0.6)
+	IQRoutputFigure(pl, filename = file.path(.outputFolder, $0), 
+	  opt.pagesize = opt.pagesize(width = 14, height = 10, scale = 0.6))
 
 snippet file.pathoutputFolder
 	file.path(.outputFolder, $0)

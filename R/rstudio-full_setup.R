@@ -33,13 +33,6 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE) {
   # 6. .Rprofile
   file.copy(system.file("setup_IQDesktop/.Rprofile"), "~/.Rprofile")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
-      "",
-      "cd",
-      "unzip /IQDESKTOP/PROJTOOLS/IQDesktop/id_rsa.zip -d .ssh",
-      "chmod 600 .ssh/id_rsa",
-      "",
-      "cd",
-      "cd PROJTOOLS",
       "git clone git@github.com:dlill/conveniencefunctions",
       "git clone git@github.com:IntiQuan/IQRtools",
       "git clone git@github.com:IntiQuan/IQRmate",
