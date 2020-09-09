@@ -333,7 +333,7 @@ toggle_mclapply_on <- function(textline) {
 #' toggle_mclapply_off(textline)
 toggle_mclapply_off <- function(textline) {
   newline <- textline
-  newline <- gsub("(parallell::)?mclapply", "lapply", newline)
+  newline <- gsub("parallell::mclapply", "lapply", newline)
   newline <- gsub("X = ", "", newline)
   newline <- gsub(", mc.cores = ncores", "", newline)
   newline <- gsub("FUN = ", "", newline)
