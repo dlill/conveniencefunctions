@@ -69,7 +69,7 @@ snippet openIQRexamples
 	rstudioapi::openProject("~/PROJTOOLS/IQRexamples/IQRexamples" $0)
 
 snippet cf_installSnippetsPowerInstall
-	system("R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
+	system("cd && cd PROJTOOLS && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
 	system("Rscript -e 'conveniencefunctions::install_cfsnippets(T)'")
 	system("pkill -f rstudio")
 	
