@@ -197,8 +197,8 @@ extract_for <- function(textline) {
 #' @rdname extract_loopargs
 #' @export
 extract_apply <- function(textline) {
-  loopval <- trimws(gsub(".*apply\\((.+),.*", "\\1", textline))
-  loopvar <- gsub(".*apply\\(.+, ?function\\( *(.+) *\\).*", "\\1", textline)
+  loopval <- trimws(gsub(".*apply\\((.+), *function.*", "\\1", textline))
+  loopvar <- gsub(".*apply\\(.+, *function\\( *(.+) *\\).*", "\\1", textline)
   list(loopvar = loopvar, loopval = loopval)
 }
 
@@ -206,7 +206,7 @@ extract_apply <- function(textline) {
 #'
 #' @param textline Line of code
 #'
-#' @return list(looparg = "loopingvariable", loopval = "list:ofValues")
+#' @return list(loopvar = "loopingvariable", loopval = "list:ofValues")
 #' @author Daniel Lill (daniel.lill@intiquan.com)
 #' @md
 #' @export
@@ -333,14 +333,12 @@ toggle_mclapply_on <- function(textline) {
 #' toggle_mclapply_off(textline)
 toggle_mclapply_off <- function(textline) {
   newline <- textline
-  newline <- gsub("parallell::mclapply", "lapply", newline)
+  newline <- gsub("parallel::mclapply", "lapply", newline)
   newline <- gsub("X = ", "", newline)
   newline <- gsub(", mc.cores = ncores", "", newline)
   newline <- gsub("FUN = ", "", newline)
   newline
 }
-
-
 
 #' Insert the arguments of a loop into the script
 #' 
