@@ -71,8 +71,9 @@ snippet openIQRexamples
 snippet cf_installSnippetsPowerInstall
 	system("cd && cd PROJTOOLS && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
 	system("Rscript -e 'conveniencefunctions::install_cfsnippets(T)'")
+
+snippet pkill_f_rstudio
 	system("pkill -f rstudio")
-	
 
 snippet pull
 	system("git pull", wait = FALSE)
