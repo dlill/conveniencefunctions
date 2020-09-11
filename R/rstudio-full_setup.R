@@ -92,3 +92,26 @@ install_cfsnippets <- function(FLAGoverwrite = FALSE){
   if (wup) cat("Snippets were overwritten \n")
   NULL
 }
+
+#' Backup the IQRdesktop setup scripts
+#'
+#' @param path_IQDesktop 
+#' @param filename_zip 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+backup_IQdesktopSetupScripts <- function(path_IQDesktop = "/IQDESKTOP/PROJTOOLS/IQDesktop/",
+                                         filename_zip = "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/setup.zip") {
+  
+  files <- list.files(path_IQDesktop, all.files = TRUE, recursive = TRUE, full.names = FALSE)
+  files <- grep("id_rsa", files, invert = TRUE, value = TRUE)
+  
+  unlink(filename_zip)
+  curwd <- getwd()
+  setwd(path_IQDesktop)
+  zip(zipfile = filename_zip, files)
+  setwd(curwd)
+  
+}
