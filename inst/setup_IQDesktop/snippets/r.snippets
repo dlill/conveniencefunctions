@@ -75,6 +75,9 @@ snippet cf_installSnippetsPowerInstall
 snippet pkill_f_rstudio
 	system("pkill -f rstudio")
 
+snippet Rscript
+	system(paste0("Rscript ", $0), wait = FALSE)
+
 snippet pull
 	system("git pull", wait = FALSE)
 
