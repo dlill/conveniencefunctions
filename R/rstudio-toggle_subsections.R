@@ -381,6 +381,53 @@ toggle_mclapply <- function() {
 
 
 
+# -------------------------------------------------------------------------#
+# Debugonce ----
+# -------------------------------------------------------------------------#
+
+#' Guess function name of interest
+#'
+#' @param textline character(1L), line of script with buggy function
+#'
+#' @return extracted function name
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
+#' textline <- "   rng <- rstudioapi::document_range("
+guess_function <- function(textline) {
+  gsub(".* ?<- ?(\\w+:+)?(\\w+)\\(.*", "\\1\\2", textline)
+}
+
+#' Insert debugonce(function)
+#' 
+#' rng <- rstudioapi::document_range(...)
+#' 
+#' gets turned into
+#' 
+#' debugonce(rstudioapi::document_range)
+#' rng <- rstudioapi::document_range(...)
+#' 
+#' @return NULL. Modifies the document
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#' @export
+insert_debugonce <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  current_row <- e$selection[[1]]$range$start[1]
+  text <- readLines(e$path)
+  textline <- text[current_row]
+  
+  newline <- paste0("debugonce(", guess_function(textline), ")\n")
+  rstudioapi::insertText(location = rstudioapi::document_position(current_row, 1), newline, id = e$id)
+  rstudioapi::documentSave(id = e$id)
+  
+  sink <- NULL
+}
+
+
 
 
 

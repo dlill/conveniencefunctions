@@ -33,6 +33,11 @@ Description: Insert loopdebugger
 Binding: insert_loopdebugger
 Interactive: false
 
+Name: Insert debugonce
+Description: Insert debugonce
+Binding: insert_debugonce
+Interactive: false
+
 Name: Insert arguments
 Description: Insert arguments of a function call
 Binding: insert_arguments
