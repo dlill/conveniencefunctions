@@ -159,6 +159,10 @@ snippet IQRoutputFig
 	IQRoutputFigure(pl, filename = file.path(.outputFolder, $0), 
 	  opt.pagesize = opt.pagesize(width = 14, height = 10, scale = 0.6))
 
+snippet opt.pagesize
+	opt.pagesize = opt.pagesize(14,10,0.6)
+
+
 snippet file.pathoutputFolder
 	file.path(.outputFolder, $0)
 
