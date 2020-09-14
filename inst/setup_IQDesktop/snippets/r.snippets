@@ -78,14 +78,20 @@ snippet pkill_f_rstudio
 snippet Rscript
 	system(paste0("Rscript ", $0), wait = FALSE, ignore.stoud = FALSE, ignore.stderr = FALSE)
 
-snippet pull
-	system("git pull", wait = FALSE)
-
 snippet pullJobs
 	conveniencefunctions::pullJobs()
 
+snippet pull
+	system("git pull", wait = FALSE)
+
+snippet status
+	system("git status", wait = FALSE)
+
 snippet code 
-	system("code .", wait = FALSE)
+	system("code $0.", wait = FALSE)
+
+snippet codeParentParentDir 
+	system("code $0../../.", wait = FALSE)
 
 snippet gall
 	conveniencefunctions::gall("$1")
