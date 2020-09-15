@@ -76,7 +76,7 @@ snippet pkill_f_rstudio
 	system("pkill -f rstudio")
 
 snippet Rscript
-	system(paste0("Rscript ", $0), wait = FALSE, ignore.stoud = FALSE, ignore.stderr = FALSE)
+	system(paste0("Rscript ", $0), wait = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE)
 
 snippet pullJobs
 	conveniencefunctions::pullJobs()
