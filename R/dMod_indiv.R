@@ -157,8 +157,10 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
   
   myfn <- function(..., fixed = NULL, deriv = TRUE, conditions = controls$conditions, simcores = 1, 
                    FLAGbrowser = FALSE, 
+                   FLAGbrowser2 = FALSE, 
                    FLAGverbose = FALSE,
-                   FLAGNaNInfwarnings = FALSE) {
+                   FLAGNaNInfwarnings = FALSE,
+                   FixedConditions = NULL) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
@@ -177,7 +179,10 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       timesD <- controls$times
       attr.name <- controls$attr.name
       
-      prediction <- try(prd0(times = timesD, pars = pars_, fixed = fixed_, deriv = deriv))
+      myderiv <- deriv
+      if (!is.null(FixedConditions) && cn %in% FixedConditions) myderiv <- FALSE
+      
+      prediction <- try(prd0(times = timesD, pars = pars_, fixed = fixed_, deriv = myderiv))
       
       if (inherits(prediction, "try-error"))
         stop("Prediction failed in condition = ", cn, ", ID = ", ID, ".
@@ -219,12 +224,13 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
       
       err <- NULL
       if (any(is.na(data[[cn]]$sigma))) {
-        err <- errmodel(out = prediction, pars = getParameters(prediction), conditions = cn)
+        err <- errmodel(out = prediction, pars = getParameters(prediction), conditions = cn, deriv=myderiv)
         mywrss <- nll(res(data[[cn]], prediction, err[[1]]), deriv = deriv, pars = pars)
       } else {
         mywrss <- wrss(res(data[[cn]], prediction))
       }
-      if (deriv) {
+      if (myderiv) {
+        if (FLAGbrowser2) browser()
         mywrss$gradient <- mywrss$gradient[names(dummy$parnames)]
         names(mywrss$gradient) <- unname(dummy$parnames)
         
