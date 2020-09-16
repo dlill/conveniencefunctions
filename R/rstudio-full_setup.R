@@ -1,9 +1,11 @@
 #' Quick setup of RStudio on a new machine
 #'
 #' 
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("local", "Ueli")) {
+cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE) {
   # 1. Theme 
   rstudioapi::applyTheme("pastel on dark")
   # 2. Keybindings
@@ -22,20 +24,25 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, IQdesktopVersion = c("loca
   }
   if (wup) cat("Bash aliases installed \n")
   # 5. Install shortcuts for Thunar
-  if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
-  thunarfile <- switch(IQdesktopVersion[1], "local" = "setup_IQDesktop/thunar_shortcuts/bookmarks", "Ueli" = "setup_IQDesktop/thunar_shortcuts/bookmarksUeli")
-  wup <- file.copy(system.file(thunarfile, package = "conveniencefunctions"), "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
-  if (wup) cat("Explorer shortcuts installed \n")
-  # # 6. IQRmate
-  # devtools::install_github("IntiQuan/IQRtools", subdir = "IQRmate")
+  if (FLAGshortcuts){
+    if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
+    wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
+                     "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
+    if (wup) cat("Explorer shortcuts installed \n")
+  }
+  # 6. .Rprofile
+  file.copy(system.file("setup_IQDesktop/.Rprofile"), "~/.Rprofile")
   cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
-      "",
-      "unzip /IQDESKTOP/PROJTOOLS/IQDesktop/id_rsa.zip -d .ssh",
-      "chmod 600 .ssh/id_rsa",
-      "",
+      "git clone git@github.com:dlill/conveniencefunctions",
+      "git clone git@github.com:IntiQuan/IQRtools",
+      "git clone git@github.com:IntiQuan/IQRmate",
+      "git clone git@github.com:IntiQuan/IQRexamples",
+      "git clone git@github.com:IntiQuan/MMVIsoboles",
       "git clone git@github.com:IntiQuan/iqrmalaria IQRmalariaGIT",
       "sudo apt-get update",
       "sudo apt-get install  libx11-dev mesa-common-dev libglu1-mesa-dev",
+      "",
+      "git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short",
       "",
       "cd ~/PROJECTS",
       "gclone /IQDESKTOP/SHARE/ (drop final /)",
@@ -84,4 +91,27 @@ install_cfsnippets <- function(FLAGoverwrite = FALSE){
   wup <- file.copy(system.file("setup_IQDesktop/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"), overwrite = FLAGoverwrite)
   if (wup) cat("Snippets were overwritten \n")
   NULL
+}
+
+#' Backup the IQRdesktop setup scripts
+#'
+#' @param path_IQDesktop 
+#' @param filename_zip 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+backup_IQdesktopSetupScripts <- function(path_IQDesktop = "/IQDESKTOP/PROJTOOLS/IQDesktop/",
+                                         filename_zip = "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/setup.zip") {
+  
+  files <- list.files(path_IQDesktop, all.files = TRUE, recursive = TRUE, full.names = FALSE)
+  files <- grep("id_rsa", files, invert = TRUE, value = TRUE)
+  
+  unlink(filename_zip)
+  curwd <- getwd()
+  setwd(path_IQDesktop)
+  zip(zipfile = filename_zip, files)
+  setwd(curwd)
+  
 }

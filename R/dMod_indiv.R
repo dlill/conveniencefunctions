@@ -280,7 +280,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
 #'
 #' @param object 
 #' @param times 
-#' @param pars 
+#' @param pars parframe 
 #' @param ... 
 #' @param data 
 #' @param FLAGverbose 

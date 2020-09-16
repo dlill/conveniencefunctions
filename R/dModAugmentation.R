@@ -198,77 +198,6 @@ cf_as.datalist <- function (x, split.by = "condition", keep.covariates = NULL, .
 # Compare ----
 
 
-#' compare two vectors
-#' 
-#' prints some stuff nicely
-#'
-#' @param x,y vectors to be compared 
-#'
-#' @return only for printing
-#' @export
-#'
-#' @examples 
-#' compare_vectors(letters[1:10], letters[15:5])
-compare_vectors <- function(x,y) {
-  cat(
-    "Ordered", "\n",
-    "--------------------\n", 
-    "x:", paste0(identical(x, sort(x)), collapse = ","), "\n",
-    "y:", paste0(identical(y, sort(y)), collapse = ","), "\n",
-    "\n\n", 
-    "intersect(x,y)", "\n",
-    "--------------------\n", 
-    paste0(intersect(x, y), collapse = ","),  "\n",
-    "\n\n", 
-    "setdiff(x,y)", "\n",
-    "--------------------\n", 
-    paste0(setdiff(x, y), collapse = ","),  "\n",
-    "\n\n", 
-    "setdiff(y,x)", "\n",
-    "--------------------\n", 
-    paste0(setdiff(y,x), collapse = ","), "\n",
-    ""
-  )
-}
-
-
-#' Setdiff of names
-#'
-#' @param .x,.y Vectors/matrices with (dim)names
-#'
-#' @return output of compare.character
-#' @export
-compare_names <- function(.x,.y) {
-  if(length(dim(.x))!=length(dim(.y)))
-    stop("not the same number of dimensions")
-  if (is.null(dim(.x))) {
-    if(!identical(order(names(.x)), order(names(.y))))
-      warning("Names not in identical order")
-    return(compare(names(.x), names(.y)))
-  }
-  if (length(dim(.x)) == 2) {
-    if(!(identical(order(rownames(.x)), order(rownames(.y)))&identical(order(colnames(.x)), order(colnames(.y)))))
-      warning("Dimnames not in identical order")
-    return(map2(dimnames(.x), dimnames(.y), ~compare(.x, .y)))
-  }
-}
-
-#' compare named numerics
-#'
-#' @param .x,.y Named numerics
-#'
-#' @return data.frame with name, diff = (.y-.x), appended output of compare_names
-#' @export
-compare_named_numeric <- function(.x,.y) {
-  
-  .x <- tibble(name = names(.x),x = .x)
-  .y = tibble(name = names(.y), y = .y)
-  out <- full_join(.x,.y, "name")
-  out <- out %>%
-    mutate(`y-x` = y-x) %>%
-    mutate(`abs(y)>abs(x)` = abs(y)>abs(x))
-  return(out)
-}
 
 #' compare two objlists
 #'
@@ -674,12 +603,6 @@ fitErrorModel_plot <- function(data) {
 # .. plotData ----
 # ----------------------------------------------- #
 
-#' Plot a list data points
-#' @export
-plotData  <- function(data,...) {
-  UseMethod("plotData", data)
-}
-
 
 #' Quickly plot data
 #' 
@@ -706,7 +629,7 @@ plotAsDatalist <- function(data, ..., smooth = T, se = FALSE) {
 #' @param data,...,scales,facet,transform see dMod::plotData
 #'
 #' @export
-plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
+cf_plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
   
   rownames_to_condition <- function(covtable) {
     out <- cbind(condition = rownames(covtable), covtable, stringsAsFactors = F)
@@ -755,52 +678,19 @@ plotData.datalist <- function(data, ..., scales = "free", facet = "wrap", transf
   
 }
 
-#' PlotData.tbl_df from dMod
-#'
-#' @param data a dMod.frame, is just called data for S3 consistency
-#' @param hypothesis 1
-#' @param ... to plotData.datalist
-#'
-#' @export
-plotData.tbl_df <- function(data, hypothesis = 1, ... ) {
-  
-  dots <- substitute(alist(...))
-  if(is.character(hypothesis)) hypothesis <- which(data$hypothesis == hypothesis)
-  
-  plotData.datalist(data[["data"]][[hypothesis]], ...) +
-    ggtitle(label = paste0(data[["hypothesis"]][[hypothesis]], "\n",
-                           paste0(paste(names(dots), "=", dots )[-1], collapse = "\n")) )
-}
 
 
 # ----------------------------------------------- #
 # .. PlotCombined ----
 # ----------------------------------------------- #
 
-#' Plot a list of model predictions and a list of data points in a combined plot
-#' @param x prediction or dMod.frame
-#' @param hypothesis numeric length 1
-#' @param index numeric refers to the fitrank of the fit stored in parframes of the dMod.frame
-#' @param ... to plotCombined.prdlist
-#' @param plotErrorBands TRUE: plot the errormodel as error bands?
-#' @param data if x is prdlist, add datalist
-#' @param scales to facet_wrap or grid
-#' @param facet "wrap" or "grid"
-#' @param transform coordinate transform
-#' @param aesthetics named vector going to aes_() in the first call to ggplot. Allows very complex plots
-#' @export
-plotCombined <- function(x,...) {
-  UseMethod("plotCombined", x)
-}
-
-
-
+#' bla
 #' @export
 #' @rdname plotCombined
 #'
 #' @details Works with multiple steps (index as a vector). I recommend then using it with \code{aesthetics = c(linetype= "step_")}
 #' to access the step-information
-plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
+cf_plotCombined.dMod.frame <- function(x, hypothesis = 1, index = 1, ... , plotErrorBands = F) {
   
   dots <- substitute(alist(...))
   message("If you want to subset() the plot, specify hypothesis AND index")
@@ -840,9 +730,7 @@ plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBan
                       paste0(paste(names(dots), "=", dots )[-1], collapse = "\n"))}
   }
   
-  
-  
-  myplot <- plotCombined.prdlist(prediction, data, ...) +
+  myplot <- cf_plotCombined.prdlist(prediction, data, ...) +
     ggtitle(label = title)
   
   if (plotErrorBands) {
@@ -863,9 +751,10 @@ plotCombined.tbl_df <- function(x, hypothesis = 1, index = 1, ... , plotErrorBan
   return(myplot)
 }
 
+#' bla
 #' @export
 #' @rdname plotCombined
-plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
+cf_plotCombined.prdlist <- function(x, data = NULL, ..., scales = "free", facet = "wrap", transform = NULL, aesthetics = NULL) {
   
   mynames <- c("time", "name", "value", "sigma", "condition", "step_")
   covtable <- NULL
@@ -1104,7 +993,6 @@ plotPars.tbl_df <- function(dMod.frame, hypothesis = 1,  ..., tol = 1 ) {
 # ---------------------------------------------------------- #
 # unlink dMod ----
 # ---------------------------------------------------------- #
-
 
 #' Unlink standard dMod-generated files
 #'

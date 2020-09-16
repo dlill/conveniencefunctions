@@ -2,10 +2,13 @@
     "addCursorAbove" : "Shift+Alt+Up",
     "addCursorBelow" : "Shift+Alt+Down",
     "executeCurrentSection" : "Ctrl+Shift+T",
+    "insertSection" : "",
     "newTerminal" : "",
     "pasteLastYank" : "",
     "quitSession" : "",
     "roxygenizePackage" : "",
     "showShellDialog" : "Ctrl+Shift+A",
-    "sourceActiveDocument" : ""
+    "sourceActiveDocument" : "",
+    "splitline" : ""
 }
+

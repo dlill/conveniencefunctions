@@ -18,7 +18,7 @@ cf_predict(
 \arguments{
 \item{times}{}
 
-\item{pars}{}
+\item{pars}{parframe}
 
 \item{FLAGverbose}{}
 

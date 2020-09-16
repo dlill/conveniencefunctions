@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  conveniencefunctions:
+    image: conveniencefunctions
+    ports:
+      - "8787:8787"
+    volumes:
+      - /home/daniel/Promotion/Promotion:/home/rstudio/Promotion
+    environment: 
+      - PASSWORD=pass
+
+

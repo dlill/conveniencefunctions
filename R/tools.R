@@ -1,4 +1,37 @@
-# [] install_keybindings
+#' Flexzirkel Stoppuhr
+#'
+#' "coin" = trainieren, "work complete" = aufhö?ren, "bing" = gleich gehts wieder los
+#'
+#' @export
+#' @importFrom beepr beep
+flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
+  cat("Tipps",
+      "* Auch die Fußverschraubung trainieren",
+      "* Auch Pinguin trainieren",
+      "* Auch Krebs trainieren",
+      "* Auch Kniebeuge trainieren",
+      "* Bei Übung 1 die Beine durchstrecken",
+      "* Bei Übung 2 den oberen Arm langziehen",
+      "* Bei Rollbrett nach vorne Beine durchstrecken",
+      sep = "\n")
+  
+  print(Sys.time())
+  on.exit(print(Sys.time()))
+  for (i in 1:100) {
+    # train
+    if (t1) {beepr::beep(2)
+      Sys.sleep(t1)}
+    if (t2) {beepr::beep(2)
+      Sys.sleep(t2)}
+    if (t3) {beepr::beep(2)
+      Sys.sleep(t3)}
+    beepr::beep(4)
+    # change
+    Sys.sleep(t4)
+    beepr::beep(1)
+    Sys.sleep(t5)
+  }
+}
 
 
 
@@ -248,6 +281,36 @@ funnames_in_package <- function(package, as_namespace = F) {
 # -------------------------------------------------------------------------#
 # File interactions ----
 # -------------------------------------------------------------------------#
+
+#' gitall from R command line
+#'
+#' @param string commit message
+#'
+#' @return
+#' @export
+gall <- function(string) {
+  system(paste0('git add --all && 
+  git commit -m "', string, '" && 
+  git pull && 
+  git push'), wait = FALSE)
+}
+
+
+#' Git pull all projects in the PROJTOOLS fodler
+#'
+#' @export
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#'
+#' @examples
+pullJobs <- function() {
+  setwd("~")
+  f <- c(list.files("PROJTOOLS/", full.names = TRUE),
+         list.files("PROJECTS/", full.names = TRUE))
+  system(paste0(paste0("cd && cd ",f, " && git pull && echo ", f), collapse = "&"))
+}
+
+
 
 #' Write a characeter vector to a file and open it.
 #'

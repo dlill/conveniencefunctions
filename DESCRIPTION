@@ -19,6 +19,8 @@ Imports:
   devtools,
   git2r,
   reshape2,
-  officer
-RoxygenNote: 7.0.2
+  officer,
+  knitr,
+  beepr
+RoxygenNote: 7.1.1
 Suggests: testthat
