@@ -141,7 +141,7 @@ cf_P_indiv <- function(p0, est.grid, fixed.grid) {
 #' @export
 #'
 #' @importFrom parallel mclapply
-cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data") {
+cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, times = NULL, attr.name = "data", fixed.conditions = NULL) {
   timesD <- sort(unique(c(0, do.call(c, lapply(data, function(d) d$time)))))
   if (!is.null(times)) 
     timesD <- sort(union(times, timesD))
@@ -160,7 +160,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
                    FLAGbrowser2 = FALSE, 
                    FLAGverbose = FALSE,
                    FLAGNaNInfwarnings = FALSE,
-                   FixedConditions = NULL) {
+                   FixedConditions = fixed.conditions) {
     arglist <- list(...)
     arglist <- arglist[match.fnargs(arglist, "pars")]
     
