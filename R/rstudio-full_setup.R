@@ -5,7 +5,7 @@
 #' @md
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE) {
+cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
   # 1. Theme 
   rstudioapi::applyTheme("pastel on dark")
   # 2. Keybindings
@@ -32,36 +32,6 @@ cf_install_rstudio <- function(FLAGoverwrite = FALSE, FLAGshortcuts = FALSE) {
   }
   # 6. .Rprofile
   file.copy(system.file("setup_IQDesktop/.Rprofile"), "~/.Rprofile")
-  cat("cd ", "mkdir PROJTOOLS",  "cd PROJTOOLS", 
-      "git clone git@github.com:dlill/conveniencefunctions",
-      "git clone git@github.com:IntiQuan/IQRtools",
-      "git clone git@github.com:IntiQuan/IQRmate",
-      "git clone git@github.com:IntiQuan/IQRexamples",
-      "git clone git@github.com:IntiQuan/MMVIsoboles",
-      "git clone git@github.com:IntiQuan/iqrmalaria IQRmalariaGIT",
-      "sudo apt-get update",
-      "sudo apt-get install  libx11-dev mesa-common-dev libglu1-mesa-dev",
-      "",
-      "git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short",
-      "",
-      "cd ~/PROJECTS",
-      "gclone /IQDESKTOP/SHARE/ (drop final /)",
-      "",
-      "cd /IQDESKTOP/SHARE/IQRtools",
-      "R CMD INSTALL --no-multiarch --with-keep.source IQRtools",
-      "",
-      "IQRtools::setup_IQRtools(local = TRUE)",
-      '.RESERVED_WORD_IQRMODELS                 <- c( 
-  "T","F","PK","G","H","gt","ge","lt","le","mod","and","or", 
-  "piecewise","interp0","interp1","interpcs", "default", "F1", "F2", "Tlag", "eps", "eta", "theta", "sigma", 
-  "a","b","b1","b2","b3","d","Intercept", 
-  "time", "y", "ydot", "RPAR", "IPAR" 
-)',
-      "",
-      "install.packages('akima')",
-      "install.packages('kmlShape')",
-      sep = "\n"
-  )  
 }
 
 
