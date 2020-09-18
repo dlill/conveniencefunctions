@@ -363,8 +363,10 @@ toggle_mclapply <- function() {
   rng <- newline <- NULL
   if (grepl("mclapply", textline)) {
     newline <- toggle_mclapply_off(textline)
+    del_line_above <- 0
+    if (grepl("^ncores *<-", text[current_row-1])) del_line_above <- 1
     rng <- rstudioapi::document_range(
-      rstudioapi::document_position(current_row - 1, 1), 
+      rstudioapi::document_position(current_row - del_line_above, 1), 
       rstudioapi::document_position(current_row, Inf))
   } else {
     newline <- toggle_mclapply_on(textline)
