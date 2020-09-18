@@ -18,14 +18,44 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
   newLines <- readLines(system.file("setup_IQDesktop/Setup/Resources/bash/bash_aliases", package = "conveniencefunctions")) 
   cat(c("\n", newLines), sep = "\n", file = bashrcfile, append = TRUE)
   # 5. Install shortcuts for Thunar
-  if (FLAGshortcuts){
-    if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
-    wup <- file.copy(system.file("setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
-                     "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
-    if (wup) cat("Explorer shortcuts installed \n")
-  }
+  if (FLAGshortcuts) install_thunarshortcuts(FLAGshortcuts)
   # 6. .Rprofile
   if (FLAGoverwrite) file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
+}
+
+
+#' Install thunar shortcuts
+#'
+#' @param FLAGoverwrite 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+install_thunarshortcuts <- function(FLAGoverwrite) {
+  if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
+  wup <- file.copy(system.file("setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
+                   "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
+  if (wup) cat("Explorer shortcuts installed \n")
+}
+
+
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+update_thunarshortcuts_in_cf <- function() {
+  thunarfile_new <- "~/.config/gtk-3.0/bookmarks"
+  thunarfile_old <- "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
+  
+  new <- NULL
+  if (!file.exists(thunarfile_new)) stop("no new bookmarks found")
+  new <- readLines(thunarfile_new)
+  old <- readLines(thunarfile_old)
+  
+  cat(c("", setdiff(new, old), ""), sep = "\n", file = thunarfile_old, append = TRUE)
 }
 
 

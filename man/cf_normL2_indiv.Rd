@@ -11,7 +11,8 @@ cf_normL2_indiv(
   est.grid,
   fixed.grid,
   times = NULL,
-  attr.name = "data"
+  attr.name = "data",
+  fixed.conditions = NULL
 )
 }
 \arguments{
