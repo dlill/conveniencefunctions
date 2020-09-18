@@ -15,10 +15,9 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
   # 4. Bash alias for git
   bashrcfile <- "~/.bashrc"
   if (Sys.info()["sysname"] == "Windows") bashrcfile <- "~/../.bashrc"
-    newLines <- readLines(system.file("setup_IQDesktop/Setup/Resources/bash/bash_aliases", package = "conveniencefunctions")) 
-    oldLines <- readLines(bashrcfile)
-    cat(c("\n", setdiff(newLines, oldLines)), sep = "\n\n", file = bashrcfile, append = TRUE)
-  if (wup) cat("Bash aliases installed \n")
+  newLines <- readLines(system.file("setup_IQDesktop/Setup/Resources/bash/bash_aliases", package = "conveniencefunctions")) 
+  oldLines <- readLines(bashrcfile)
+  cat(c("\n", setdiff(newLines, oldLines)), sep = "\n\n", file = bashrcfile, append = TRUE)
   # 5. Install shortcuts for Thunar
   if (FLAGshortcuts){
     if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
