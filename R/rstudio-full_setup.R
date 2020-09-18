@@ -26,7 +26,7 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
     if (wup) cat("Explorer shortcuts installed \n")
   }
   # 6. .Rprofile
-  file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
+  if (FLAGoverwrite) file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
 }
 
 
@@ -40,7 +40,7 @@ install_cfkeybindings <- function(FLAGoverwrite = FALSE){
   if (!dir.exists(keybindings_path)) dir.create(keybindings_path, FALSE, TRUE)
   keybindings_files <- list.files(system.file("setup_rstudio/keybindings", package = "conveniencefunctions"), "json$", F, T)
   wup <- vapply(stats::setNames(nm = keybindings_files), file.copy, to = keybindings_path, overwrite = FLAGoverwrite, FUN.VALUE = TRUE)
-  if (any(wup)) cat(paste0(names(wup)[wup], collapse = " .... \n"),  "installed\n")
+  if (any(wup)) cat(paste0(names(wup)[wup], collapse = " .... \n"),  "\nkeybindings installed\n")
   NULL
 }
 
