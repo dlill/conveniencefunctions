@@ -1,6 +1,6 @@
 # ssh key
 cd 
-mkdir .ssh 
+mkdir ~/.ssh 
 unzip id_rsa.zip -d ~/.ssh 
 chmod 600 ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa.pub
@@ -8,7 +8,6 @@ chmod 600 ~/.ssh/id_rsa.pub
 # git 
 git config --global user.name Daniel Lill
 git config --global user.email daniel.lill@intiquan.com
-
 
 # clone PROJECTS
 cd 
@@ -33,3 +32,6 @@ cd && cd PROJTOOLS && Rscript -e "devtools::install_deps('./IQRmate/')" && R CMD
 cd && cd PROJTOOLS/IQRmalariaGIT && Rscript -e "devtools::install_deps('./IQRmalaria/')" && R CMD INSTALL --no-multiarch --with-keep.source IQRmalaria
 cd && cd PROJTOOLS && Rscript -e "devtools::install_deps('./IQRexamples/')" && R CMD INSTALL --no-multiarch --with-keep.source IQRexamples
 cd && cd PROJTOOLS && Rscript -e "devtools::install_deps('./MMVIsoboles/')" && R CMD INSTALL --no-multiarch --with-keep.source MMVIsoboles
+
+# Setup RStudio
+Rscript -e 'conveniencefunctions::cf_install_rstudio()'
