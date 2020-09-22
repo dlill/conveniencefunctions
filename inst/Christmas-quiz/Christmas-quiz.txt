@@ -1,0 +1,29 @@
+* Write code to sample from an NLME project "projPath" with sample flag 3 including an ID column
+    * One point for each correct argument
+    * sample_IQRnlmeProject(projPath, FLAG_SAMPLE = 3, FLAGid = TRUE) ***
+* How do you load a csv data set
+    * load_IQRcsvData
+    * IQRloadCSVData ***
+    * IQRloadCsvData
+    * IQRLoadCsvData
+    * load_csvDATA
+* How do you create a general data.frame
+    * IQRdataGENERAL ****
+    * IQRDataGENERAL
+    * IQRdataGeneral 
+    * IQRDataGeneral 
+* Which argument lets you supply covariates to getPopParameters_IQRnlmeProject (IndCovariates)
+* How are the individual parameters called in the list returned by sample_IQRnlmeProject
+    * indivPars
+    * parameterValuesIndividual ***
+    * parametersIndividual
+    * indParams
+* You want to specify a covariate relation for allometric scaling of the CL parameter with weight (WT). How do you write the formula
+    * XREF * (COV / REF)^BETA
+    * X_Ref * (WT / Ref)^Beta
+    * X_ref * (WT / REF)^Beta ***
+    * X_ref * (WT / REF)^BETA
+* Convert a path to an IQRnlmeProject
+    * as_IQRnlmeProject
+
+Thanks RStudio for fuzzy matching and tab-completion!
