@@ -127,7 +127,7 @@ services:
       # with the default config file. If you need your own license keys - please contact
       # info@intiquan.com. Keys are free for academia, non-profit, governmental use.
       - IQREPORT_LICENSE_KEY=89B7429C-B436D222-49516465736B746F70-B90E4447-33BD928
-      - IQRTOOLS_LICENSE_KEY=afee66a7183cbd2b-444c5f606e666f6a6b-5fedaf46-bb3663882f8c1ad6
+      - IQRTOOLS_LICENSE_KEY=89cc4f29b60e70c-4960721b47645e60696e60-6dcd636a-6d4050bc304d430f
 
       # Finally, some settings for IQR Tools and IQReport. The "compliance mode" in IQR Tools
       # allows to automatically generate traceability information when conducting an analysis.
