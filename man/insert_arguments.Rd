@@ -6,9 +6,6 @@
 \usage{
 insert_arguments()
 }
-\value{
-
-}
 \description{
 Extract arguments from a function call
 }

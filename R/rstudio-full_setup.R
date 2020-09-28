@@ -5,7 +5,9 @@
 #' @md
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
+cf_install_rstudio <- function(FLAGoverwrite = TRUE, 
+                               FLAGshortcuts = FALSE,
+                               FLAGreservedWords = FALSE) {
   # 1. Theme 
   try(rstudioapi::applyTheme("pastel on dark"))
   # 2. Keybindings
@@ -21,9 +23,20 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
   if (FLAGshortcuts) install_thunarshortcuts(FLAGshortcuts)
   # 6. .Rprofile
   if (FLAGoverwrite) file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
+  # 7. 
+  if (FLAGreservedWords) install_cfreservedWords()
 }
 
 
+#' Copy a standard setup_options_IQRtools.R for custom settings
+#'
+#' @return
+#' @export
+#'
+#' @examples
+install_cfreservedWords <- function(){
+  file.copy(system.file("setup_IQDesktop/Setup/Resources/setup_options_IQRtools.R"), "~/setup_options_IQRtools.R")
+}
 #' Install thunar shortcuts
 #'
 #' @param FLAGoverwrite 

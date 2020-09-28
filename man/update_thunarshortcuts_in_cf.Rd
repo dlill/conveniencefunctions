@@ -6,9 +6,6 @@
 \usage{
 update_thunarshortcuts_in_cf()
 }
-\value{
-
-}
 \description{
 Title
 }
