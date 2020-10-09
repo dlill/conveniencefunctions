@@ -6,8 +6,8 @@
 #' @return called for side-effect
 #' @export
 cf_install_rstudio <- function(FLAGoverwrite = TRUE, 
-                               FLAGshortcuts = FALSE,
-                               FLAGreservedWords = FALSE) {
+                               FLAGThunarShortcuts = FALSE,
+                               FLAGIQRreservedWords = FALSE) {
   # 1. Theme 
   try(rstudioapi::applyTheme("pastel on dark"))
   # 2. Keybindings
@@ -18,13 +18,14 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE,
   bashrcfile <- "~/.bashrc"
   if (Sys.info()["sysname"] == "Windows") bashrcfile <- "~/../.bashrc"
   newLines <- readLines(system.file("setup_IQDesktop/Setup/Resources/bash/bash_aliases", package = "conveniencefunctions")) 
-  cat(c("\n", newLines), sep = "\n", file = bashrcfile, append = TRUE)
+  if (!any(grepl("# ===== conveniencefunctions aliases =======", readLines(bashrcfile))))
+    cat(c("\n", newLines), sep = "\n", file = bashrcfile, append = TRUE)
   # 5. Install shortcuts for Thunar
-  if (FLAGshortcuts) install_thunarshortcuts(FLAGshortcuts)
+  if (FLAGThunarShortcuts) install_thunarshortcuts(FLAGThunarShortcuts)
   # 6. .Rprofile
   if (FLAGoverwrite) file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
   # 7. 
-  if (FLAGreservedWords) install_cfreservedWords()
+  if (FLAGIQRreservedWords) install_cfreservedWords()
 }
 
 
