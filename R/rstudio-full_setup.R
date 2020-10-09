@@ -5,33 +5,70 @@
 #' @md
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
+cf_install_rstudio <- function(FLAGoverwrite = TRUE, 
+                               FLAGshortcuts = FALSE,
+                               FLAGreservedWords = FALSE) {
   # 1. Theme 
-  rstudioapi::applyTheme("pastel on dark")
+  try(rstudioapi::applyTheme("pastel on dark"))
   # 2. Keybindings
   install_cfkeybindings(FLAGoverwrite = FLAGoverwrite)
   # 3. Snippets
   install_cfsnippets(FLAGoverwrite = FLAGoverwrite)  
-  wup <- FLAGoverwrite
   # 4. Bash alias for git
-  if (Sys.info()["sysname"] == "Linux"){
-    wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/.bash_aliases", overwrite = FLAGoverwrite) 
-    system("sed -i 's/\r//' ~/.bash_aliases")
-  }
-  if (Sys.info()["sysname"] == "Windows"){
-    wup <- file.copy(system.file("setup_IQDesktop/bash/bash_aliases", package = "conveniencefunctions"), "~/../.bash_aliases", overwrite = FLAGoverwrite) 
-    writeLines("source ~/.bash_aliases", "~/../.bashrc")
-  }
-  if (wup) cat("Bash aliases installed \n")
+  bashrcfile <- "~/.bashrc"
+  if (Sys.info()["sysname"] == "Windows") bashrcfile <- "~/../.bashrc"
+  newLines <- readLines(system.file("setup_IQDesktop/Setup/Resources/bash/bash_aliases", package = "conveniencefunctions")) 
+  cat(c("\n", newLines), sep = "\n", file = bashrcfile, append = TRUE)
   # 5. Install shortcuts for Thunar
-  if (FLAGshortcuts){
-    if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
-    wup <- file.copy(system.file("setup_IQDesktop/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
-                     "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
-    if (wup) cat("Explorer shortcuts installed \n")
-  }
+  if (FLAGshortcuts) install_thunarshortcuts(FLAGshortcuts)
   # 6. .Rprofile
-  file.copy(system.file("setup_IQDesktop/.Rprofile"), "~/.Rprofile")
+  if (FLAGoverwrite) file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
+  # 7. 
+  if (FLAGreservedWords) install_cfreservedWords()
+}
+
+
+#' Copy a standard setup_options_IQRtools.R for custom settings
+#'
+#' @return
+#' @export
+#'
+#' @examples
+install_cfreservedWords <- function(){
+  file.copy(system.file("setup_IQDesktop/Setup/Resources/setup_options_IQRtools.R"), "~/setup_options_IQRtools.R")
+}
+#' Install thunar shortcuts
+#'
+#' @param FLAGoverwrite 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+install_thunarshortcuts <- function(FLAGoverwrite) {
+  if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
+  wup <- file.copy(system.file("setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
+                   "~/.config/gtk-3.0/bookmarks", overwrite = FLAGoverwrite) 
+  if (wup) cat("Explorer shortcuts installed \n")
+}
+
+
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+update_thunarshortcuts_in_cf <- function() {
+  thunarfile_new <- "~/.config/gtk-3.0/bookmarks"
+  thunarfile_old <- "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
+  
+  new <- NULL
+  if (!file.exists(thunarfile_new)) stop("no new bookmarks found")
+  new <- readLines(thunarfile_new)
+  old <- readLines(thunarfile_old)
+  
+  cat(c("", setdiff(new, old), ""), sep = "\n", file = thunarfile_old, append = TRUE)
 }
 
 
@@ -43,9 +80,9 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE) {
 install_cfkeybindings <- function(FLAGoverwrite = FALSE){
   keybindings_path <- "~/.R/rstudio/keybindings"
   if (!dir.exists(keybindings_path)) dir.create(keybindings_path, FALSE, TRUE)
-  keybindings_files <- list.files(system.file("setup_IQDesktop/keybindings", package = "conveniencefunctions"), "json$", F, T)
+  keybindings_files <- list.files(system.file("setup_rstudio/keybindings", package = "conveniencefunctions"), "json$", F, T)
   wup <- vapply(stats::setNames(nm = keybindings_files), file.copy, to = keybindings_path, overwrite = FLAGoverwrite, FUN.VALUE = TRUE)
-  if (any(wup)) cat(paste0(names(wup)[wup], collapse = " .... \n"),  "installed\n")
+  if (any(wup)) cat(paste0(names(wup)[wup], collapse = " .... \n"),  "\nkeybindings installed\n")
   NULL
 }
 
@@ -58,30 +95,8 @@ install_cfkeybindings <- function(FLAGoverwrite = FALSE){
 #' @examples
 install_cfsnippets <- function(FLAGoverwrite = FALSE){
   if(!dir.exists("~/.R/snippets/")) dir.create("~/.R/snippets/", recursive = TRUE)
-  wup <- file.copy(system.file("setup_IQDesktop/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"), overwrite = FLAGoverwrite)
+  wup <- file.copy(system.file("setup_rstudio/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"), overwrite = FLAGoverwrite)
   if (wup) cat("Snippets were overwritten \n")
   NULL
 }
 
-#' Backup the IQRdesktop setup scripts
-#'
-#' @param path_IQDesktop 
-#' @param filename_zip 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-backup_IQdesktopSetupScripts <- function(path_IQDesktop = "/IQDESKTOP/PROJTOOLS/IQDesktop/",
-                                         filename_zip = "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/setup.zip") {
-  
-  files <- list.files(path_IQDesktop, all.files = TRUE, recursive = TRUE, full.names = FALSE)
-  files <- grep("id_rsa", files, invert = TRUE, value = TRUE)
-  
-  unlink(filename_zip)
-  curwd <- getwd()
-  setwd(path_IQDesktop)
-  zip(zipfile = filename_zip, files)
-  setwd(curwd)
-  
-}

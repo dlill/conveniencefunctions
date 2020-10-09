@@ -284,7 +284,7 @@ snippet IQRhead
 
 	## Preliminaries ====
 
-	setwd(dirname(rstudioapi::getSourceEditorContext()\$path))
+	try(setwd(dirname(rstudioapi::getSourceEditorContext()\$path)))
 
 	# Default packages (do not load other packages, use "::" instead)
 	library(IQRtools)

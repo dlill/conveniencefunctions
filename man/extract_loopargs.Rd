@@ -16,7 +16,7 @@ extract_loopargs(textline)
 \item{textline}{Line of code}
 }
 \value{
-list(looparg = "loopingvariable", loopval = "list:ofValues")
+list(loopvar = "loopingvariable", loopval = "list:ofValues")
 }
 \description{
 Get the arguments of a for loop or of lapply

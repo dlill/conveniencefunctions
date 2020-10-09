@@ -4,14 +4,8 @@
 \alias{cf_plotData.datalist}
 \title{Copied from dMod with additional title showing covariates}
 \usage{
-cf_plotData.datalist(
-  data,
-  ...,
-  scales = "free",
-  facet = "wrap",
-  transform = NULL,
-  aesthetics = NULL
-)
+cf_plotData.datalist(data, ..., scales = "free", facet = "wrap",
+  transform = NULL, aesthetics = NULL)
 }
 \arguments{
 \item{data, ..., scales, facet, transform}{see dMod::plotData}

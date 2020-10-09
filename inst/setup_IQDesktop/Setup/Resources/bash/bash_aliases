@@ -1,0 +1,11 @@
+# ===== conveniencefunctions aliases =======
+gitall() {
+  git add --all && git commit -m "$1" && git pull && git push
+  }
+  
+gall() {
+  git add --all && git commit -m "$1" && git pull && git push && exit
+  }
+  
+alias gitlog="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
+alias ll='ls -alF'

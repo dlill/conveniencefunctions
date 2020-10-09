@@ -4,15 +4,8 @@
 \alias{cf_normL2_indiv}
 \title{Fast normL2}
 \usage{
-cf_normL2_indiv(
-  data,
-  prd0,
-  errmodel = NULL,
-  est.grid,
-  fixed.grid,
-  times = NULL,
-  attr.name = "data"
-)
+cf_normL2_indiv(data, prd0, errmodel = NULL, est.grid, fixed.grid,
+  times = NULL, attr.name = "data", fixed.conditions = NULL)
 }
 \arguments{
 \item{data}{}

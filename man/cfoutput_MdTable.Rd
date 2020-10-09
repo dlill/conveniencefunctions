@@ -2,24 +2,27 @@
 % Please edit documentation in R/outputting.R
 \name{cfoutput_MdTable}
 \alias{cfoutput_MdTable}
-\title{Title}
+\title{Output table as markdown}
 \usage{
-cfoutput_MdTable(
-  dt,
-  filename = NULL,
-  format = c("markdown", "pandoc"),
-  caption = NULL,
-  ...
-)
+cfoutput_MdTable(dt, split_by = NULL, filename = NULL,
+  format = c("markdown", "pandoc"), caption = NULL, ...)
 }
 \arguments{
-\item{dt}{}
+\item{dt}{data.table}
+
+\item{split_by}{Charactor of colnames to split the table by inserting separator lines}
 
 \item{filename}{}
 }
 \value{
-
+object of class knitr::kable
 }
 \description{
-Title
+Output table as markdown
+}
+\examples{
+cfoutput_MdTable(data.table(iris), split_by = "Species")
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

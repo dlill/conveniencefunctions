@@ -6,7 +6,7 @@
 #' @importFrom beepr beep
 flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
   cat("Tipps",
-      "* Auch die Fußverschraubung trainieren",
+      "* Auch die Fussverschraubung trainieren",
       "* Auch Pinguin trainieren",
       "* Auch Krebs trainieren",
       "* Auch Kniebeuge trainieren",
