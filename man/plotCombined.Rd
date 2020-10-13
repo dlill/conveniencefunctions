@@ -5,11 +5,23 @@
 \alias{cf_plotCombined.prdlist}
 \title{bla}
 \usage{
-cf_plotCombined.dMod.frame(x, hypothesis = 1, index = 1, ...,
-  plotErrorBands = F)
+cf_plotCombined.dMod.frame(
+  x,
+  hypothesis = 1,
+  index = 1,
+  ...,
+  plotErrorBands = F
+)
 
-cf_plotCombined.prdlist(x, data = NULL, ..., scales = "free",
-  facet = "wrap", transform = NULL, aesthetics = NULL)
+cf_plotCombined.prdlist(
+  x,
+  data = NULL,
+  ...,
+  scales = "free",
+  facet = "wrap",
+  transform = NULL,
+  aesthetics = NULL
+)
 }
 \description{
 bla

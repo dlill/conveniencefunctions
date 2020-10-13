@@ -13,6 +13,9 @@ cf_P_indiv(p0, est.grid, fixed.grid)
 
 \item{fixed.grid}{}
 }
+\value{
+
+}
 \description{
 Title
 }

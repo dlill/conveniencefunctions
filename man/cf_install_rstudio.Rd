@@ -4,8 +4,11 @@
 \alias{cf_install_rstudio}
 \title{Quick setup of RStudio on a new machine}
 \usage{
-cf_install_rstudio(FLAGoverwrite = TRUE, FLAGshortcuts = FALSE,
-  FLAGreservedWords = FALSE)
+cf_install_rstudio(
+  FLAGoverwrite = TRUE,
+  FLAGThunarShortcuts = FALSE,
+  FLAGIQRreservedWords = FALSE
+)
 }
 \value{
 called for side-effect
