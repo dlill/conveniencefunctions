@@ -102,8 +102,9 @@ snippet cfgall
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
-snippet whiledevlist
-	while(length(dev.list())) dev.off()
+snippet whiledevlistDEVICE
+	devlist <- dev.list()
+	for(dev in devlist[names(devlist) == "$0png") dev.off(dev)
 
 snippet authormdheader
 	# Daniel Lill (daniel.lill@intiquan.com)
