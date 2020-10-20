@@ -27,15 +27,16 @@ cf_dir.create <- function(dirnm) {
 #' @examples
 #' cfoutput_MdTable(data.table(iris), split_by = "Species")
 cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("markdown", "pandoc"), caption = NULL, ...) {
+  cat("[ ] Add FLAGsummaryRow, listing the number of unique levels per column")
   kt <- knitr::kable(dt,format = format[1], caption = caption, ...)
   
   if (!is.null(split_by)){
     dt <- copy(as.data.table(dt))
     n <- dt[,list(nlines = .N), by = split_by]
     n[,`:=`(rowid = cumsum(nlines))]
-    n[,`:=`(rowid = rowid + 2)]
+    n[,`:=`(rowid = rowid + 2 + 2*(!is.null(caption)))]
     atr <- attributes(kt)
-    seprow <- gsub(":","-",kt[2])
+    seprow <- gsub(":","-",kt[2 + 2*(!is.null(caption))])
     for (i in rev(n$rowid)[-1]) {
       kt <- c(kt[1:i], seprow, kt[(i+1):length(kt)])
     }

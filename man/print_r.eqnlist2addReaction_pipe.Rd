@@ -13,12 +13,13 @@ print_r.eqnlist2addReaction_pipe(reactions)
 Print an eqnlist as a pipe of addReaction()-calls and insert them in place
 }
 \seealso{
-Other printtools: \code{\link{print_mathematica.character}},
-  \code{\link{print_mathematica.eqnlist}},
-  \code{\link{print_mathematica.eqnvec}},
-  \code{\link{print_mathematica.matrix}},
-  \code{\link{print_mathematica.name_equals_value}},
-  \code{\link{print_r.named_vector}}
+Other printtools: 
+\code{\link{print_mathematica.character}()},
+\code{\link{print_mathematica.eqnlist}()},
+\code{\link{print_mathematica.eqnvec}()},
+\code{\link{print_mathematica.matrix}()},
+\code{\link{print_mathematica.name_equals_value}()},
+\code{\link{print_r.named_vector}()}
 }
 \concept{insertfunctions}
 \concept{printtools}

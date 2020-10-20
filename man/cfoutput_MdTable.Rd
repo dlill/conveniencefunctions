@@ -4,8 +4,14 @@
 \alias{cfoutput_MdTable}
 \title{Output table as markdown}
 \usage{
-cfoutput_MdTable(dt, split_by = NULL, filename = NULL,
-  format = c("markdown", "pandoc"), caption = NULL, ...)
+cfoutput_MdTable(
+  dt,
+  split_by = NULL,
+  filename = NULL,
+  format = c("markdown", "pandoc"),
+  caption = NULL,
+  ...
+)
 }
 \arguments{
 \item{dt}{data.table}

@@ -88,10 +88,10 @@ snippet status
 	system("git status", wait = FALSE)
 
 snippet code 
-	system("code $0.", wait = FALSE)
+	system("printf 'y' | code $0.", wait = FALSE)
 
 snippet codeParentParentDir 
-	system("code $0../../.", wait = FALSE)
+	system("printf 'y' | code $0../../.", wait = FALSE)
 
 snippet gall
 	conveniencefunctions::gall("$1")
@@ -102,8 +102,9 @@ snippet cfgall
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
-snippet whiledevlist
-	while(length(dev.list())) dev.off()
+snippet whiledevlistDEVICE
+	devlist <- dev.list()
+	for(dev in devlist[names(devlist) == "$0png"]) dev.off(dev)
 
 snippet authormdheader
 	# Daniel Lill (daniel.lill@intiquan.com)
@@ -154,6 +155,9 @@ snippet unique
 
 snippet unqiue
 	unique
+
+snippet .Last.value
+	.Last.value
 
 snippet cfcopyscript
 	conveniencefunctions::cf_copy_script($0)
@@ -380,6 +384,9 @@ snippet catsep_comma
 
 snippet loadcf
 	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
+
+snippet loadOmicsTools
+	devtools::load_all("~/Promotion/Promotion/Projects/OmicsTools")
 
 snippet load_all
 	devtools::load_all()

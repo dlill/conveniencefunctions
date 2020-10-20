@@ -6,6 +6,9 @@
 \usage{
 install_cfreservedWords()
 }
+\value{
+
+}
 \description{
 Copy a standard setup_options_IQRtools.R for custom settings
 }

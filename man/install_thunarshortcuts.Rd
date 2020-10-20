@@ -9,6 +9,9 @@ install_thunarshortcuts(FLAGoverwrite)
 \arguments{
 \item{FLAGoverwrite}{}
 }
+\value{
+
+}
 \description{
 Install thunar shortcuts
 }
