@@ -18,12 +18,15 @@
     * parameterValuesIndividual ***
     * parametersIndividual
     * indParams
-* You want to specify a covariate relation for allometric scaling of the CL parameter with weight (WT). How do you write the formula
+* In a GPF, you want to specify a covariate relation for allometric scaling of the CL parameter with weight (WT). How do you write the formula
     * XREF * (COV / REF)^BETA
     * X_Ref * (WT / Ref)^Beta
     * X_ref * (WT / REF)^Beta ***
     * X_ref * (WT / REF)^BETA
 * Convert a path to an IQRnlmeProject
     * as_IQRnlmeProject
+* You want to create a GPF from a GPFProjectInfo
+    * generate_GPFfromProjectInfo
+    * generate_GPFFromProjectInfo
 
 Thanks RStudio for fuzzy matching and tab-completion!
