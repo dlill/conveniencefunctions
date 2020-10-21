@@ -19,8 +19,12 @@ cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
   to_stripped   <- stringr::str_replace_all(to,   c("\\.R$" = "", "^SCRIPT_" = ""))
   
   ln <- readLines(from)
-  message("Number of replaced filename references: ", sum(stringr::str_count(ln, from_stripped)), "-------\n")
+  message("Number of replaced filename references: ", sum(stringr::str_count(ln, from_stripped)), "-------")
   ln <- stringr::str_replace_all(ln, from_stripped, to_stripped)
+  
+  idx_date <- which(ln == "# [Date]") + 1
+  ln[idx_date] <- paste0("# ", date())
+  message("Date was updated")
   
   writeLines(ln, to)
   
