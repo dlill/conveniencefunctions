@@ -88,10 +88,10 @@ snippet status
 	system("git status", wait = FALSE)
 
 snippet code 
-	system("code $0.", wait = FALSE)
+	system("printf 'y' | code $0.", wait = FALSE)
 
 snippet codeParentParentDir 
-	system("code $0../../.", wait = FALSE)
+	system("printf 'y' | code $0../../.", wait = FALSE)
 
 snippet gall
 	conveniencefunctions::gall("$1")
