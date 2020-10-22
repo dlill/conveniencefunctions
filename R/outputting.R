@@ -26,7 +26,9 @@ cf_dir.create <- function(dirnm) {
 #'
 #' @examples
 #' cfoutput_MdTable(data.table(iris), split_by = "Species")
-cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("markdown", "pandoc"), caption = NULL, ...) {
+cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("markdown", "pandoc"), caption = NULL, na.strings = "-", ...) {
+  options(knitr.kable.NA = na.strings)
+  
   cat("[ ] Add FLAGsummaryRow, listing the number of unique levels per column")
   kt <- knitr::kable(dt,format = format[1], caption = caption, ...)
   
