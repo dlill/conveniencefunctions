@@ -72,6 +72,7 @@ inspire <- function() {
       "* Goal",
       "  * If you never did an analysis before, try mapping the necessary steps in advance",
       "  * Work out the fastest route to your goal and don't let yourself be distracted",
+      "  * Think of agile development techniques - sprints and long-term goals.",
       "* Copy these tips into the script to not forget them :)",
       
     #  "* Principles of data programming",
