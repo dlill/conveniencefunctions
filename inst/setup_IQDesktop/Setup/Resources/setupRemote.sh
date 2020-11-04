@@ -12,7 +12,6 @@ git config --global user.email daniel.lill@intiquan.com
 # clone PROJECTS
 cd 
 mkdir PROJECTS
-cd && cd PROJECTS && git clone /IQDESKTOP/SHARE/consulting/TEVA/A12_Teva_Austedo_QD_formulation/SHARED_MGS/GIT A12_Teva_Austedo_QD_formulation &
 cd && cd PROJECTS && git clone /IQDESKTOP/SHARE/consulting/MMV/XXX_IsobolePublication/GIT IsobolePublication &
 
 # clone PROJTOOLS
