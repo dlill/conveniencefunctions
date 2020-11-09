@@ -90,8 +90,14 @@ snippet status
 snippet code 
 	system("printf 'y' | code $0.", wait = FALSE)
 
-snippet codeParentParentDir 
+snippet codeParent2Dir 
 	system("printf 'y' | code $0../../.", wait = FALSE)
+
+snippet codeParent3Dir 
+	system("printf 'y' | code $0../../../.", wait = FALSE)
+
+snippet codeProjectDir 
+	system("printf 'y' | code `r rstudioapi::getActiveProject()`", wait = FALSE)
 
 snippet gall
 	conveniencefunctions::gall("$1")
