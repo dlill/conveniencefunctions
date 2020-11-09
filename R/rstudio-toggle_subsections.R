@@ -198,7 +198,7 @@ extract_for <- function(textline) {
 #' @export
 extract_apply <- function(textline) {
   loopval <- trimws(gsub(".*apply\\((.+), *function.*", "\\1", textline))
-  loopvar <- gsub(".*apply\\(.+, *function\\( *(.+) *\\).*", "\\1", textline)
+  loopvar <- gsub(".*apply\\(.+, *function\\( *(\\w+) *\\).*", "\\1", textline)
   list(loopvar = loopvar, loopval = loopval)
 }
 
@@ -311,6 +311,9 @@ insert_arguments <- function() {
 #' @examples
 #' textline <- "fuck <- lapply(1:n, function(x) {"
 #' toggle_mclapply_on(textline)
+#' textline <- "fuck <- lapply(motherfuck[1:3], function(x) bla::fn(x))"
+#' toggle_mclapply_on(textline)
+#' 
 toggle_mclapply_on <- function(textline) {
   loopargs <- extract_apply(textline = textline)
   newline <- textline
