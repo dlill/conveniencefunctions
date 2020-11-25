@@ -54,8 +54,8 @@ cf_parf_getMeta <- function(pars){
 #' @export
 #'
 #' @examples
-cf_parf_metaNames <- function(parf){
-  setdiff(names(parf), attr(parf, "parameters"))
+cf_parf_metaNames <- function(pars){
+  setdiff(names(pars), attr(pars, "parameters"))
 }
 
 #' Select parameter columns of parframe

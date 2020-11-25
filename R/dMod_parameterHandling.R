@@ -12,9 +12,9 @@
 
 #' Build basic fixed.grid, est.grid, est.vec_df
 #'
-#' @param parameters_df data.table(name0, name, condition, value_linear)
-#' @param parameters_estimate Character vector of outer parameters to estimate
-#' @param condition.grid data.frame(condition, ID, ...) (will be coerced to data.table)
+#' @param parameters_df 
+#' @param parameters_estimate 
+#' @param condition.grid 
 #' @param condition.grid_parcolumns names of cols which have parameter values in them
 #'
 #' @return
@@ -22,21 +22,18 @@
 #'
 #' @examples
 cf_build_pargrids <- function(parameters_df, parameters_estimate, condition.grid, condition.grid_parcolumns = NULL) {
-  condition.grid <- data.table(condition.grid)
+  fixed.grid <- parameters_df %>%
+    filter(!name0 %in% c(parameters_estimate, intersect(name0, names(condition.grid)))) %>%
+    reshape2::dcast(. ~ name, value.var = "value") %>% .[-1] %>% 
+    cbind(condition.grid[c("ID", "condition", condition.grid_parcolumns)], .)
   
-  fixed.grid <- copy(parameters_df)
-  fixed.grid <- dcast(fixed.grid, condition ~ name0, value.var = "value")
-  fixed.grid <- fixed.grid[,.SD, .SDcols = !condition.grid_parcolumns]
-  fixed.grid <- merge(fixed.grid, condition.grid[,.SD, .SDcols = c("ID", "condition", condition.grid_parcolumns)],
-                      on = "condition")
-  
-  est.grid <- copy(parameters_df)
-  est.grid <- est.grid[!name0 %in% parameters_estimate, `:=`(name = NA)]
-  est.grid <- dcast(est.grid, condition ~ name0, value.var = "name")
-  est.grid <- merge(est.grid, condition.grid[,list(condition, ID)], on = "condition")
-  
+  est.grid <- parameters_df %>%
+    filter(name0 %in% parameters_estimate) %>%
+    reshape2::dcast(. ~ name0, value.var = "name") %>%
+    select(-1) %>%
+    cbind(condition.grid[c("ID", "condition")], .)
   est.vec_df <- parameters_df %>% filter(name0 %in% parameters_estimate)
-  list(fixed.grid = est.grid, est.grid = est.grid, est.vec_df = est.vec_df)
+  list(fixed.grid = fixed.grid, est.grid = est.grid, est.vec_df = est.vec_df)
 }
 
 
@@ -85,7 +82,7 @@ cf_condition_specific_wrapper <- function(condition_specific, est.grid, est.vec_
 #' estscale = "L", initpar = F, dynpar = F, obspar = F, errpar = F
 #' @importFrom dplyr bind_rows
 #' @export
-cf_build_parameters_df <- function(odes = NULL, observables = NULL, errormodel = NULL, FLAGguessEstScale = TRUE) {
+cf_build_parameters_df <- function(odes, observables, errormodel, FLAGguessEstScale = TRUE) {
   
   # [] implement getting parameters from events
   
@@ -119,7 +116,7 @@ cf_build_parameters_df <- function(odes = NULL, observables = NULL, errormodel =
   if (FLAGguessEstScale) 
     parameters_df <- mutate(parameters_df, estscale = case_when(str_detect(name, "^offset_") ~ "N", TRUE ~ estscale))
   
-  data.table(parameters_df)
+  parameters_df
 }
 
 #' Make parameters_df parameters condition specific
@@ -157,27 +154,19 @@ cf_parameters_df_duplicate_inits <- function(parameters_df) {
 #'
 #' @return new paraemters_df with new rows
 #' @export
-cf_parameters_df_condition_specific <- function(parameters_df, conditions = c("C1", "C2"), parnames = parameters_df$name, FLAGDropOrig = TRUE) {
+cf_parameters_df_condition_specific <- function(parameters_df, conditions = c("C1", "C2"), parnames = parameters_df$name) {
   # possible options
   # [] keep or drop original parameters? => keep
   # [] condition is now always only the latest supplied conditions supplied to this parameter...
-  parameters_df <- data.table(parameters_df)
-  
   parnames_new <- outer(parnames, conditions, paste, sep = "_")
-  
-x <- (unique(parnames))[[1]]
-  pardf_new <- lapply(unique(parnames), function(x) {
+  x <- unique(parnames)[1]
+  for (x in unique(parnames)){
     parnames_new_x   <- parnames_new[parnames == x]
-    parameters_df_new <- copy(parameters_df)
-    parameters_df_new <- parameters_df_new[name == x]
-    parameters_df_new[,`:=`(new = list(data.table(name  = parnames_new_x, condition = conditions)))]
-    suppressWarnings(parameters_df_new[,`:=`(name = NULL, condition = NULL, FLAGindividualized = TRUE)])
-    parameters_df_new <- unnest_listcol_dt(parameters_df_new, "new")
-    parameters_df_new
-  })
-  
-  if (FLAGDropOrig) parameters_df <- parameters_df[!name %in% parnames]
-  parameters_df <- rbindlist(c(list(parameters_df), pardf_new), use.names = TRUE, fill = TRUE)
+    
+    parameters_df_new    <- filter(parameters_df[setdiff(names(parameters_df), "condition")], name == x) %>% 
+      mutate(name = list(tibble(name  = parnames_new_x, condition = conditions))) %>% unnest(name)
+    parameters_df <- bind_rows(parameters_df, parameters_df_new)
+  }
   parameters_df
 }
 
@@ -271,33 +260,6 @@ cf_make_condition_specific <- function(est.grid, parameters_est_df, parname, con
 #' @export
 unclass_parvec <- function(x) {setNames(unclass(x)[1:length(x)], names(x))}
 
-#' Title
-#'
-#' @param parameters_df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cf_parameters_df_calc_outerValues <- function(parameters_df) {
-  cat("updating value,lower,upper columns\n")
-  copy(parameters_df)[,`:=`(value = case_when(estscale == "L" ~ log(value_linear), TRUE ~ value_linear),
-                            upper = case_when(estscale == "L" ~ log(upper_linear), TRUE ~ upper_linear),
-                            lower = case_when(estscale == "L" ~ log(lower_linear), TRUE ~ lower_linear))]}
-
-#' Title
-#'
-#' @param parameters_df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cf_parameters_df_calc_linearValues <- function(parameters_df) {
-  cat("updating (value,upper,lower)_linear columns\n")
-  copy(parameters_df)[,`:=`(value_linear = case_when(estscale == "L" ~ exp(value), TRUE ~ value),
-                            upper_linear = case_when(estscale == "L" ~ exp(upper), TRUE ~ upper),
-                            lower_linear = case_when(estscale == "L" ~ exp(lower), TRUE ~ lower))]}
 
 
 
