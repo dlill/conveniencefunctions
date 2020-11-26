@@ -406,7 +406,7 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
     
     times <- sort(c(unique(SIMOPT.times, time)))
     pouter <- arglist[[1]]
-    prediction <- prd_indiv(times, pouter, condition = condition, deriv = deriv)
+    prediction <- prd_indiv(times, pouter, fixed = fixed, condition = condition, deriv = deriv, FLAGrenameDeriv = TRUE)
     if (!is.null(conditions) && !condition %in% conditions) 
       return()
     
