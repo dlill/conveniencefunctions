@@ -446,7 +446,7 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
     }
     out <- objlist(value = val, gradient = gr, hessian = hs)
     attr(out, controls$attr.name) <- out$value
-    attr(out, "prediction") <- pred
+    # attr(out, "prediction") <- pred
     return(out)
   }
   class(myfn) <- c("objfn", "fn")
