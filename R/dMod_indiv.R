@@ -45,6 +45,36 @@ cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
 }
 
 
+#' Title
+#'
+#' @param pred0 prd0(times,pars)[[1]]
+#' @param pars pars
+#' @param est.grid est.grid
+#' @param cn name of condition
+#'
+#' @return pred0 with updated deriv argument
+#' @export
+#'
+#' @examples
+cf_renameDerivPars <- function(pred0, pars, est.grid, cn) {
+  der <- attr(pred0, "deriv")
+  dernm <- setdiff(colnames(der), "time")
+  derpars <- do.call(rbind,strsplit(dernm, ".", fixed = TRUE))
+  derpars <- data.table(derpars)
+  setnames(derpars, c("y", "parinner"))
+  
+  eg <- data.table(est.grid)[condition == cn, !c("condition", "ID")]
+  eg <- data.table(t(eg), keep.rownames = "parinner")
+  setnames(eg, "V1", "parouter")
+  
+  derpars <- eg[derpars, on ="parinner"]
+  derpars[,`:=`(dernmnew = paste0(y, ".", parouter))]
+  
+  colnames(der) <- c("time", derpars$dernmnew)
+  attr(pred0, "deriv") <- der
+  pred0
+}
+
 
 #' Title
 #'
@@ -58,9 +88,26 @@ cf_make_pars <- function(pars, fixed = NULL, est.grid, fixed.grid, ID){
 #' @examples
 cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
   
+# Title
+#
+# @param times 
+# @param pars 
+# @param fixed 
+# @param deriv 
+# @param conditions 
+# @param FLAGbrowser 
+# @param FLAGverbose 
+# @param FLAGrenameDerivPars Needed for cf_datapointL2, where I need derivs wrt the outer parameters
+#
+# @return
+# @export
+#
+# @examples
   prd <- function(times, pars, fixed = NULL, deriv = FALSE, conditions = est.grid$condition, 
                   FLAGbrowser = FALSE, 
-                  FLAGverbose = FALSE) {
+                  FLAGverbose = FALSE,
+                  FLAGrenameDerivPars = FALSE
+                  ) {
     out <- lapply(setNames(nm = conditions), function(cn) {
       if (FLAGbrowser) browser()
       ID <- est.grid$ID[est.grid$condition == cn]
@@ -84,8 +131,8 @@ cf_PRD_indiv <- function(prd0, est.grid, fixed.grid) {
         pinner_test <- setNames(runif(length(getParameters(x))),getParameters(x))
         x(times, pinner_test, deriv = FALSE)
       }
+      if (deriv && FLAGrenameDerivPars) pred0 <- cf_renameDerivPars(pred0, pars, est.grid, cn)
       pred0
-      # pred0 <- prd0(times, pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
     })
     dMod::as.prdlist(out)
   }
@@ -118,7 +165,7 @@ cf_P_indiv <- function(p0, est.grid, fixed.grid) {
       
       if (length(setdiff(getParameters(prd0), names(c(pars_, fixed_)))))
         stop("The following parameters are missing: ", paste0(setdiff(getParameters(prd0), names(c(pars_, fixed_))), collapse = ", "))
-      p0(pars_, fixed = fixed_, deriv = deriv, condtions = conditions)[[1]]
+      p0(pars_, fixed = fixed_, deriv = deriv)[[1]]
     })
   }
   class(prd) <- c("parfn", "fn")
@@ -227,7 +274,7 @@ cf_normL2_indiv <- function (data, prd0, errmodel = NULL, est.grid, fixed.grid, 
         err <- errmodel(out = prediction, pars = getParameters(prediction), conditions = cn, deriv=myderiv)
         mywrss <- nll(res(data[[cn]], prediction, err[[1]]), deriv = deriv, pars = pars)
       } else {
-        mywrss <- wrss(res(data[[cn]], prediction))
+        mywrss <- nll(res(data[[cn]], prediction), deriv = deriv, pars = pars)
       }
       if (myderiv) {
         if (FLAGbrowser2) browser()
@@ -376,8 +423,7 @@ cf_datapointL2 <- function (name, time, value, sigma = 1, attr.name = "validatio
     pred <- prediction[[condition]][time.index, ]
     deriv <- NULL
     if (withDeriv) 
-      deriv <- attr(prediction[[condition]], "deriv")[time.index, 
-                                                      ]
+      deriv <- attr(prediction[[condition]], "deriv")[time.index, ]
     pred <- pred[mu]
     if (withDeriv) {
       mu.para <- intersect(paste(mu, parapar, sep = "."), 
