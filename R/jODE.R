@@ -286,7 +286,7 @@ jODE_writeTestScript <- function(est_mat, fixed_mat, trafo, odes, obs, err, est_
   jODE_fixed_functions <-
     paste0(c(
       'cd("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/02-Scripts")',
-      'include("/home/daniel/Promotion/Promotion/Projects/conveniencefunctions/inst/jODE/jODE_v2_002_fixed_functions.jl")',
+      paste0('include("',system.file('jODE/jODE_v2_002_fixed_functions.jl', package = "conveniencefunctions"), '")'),
       'include("S102-Julia01_functions.jl")',
       'data = CSV.read("../01-Data/001-a-data_full.csv")',
       'data = jODE_sanitizeData(data)'
