@@ -27,7 +27,7 @@ jODE_indify_est_grid <- function(est_grid, est_vec) {
 #' @export
 jODE_prepare_matrices <- function(est_grid, fixed_grid, est_vec) {
   
-  est_grid$condition <- fixed.grid$condition <- NULL
+  est_grid$condition <- fixed_grid$condition <- NULL
   
   est_grid <- jODE_indify_est_grid(est_grid, est_vec)
   est_mat <- as.matrix(est_grid)
@@ -123,7 +123,7 @@ jODE_funJ <- function(est_mat, fixed_mat, trafo, odes, obs, err) {
   )
   # .. jODE_f2 ----
   jODE_f2 <- paste0(
-    "jODE_f2 = function(du, u, p,t)", "\n",
+    "function jODE_f2(du, u, p,t)", "\n",
     "    # Get u0 and p \n",
     "    ", paste0(names(odes), collapse = ", "), " = u"," \n",
     "    ", paste0(setdiff(names(trafo), names(odes)), collapse = ", "), " = p"," \n",
@@ -249,7 +249,7 @@ jODE_write_sourcefile <- function(est_grid, fixed_grid, est_vec, trafo, odes, ob
 #' @param est_vec sorted est_vec
 #'
 #' @return string which you can use to write a file
-#' @export
+#' @export <- <- 
 jODE_writeTestScript <- function(est_mat, fixed_mat, trafo, odes, obs, err, est_vec) {
   nm_pars   <- colnames(est_mat)[-1]
   nm_fixed  <- colnames(fixed_mat)[-1]
@@ -285,7 +285,7 @@ jODE_writeTestScript <- function(est_mat, fixed_mat, trafo, odes, obs, err, est_
   
   jODE_fixed_functions <-
     paste0(c(
-      'cd("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/02-Scripts")',
+      # 'cd("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/02-Scripts")',
       paste0('include("',system.file('jODE/jODE_v2_002_fixed_functions.jl', package = "conveniencefunctions"), '")'),
       'include("S102-Julia01_functions.jl")',
       'data = CSV.read("../01-Data/001-a-data_full.csv")',
@@ -312,7 +312,7 @@ jODE_writeTestScript <- function(est_mat, fixed_mat, trafo, odes, obs, err, est_
       "                    fixed_mat, jODE_make_pars, jODE_p, jODE_f, ",
       "                    jODE_g, jODE_e",
       ")",
-      "@time obj(est_vec, deriv = false, verbose = true)",
+      "@time obj(est_vec, deriv = false, verbose = true)"
     ), collapse = "\n")
   
   
