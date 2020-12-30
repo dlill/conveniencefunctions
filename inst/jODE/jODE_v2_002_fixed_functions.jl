@@ -78,7 +78,7 @@ function jODE_normL2(data, jODE_prd_condition, est_mat,
         pred = jODE_prd_condition(pars, fixed, mycn, datatimes, jODE_p, jODE_f, jODE_g, jODE_e) 
         # prepare calculations
         # print("pred defined\n")
-        df_both = join(data,pred, on = [:name, :time, :ID], kind = :inner, makeunique = true)
+        df_both = join(pred,data, on = [:name, :time, :ID], kind = :inner, makeunique = true)
         df_both.is_bloq = df_both.value .< df_both.lloq
         df_both.objval = convert.(eltype(pars), zeros(length(df_both.lloq)))
         df_both.sigma  = convert.(eltype(pars), df_both.sigma)

@@ -6,13 +6,19 @@
 #' @importFrom beepr beep
 flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
   cat("Tipps",
-      "* Auch die Fussverschraubung trainieren",
-      "* Auch Pinguin trainieren",
-      "* Auch Krebs trainieren",
-      "* Auch Kniebeuge trainieren",
       "* Bei Übung 1 die Beine durchstrecken",
       "* Bei Übung 2 den oberen Arm langziehen",
       "* Bei Rollbrett nach vorne Beine durchstrecken",
+      "Übungen",
+      "* Fussverschraubung",
+      "* Pinguin",
+      "* Krebs",
+      "* Muschel",
+      "* Kniebeugen",
+      "* Klimmzüge",
+      "* Sit-ups",
+      "* Liegestütze",
+      "* Gymnastikball",
       sep = "\n")
   
   print(Sys.time())
