@@ -12,5 +12,23 @@ gall() {
   git add --all && git commit -m "$1" && git pull && git push && exit
   }
   
+gitcom() {
+  git add --all && git commit -m "$1"
+  }
+  
 alias gitlog="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
+
 alias ll='ls -alF'
+
+pandodocx() {
+  pandoc -o ${1%%md}docx $1
+}
+
+pandopdf() {
+  pandoc -o ${1%%md}pdf $1
+}
+
+alias ll="ls -lh"
+
+alias gitlog="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
+
