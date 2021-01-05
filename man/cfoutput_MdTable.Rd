@@ -10,6 +10,7 @@ cfoutput_MdTable(
   filename = NULL,
   format = c("markdown", "pandoc"),
   caption = NULL,
+  na.strings = "-",
   ...
 )
 }

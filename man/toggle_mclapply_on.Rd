@@ -18,4 +18,7 @@ Title
 \examples{
 textline <- "fuck <- lapply(1:n, function(x) {"
 toggle_mclapply_on(textline)
+textline <- "fuck <- lapply(motherfuck[1:3], function(x) bla::fn(x))"
+toggle_mclapply_on(textline)
+
 }
