@@ -6,18 +6,18 @@
 #' @importFrom beepr beep
 flexZirkel <- function(t1 = 15,t2 = 10,t3 = 10,t4 = 7,t5 = 5) {
   cat("Tipps",
-      "* Bei Übung 1 die Beine durchstrecken",
-      "* Bei Übung 2 den oberen Arm langziehen",
+      "* Bei Uebung 1 die Beine durchstrecken",
+      "* Bei Uebung 2 den oberen Arm langziehen",
       "* Bei Rollbrett nach vorne Beine durchstrecken",
-      "Übungen",
+      "Uebungen",
       "* Fussverschraubung",
       "* Pinguin",
       "* Krebs",
       "* Muschel",
       "* Kniebeugen",
-      "* Klimmzüge",
+      "* KlimmzUege",
       "* Sit-ups",
-      "* Liegestütze",
+      "* LiegestUetze",
       "* Gymnastikball",
       sep = "\n")
   
