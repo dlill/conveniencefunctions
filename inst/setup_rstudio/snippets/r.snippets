@@ -107,8 +107,11 @@ snippet codeProjectDir
 snippet gall
 	conveniencefunctions::gall("$1")
 
-snippet cfgall
-	conveniencefunctions::gall("$1")
+snippet gcom
+	conveniencefunctions::gcom("$1")
+
+snippet gitlog
+	system("git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short", wait = FALSE)
 
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
