@@ -60,16 +60,21 @@ install_thunarshortcuts <- function(FLAGoverwrite) {
 #' @export
 #'
 #' @examples
-update_thunarshortcuts_in_cf <- function() {
+update_thunarshortcuts_in_cf <- function(append=FALSE) {
   thunarfile_new <- "~/.config/gtk-3.0/bookmarks"
-  thunarfile_old <- "/IQDESKTOP/Promotion/Projects/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
+  thunarfile_old <- "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
   
-  new <- NULL
   if (!file.exists(thunarfile_new)) stop("no new bookmarks found")
   new <- readLines(thunarfile_new)
-  old <- readLines(thunarfile_old)
   
-  cat(c("", setdiff(new, old), ""), sep = "\n", file = thunarfile_old, append = TRUE)
+  if (!append){
+    writeLines(new, thunarfile_old)
+    return("Bookmars replaced")
+  }
+  
+  old <- readLines(thunarfile_old)
+  cat(c("", setdiff(new, old), ""), sep = "\n", file = thunarfile_old, append = append)
+  return("Bookmarks added")
 }
 
 
