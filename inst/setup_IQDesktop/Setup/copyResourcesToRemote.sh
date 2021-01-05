@@ -1,6 +1,8 @@
-ssh-copy-id -p 6913 daniel2@192.168.1.12
-scp -P 6913 /c/PROJTOOLS/IQDesktop/id_rsa.zip  daniel2@192.168.1.12:~/id_rsa.zip
-scp -P 6913 /c/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/setupRemote.sh daniel2@192.168.1.12:~/setupRemote.sh
-ssh -p 6913 daniel2@192.168.1.12 'cd && chmod +x setupRemote.sh'
+docker exec -u daniel2 -d setup_IQdesktop_1 sh -c 'mkdir /home/daniel2/.ssh'
+docker cp /home/daniel/.ssh/id_rsa setup_IQdesktop_1:/home/daniel2/.ssh/
+docker cp /home/daniel/.ssh/id_rsa.pub setup_IQdesktop_1:/home/daniel2/.ssh/
+docker cp /home/daniel/Promotion/Promotion/Projects/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/setupLocal.sh setup_IQdesktop_1:/home/daniel2/
+
+docker exec -u daniel2 -it setup_IQdesktop_1 sh -c 'cd /home/daniel2/ && sudo chown daniel2 setupLocal.sh && chmod +x setupLocal.sh && ./setupLocal.sh'
 
 # /IQDESKTOP/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/setupLocal.sh

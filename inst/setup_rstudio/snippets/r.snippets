@@ -1,8 +1,6 @@
 snippet licenseIQReport
 	http://192.168.1.12:7804/licensekey/
 
-
-
 snippet IQRcodeReview
 	# -------------------------------------------------------------------------#
 	# Code Review Status of the Function
@@ -18,48 +16,17 @@ snippet IQRcodeReview
 	# -------------------------------------------------------------------------#
 
 
-
-snippet IQDsetwdA100
-	setwd("/IQDESKTOP/PROJECTS/A100_OZ439-PQP_Isobole/Work/02-Scripts")
+snippet IQDsetwdIsobolePaper
+	setwd("/IQDESKTOP/Promotion/Projects/IntiQuan/SafeCopies/IsobolePublication")
 
 snippet IQDsetwdMMVIsoboles
 	setwd("~/PROJTOOLS/MMVIsoboles")
-
-snippet IQDsetwdIsobolePaper
-	setwd("/IQDESKTOP/PROJECTS/IsobolePublication/Work/02-Scripts/")
 
 snippet IQDloadIsoboles
 	devtools::load_all("~/PROJTOOLS/MMVIsoboles")
 
 snippet IQDloadIQRmalaria
 	devtools::load_all("~/PROJTOOLS/IQRmalaria/IQRmalaria")
-
-snippet IQDloadIQRexamples
-	devtools::load_all("~/PROJTOOLS/IQRexamples")
-
-snippet IQDloadIQRtools
-	devtools::load_all("~/PROJTOOLS/IQRtools/IQRtools")
-
-snippet IQDsetwdA11_91SampleSize
-	setwd("/IQDESKTOP/PROJECTS/A11_Teva_QSP_IL15_PART2/Work/T91_Sample_Size_Calc/Scripts/")
-
-snippet IQDsetwdA12_90Assessments_Add
-	setwd("/IQDESKTOP/PROJECTS/A12_Teva_Austedo_QD_formulation/Work/90_Assessments_Add/Scripts/")
-
-snippet IQDsetwdA11_05ModelReduction
-	setwd("/IQDESKTOP/PROJECTS/A11_Teva_QSP_IL15_PART2/Work/T05_ModelReduction/Scripts/")
-
-snippet IQDsetwdA07_02ModelReduction
-	setwd("/IQDESKTOP/PROJECTS/A07_Teva_QSP_PART1/Work/T02_ModelReduction/Scripts/")
-
-snippet IQDsetwdA09_Phase5
-	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase5_SampleSize/Scripts/")
-
-snippet IQDsetwdA09_Phase2
-	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase2_ProofOfConcept/Scripts/")
-
-snippet IQDsetwdA09_Phase3
-	setwd("/IQDESKTOP/PROJECTS/A09_Teva_QSP_IL5_PART2/Work/Phase3_Clinical/Scripts/")
 
 snippet opencf
 	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("~/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
