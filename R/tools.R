@@ -293,12 +293,27 @@ funnames_in_package <- function(package, as_namespace = F) {
 #' @param string commit message
 #'
 #' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
 gall <- function(string) {
   system(paste0('git add --all && 
   git commit -m "', string, '" && 
   git pull && 
   git push'), wait = FALSE)
+}
+
+#' gitcom from R command line
+#'
+#' @param string commit message
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+gcom <- function(string) {
+  system(paste0('git add --all && 
+  git commit -m "', string, '"'), wait = FALSE)
 }
 
 
