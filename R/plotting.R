@@ -120,6 +120,17 @@ cfggplot <- function(data = NULL, mapping = aes()) {
     theme_cf()
 }
 
+#' scalecolorcf
+#' Copied from dMod
+#' @param ... see scale_color_manual
+#'
+#' @return added to plots
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+scale_color_cf <- function(...) {
+  scale_color_manual(..., values = cfcolors)
+}
 
 cfcolorsFULL <- list(
   medium = c(black = '#010202', gray = '#737373', red = '#F15A60', green = '#7AC36A', blue = '#5A9BD4', orange = '#FAA75B', purple = '#9E67AB', maroon = '#CE7058', magenta = '#D77FB4'),
@@ -130,7 +141,4 @@ cfcolorsFULL <- list(
 cfcolors <- c(rep(c("#000000", "#C5000B", "#0084D1", "#579D1C", "#FF950E", 
                   "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513"),2), 
                   rep("gray", 100))
-
-
-
 
