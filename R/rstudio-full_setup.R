@@ -62,7 +62,7 @@ install_thunarshortcuts <- function(FLAGoverwrite) {
 #' @examples
 update_thunarshortcuts_in_cf <- function() {
   thunarfile_new <- "~/.config/gtk-3.0/bookmarks"
-  thunarfile_old <- "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
+  thunarfile_old <- "/IQDESKTOP/Promotion/Projects/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
   
   new <- NULL
   if (!file.exists(thunarfile_new)) stop("no new bookmarks found")
