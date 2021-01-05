@@ -4,7 +4,7 @@
 \alias{update_thunarshortcuts_in_cf}
 \title{Title}
 \usage{
-update_thunarshortcuts_in_cf()
+update_thunarshortcuts_in_cf(append = FALSE)
 }
 \value{
 
