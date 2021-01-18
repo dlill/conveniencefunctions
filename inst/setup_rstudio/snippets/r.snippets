@@ -50,11 +50,32 @@ snippet pkill_f_rstudio
 snippet Rscript
 	system(paste0("Rscript ", $0), wait = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE)
 
-snippet pullJobs
-	conveniencefunctions::pullJobs()
-
-snippet gitpush
+snippet gpush
 	system("git push", wait = FALSE)
+
+snippet gpullsh
+	system("git pull && git push", wait = FALSE)
+
+snippet gpull
+	system("git pull", wait = FALSE)
+
+snippet status
+	system("git status", wait = FALSE)
+
+snippet gstatus
+	system("git status", wait = FALSE)
+
+snippet gall
+	conveniencefunctions::gall("$1")
+
+snippet gcom
+	conveniencefunctions::gitcom("$1")
+
+snippet gam
+	conveniencefunctions::gitam("$1")
+
+snippet gnam
+	conveniencefunctions::gitnam()
 
 snippet gitpullsh
 	system("git pull && git push", wait = FALSE)
@@ -62,20 +83,8 @@ snippet gitpullsh
 snippet gitpull
 	system("git pull", wait = FALSE)
 
-snippet status
+snippet gitstatus
 	system("git status", wait = FALSE)
-
-snippet code 
-	system("printf 'y' | code $0.", wait = FALSE)
-
-snippet codeParent2Dir 
-	system("printf 'y' | code $0../../.", wait = FALSE)
-
-snippet codeParent3Dir 
-	system("printf 'y' | code $0../../../.", wait = FALSE)
-
-snippet codeProjectDir 
-	system("printf 'y' | code `r rstudioapi::getActiveProject()`", wait = FALSE)
 
 snippet gitall
 	conveniencefunctions::gall("$1")
@@ -91,6 +100,20 @@ snippet gitnam
 
 snippet gitlog
 	system("git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short", wait = FALSE)
+
+snippet code 
+	system("printf 'y' | code $0.", wait = FALSE)
+
+snippet codeParent2Dir 
+	system("printf 'y' | code $0../../.", wait = FALSE)
+
+snippet codeParent3Dir 
+	system("printf 'y' | code $0../../../.", wait = FALSE)
+
+snippet codeProjectDir 
+	system("printf 'y' | code `r rstudioapi::getActiveProject()`", wait = FALSE)
+
+
 
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
