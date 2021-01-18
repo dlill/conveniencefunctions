@@ -28,10 +28,14 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE,
   }
   file.copy(bashrcfile, paste0(bashrcfile, ".backup"))
   writeLines(c(bashrcLines, newLines), bashrcfile)
+  cat("Bash aliases were updated\n")
   # 5. Install shortcuts for Thunar
   if (FLAGThunarShortcuts) install_thunarshortcuts(FLAGThunarShortcuts)
   # 6. .Rprofile
-  if (FLAGoverwrite) file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
+  if (FLAGoverwrite) {
+    file.copy(system.file("setup_IQDesktop/Setup/Resources/.Rprofile"), "~/.Rprofile")
+    cat("Rprofile updated \n")
+    }
   # 7. 
   if (FLAGIQRreservedWords) install_cfreservedWords()
 }
