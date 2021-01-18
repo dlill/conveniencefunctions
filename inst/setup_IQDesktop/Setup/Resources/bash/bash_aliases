@@ -19,6 +19,10 @@ gitam() {
   git add --all && git commit --amend -m "$1"
 }
   
+gitnam() {
+  git add --all && git commit --amend --no-edit
+}
+  
 gitpu() {
   git pull && git push
 }

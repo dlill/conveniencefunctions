@@ -329,6 +329,19 @@ gitam <- function(string) {
   git commit --amend -m "', string, '"'), wait = FALSE)
 }
 
+#' gitcom --amend --no-edit from R command line
+#'
+#' @param string commit message
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+gitam <- function() {
+  system(paste0('git add --all && 
+  git commit --amend --no-edit'), wait = FALSE)
+}
+
 
 #' Git pull all projects in the PROJTOOLS fodler
 #'
