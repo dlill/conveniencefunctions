@@ -249,7 +249,7 @@ jODE_write_sourcefile <- function(est_grid, fixed_grid, est_vec, trafo, odes, ob
 #' @param est_vec sorted est_vec
 #'
 #' @return string which you can use to write a file
-#' @export <- <- 
+#' @export 
 jODE_writeTestScript <- function(est_mat, fixed_mat, trafo, odes, obs, err, est_vec) {
   nm_pars   <- colnames(est_mat)[-1]
   nm_fixed  <- colnames(fixed_mat)[-1]
