@@ -16,6 +16,14 @@ gitcom() {
   git add --all && git commit -m "$1"
   }
   
+gitam() {
+  git add --all && git commit --amend -m "$1"
+}
+  
+gitpu() {
+  git pull && git push
+}
+  
 alias gitlog="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
 
 alias ll='ls -alF'
@@ -29,6 +37,4 @@ pandopdf() {
 }
 
 alias ll="ls -lh"
-
-alias gitlog="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
 

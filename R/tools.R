@@ -311,9 +311,22 @@ gall <- function(string) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-gcom <- function(string) {
+gitcom <- function(string) {
   system(paste0('git add --all && 
   git commit -m "', string, '"'), wait = FALSE)
+}
+
+#' gitcom --amend from R command line
+#'
+#' @param string commit message
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+gitam <- function(string) {
+  system(paste0('git add --all && 
+  git commit --amend -m "', string, '"'), wait = FALSE)
 }
 
 
