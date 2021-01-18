@@ -17,9 +17,17 @@ cf_install_rstudio <- function(FLAGoverwrite = TRUE,
   # 4. Bash alias for git
   bashrcfile <- "~/.bashrc"
   if (Sys.info()["sysname"] == "Windows") bashrcfile <- "~/../.bashrc"
+  bashrcLines <- readLines(bashrcfile)
   newLines <- readLines(system.file("setup_IQDesktop/Setup/Resources/bash/bash_aliases", package = "conveniencefunctions")) 
-  if (!any(grepl("# ===== conveniencefunctions aliases =======", readLines(bashrcfile))))
-    cat(c("\n", newLines), sep = "\n", file = bashrcfile, append = TRUE)
+  
+  cfline_start <- grep("# ===== CONVENIENCEFUCNTIONS =======", bashrcLines)
+  cfline_end <- grep("# ===== END CONVENIENCEFUCNTIONS =======", bashrcLines)
+  if (length(cfline_start)) { # Delete cflines if they are present
+    if (!length(cfline_end)) cfline_end <- length(bashrcLines)
+    bashrcLines <- bashrcLines[-(cfline_start:cfline_end)]
+  }
+  file.copy(bashrcfile, paste0(bashrcfile, ".backup"))
+  writeLines(c(bashrcLines, newLines), bashrcfile)
   # 5. Install shortcuts for Thunar
   if (FLAGThunarShortcuts) install_thunarshortcuts(FLAGThunarShortcuts)
   # 6. .Rprofile

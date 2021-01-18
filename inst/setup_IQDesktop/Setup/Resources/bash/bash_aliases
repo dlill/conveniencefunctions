@@ -1,7 +1,6 @@
+# ===== CONVENIENCEFUCNTIONS =======
 # ===== Path to radian =======
 # export PATH=$PATH:/home/daniel/.local/bin
-
-# ===== conveniencefunctions aliases =======
 alias r="radian"
 
 gitall() {
@@ -37,4 +36,7 @@ pandopdf() {
 }
 
 alias ll="ls -lh"
+
+
+# ===== END CONVENIENCEFUCNTIONS =======
 
