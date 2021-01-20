@@ -30,6 +30,7 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
   options(knitr.kable.NA = na.strings)
   
   cat("[ ] Add FLAGsummaryRow, listing the number of unique levels per column")
+  cat("[ ] Use pander?")
   kt <- knitr::kable(dt,format = format[1], caption = caption, ...)
   
   if (!is.null(split_by)){
