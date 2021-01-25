@@ -29,6 +29,8 @@ gitpu() {
   
 alias gitlog="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
 
+alias gitlogallgraph="git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short --all --graph""
+
 alias ll='ls -alF'
 
 pandodocx() {
