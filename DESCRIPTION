@@ -1,7 +1,7 @@
 Package: conveniencefunctions
 Type: Package
 Title: Convenience Functions
-Version: 0.1.0
+Version: 0.2.0
 Author: Daniel Lill
 Maintainer: Daniel Lill <daniel.lill@physik.uni-freiburg.de>
 Description: Collection of functions for convenience and some other stuff. This package is used mainly for personal use and plaground.
