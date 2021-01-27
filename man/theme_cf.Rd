@@ -4,7 +4,7 @@
 \alias{theme_cf}
 \title{Nice ggplot theme}
 \usage{
-theme_cf(base_size = 12, base_family = "")
+theme_cf(base_size = 12, base_family = "", FLAGbold = TRUE)
 }
 \arguments{
 \item{base_size, base_family}{see ?theme_bw}
