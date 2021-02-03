@@ -349,8 +349,8 @@ gitam <- function(string) {
   if (missing(string)){
     cmd <- 'git add --all && git commit --amend --no-edit'
   } else {
-      cmd <- paste0('git add --all && git commit --amend -m "', string, '"')
-    }
+    cmd <- paste0('git add --all && git commit --amend -m "', string, '"')
+  }
   system(cmd, wait = FALSE)
 }
 
