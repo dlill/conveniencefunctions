@@ -233,6 +233,27 @@ insert_values_by_name <- function(vec, values) {
 }
 
 
+#' Turn correlation matrix and standard deviations back to covariance matrix
+#'
+#' @param mycor correlation matrix
+#' @param mysd standard deviations
+#'
+#' @return covariance matrix
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
+#' mycor <- matrix(c(1,0.8,0.8,1),2)
+#' mysd <- c(sqrt(2),1)
+#' cor2cov(mycor,mysd)
+cor2cov <- function(mycor,mysd = rep(1,dim(mycor)[1])) {
+  sdmat <- matrix(mysd, nrow = length(mysd), ncol = length(mysd))
+  sdmat <- sdmat * t(sdmat)
+  mycov <- mycor * sdmat
+}
+
+
 
 # Other useful stuff ----
 

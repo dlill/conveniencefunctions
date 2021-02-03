@@ -4,10 +4,12 @@
 \alias{cfggplot}
 \title{cfggplot}
 \usage{
-cfggplot(data = NULL, mapping = aes())
+cfggplot(data = NULL, mapping = aes(), FLAGbold = TRUE)
 }
 \arguments{
 \item{data, mapping}{see ?ggplot}
+
+\item{FLAGbold}{Make text bold faced}
 }
 \value{
 ggplot
