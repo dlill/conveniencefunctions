@@ -8,6 +8,8 @@ theme_cf(base_size = 12, base_family = "", FLAGbold = TRUE)
 }
 \arguments{
 \item{base_size, base_family}{see ?theme_bw}
+
+\item{FLAGbold}{Make text bold faced}
 }
 \value{
 

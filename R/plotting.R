@@ -76,6 +76,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
 #' Taken from dMod
 #' 
 #' @param base_size,base_family see ?theme_bw
+#' @param FLAGbold Make text bold faced
 #'
 #' @return
 #' @export
@@ -111,6 +112,7 @@ theme_cf <- function(base_size = 12, base_family = "", FLAGbold = TRUE) {
 #' cfggplot
 #'
 #' @param data,mapping see ?ggplot
+#' @param FLAGbold Make text bold faced
 #'
 #' @return ggplot
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
@@ -118,9 +120,9 @@ theme_cf <- function(base_size = 12, base_family = "", FLAGbold = TRUE) {
 #' @export
 #'
 #' @examples
-cfggplot <- function(data = NULL, mapping = aes()) {
+cfggplot <- function(data = NULL, mapping = aes(), FLAGbold = TRUE) {
   ggplot(data,mapping) + 
-    theme_cf()
+    theme_cf(FLAGbold = FLAGbold)
 }
 
 #' scalecolorcf

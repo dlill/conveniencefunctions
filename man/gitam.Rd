@@ -4,25 +4,17 @@
 \alias{gitam}
 \title{gitcom --amend from R command line}
 \usage{
-gitam()
-
-gitam()
+gitam(string)
 }
 \arguments{
 \item{string}{commit message}
 }
 \value{
 
-
-
 }
 \description{
 gitcom --amend from R command line
-
-gitcom --amend --no-edit from R command line
 }
 \author{
-Daniel Lill (daniel.lill@physik.uni-freiburg.de)
-
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }
