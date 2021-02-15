@@ -100,7 +100,7 @@ theme_cf <- function(base_size = 12, base_family = "", FLAGbold = TRUE) {
           axis.ticks.length = unit(-2, "mm"),
           legend.key = element_rect(colour = NA),
           panel.border = element_rect(colour = "black"),
-          panel.grid.minor = element_blank(),
+          panel.grid = element_blank(),
           strip.background = element_rect(fill = "white", colour = NA),
           strip.text = element_text(size = rel(1.0))
           ) 
