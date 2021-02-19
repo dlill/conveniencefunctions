@@ -80,7 +80,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
 #'
 #' @return
 #' @export
-theme_cf <- function(base_size = 12, base_family = "", FLAGbold = TRUE) {
+theme_cf <- function(base_size = 11, base_family = "", FLAGbold = TRUE) {
   colors <- list(
     medium = c(gray = '#737373', red = '#F15A60', green = '#7AC36A', blue = '#5A9BD4', orange = '#FAA75B', purple = '#9E67AB', maroon = '#CE7058', magenta = '#D77FB4'),
     dark = c(black = '#010202', red = '#EE2E2F', green = '#008C48', blue = '#185AA9', orange = '#F47D23', purple = '#662C91', maroon = '#A21D21', magenta = '#B43894'),
@@ -94,8 +94,8 @@ theme_cf <- function(base_size = 12, base_family = "", FLAGbold = TRUE) {
           rect = element_rect(fill = "white", colour = NA),
           text = element_text(colour = "black"),
           axis.text = element_text(size = rel(1.0), colour = "black"),
-          axis.text.x = element_text(margin=unit(c(4, 4, 0, 4), "mm")),
-          axis.text.y = element_text(margin=unit(c(4, 4, 4, 0), "mm")),
+          axis.text.x = element_text(margin=unit(c(3, 3, 0, 3), "mm")),
+          axis.text.y = element_text(margin=unit(c(3, 3, 3, 0), "mm")),
           axis.ticks = element_line(colour = "black"),
           axis.ticks.length = unit(-2, "mm"),
           legend.key = element_rect(colour = NA),
