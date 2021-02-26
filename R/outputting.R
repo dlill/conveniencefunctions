@@ -26,12 +26,17 @@ cf_dir.create <- function(dirnm) {
 #'
 #' @examples
 #' cfoutput_MdTable(data.table(iris), split_by = "Species")
-cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("markdown", "pandoc"), caption = NULL, na.strings = "-", ...) {
+cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("markdown", "pandoc"), 
+                             caption = NULL, na.strings = "-", FLAGsummaryRow = TRUE, ...) {
   options(knitr.kable.NA = na.strings)
   
   cat("[ ] Add FLAGsummaryRow, listing the number of unique levels per column")
-  cat("[ ] Use pander?")
+  # kt <- knitr::kable(dt,format = format[1], caption = caption)
   kt <- knitr::kable(dt,format = format[1], caption = caption, ...)
+  
+  seprow <- gsub(":","-",kt[2 + 2*(!is.null(caption))])
+  widths <- nchar(strsplit(seprow, "|", fixed = TRUE)[[1]][-1])
+  
   
   if (!is.null(split_by)){
     dt <- copy(as.data.table(dt))
@@ -39,12 +44,18 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
     n[,`:=`(rowid = cumsum(nlines))]
     n[,`:=`(rowid = rowid + 2 + 2*(!is.null(caption)))]
     atr <- attributes(kt)
-    seprow <- gsub(":","-",kt[2 + 2*(!is.null(caption))])
     for (i in rev(n$rowid)[-1]) {
       kt <- c(kt[1:i], seprow, kt[(i+1):length(kt)])
     }
     attributes(kt) <- atr
-    }
+  }
+  
+  if (FLAGsummaryRow) {
+    summaryrow <- vapply(dt, function(x) paste0("N=", length(unique(x))), "N=nunique")
+    summaryrow <- vapply(seq_along(summaryrow), function(i) sprintf(paste0("%",widths[i],"s"), summaryrow[i]), "bla")
+    summaryrow <- paste0("|", paste0(summaryrow, collapse = "|"), "|")
+    kt <- c(kt, seprow, summaryrow)
+  }
   
   if(!is.null(filename))
     writeLines(kt, filename)

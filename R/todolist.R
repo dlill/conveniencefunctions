@@ -16,7 +16,12 @@ todolist <- function(path = getwd(), FLAGpipes = FALSE, filename = NULL) {
   # * Wrap in function so errors can be caught and the working directory can be reset
   assemble_todolist <- function(FLAGpipes) {
     # .. Todolist ----#
-    grepout <- system('grep -I -r "\\\\[x*\\\\]"', intern = TRUE)
+    grepout <- system('grep -I -r "\\\\[[x ]*\\\\]"', intern = TRUE)
+    # files <- list.files(path, "\\.(R|md|txt)", recursive = T, full.names = TRUE)
+    # todo_frame <- lapply(setNames(files, basename(files)), function(f) {
+    #   ft <- grep("\\[[x ]*\\]", readLines(f), value = TRUE)
+    #   todo_frame <- data.table(gout = ft)
+    # })
     todo_frame <- data.frame(gout = grepout, stringsAsFactors = FALSE)
     todo_frame <- mutate(todo_frame,
                          done = str_detect(gout, fixed("[x]")),
@@ -24,7 +29,7 @@ todolist <- function(path = getwd(), FLAGpipes = FALSE, filename = NULL) {
                          script = case_when(!is.na(str_extract(gout, "^S\\d+")) ~ str_extract(gout, "^S\\d+"),
                                             TRUE ~ script),
                          scriptn = as.numeric(str_extract(script, "\\d.*")),
-                         task = str_replace_all(gout, "^.*\\[x*\\] (.*)$", "\\1"),
+                         task = str_replace_all(gout, "^.*\\[ *\\] (.*)$", "\\1"),
                          checkbox = str_extract(gout, "\\[x*\\]")
     )
     todo_frame <- arrange(todo_frame, done, scriptn)
