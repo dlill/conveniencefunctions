@@ -58,6 +58,7 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
   
   if(!is.null(filename))
     writeLines(kt, filename)
+  
   cat(kt, sep = "\n")
   kt
 }
