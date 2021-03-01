@@ -38,6 +38,11 @@ Description: Insert debugonce
 Binding: insert_debugonce
 Interactive: false
 
+Name: Extract variable
+Description: Put code into a variable
+Binding: extract_variable
+Interactive: false
+
 Name: Insert arguments
 Description: Insert arguments of a function call
 Binding: insert_arguments

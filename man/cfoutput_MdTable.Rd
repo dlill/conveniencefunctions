@@ -11,6 +11,7 @@ cfoutput_MdTable(
   format = c("markdown", "pandoc"),
   caption = NULL,
   na.strings = "-",
+  FLAGsummaryRow = TRUE,
   ...
 )
 }

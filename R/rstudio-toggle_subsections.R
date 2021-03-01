@@ -433,6 +433,36 @@ insert_debugonce <- function() {
 }
 
 
+# -------------------------------------------------------------------------#
+# Assign variable ----
+# -------------------------------------------------------------------------#
 
+#' Assign code into a variable
+#' 
+#' @return NULL. Modifies the document
+#' @author Daniel Lill (daniel.lill@intiquan.com)
+#' @md
+#' @export
+extract_variable <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  range <- e$selection[[1]]$range
+  x <- e$selection[[1]]$range$start[1]
+  y0 <- e$selection[[1]]$range$start[2]
+  y1 <- e$selection[[1]]$range$end[2] - 1
+  
+  text <- readLines(e$path)
+  textline <- text[x]
+  textsel <- substr(textline, y0,y1)
+  
+  varnm <- rstudioapi::showPrompt("Variable name", "Ali needs you")
+  newline <-   paste0(varnm, " <- ", textsel, "\n")
 
+  rstudioapi::modifyRange(location = range, varnm, id = e$id)
+  rstudioapi::insertText(location = rstudioapi::document_position(x, 1), newline, id = e$id)
+  rstudioapi::documentSave(id = e$id)
+  
+  sink <- NULL
+  
+}
 
