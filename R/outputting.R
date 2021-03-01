@@ -30,7 +30,6 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
                              caption = NULL, na.strings = "-", FLAGsummaryRow = TRUE, ...) {
   options(knitr.kable.NA = na.strings)
   
-  cat("[ ] Add FLAGsummaryRow, listing the number of unique levels per column")
   # kt <- knitr::kable(dt,format = format[1], caption = caption)
   kt <- knitr::kable(dt,format = format[1], caption = caption, ...)
   
@@ -59,6 +58,7 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
   
   if(!is.null(filename))
     writeLines(kt, filename)
+  cat(kt, sep = "\n")
   kt
 }
 
