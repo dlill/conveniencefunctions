@@ -1,6 +1,10 @@
 # ===== CONVENIENCEFUCNTIONS =======
 # ===== Path to radian =======
 # export PATH=$PATH:/home/daniel/.local/bin
+# ===== Path to matlab =======
+# export PATH=$PATH:/usr/local/MATLAB/R2020b/bin
+
+
 alias r="radian"
 
 gitall() {
