@@ -111,21 +111,12 @@ snippet codeParent3Dir
 snippet codeProjectDir 
 	system("printf 'y' | code `r rstudioapi::getActiveProject()`", wait = FALSE)
 
-
-
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
 snippet whiledevlistDEVICE
 	devlist <- dev.list()
 	for(dev in devlist[names(devlist) == "$0png"]) dev.off(dev)
-
-snippet authormdheader
-	# Daniel Lill (daniel.lill@intiquan.com)
-
-snippet authormd
-	#' @author Daniel Lill (daniel.lill@intiquan.com)
-	#' @md
 
 snippet authormduni
 	#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
@@ -277,44 +268,6 @@ snippet date_cf
 
 snippet Sys.date_cf
 	`r format(Sys.time(), "%a %b %d %Y")`
-
-
-snippet IQRhead
-	#### HEADER ================================================================
-	#
-	# `r basename(rstudioapi::getSourceEditorContext()$path)`
-	#
-	# [PURPOSE]
-	# ${2:Purpose}
-	#
-	# [AUTHOR]
-	# ${3:Author}
-	#
-	# [CLEANING]
-	rm(list = grep("^(\\\.input|\\\.output)", ls(all.names = TRUE), value = TRUE))
-	rm(list = ls())
-	#
-	# [INPUT]
-	.inputFolder <- "../"
-	#
-	# [OUTPUT]
-	.outputFolder <- "../Output/`r sub("^SCRIPT_", "", tools::file_path_sans_ext(basename(rstudioapi::getSourceEditorContext()$path)))`/"
-	#
-	# [OTHER]
-	#
-
-	## Preliminaries ====
-
-	try(setwd(dirname(rstudioapi::getSourceEditorContext()\$path)))
-
-	# Default packages (do not load other packages, use "::" instead)
-	library(IQRtools)
-	library(dplyr)
-	library(ggplot2)
-
-
-	IQRinitCompliance("`r basename(rstudioapi::getSourceEditorContext()$path)`")
-	aux_version("IQRtools", minVersion = "`r sub("\\.9000$", "", installed.packages()["IQRtools", "Version"])`")
 
 
 
