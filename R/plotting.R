@@ -67,8 +67,16 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
 }
 
 
-
-
+#' Grab a base plot into grid object
+#'
+#' @return gtree
+#' @export
+#' @importFrom grid grid.grab
+#' @importFrom gridGraphics grid.echo
+cfgrab <- function() {
+  gridGraphics::grid.echo()
+  grid::grid.grab()
+}
 
 
 #' Nice ggplot theme

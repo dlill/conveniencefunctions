@@ -21,6 +21,8 @@ Imports:
   reshape2,
   officer,
   knitr,
-  beepr
+  beepr, 
+  grid,
+  gridGraphics
 RoxygenNote: 7.1.1
 Suggests: testthat
