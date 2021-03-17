@@ -126,8 +126,14 @@ snippet ggsavBASE
 	pl = cfgrab()
 	ggsave(file.path(.outputFolder, $0), pl, width = 15.5, height = 10, scale = 1, units = "cm")
 
+snippet ggsavPAGINATE
+	cf_outputFigure(file.path(.outputFolder, $0), pl, width = 15.5, height = 10, scale = 1, units = "cm",
+	paginateInfo = cf_paginateInfo(
+	))
+
 snippet ggsav
 	ggsave(file.path(.outputFolder, $0), pl, width = 15.5, height = 10, scale = 1, units = "cm")
+
 
 snippet melt
 	melt($0, variable.name = "VARIABLE", variable.factor = FALSE, value.name = "VALUE")
