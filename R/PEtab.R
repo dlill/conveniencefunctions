@@ -207,13 +207,15 @@ petab <- function(
 #' path <- "../../Software/dMod/PEtabTests/0001"
 #' FLAGTestCase <- TRUE
 petab_files <- function(modelname, path, FLAGTestCase = FALSE) {
+  warning("model refers to rds instead of xml\n")
   out <- NULL
   if (FLAGTestCase) {
     out <- c(
       yaml                       = paste0(modelname, ".yaml"),
       experimentalCondition      = paste0("_experimentalCondition"     , ".tsv"),
       measurementData            = paste0("_measurementData"           , ".tsv"),
-      model                      = paste0("_model"                     , ".xml"),
+      modelXML                   = paste0("_model"                     , ".xml"),
+      model                      = paste0("_model"                     , ".rds"),
       observables                = paste0("_observables"               , ".tsv"),
       parameters                 = paste0("_parameters"                , ".tsv"),
       simulatedData              = paste0("_simulatedData"             , ".tsv"),
@@ -223,15 +225,15 @@ petab_files <- function(modelname, path, FLAGTestCase = FALSE) {
       yaml                       = paste0(modelname, ".yaml"),
       experimentalCondition      = paste0("experimentalCondition_"     , modelname, ".tsv"),
       measurementData            = paste0("measurementData_"           , modelname, ".tsv"),
-      model                      = paste0("model_"                     , modelname, ".xml"),
+      modelXML                   = paste0("model_"                     , modelname, ".xml"),
       model                      = paste0("model_"                     , modelname, ".rds"),
       observables                = paste0("observables_"               , modelname, ".tsv"),
       parameters                 = paste0("parameters_"                , modelname, ".tsv"),
       simulatedData              = paste0("simulatedData_"             , modelname, ".tsv"),
       visualizationSpecification = paste0("visualizationSpecification_", modelname, ".tsv"))
   }
-  
-  file.path(path, out)
+  nm <- names(out)
+  setNames(file.path(path, out), nm)
 }
 
 
@@ -260,5 +262,24 @@ readPetab <- function(modelname, path, FLAGTestCase = FALSE) {
   do.call(petab, c(files_model, files_tsv))
 }
 
-
+writePetab <- function(petab, modelname, path, FLAGTestCase = FALSE) {
+  
+  files <- petab_files(modelname = modelname, path = path, FLAGTestCase = FLAGTestCase)
+  files <- files[intersect(names(files), names(petab))]
+  
+  # tables
+  files_tsv <- grep("tsv", files, value = TRUE)
+  lapply(names(files_tsv), function(nm) {
+    fwrite(petab[[nm]], files[[nm]], sep = "\t")})
+  
+  # model
+  files_model <- grep("rds", files, value = TRUE)
+  files_model <- lapply(names(files_model), function(nm) {
+    saveRDS(petab[[nm]], files[[nm]])})
+  
+  # yaml
+  # Todo
+  
+  invisible(petab)
+}
 
