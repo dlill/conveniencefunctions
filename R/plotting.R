@@ -31,6 +31,67 @@ cf_stopDev <- function(filename) {
   NULL
 }
 
+#' Collector function for arguments to call paginate
+#'
+#' @param facets 
+#' @param nrow 
+#' @param ncol 
+#' @param scales 
+#' @param type 
+#' @param ... see [ggforce::facet_wrap_paginate()] and [ggforce::facet_grid_paginate()]
+#'
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @return
+#' 
+#' @export
+#'
+#' @examples
+#' # see ?cf_applyPaginate
+cf_paginateInfo <- function(facets, nrow = 2, ncol = 3, scales = "fixed", type = c("wrap", "grid"), ...) {
+  dots <- list(...)
+  type <- paste0("facet_", type, "_paginate")[1]
+  c(list(type = type, facets = facets, nrow = nrow, ncol = ncol, scales = scales), dots)
+}
+
+#' Get list of paginated plots
+#' 
+#' use ggforce
+#' 
+#' @param pl (not yet facetted) ggplot
+#' @param paginateInfo output from [cf_paginateInfo]
+#'
+#' @return list of ggplots
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#' 
+#' @importFrom ggforce facet_wrap_paginate facet_grid_paginate
+#'
+#' @examples
+#' # adapted from ggforce examples
+#' paginateInfo <- cf_paginateInfo(~cut:clarity)
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1)
+#' plotlist <- cf_applyPaginate(pl, paginateInfo)
+#' plotlist[[1]]
+#' plotlist[[5]]
+cf_applyPaginate <- function(pl, paginateInfo) {
+# [ ] change: read paginateInfo from pl!
+  # pl$facet %>% str1
+  #  'FacetWrapPaginate', 'FacetWrap', ...
+  facet_paginate <- utils::getFromNamespace(paginateInfo$type, "ggforce")
+  paginateInfo <- paginateInfo[setdiff(names(paginateInfo), "type")]
+  px <- pl + {do.call(facet_paginate, paginateInfo)}
+  n <- ggforce::n_pages(px)
+  lapply(1:n, function(i) {
+    pl + {do.call(facet_paginate, c(paginateInfo,list(page = i)))}
+  })
+}
+
+
+
 #' Output figures
 #' 
 #' current features
@@ -51,11 +112,20 @@ cf_stopDev <- function(filename) {
 #' @examples
 cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
                             width = 14, height = 10, scale = 0.6, 
+                            paginateInfo = NULL,
                             FLAGaddScriptname = TRUE, ...) {
+  
+  
+  if (!is.null(paginateInfo)) 
+    pl <- cf_paginateInfo(pl, paginateInfo)
   
   cf_startDev(filename, width, height, scale, ...)
   
-  print(pl) # cf_printPlot for multipage
+  if (any(c("ggplot") %in% class(pl))) { #add grob, gridExtra objects,etc
+    print(pl) # one page
+  } else {
+    for (p in pl) print(p) # multipage
+  }
   
   if (FLAGaddScriptname)
     grid::grid.text(basename(filename), x = unit(0.02, "npc"), y = unit(0.03, "npc"), hjust = 0, gp = gridgpar(
