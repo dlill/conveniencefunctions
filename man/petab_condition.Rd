@@ -2,7 +2,7 @@
 % Please edit documentation in R/PEtab.R
 \name{petab_condition}
 \alias{petab_condition}
-\title{Title}
+\title{Constructor for Conditions}
 \usage{
 petab_condition(conditionId, conditionName = NULL, ...)
 }
