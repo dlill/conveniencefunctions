@@ -8,8 +8,8 @@ petab_parameters(
   parameterId,
   parameterName = NULL,
   parameterScale = c("log", "lin", "log10")[[1]],
-  lowerBound = 0,
-  upperBound = 10000,
+  lowerBound = 1e-04,
+  upperBound = 1000,
   nominalValue = 1,
   estimate = c(1, 0)[[1]],
   initializationPriorType = c("parameterScaleUniform", "uniform", "normal", "laplace",
@@ -48,4 +48,7 @@ petab_parameters(
 }
 \description{
 Constructor for Parameters
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

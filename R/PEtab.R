@@ -1,4 +1,6 @@
-
+# -------------------------------------------------------------------------#
+# Tables ----
+# -------------------------------------------------------------------------#
 
 #' Constructor for Conditions
 #'
@@ -9,10 +11,11 @@
 #' @param ... parameterOrSpeciesOrCompartmentId1. Numeric (value) or string (different parameterId)
 #' 
 #' @return
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
-#'
-#' @examples
-petab_condition <- function(
+petab_experimentalCondition <- function(
   conditionId,
   conditionName = NULL,
   ...) {
@@ -33,7 +36,12 @@ petab_condition <- function(
 #' @param replicateId 
 #' @param preequilibrationConditionId 
 #' @param noiseParameters numeric, string or null: Measurement noise or parameter name
-petab_measurements <- function(
+#' 
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_measurementData <- function(
   observableId,
   simulationConditionId,
   measurement,
@@ -66,13 +74,14 @@ petab_measurements <- function(
 #' @param noiseDistribution 
 #'
 #' @return
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
-#'
-#' @examples
 petab_observables <- function(
   observableId,
   observableName           = NULL,
-  observableFormula        = "observableParameter${n}_${observableId} * state1",
+  observableFormula        = "observableParameter1_${observableId} * state1",
   observableTransformation = c("lin", "log", "log10")[[1]],
   noiseFormula             = c(1, "noiseParameter${n}_${observableId}")[[1]], # aka errormodel
   noiseDistribution        = c("normal", "laplace")[[1]]) {
@@ -101,16 +110,17 @@ petab_observables <- function(
 #' @param objectivePriorParameters 
 #'
 #' @return
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
-#'
-#' @examples
 petab_parameters <- function(
   parameterId,
   parameterName                 = NULL,
   parameterScale                = c("log", "lin", "log10")[[1]],
-  lowerBound                    = 0,     # given on linear scale
-  upperBound                    = 10000, # given on linear scale
-  nominalValue                  = 1,   # given on linear scale
+  lowerBound                    = 0.0001, # given on linear scale
+  upperBound                    = 1000,   # given on linear scale
+  nominalValue                  = 1,      # given on linear scale
   estimate                      = c(1,0)[[1]],
   initializationPriorType       = c("parameterScaleUniform","uniform","normal","laplace","logNormal","logLaplace","parameterScaleNormal","parameterScaleLaplace")[[1]],
   initializationPriorParameters = "-1;1",
@@ -129,6 +139,125 @@ petab_parameters <- function(
     objectivePriorType            = objectivePriorType,
     objectivePriorParameters      = objectivePriorParameters
   )
+}
+
+# -------------------------------------------------------------------------#
+# Model ----
+# -------------------------------------------------------------------------#
+
+#' PEtab structural model without sbml
+#'
+#' @param odes eqnlist or eqnvc
+#' @param events eventlist
+#' @param ... not used, but could be used in the future for imitating assignment rules etc
+#' 
+#' @return list
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_model <- function(odes, events = NULL, ...) {
+  list(odes = odes, events = events, ...)
+}
+
+
+# -------------------------------------------------------------------------#
+# PEtab representation ----
+# -------------------------------------------------------------------------#
+
+#' Collector function for petab files
+#'
+#' @param model [dMod::eqnlist()]
+#' @param condition see [petab_condition()]
+#' @param measurements see [petab_measurements()]
+#' @param observables see [petab_observables()]
+#' @param parameters see [petab_parameters()]
+#'
+#' @return list of the input arguments
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab <- function(
+  model,
+  experimentalCondition = NULL,
+  measurementData = NULL,
+  observables = NULL,
+  parameters = NULL, 
+  ...
+) {
+  # Think of valid combinations of NULLs
+  # either full specification without parameters
+  # or sparse specification without parameters
+  # or sparse specification with parameters
+  list(model = model,
+       experimentalCondition = experimentalCondition,
+       measurementData = measurementData,
+       observables = observables,
+       parameters = parameters)
+}
+
+#' List petab files
+#' @param modelname 
+#' @param path 
+#' @param FLAGTestCase 
+#' modelname <- "Boehm_JProteomeRes2014"
+#' path <- "../../Software/dMod/BenchmarkModels/Boehm_JProteomeRes2014/"
+#' FLAGTestCase <- FALSE
+#' path <- "../../Software/dMod/PEtabTests/0001"
+#' FLAGTestCase <- TRUE
+petab_files <- function(modelname, path, FLAGTestCase = FALSE) {
+  out <- NULL
+  if (FLAGTestCase) {
+    out <- c(
+      yaml                       = paste0(modelname, ".yaml"),
+      experimentalCondition      = paste0("_experimentalCondition"     , ".tsv"),
+      measurementData            = paste0("_measurementData"           , ".tsv"),
+      model                      = paste0("_model"                     , ".xml"),
+      observables                = paste0("_observables"               , ".tsv"),
+      parameters                 = paste0("_parameters"                , ".tsv"),
+      simulatedData              = paste0("_simulatedData"             , ".tsv"),
+      visualizationSpecification = paste0("_visualizationSpecification", ".tsv"))
+  } else {
+    out <- c(
+      yaml                       = paste0(modelname, ".yaml"),
+      experimentalCondition      = paste0("experimentalCondition_"     , modelname, ".tsv"),
+      measurementData            = paste0("measurementData_"           , modelname, ".tsv"),
+      model                      = paste0("model_"                     , modelname, ".xml"),
+      model                      = paste0("model_"                     , modelname, ".rds"),
+      observables                = paste0("observables_"               , modelname, ".tsv"),
+      parameters                 = paste0("parameters_"                , modelname, ".tsv"),
+      simulatedData              = paste0("simulatedData_"             , modelname, ".tsv"),
+      visualizationSpecification = paste0("visualizationSpecification_", modelname, ".tsv"))
+  }
+  
+  file.path(path, out)
+}
+
+
+#' Read PEtab files
+#'
+#' @param modelname 
+#' @param path 
+#' @param FLAGTestCase 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+readPetab <- function(modelname, path, FLAGTestCase = FALSE) {
+  files <- petab_files(modelname = modelname, path = path, FLAGTestCase = FLAGTestCase)
+  files <- files[file.exists(files)]
+  # tables
+  files_tsv <- grep("tsv", files, value = TRUE)
+  files_tsv <- lapply(files_tsv, fread)
+  # model
+  files_model <- grep("xml", files, value = TRUE)
+  if (length(files_model)) stop("xml not supported")
+  files_model <- grep("rds", files, value = TRUE)
+  files_model <- lapply(files_model, readRDS)
+  
+  do.call(petab, c(files_model, files_tsv))
 }
 
 

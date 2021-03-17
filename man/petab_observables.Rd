@@ -7,7 +7,7 @@
 petab_observables(
   observableId,
   observableName = NULL,
-  observableFormula = "observableParameter${n}_${observableId} * state1",
+  observableFormula = "observableParameter1_${observableId} * state1",
   observableTransformation = c("lin", "log", "log10")[[1]],
   noiseFormula = c(1, "noiseParameter${n}_${observableId}")[[1]],
   noiseDistribution = c("normal", "laplace")[[1]]
@@ -31,4 +31,7 @@ petab_observables(
 }
 \description{
 Constructor for Observables
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }
