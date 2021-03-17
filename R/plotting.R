@@ -112,6 +112,18 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
                             units = c("in", "cm", "mm"), 
                             dpi = 300, limitsize = TRUE, ...) {
   
+  
+  # Handle paginate
+  if (is.null(paginateInfo))  {
+    pl <- list(pl)
+  } else {
+    pl <- cf_applyPaginate(pl, paginateInfo)
+    if (!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
+      filename <- gsub(".png", "%03d.png", filename)
+    }
+    FLAGaddScriptname <- FALSE
+  }
+  
   # device wrestling
   dpi <- ggplot2:::parse_dpi(dpi)
   dev <- ggplot2:::plot_dev(NULL, filename, dpi = dpi)
@@ -125,17 +137,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
     grDevices::dev.off()
     if (old_dev > 1) grDevices::dev.set(old_dev)
   }))
-  
-  # Handle paginate
-  if (is.null(paginateInfo))  {
-    pl <- list(pl)
-  } else {
-    pl <- cf_applyPaginate(pl, paginateInfo)
-    if (!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
-      filename <- gsub(".png", "%03d.png", filename)
-    }
-    FLAGaddScriptname <- FALSE
-  }
+
   
   # Print plots
   for (p in pl) print(p)
