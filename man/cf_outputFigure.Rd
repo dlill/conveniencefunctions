@@ -11,7 +11,11 @@ cf_outputFigure(
   width = 14,
   height = 10,
   scale = 0.6,
+  paginateInfo = NULL,
   FLAGaddScriptname = TRUE,
+  units = c("in", "cm", "mm"),
+  dpi = 300,
+  limitsize = TRUE,
   ...
 )
 }

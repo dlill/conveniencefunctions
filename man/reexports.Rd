@@ -3,7 +3,9 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{getConditions}
+\alias{n_pages}
+\alias{facet_grid_paginate}
+\alias{facet_wrap_paginate}
 \alias{tidyverse_logo}
 \title{Reexports}
 \keyword{internal}
@@ -12,7 +14,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dMod}{\code{\link[dMod]{getConditions}}}
+  \item{ggforce}{\code{\link[ggforce]{facet_grid_paginate}}, \code{\link[ggforce]{facet_wrap_paginate}}, \code{\link[ggforce]{n_pages}}}
 
   \item{tidyverse}{\code{\link[tidyverse]{tidyverse_logo}}}
 }}

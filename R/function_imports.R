@@ -1,16 +1,20 @@
 #' Reexports
 #' 
 
-#' @importFrom dMod getConditions
+
+#' @importFrom ggforce n_pages
 #' @export
-#' 
-#' @rdname ggly
-dMod::getConditions
+ggforce::n_pages
+#' @importFrom ggforce facet_grid_paginate
+#' @export
+ggforce::facet_grid_paginate 
+#' @importFrom ggforce facet_wrap_paginate
+#' @export
+ggforce::facet_wrap_paginate 
 
 
 # Dummy imports ----
 
 #' @importFrom tidyverse tidyverse_logo
-#' @rdname ggly
 tidyverse::tidyverse_logo
 

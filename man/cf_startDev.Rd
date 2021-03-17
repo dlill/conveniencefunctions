@@ -5,7 +5,7 @@
 \alias{cf_stopDev}
 \title{Title}
 \usage{
-cf_startDev(filename, width = 14, height = 10, scale = 0.6, ...)
+cf_startDev(filename, width = 14, height = 10, scale = 0.6, units = "cm", ...)
 
 cf_stopDev(filename)
 }

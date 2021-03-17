@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-cf_startDev <- function(filename, width = 14, height = 10, scale = 0.6, ...) {
+cf_startDev <- function(filename, width = 14, height = 10, scale = 0.6, units = "cm", ...) {
   width <- width * scale
   height <- height * scale
   if (grepl("png$", filename)) {
@@ -72,15 +72,10 @@ cf_paginateInfo <- function(facets, nrow = 2, ncol = 3, scales = "fixed", type =
 #' @examples
 #' # adapted from ggforce examples
 #' paginateInfo <- cf_paginateInfo(~cut:clarity)
-#' pl <- ggplot(diamonds) +
-#'   geom_point(aes(carat, price), alpha = 0.1)
 #' plotlist <- cf_applyPaginate(pl, paginateInfo)
 #' plotlist[[1]]
 #' plotlist[[5]]
 cf_applyPaginate <- function(pl, paginateInfo) {
-# [ ] change: read paginateInfo from pl!
-  # pl$facet %>% str1
-  #  'FacetWrapPaginate', 'FacetWrap', ...
   facet_paginate <- utils::getFromNamespace(paginateInfo$type, "ggforce")
   paginateInfo <- paginateInfo[setdiff(names(paginateInfo), "type")]
   px <- pl + {do.call(facet_paginate, paginateInfo)}
@@ -113,27 +108,46 @@ cf_applyPaginate <- function(pl, paginateInfo) {
 cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
                             width = 14, height = 10, scale = 0.6, 
                             paginateInfo = NULL,
-                            FLAGaddScriptname = TRUE, ...) {
+                            FLAGaddScriptname = TRUE,
+                            units = c("in", "cm", "mm"), 
+                            dpi = 300, limitsize = TRUE, ...) {
   
+  # device wrestling
+  dpi <- ggplot2:::parse_dpi(dpi)
+  dev <- ggplot2:::plot_dev(device, filename, dpi = dpi)
+  dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
+                  limitsize = limitsize)
   
-  if (!is.null(paginateInfo)) 
-    pl <- cf_paginateInfo(pl, paginateInfo)
+  old_dev <- grDevices::dev.cur()
   
-  cf_startDev(filename, width, height, scale, ...)
+  dev(filename = filename, width = dim[1], height = dim[2], ...)
+  on.exit(utils::capture.output({
+    grDevices::dev.off()
+    if (old_dev > 1) grDevices::dev.set(old_dev)
+  }))
   
-  if (any(c("ggplot") %in% class(pl))) { #add grob, gridExtra objects,etc
-    print(pl) # one page
+  # Handle paginate
+  if (is.null(paginateInfo))  {
+    pl <- list(pl)
   } else {
-    for (p in pl) print(p) # multipage
+    pl <- cf_paginateInfo(pl, paginateInfo)
+    if (!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
+      filename <- gsub(".png", "%03d.png", filename)
+    }
+    FLAGaddScriptname <- FALSE
   }
   
-  if (FLAGaddScriptname)
-    grid::grid.text(basename(filename), x = unit(0.02, "npc"), y = unit(0.03, "npc"), hjust = 0, gp = gridgpar(
-      fontsize = eval(parse(text = paste0(0.8 * width * scale , " * ", pl$theme$legend.text$size,pl$theme$text$size)))
-    ))
+  # Print plots
+  for (p in pl) print(p)
   
-  cf_stopDev(filename)
-  invisible(pl)
+  if (FLAGaddScriptname)
+    grid::grid.text(basename(filename), x = unit(0.02, "npc"), 
+                    y = unit(0.03, "npc"), hjust = 0, 
+                    gp = gridgpar(fontsize = eval(parse(
+                      text = paste0(0.8 * width * scale , " * ", 
+                                    pl$theme$legend.text$size,pl$theme$text$size)))))
+  
+  invisible()
 }
 
 
