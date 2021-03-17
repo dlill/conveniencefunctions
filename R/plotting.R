@@ -114,7 +114,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
   
   # device wrestling
   dpi <- ggplot2:::parse_dpi(dpi)
-  dev <- ggplot2:::plot_dev(device, filename, dpi = dpi)
+  dev <- ggplot2:::plot_dev(NULL, filename, dpi = dpi)
   dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
                   limitsize = limitsize)
   
@@ -130,7 +130,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
   if (is.null(paginateInfo))  {
     pl <- list(pl)
   } else {
-    pl <- cf_paginateInfo(pl, paginateInfo)
+    pl <- cf_applyPaginate(pl, paginateInfo)
     if (!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
       filename <- gsub(".png", "%03d.png", filename)
     }
