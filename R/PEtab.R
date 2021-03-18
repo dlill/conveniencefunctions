@@ -210,7 +210,7 @@ petab <- function(
 petab_modelname_path <- function(filename) {
   if (tools::file_ext(basename(filename)) != "petab") 
     stop("File ending should be .petab (is ", tools::file_ext(filename), ")")
-  modelname <- gsub(".petab$", basename(filename))
+  modelname <- gsub(".petab$", "", basename(filename))
   path <- dirname(filename)
   list(modelname = modelname, path = path)
 }
@@ -272,10 +272,7 @@ petab_files <- function(filename, FLAGTestCase = FALSE) {
 #' @examples
 readPetab <- function(filename, FLAGTestCase = FALSE) {
   
-  modelname <- petab_modelname_path(filename)$modelname
-  path <- petab_modelname_path(filename)$path
-  
-  files <- petab_files(modelname = modelname, path = path, FLAGTestCase = FLAGTestCase)
+  files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
   files <- files[file.exists(files)]
   # tables
   files_tsv <- grep("tsv", files, value = TRUE)
@@ -291,25 +288,27 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
 
 writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FALSE) {
 
-  modelname <- petab_modelname_path(filename)$modelname
-  path <- petab_modelname_path(filename)$path
-  dir.create(path, FALSE, TRUE)
+  # Create folder
+  dir.create(petab_modelname_path(filename)$path, FALSE, TRUE)
   
-  files <- petab_files(modelname = modelname, path = path, FLAGTestCase = FLAGTestCase)
+  # Select files to write
+  files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
   files <- files[intersect(names(files), names(petab))]
   
-  # tables
+  # Write tables
   files_tsv <- grep("tsv", files, value = TRUE)
   lapply(names(files_tsv), function(nm) {
     fwrite(petab[[nm]], files[[nm]], sep = "\t")})
   
-  # model
+  # Write model
   files_model <- grep("rds", files, value = TRUE)
   files_model <- lapply(names(files_model), function(nm) {
     saveRDS(petab[[nm]], files[[nm]])})
-  # xml todo
   
-  # yaml
+  # Write xml model 
+  # todo
+  
+  # Write yaml
   # Todo
   
   invisible(petab)
