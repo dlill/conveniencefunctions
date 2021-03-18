@@ -244,7 +244,8 @@ petab_files <- function(filename, FLAGTestCase = FALSE) {
       yaml                       = paste0(modelname, ".yaml"),
       experimentalCondition      = paste0("_experimentalCondition"     , ".tsv"),
       measurementData            = paste0("_measurementData"           , ".tsv"),
-      modelXML                   = paste0("_model"                     , ".xml"),
+      modelXML                      = paste0("_model"                     , ".xml"), 
+      # [ ] not very elegant. Remove rds when sbml is stable
       model                      = paste0("_model"                     , ".rds"),
       observables                = paste0("_observables"               , ".tsv"),
       parameters                 = paste0("_parameters"                , ".tsv"),
@@ -255,7 +256,8 @@ petab_files <- function(filename, FLAGTestCase = FALSE) {
       yaml                       = paste0(modelname, ".yaml"),
       experimentalCondition      = paste0("experimentalCondition_"     , modelname, ".tsv"),
       measurementData            = paste0("measurementData_"           , modelname, ".tsv"),
-      modelXML                   = paste0("model_"                     , modelname, ".xml"),
+      modelXML                      = paste0("model_"                     , modelname, ".xml"),
+      # [ ] not very elegant. Remove rds when sbml is stable
       model                      = paste0("model_"                     , modelname, ".rds"),
       observables                = paste0("observables_"               , modelname, ".tsv"),
       parameters                 = paste0("parameters_"                , modelname, ".tsv"),
@@ -293,14 +295,14 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
   do.call(petab_init, c(files_model, files_tsv))
 }
 
-writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FALSE) {
+writePetab <- function(petab, filename = "petab/model.petab") {
 
   # Create folder, load petab
   dir.create(petab_modelname_path(filename)$path, FALSE, TRUE)
   pe <- petab_python_setup()
   
   # Get filenames
-  files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
+  files <- petab_files(filename = filename)
   
   # Write yaml
   pe$create_problem_yaml(sbml_files        = basename(files["modelXML"]),
@@ -309,6 +311,9 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
                          parameter_file    = basename(files["parameters"]), 
                          observable_files  = basename(files["observables"]), 
                          yaml_file         = files["yaml"])
+  
+  # [ ] Hack: Remove once sbml export is stable
+  if ("model" %in% names(petab)) petab$modelXML <- petab$model
   
   # Select files to write
   files <- files[names(petab)]
@@ -335,6 +340,7 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
     do.call(sbml_exportEquationList, args)
   }
   
+  cat("Success?")
   invisible(petab)
 }
 

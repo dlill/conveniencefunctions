@@ -18,7 +18,6 @@ eqnlist_addDefaultCompartment <- function(equationList, compName) {
 }
 
 
-
 #' Extract parInfo data.table from equationlist
 #'
 #' @param el equationList

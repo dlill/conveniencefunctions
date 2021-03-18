@@ -66,6 +66,7 @@ petab <- petab_init(pe_mo,
                     pe_me,
                     pe_ob)
 
+# debugonce(writePetab)
 writePetab(petab, "petab/enzymeKinetics.petab")
 
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)
