@@ -46,13 +46,13 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
     for (fact in names(types)[types%in%c("character","factor")]) dt[[fact]] <- paste0('"', dt[[fact]],'"')
     kt <- knitr::kable(dt,format = "markdown")
     kt <- kt[-(1:2)]
-    row0 <- paste0("tibble::tribble(")
+    row0 <- paste0("data.table(tibble::tribble(")
     row1 <- paste0(paste0("~", names(dt), ","), collapse = " ")
     kt <- substr(kt, 2, nchar(kt))
     kt <- gsub("\\|", ",", kt)
     rowN <- kt[length(kt)]
     rowN <- substr(rowN, 1, nchar(rowN)-1)
-    rowN <- paste0(rowN, ")")
+    rowN <- paste0(rowN, "))")
     kt <- kt[-length(kt)]
     kt <- c(row0, row1, kt, rowN)
     if (NFLAGtribble == 1) cat(kt, sep = "\n")
