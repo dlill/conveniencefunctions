@@ -3,6 +3,22 @@
 # -------------------------------------------------------------------------#
 
 
+#' Title
+#'
+#' @param el 
+#' @param compName 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+eqnlist_addDefaultCompartment <- function(equationList, compName) {
+  as.eqnlist(as.data.frame(equationList), 
+             volumes = setNames(rep(compName), equationList$states))
+}
+
+
+
 #' Extract parInfo data.table from equationlist
 #'
 #' @param el equationList
