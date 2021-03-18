@@ -17,7 +17,7 @@
 #' @export
 petab_experimentalCondition <- function(
   conditionId,
-  conditionName = NULL,
+  conditionName = NA,
   ...) {
   data.table(conditionId = conditionId, 
              conditionName = conditionName, 
@@ -31,11 +31,11 @@ petab_experimentalCondition <- function(
 #' @param simulationConditionId 
 #' @param measurement 
 #' @param time 
-#' @param observableParameters numeric string or null
+#' @param observableParameters numeric string or NA
 #' @param datasetId 
 #' @param replicateId 
 #' @param preequilibrationConditionId 
-#' @param noiseParameters numeric, string or null: Measurement noise or parameter name
+#' @param noiseParameters numeric, string or NA: Measurement noise or parameter name
 #' 
 #' 
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
@@ -46,11 +46,11 @@ petab_measurementData <- function(
   simulationConditionId,
   measurement,
   time,
-  observableParameters        = list(NULL, "1;1", "scale_i;offset_i")[[1]], 
-  noiseParameters             = list(1, "error_obsi_ADD;error_obsi_REL")[[1]],
-  datasetId                   = NULL,
-  replicateId                 = NULL,
-  preequilibrationConditionId = NULL
+  observableParameters        = list(NA, "1;1", "scale_obsi;offset_obsi")[[1]], 
+  noiseParameters             = list(1, "error_ADD_obsi;error_REL_obsi")[[1]],
+  datasetId                   = NA,
+  replicateId                 = NA,
+  preequilibrationConditionId = NA
 ) {
   data.table(
     observableId                = observableId,
@@ -80,10 +80,10 @@ petab_measurementData <- function(
 #' @export
 petab_observables <- function(
   observableId,
-  observableName           = NULL,
+  observableName           = NA,
   observableFormula        = "observableParameter1_${observableId} * state1",
   observableTransformation = c("lin", "log", "log10")[[1]],
-  noiseFormula             = c(1, "noiseParameter${n}_${observableId}")[[1]], # aka errormodel
+  noiseFormula             = c(1, "noiseParameter${n}_${observableId} + noiseParameter${n}_${observableId}*${observableId}")[[1]], # aka errormodel
   noiseDistribution        = c("normal", "laplace")[[1]]) {
   data.table(
     observableId             = observableId,
@@ -116,7 +116,7 @@ petab_observables <- function(
 #' @export
 petab_parameters <- function(
   parameterId,
-  parameterName                 = NULL,
+  parameterName                 = NA,
   parameterScale                = c("log", "lin", "log10")[[1]],
   lowerBound                    = 0.0001, # given on linear scale
   upperBound                    = 1000,   # given on linear scale
@@ -156,7 +156,7 @@ petab_parameters <- function(
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab_model <- function(odes, events = NULL, ...) {
+petab_model <- function(odes, events = NA, ...) {
   list(odes = odes, events = events, ...)
 }
 
@@ -180,13 +180,13 @@ petab_model <- function(odes, events = NULL, ...) {
 #' @export
 petab <- function(
   model,
-  experimentalCondition = NULL,
-  measurementData = NULL,
-  observables = NULL,
-  parameters = NULL, 
+  experimentalCondition = NA,
+  measurementData = NA,
+  observables = NA,
+  parameters = NA, 
   ...
 ) {
-  # Think of valid combinations of NULLs
+  # Think of valid combinations of NAs
   # either full specification without parameters
   # or sparse specification without parameters
   # or sparse specification with parameters
@@ -197,6 +197,25 @@ petab <- function(
        parameters = parameters)
 }
 
+#' Title
+#'
+#' @param filename path ending in .petab
+#'
+#' @return list(modelname, path)
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
+petab_modelname_path <- function(filename) {
+  if (tools::file_ext(basename(filename)) != "petab") 
+    stop("File ending should be .petab (is ", tools::file_ext(filename), ")")
+  modelname <- gsub(".petab$", basename(filename))
+  path <- dirname(filename)
+  list(modelname = modelname, path = path)
+}
+
+
 #' List petab files
 #' @param modelname 
 #' @param path 
@@ -206,7 +225,11 @@ petab <- function(
 #' FLAGTestCase <- FALSE
 #' path <- "../../Software/dMod/PEtabTests/0001"
 #' FLAGTestCase <- TRUE
-petab_files <- function(modelname, path, FLAGTestCase = FALSE) {
+petab_files <- function(filename, FLAGTestCase = FALSE) {
+  
+  modelname <- petab_modelname_path(filename)$modelname
+  path <- petab_modelname_path(filename)$path
+  
   warning("model refers to rds instead of xml\n")
   out <- NULL
   if (FLAGTestCase) {
@@ -247,7 +270,11 @@ petab_files <- function(modelname, path, FLAGTestCase = FALSE) {
 #' @export
 #'
 #' @examples
-readPetab <- function(modelname, path, FLAGTestCase = FALSE) {
+readPetab <- function(filename, FLAGTestCase = FALSE) {
+  
+  modelname <- petab_modelname_path(filename)$modelname
+  path <- petab_modelname_path(filename)$path
+  
   files <- petab_files(modelname = modelname, path = path, FLAGTestCase = FLAGTestCase)
   files <- files[file.exists(files)]
   # tables
@@ -262,7 +289,11 @@ readPetab <- function(modelname, path, FLAGTestCase = FALSE) {
   do.call(petab, c(files_model, files_tsv))
 }
 
-writePetab <- function(petab, modelname, path, FLAGTestCase = FALSE) {
+writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FALSE) {
+
+  modelname <- petab_modelname_path(filename)$modelname
+  path <- petab_modelname_path(filename)$path
+  dir.create(path, FALSE, TRUE)
   
   files <- petab_files(modelname = modelname, path = path, FLAGTestCase = FLAGTestCase)
   files <- files[intersect(names(files), names(petab))]
@@ -276,6 +307,7 @@ writePetab <- function(petab, modelname, path, FLAGTestCase = FALSE) {
   files_model <- grep("rds", files, value = TRUE)
   files_model <- lapply(names(files_model), function(nm) {
     saveRDS(petab[[nm]], files[[nm]])})
+  # xml todo
   
   # yaml
   # Todo
@@ -283,3 +315,19 @@ writePetab <- function(petab, modelname, path, FLAGTestCase = FALSE) {
   invisible(petab)
 }
 
+
+# -------------------------------------------------------------------------#
+# Interface to useful PEtab functions ----
+# -------------------------------------------------------------------------#
+# * Sample from prior, ...
+# * ...
+
+
+# Next steps
+# [ ] Construct measurement data from Viktor's data
+# [ ] Construct experimentalCondition for model
+# [ ] Construct observables: Think about specific functions to generate the observables "on the fly" for different model specifications
+# [ ] Construct model
+# [ ] Construct parameters: From rest of petab file
+
+# [ ] 

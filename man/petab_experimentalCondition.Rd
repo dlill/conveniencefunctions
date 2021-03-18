@@ -4,7 +4,7 @@
 \alias{petab_experimentalCondition}
 \title{Constructor for Conditions}
 \usage{
-petab_experimentalCondition(conditionId, conditionName = NULL, ...)
+petab_experimentalCondition(conditionId, conditionName = NA, ...)
 }
 \arguments{
 \item{conditionId}{character Condition ID}

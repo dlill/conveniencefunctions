@@ -6,10 +6,11 @@
 \usage{
 petab_observables(
   observableId,
-  observableName = NULL,
+  observableName = NA,
   observableFormula = "observableParameter1_${observableId} * state1",
   observableTransformation = c("lin", "log", "log10")[[1]],
-  noiseFormula = c(1, "noiseParameter${n}_${observableId}")[[1]],
+  noiseFormula = c(1,
+    "noiseParameter${n}_${observableId} + noiseParameter${n}_${observableId}*${observableId}")[[1]],
   noiseDistribution = c("normal", "laplace")[[1]]
 )
 }

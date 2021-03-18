@@ -2,7 +2,25 @@
 % Please edit documentation in R/dModAugmentation.R
 \name{as.parvec.tbl_df}
 \alias{as.parvec.tbl_df}
-\title{as.parvec for dMod.frames}
+\title{#' Try getting conditions
+#'
+#' first from obj, then from data, then from p
+#'
+#' @param x dMod frame
+#' @param hypothesis  1
+#'
+#' @export
+getConditions.tbl_df <- function(x, hypothesis = 1) {
+  getConditions.fn <- dMod:::getConditions.fn
+  
+  if (!is.null(suppressWarnings(x$obj[[hypothesis]])))
+    return(dMod:::getConditions.fn(x$obj[[hypothesis]]))
+  if (!is.null(x$data[[hypothesis]]))
+    return(names(x$data[[hypothesis]]))
+  if (!is.null(x$p[[hypothesis]]))
+    return(dMod:::getConditions.fn(x$p[[hypothesis]]))
+}
+as.parvec for dMod.frames}
 \usage{
 \method{as.parvec}{tbl_df}(x, hypothesis = 1, index = 1)
 }
@@ -14,5 +32,23 @@
 \item{index}{going to as.parvec.parframe}
 }
 \description{
+#' Try getting conditions
+#'
+#' first from obj, then from data, then from p
+#'
+#' @param x dMod frame
+#' @param hypothesis  1
+#'
+#' @export
+getConditions.tbl_df <- function(x, hypothesis = 1) {
+  getConditions.fn <- dMod:::getConditions.fn
+  
+  if (!is.null(suppressWarnings(x$obj[[hypothesis]])))
+    return(dMod:::getConditions.fn(x$obj[[hypothesis]]))
+  if (!is.null(x$data[[hypothesis]]))
+    return(names(x$data[[hypothesis]]))
+  if (!is.null(x$p[[hypothesis]]))
+    return(dMod:::getConditions.fn(x$p[[hypothesis]]))
+}
 as.parvec for dMod.frames
 }

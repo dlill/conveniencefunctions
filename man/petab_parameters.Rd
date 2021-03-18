@@ -6,7 +6,7 @@
 \usage{
 petab_parameters(
   parameterId,
-  parameterName = NULL,
+  parameterName = NA,
   parameterScale = c("log", "lin", "log10")[[1]],
   lowerBound = 1e-04,
   upperBound = 1000,

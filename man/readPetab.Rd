@@ -4,14 +4,14 @@
 \alias{readPetab}
 \title{Read PEtab files}
 \usage{
-readPetab(modelname, path, FLAGTestCase = FALSE)
+readPetab(filename, FLAGTestCase = FALSE)
 }
 \arguments{
+\item{FLAGTestCase}{}
+
 \item{modelname}{}
 
 \item{path}{}
-
-\item{FLAGTestCase}{}
 }
 \value{
 

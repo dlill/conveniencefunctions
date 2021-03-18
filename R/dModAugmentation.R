@@ -285,24 +285,24 @@ as.condition.grid <- function(df) {
 }
 
 
-#' Try getting conditions
-#'
-#' first from obj, then from data, then from p
-#'
-#' @param x dMod frame
-#' @param hypothesis  1
-#'
-#' @export
-getConditions.tbl_df <- function(x, hypothesis = 1) {
-  getConditions.fn <- dMod:::getConditions.fn
-  
-  if (!is.null(suppressWarnings(x$obj[[hypothesis]])))
-    return(dMod:::getConditions.fn(x$obj[[hypothesis]]))
-  if (!is.null(x$data[[hypothesis]]))
-    return(names(x$data[[hypothesis]]))
-  if (!is.null(x$p[[hypothesis]]))
-    return(dMod:::getConditions.fn(x$p[[hypothesis]]))
-}
+#' #' Try getting conditions
+#' #'
+#' #' first from obj, then from data, then from p
+#' #'
+#' #' @param x dMod frame
+#' #' @param hypothesis  1
+#' #'
+#' #' @export
+#' getConditions.tbl_df <- function(x, hypothesis = 1) {
+#'   getConditions.fn <- dMod:::getConditions.fn
+#'   
+#'   if (!is.null(suppressWarnings(x$obj[[hypothesis]])))
+#'     return(dMod:::getConditions.fn(x$obj[[hypothesis]]))
+#'   if (!is.null(x$data[[hypothesis]]))
+#'     return(names(x$data[[hypothesis]]))
+#'   if (!is.null(x$p[[hypothesis]]))
+#'     return(dMod:::getConditions.fn(x$p[[hypothesis]]))
+#' }
 
 
 #' as.parvec for dMod.frames

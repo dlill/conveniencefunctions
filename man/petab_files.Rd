@@ -4,18 +4,18 @@
 \alias{petab_files}
 \title{List petab files}
 \usage{
-petab_files(modelname, path, FLAGTestCase = FALSE)
+petab_files(filename, FLAGTestCase = FALSE)
 }
 \arguments{
-\item{modelname}{}
-
-\item{path}{}
-
 \item{FLAGTestCase}{modelname <- "Boehm_JProteomeRes2014"
 path <- "../../Software/dMod/BenchmarkModels/Boehm_JProteomeRes2014/"
 FLAGTestCase <- FALSE
 path <- "../../Software/dMod/PEtabTests/0001"
 FLAGTestCase <- TRUE}
+
+\item{modelname}{}
+
+\item{path}{}
 }
 \description{
 List petab files

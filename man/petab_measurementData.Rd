@@ -9,11 +9,11 @@ petab_measurementData(
   simulationConditionId,
   measurement,
   time,
-  observableParameters = list(NULL, "1;1", "scale_i;offset_i")[[1]],
-  noiseParameters = list(1, "error_obsi_ADD;error_obsi_REL")[[1]],
-  datasetId = NULL,
-  replicateId = NULL,
-  preequilibrationConditionId = NULL
+  observableParameters = list(NA, "1;1", "scale_obsi;offset_obsi")[[1]],
+  noiseParameters = list(1, "error_ADD_obsi;error_REL_obsi")[[1]],
+  datasetId = NA,
+  replicateId = NA,
+  preequilibrationConditionId = NA
 )
 }
 \arguments{
@@ -25,9 +25,9 @@ petab_measurementData(
 
 \item{time}{}
 
-\item{observableParameters}{numeric string or null}
+\item{observableParameters}{numeric string or NA}
 
-\item{noiseParameters}{numeric, string or null: Measurement noise or parameter name}
+\item{noiseParameters}{numeric, string or NA: Measurement noise or parameter name}
 
 \item{datasetId}{}
 

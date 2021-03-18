@@ -6,10 +6,10 @@
 \usage{
 petab(
   model,
-  experimentalCondition = NULL,
-  measurementData = NULL,
-  observables = NULL,
-  parameters = NULL,
+  experimentalCondition = NA,
+  measurementData = NA,
+  observables = NA,
+  parameters = NA,
   ...
 )
 }
