@@ -25,9 +25,13 @@ cf_dir.create <- function(dirnm) {
 #' @export
 #'
 #' @examples
+#' dt <- data.table(iris)[1:5]
+#' cfoutput_MdTable(dt)
 #' cfoutput_MdTable(data.table(iris), split_by = "Species")
 cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("markdown", "pandoc"), 
-                             caption = NULL, na.strings = "-", FLAGsummaryRow = TRUE, ...) {
+                             caption = NULL, na.strings = "-", FLAGsummaryRow = TRUE, 
+                             NFLAGtribble = 0,
+                             ...) {
   options(knitr.kable.NA = na.strings)
   
   # kt <- knitr::kable(dt,format = format[1], caption = caption)
@@ -36,6 +40,29 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
   seprow <- gsub(":","-",kt[2 + 2*(!is.null(caption))])
   widths <- nchar(strsplit(seprow, "|", fixed = TRUE)[[1]][-1])
   
+  if (NFLAGtribble) {
+    types <- vapply(dt, class, "double")
+    for (fact in names(types)[types=="factor"]) dt[[fact]] <- as.character(dt[[fact]])
+    for (fact in names(types)[types%in%c("character","factor")]) dt[[fact]] <- paste0('"', dt[[fact]],'"')
+    kt <- knitr::kable(dt,format = "markdown")
+    kt <- kt[-(1:2)]
+    row0 <- paste0("tibble::tribble(")
+    row1 <- paste0(paste0("~", names(dt), ","), collapse = " ")
+    kt <- substr(kt, 2, nchar(kt))
+    kt <- gsub("\\|", ",", kt)
+    rowN <- kt[length(kt)]
+    rowN <- substr(rowN, 1, nchar(rowN)-1)
+    rowN <- paste0(rowN, ")")
+    kt <- kt[-length(kt)]
+    kt <- c(row0, row1, kt, rowN)
+    if (NFLAGtribble == 1) cat(kt, sep = "\n")
+    if (NFLAGtribble == 2) {
+      e <- rstudioapi::getSourceEditorContext()
+      rstudioapi::documentSave(e$id)
+      rstudioapi::insertText(e$selection[[1]]$range$start, paste0(kt, collapse = "\n"))
+    }
+    return(invisible(kt))
+  }
   
   if (!is.null(split_by)){
     dt <- copy(as.data.table(dt))
@@ -60,7 +87,7 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
     writeLines(kt, filename)
   
   cat(kt, sep = "\n")
-  kt
+  invisible(kt)
 }
 
 

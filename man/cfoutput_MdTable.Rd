@@ -12,6 +12,7 @@ cfoutput_MdTable(
   caption = NULL,
   na.strings = "-",
   FLAGsummaryRow = TRUE,
+  NFLAGtribble = 0,
   ...
 )
 }
@@ -29,6 +30,8 @@ object of class knitr::kable
 Output table as markdown
 }
 \examples{
+dt <- data.table(iris)[1:5]
+cfoutput_MdTable(dt)
 cfoutput_MdTable(data.table(iris), split_by = "Species")
 }
 \author{

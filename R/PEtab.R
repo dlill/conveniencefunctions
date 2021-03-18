@@ -178,7 +178,7 @@ petab_model <- function(odes, events = NA, ...) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab <- function(
+petab_init <- function(
   model = NULL,
   experimentalCondition = NULL,
   measurementData = NULL,
@@ -289,16 +289,27 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
   files_model <- grep("rds", files, value = TRUE)
   files_model <- lapply(files_model, readRDS)
   
-  do.call(petab, c(files_model, files_tsv))
+  do.call(petab_init, c(files_model, files_tsv))
 }
 
 writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FALSE) {
 
-  # Create folder
+  # Create folder, load petab
   dir.create(petab_modelname_path(filename)$path, FALSE, TRUE)
+  pe <- petab_python_setup()
+  
+  # Get filenames
+  files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
+  
+  # Write yaml
+  pe$create_problem_yaml(sbml_files        = basename(f["modelXML"]),
+                         condition_files   = basename(f["experimentalCondition"]),
+                         measurement_files = basename(f["measurementData"]),
+                         parameter_file    = basename(f["parameters"]), 
+                         observable_files  = basename(f["observables"]), 
+                         yaml_file         = f["yaml"])
   
   # Select files to write
-  files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
   files <- files[names(petab)]
   files <- files[vapply(petab, function(x) !is.null(x), TRUE)]
   
@@ -316,7 +327,8 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
   
   # [ ] Write xml model 
   
-  # [ ] Write yaml
+  
+  
   
   invisible(petab)
 }
@@ -350,15 +362,52 @@ petab_lint <- function(petab) {
 }
 
 
+
+# -------------------------------------------------------------------------#
+# Python setup ----
+# -------------------------------------------------------------------------#
+
+#' Setup the connection to python petab
+#' 
+#' * if petab virtualenv not present: 
+#'   * sets up a virtualenv called "petab" 
+#'   * pip installs petab
+#' * uses "petab" virtual env
+#' * imports and returns petab
+#' 
+#' use as pe <- petab_python_setup()
+#' 
+#' @return python module, see [reticulate::import()]
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_python_setup <- function() {
+  if (!"petab" %in% reticulate::virtualenv_list()){
+    reticulate::virtualenv_install("petab", "petab")
+  }
+  message("Using petab virtualenv\n")
+  reticulate::use_virtualenv("petab")
+  reticulate::import("petab")
+}
+
+
+# -------------------------------------------------------------------------#
+# Todolist ----
+# -------------------------------------------------------------------------#
 # * Sample from prior, ...
 # * petablint ...
-
-
 # Next steps
-# [ ] Construct measurement data from Viktor's data
+# [ ] Construct measurement data from old data
 # [ ] Construct experimentalCondition for model
 # [ ] Construct observables: Think about specific functions to generate the observables "on the fly" for different model specifications
 # [ ] Construct model
 # [ ] Construct parameters: From rest of petab file
+
+
+# -------------------------------------------------------------------------#
+# SBML export ----
+# -------------------------------------------------------------------------#
+
+
 
 # [ ] 
