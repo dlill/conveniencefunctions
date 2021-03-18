@@ -1,0 +1,435 @@
+# -------------------------------------------------------------------------#
+# dMod helper functions ----
+# -------------------------------------------------------------------------#
+
+
+#' Extract parInfo data.table from equationlist
+#'
+#' @param el equationList
+#'
+#' @return data.table
+#' @export
+#'
+#' @examples
+getParInfo <- function(equationList) {
+  parName <- setdiff(getParameters(equationList), c(equationList$states, equationList$volumes))
+  parInfo <- data.table(parName = parName)
+  parInfo[,`:=`(parValue = seq(0.1,1,length.out = .N))]
+  parInfo[,`:=`(parUnit = "per_second")]
+  parInfo
+}
+
+
+
+#' Title
+#'
+#' @param el 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+getSpeciesInfo <- function(equationList){
+  data.table(speciesName = equationList$states,
+             compName    = equationList$volumes,
+             initialAmount = 0)
+}
+
+#' Title
+#'
+#' @param el 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+getCompartmentInfo <- function(equationList) {
+  ci <- data.table(compName = unique(equationList$volumes),
+                   compSize = 1)
+}
+
+
+#' Title
+#'
+#' @param el 
+#' @param p 
+#'
+#' @return list of reactions
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#' @importFrom cOde getSymbols
+getReactionInfo <- function(equationList, parInfo = getParInfo(equationList)) {
+  re <- getReactions(equationList)
+  re <- data.table(re)
+  re[,`:=`(reactants = lapply(Educt,   cOde::getSymbols))]
+  re[,`:=`(product   = lapply(Product, cOde::getSymbols))]
+  
+  fl <- getFluxes(equationList, type = "amount")
+  fl <- rbindlist(lapply(fl, function(f) data.table(Description = names(f), Flux = f)), idcol = "Species")
+  fl <- fl[,list(Description, Flux)]
+  fl[,`:=`(Flux = gsub("^[+-]?1\\*", "", Flux))]
+  fl <- unique(fl)
+  if (nrow(fl) != nrow(re)) stop("fluxes and reactionlist don't match")
+  re <- fl[re, on = c("Description")]
+  
+  re[,`:=`(reactionName = gsub(" ", "", Description))]
+  re[,`:=`(parName  = lapply(Rate,    function(x)  setdiff(cOde::getSymbols(x), equationList$states)))]
+  re[,`:=`(parValue = lapply(parName, function(pn) parInfo[parName %in% pn, parValue]))]
+  re[,`:=`(parUnit  = lapply(parName, function(pn) parInfo[parName %in% pn, parUnit]))]
+  re[,`:=`(reversible = 0)]
+  re[,`:=`(equation = copy(Flux))]
+  
+  re <- re[,list(reactants,product,reactionName,parName,parValue,parUnit,reversible,equation)] 
+  re
+}
+
+#' Title
+#'
+#' @param unitNameSubset 
+#' @param unitName 
+#' @param unitKind list
+#' @param exponent list
+#'
+#' @return
+#' @export
+#'
+#' @examples
+getUnitInfo <- function(unitName = NULL, unitKind = NULL, exponent = NULL) {
+  # Default list of units
+  unitInfo <- data.table(tibble::tribble(
+    ~unitName, ~unitKind, ~exponent,
+    "per_second"          ,c("UNIT_KIND_SECOND")               ,c(-1)        ,
+    "per_mole_per_second" ,c("UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND") ,c(-1, -1),
+    "litre_per_mole_per_second" ,c("UNIT_KIND_LITRE",  "UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND") ,c(1,-1, -1)))
+  
+  # Add custom
+  unitInfo <- rbindlist(list(
+    unitInfo,
+    data.table(unitName = unitName, unitKind = unitKind, exponent = exponent)
+  ))
+  unitInfo
+}
+
+# -------------------------------------------------------------------------#
+# libSBML helper functions ----
+# -------------------------------------------------------------------------#
+
+#' Title
+#'
+#' @param modelname 
+#' @param sbmlDoc 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_initialize <- function(modelname = "EnzymaticReaction", sbmlDoc) {
+  model = SBMLDocument_createModel(sbmlDoc)
+  Model_setId(model, modelname)
+  model
+}
+
+
+
+#' Add unit
+#'
+#' @param model 
+#' @param unitName 
+#' @param unitKind 
+#' @param exponent 
+#'
+#' @return
+#' @export
+#'
+sbml_addOneUnit <- function(model, unitName = "litre_per_mole_per_second", 
+                            unitKind =c("UNIT_KIND_LITRE", "UNIT_KIND_MOLE", "UNIT_KIND_SECOND"),
+                            exponent = c(1,-1,-1)) {
+  unitdef = Model_createUnitDefinition(model)
+  UnitDefinition_setId(unitdef, unitName)
+  for (i in seq_along(unitKind)){
+    unit = UnitDefinition_createUnit(unitdef)
+    Unit_setKind(unit, unitKind[i])
+    Unit_setExponent(unit,exponent[i])
+  }
+  invisible(model)
+}
+
+
+
+#' Title
+#'
+#' @param model 
+#' @param compName 
+#' @param compsize 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_addOneCompartment <- function(model, compName, compSize) {
+  comp = Model_createCompartment(model)
+  Compartment_setId(comp,compName)
+  Compartment_setSize(comp,compSize)
+}
+
+
+#' Title
+#'
+#' @param model 
+#' @param speciesName 
+#' @param compName 
+#' @param speciesInitialAmount 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_addOneSpecies <- function(model, speciesName, compName, initialAmount) {
+  sp = Model_createSpecies(model)  
+  Species_setCompartment(sp,compName)
+  Species_setId(sp,speciesName)
+  Species_setName(sp,speciesName)
+  Species_setInitialAmount(sp,initialAmount)
+}
+
+#' Title
+#'
+#' @param reaction 
+#' @param speciesNames 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_reactionAddReactants <- function(reaction, speciesName) {
+  for (nm in speciesName){
+    spr = Reaction_createReactant(reaction)
+    SimpleSpeciesReference_setSpecies(spr,nm)
+  }
+}
+
+#' Title
+#'
+#' @param reaction 
+#' @param speciesNames 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_reactionAddProducts <- function(reaction, speciesNames) {
+  for (nm in speciesNames){
+    spr = Reaction_createProduct(reaction)
+    SimpleSpeciesReference_setSpecies(spr,nm)
+  }
+}
+
+#' Title
+#'
+#' @param kl 
+#' @param parName 
+#' @param parValue 
+#' @param unitName 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_kineticLawAddParameters <- function(kl, parName, parValue, unitName) {
+  para = KineticLaw_createParameter(kl)
+  for (i in seq_along(parName)){
+    Parameter_setId(para, parName[i])
+    Parameter_setValue( para, parValue[i])
+    Parameter_setUnits( para, unitName[i])}
+}
+
+#' Title
+#'
+#' @param reaction 
+#' @param equation 
+#' @param parName 
+#' @param parValue 
+#' @param parUnit 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_reactionAddKineticLaw <- function(reaction, equation, parName, parValue, parUnit) {
+  kl = Reaction_createKineticLaw(reaction)
+  astMath <- parseFormula(equation)
+  KineticLaw_setMath( kl, astMath)  
+  sbml_kineticLawAddParameters(kl, parName, parValue, parUnit)
+}
+
+#' Title
+#'
+#' @param model 
+#' @param reactionName 
+#' @param reversible 
+#' @param reactants 
+#' @param products 
+#' @param equation 
+#' @param parName 
+#' @param parValue 
+#' @param parUnit 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_addOneReaction <- function(model, reactionName,
+                                reversible = 1, reactants, products,
+                                equation, parName, parValue, parUnit
+) {
+  reaction = Model_createReaction(model)
+  Reaction_setId(reaction,reactionName)
+  if (reversible==0) Reaction_setReversible(reaction, reversible)
+  sbml_reactionAddReactants(reaction, reactants)
+  sbml_reactionAddProducts(reaction, products)
+  sbml_reactionAddKineticLaw(reaction, equation, parName, parValue, parUnit)
+}
+
+
+#' From libSBML example
+#' 
+#' @author Frank Bergmann
+#'
+#' @param sbmlDoc 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_validateSBML <- function(sbmlDoc)
+{
+  noProblems             = 1;
+  numCheckFailures       = 0;
+  numConsistencyErrors   = 0;
+  numConsistencyWarnings = 0;
+  numValidationErrors    = 0;
+  numValidationWarnings  = 0;
+  
+  # LibSBML 3.3 is lenient when generating models from scratch using the
+  # API for creating objects.  Once the whole model is done and before it
+  # gets written out, it's important to check that the whole model is in
+  # fact complete, consistent and valid.
+  
+  numCheckFailures = SBMLDocument_checkInternalConsistency( sbmlDoc);
+  if ( numCheckFailures > 0 ) {
+    noProblems = 0;
+    for (i in 0:(numCheckFailures-1)) {
+      sbmlErr = SBMLDocument_getError( sbmlDoc, i);
+      if ( XMLError_isFatal(sbmlErr) || XMLError_isError(sbmlErr) ) {
+        numConsistencyErrors = numConsistencyErrors + 1;
+      } else {
+        numConsistencyWarnings = 1 + numConsistencyWarnings;
+      }      
+    } 
+    
+    SBMLDocument_printErrors(sbmlDoc);
+  }
+  
+  # If the internal checks fail, it makes little sense to attempt
+  # further validation, because the model may be too compromised to
+  # be properly interpreted.
+  
+  if (numConsistencyErrors > 0) {
+    cat("Further validation aborted.\n"); 
+  } else {
+    numCheckFailures = SBMLDocument_checkConsistency( sbmlDoc );
+    if ( numCheckFailures > 0 ) {
+      noProblems = 0;
+      for (i in 0:(numCheckFailures-1)) {
+        sbmlErr = SBMLDocument_getError( sbmlDoc, i);
+        if ( XMLError_isFatal( sbmlErr) || XMLError_isError( sbmlErr) ) {
+          numValidationErrors = 1+ numValidationErrors;
+        } else {
+          numValidationWarnings = 1+ numValidationWarnings;
+        }      
+      } 
+      SBMLDocument_printErrors(sbmlDoc);
+    }
+  }
+  
+  if (noProblems) {
+    return (1);
+  } else {
+    if (numConsistencyErrors > 0) {
+      cat("ERROR: encountered ",numConsistencyErrors," consistency error(s) in model '",Model_getId(SBMLDocument_getModel( sbmlDoc)),"'.\n")
+    }
+    if (numConsistencyWarnings > 0) {
+      cat( "Notice: encountered ",numConsistencyWarnings," consistency warning(s) in model '",Model_getId(SBMLDocument_getModel( sbmlDoc)),"'.\n")
+    }
+    
+    if (numValidationErrors > 0) {
+      cat("ERROR: encountered ",numValidationErrors," validation error(s) in model '",Model_getId(SBMLDocument_getModel( sbmlDoc)),"'.\n")
+    }
+    if (numValidationWarnings > 0) {
+      cat( "Notice: encountered ",numValidationWarnings," validation warning(s) in model '",Model_getId(SBMLDocument_getModel( sbmlDoc)),"'.\n")
+    }
+    
+    return (numConsistencyErrors == 0 && numValidationErrors == 0);
+  }
+}
+
+
+# -------------------------------------------------------------------------#
+# sbml export function ----
+# -------------------------------------------------------------------------#
+
+
+#' Title
+#'
+#' @param modelname 
+#' @param filename 
+#' @param equationList 
+#' @param unitInfo 
+#' @param speciesInfo 
+#' @param parInfo 
+#' @param compartmentInfo 
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
+#' modelname = "Model"
+#' unitInfo = getUnitInfo()
+#' speciesInfo = getSpeciesInfo(equationList)
+#' parInfo = getParInfo(equationList)
+#' compartmentInfo = getCompartmentInfo(equationList)
+sbml_exportEquationList <- function(equationList,
+                                    filename,
+                                    modelname = "Model",
+                                    unitInfo        = getUnitInfo(),
+                                    speciesInfo     = getSpeciesInfo(equationList),
+                                    parInfo         = getParInfo(equationList),
+                                    compartmentInfo = getCompartmentInfo(equationList)) {
+  # Load libSBML
+  library(libSBML)
+  
+  # Collect arguments
+  unitInfoList        <- purrr::transpose(unitInfo)
+  speciesInfoList     <- purrr::transpose(speciesInfo)
+  parInfoList         <- purrr::transpose(parInfo)
+  compartmentInfoList <- purrr::transpose(compartmentInfo)
+  reactionInfoList    <- purrr::transpose(getReactionInfo(equationList,parInfo = parInfo))
+  
+  # Start SBML document
+  sbmlDoc = SBMLDocument(level = 2, version = 4) 
+  model <- sbml_initialize(modelname, sbmlDoc)
+  
+  # Populate with content
+  for (x in unitInfoList)        do.call(sbml_addOneUnit,        c(list(model = model),x))
+  for (x in compartmentInfoList) do.call(sbml_addOneCompartment, c(list(model = model),x))
+  for (x in speciesInfoList)     do.call(sbml_addOneSpecies,     c(list(model = model),x))
+  for (x in reactionInfoList)    do.call(sbml_addOneReaction,    c(list(model = model),x))
+  
+  # Validate and write to file
+  sbml_validateSBML(sbmlDoc) 
+  writeSBML(sbmlDoc, filename = filename)
+  invisible(NULL)
+}
