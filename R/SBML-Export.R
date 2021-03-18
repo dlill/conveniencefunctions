@@ -3,6 +3,22 @@
 # -------------------------------------------------------------------------#
 
 
+#' Title
+#'
+#' @param el 
+#' @param compName 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+eqnlist_addDefaultCompartment <- function(equationList, compName) {
+  as.eqnlist(as.data.frame(equationList), 
+             volumes = setNames(rep(compName), equationList$states))
+}
+
+
+
 #' Extract parInfo data.table from equationlist
 #'
 #' @param el equationList
@@ -396,11 +412,27 @@ sbml_validateSBML <- function(sbmlDoc)
 #' @export
 #'
 #' @examples
-#' modelname = "Model"
-#' unitInfo = getUnitInfo()
-#' speciesInfo = getSpeciesInfo(equationList)
-#' parInfo = getParInfo(equationList)
-#' compartmentInfo = getCompartmentInfo(equationList)
+#' 
+#' library(conveniencefunctions)
+#' .. Eqnlist and objects -----
+#' el <- NULL
+#' el <- addReaction(el, from = "E + S", to = "ES", rate = "(kon)*E*S",
+#'                   description = "production of complex")
+#' el <- addReaction(el, from = "ES", to = "E + S", rate = "koff*ES",
+#'                   description = "decay of complex")
+#' el <- addReaction(el, from = "ES", to = "E + P", rate = "kcat*ES",
+#'                   description = "production of product")
+#' el <- eqnlist_addDefaultCompartment(el, "cytoplasm")
+#' 
+#' filename <- file.path(tempdir(), "model.xml")
+#' 
+#' parInfo <- data.table(tibble::tribble(
+#'   ~parName, ~parValue, ~parUnit,
+#'   "kon"   ,     0.10,"litre_per_mole_per_second" ,
+#'   "koff"  ,     0.55,"per_second" ,
+#'   "kcat"  ,     1.00,"per_second" ))
+#' 
+#' sbml_exportEquationList(el, filename, parInfo = parInfo)
 sbml_exportEquationList <- function(equationList,
                                     filename,
                                     modelname = "Model",
