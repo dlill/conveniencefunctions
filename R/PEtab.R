@@ -126,6 +126,7 @@ petab_parameters <- function(
   initializationPriorParameters = "-1;1",
   objectivePriorType            = c("parameterScaleNormal","parameterScaleUniform","uniform","normal","laplace","logNormal","logLaplace","parameterScaleLaplace")[[1]],
   objectivePriorParameters      = "-1;1") {
+  
   data.table(
     parameterId                   = parameterId,
     parameterName                 = parameterName,
@@ -147,7 +148,7 @@ petab_parameters <- function(
 
 #' PEtab structural model without sbml
 #'
-#' @param odes eqnlist or eqnvc
+#' @param equationList eqnlist
 #' @param events eventlist
 #' @param ... not used, but could be used in the future for imitating assignment rules etc
 #' 
@@ -156,8 +157,8 @@ petab_parameters <- function(
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab_model <- function(odes, events = NA, ...) {
-  list(odes = odes, events = events, ...)
+petab_model <- function(equationList, events = NA, parInfo = getParInfo(equationList), ...) {
+  list(equationList = equationList, events = events, parInfo = parInfo, ...)
 }
 
 
@@ -284,8 +285,8 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
   files_tsv <- grep("tsv", files, value = TRUE)
   files_tsv <- lapply(files_tsv, fread)
   # model
-  files_model <- grep("xml", files, value = TRUE)
-  if (length(files_model)) stop("xml not supported")
+  files_model <- grep("xml", files, value = TRUE) # Do nothing, read rds
+
   files_model <- grep("rds", files, value = TRUE)
   files_model <- lapply(files_model, readRDS)
   
@@ -302,12 +303,12 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
   files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
   
   # Write yaml
-  pe$create_problem_yaml(sbml_files        = basename(f["modelXML"]),
-                         condition_files   = basename(f["experimentalCondition"]),
-                         measurement_files = basename(f["measurementData"]),
-                         parameter_file    = basename(f["parameters"]), 
-                         observable_files  = basename(f["observables"]), 
-                         yaml_file         = f["yaml"])
+  pe$create_problem_yaml(sbml_files        = basename(files["modelXML"]),
+                         condition_files   = basename(files["experimentalCondition"]),
+                         measurement_files = basename(files["measurementData"]),
+                         parameter_file    = basename(files["parameters"]), 
+                         observable_files  = basename(files["observables"]), 
+                         yaml_file         = files["yaml"])
   
   # Select files to write
   files <- files[names(petab)]
@@ -319,16 +320,20 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
     lapply(names(files_tsv), function(nm) {
       fwrite(petab[[nm]], files[[nm]], sep = "\t")})
   
-  # Write model
+  # Write model rds
   files_model <- grep("rds", files, value = TRUE)
   if (length(files_model)) 
     lapply(names(files_model), function(nm) {
       saveRDS(petab[[nm]], files[[nm]])})
   
-  # [ ] Write xml model 
-  
-  
-  
+  # Write model xml
+  files_model <- grep("xml", files, value = TRUE)
+  if (length(files_model)) {
+    args <- c(petab$model, list(filename = files_model, 
+                                modelname = modelname))
+    args <- args[setdiff(names(args), "events")] # [ ] Todo: Events
+    do.call(sbml_exportEquationList, args)
+  }
   
   invisible(petab)
 }
@@ -403,11 +408,3 @@ petab_python_setup <- function() {
 # [ ] Construct model
 # [ ] Construct parameters: From rest of petab file
 
-
-# -------------------------------------------------------------------------#
-# SBML export ----
-# -------------------------------------------------------------------------#
-
-
-
-# [ ] 

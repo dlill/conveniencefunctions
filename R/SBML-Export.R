@@ -14,7 +14,7 @@
 #' @examples
 eqnlist_addDefaultCompartment <- function(equationList, compName) {
   as.eqnlist(as.data.frame(equationList), 
-             volumes = setNames(rep(compName), equationList$states))
+             volumes = setNames(rep(compName, length(equationList$states)), equationList$states))
 }
 
 

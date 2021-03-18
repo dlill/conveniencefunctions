@@ -54,7 +54,7 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
     rowN <- substr(rowN, 1, nchar(rowN)-1)
     rowN <- paste0(rowN, "))")
     kt <- kt[-length(kt)]
-    kt <- c(row0, row1, kt, rowN)
+    kt <- c(row0, row1, kt, rowN, "")
     if (NFLAGtribble == 1) cat(kt, sep = "\n")
     if (NFLAGtribble == 2) {
       e <- rstudioapi::getSourceEditorContext()

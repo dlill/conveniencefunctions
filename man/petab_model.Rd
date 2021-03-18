@@ -4,10 +4,10 @@
 \alias{petab_model}
 \title{PEtab structural model without sbml}
 \usage{
-petab_model(odes, events = NA, ...)
+petab_model(equationList, events = NA, parInfo = getParInfo(equationList), ...)
 }
 \arguments{
-\item{odes}{eqnlist or eqnvc}
+\item{equationList}{eqnlist}
 
 \item{events}{eventlist}
 
