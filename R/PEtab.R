@@ -179,22 +179,28 @@ petab_model <- function(odes, events = NA, ...) {
 #' @md
 #' @export
 petab <- function(
-  model,
-  experimentalCondition = NA,
-  measurementData = NA,
-  observables = NA,
-  parameters = NA, 
+  model = NULL,
+  experimentalCondition = NULL,
+  measurementData = NULL,
+  observables = NULL,
+  parameters = NULL, 
   ...
 ) {
+  
   # Think of valid combinations of NAs
   # either full specification without parameters
   # or sparse specification without parameters
   # or sparse specification with parameters
-  list(model = model,
+  
+  petab <- list(model = model,
        experimentalCondition = experimentalCondition,
        measurementData = measurementData,
        observables = observables,
        parameters = parameters)
+  
+  petab_lint(petab)
+  
+  petab
 }
 
 #' Title
@@ -230,7 +236,7 @@ petab_files <- function(filename, FLAGTestCase = FALSE) {
   modelname <- petab_modelname_path(filename)$modelname
   path <- petab_modelname_path(filename)$path
   
-  warning("model refers to rds instead of xml\n")
+  # [ ] warning("model refers to rds instead of xml\n")
   out <- NULL
   if (FLAGTestCase) {
     out <- c(
@@ -293,23 +299,24 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
   
   # Select files to write
   files <- petab_files(filename = filename, FLAGTestCase = FLAGTestCase)
-  files <- files[intersect(names(files), names(petab))]
+  files <- files[names(petab)]
+  files <- files[vapply(petab, function(x) !is.null(x), TRUE)]
   
   # Write tables
   files_tsv <- grep("tsv", files, value = TRUE)
-  lapply(names(files_tsv), function(nm) {
-    fwrite(petab[[nm]], files[[nm]], sep = "\t")})
+  if (length(files_tsv)) 
+    lapply(names(files_tsv), function(nm) {
+      fwrite(petab[[nm]], files[[nm]], sep = "\t")})
   
   # Write model
   files_model <- grep("rds", files, value = TRUE)
-  files_model <- lapply(names(files_model), function(nm) {
-    saveRDS(petab[[nm]], files[[nm]])})
+  if (length(files_model)) 
+    lapply(names(files_model), function(nm) {
+      saveRDS(petab[[nm]], files[[nm]])})
   
-  # Write xml model 
-  # todo
+  # [ ] Write xml model 
   
-  # Write yaml
-  # Todo
+  # [ ] Write yaml
   
   invisible(petab)
 }
@@ -318,8 +325,33 @@ writePetab <- function(petab, filename = "petab/model.petab", FLAGTestCase = FAL
 # -------------------------------------------------------------------------#
 # Interface to useful PEtab functions ----
 # -------------------------------------------------------------------------#
+
+petab_lint <- function(petab) {
+  # [ ] Implement access to petab.lint
+  errlist <- list()
+  
+  # Some quick own checks
+  dupes <- which(duplicated(petab$measurementData))
+  if(length(dupes)) {
+    warning("These rows are duplicates in measurementData: ", paste0(head(dupes,10), collapse = ","), "...")
+    errlist <- c(errlist, measurementDataDupes = dupes)}
+  
+  dupes <- which(duplicated(petab$observables$observableID))
+  if(length(dupes)) {
+    warning("These rows are duplicates in observableId: ", paste0(head(dupes,10), collapse = ","), "...")
+    errlist <- c(errlist, observableIdDupes = dupes)}
+
+  dupes <- which(duplicated(petab$experimentalCondition$conditionId))
+  if(length(dupes)) {
+    warning("These rows are duplicates in conditionId :", paste0(head(dupes,10), collapse = ","), "...")
+    errlist <- c(errlist, list(conditionIdDupes = dupes))}
+  
+  errlist
+}
+
+
 # * Sample from prior, ...
-# * ...
+# * petablint ...
 
 
 # Next steps
