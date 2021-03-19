@@ -43,6 +43,7 @@ pred <- as.data.table(x(seq(0,100), pars)[[1]])
 pred <- x(seq(0,100, 10), pars)
 pred <- data.table(as.data.frame(pred))
 pred[,`:=`(sigma = value * 0.1)]
+pred <- rbind(pred,pred,pred)
 pred[,`:=`(value = value + rnorm(length(value), sd = sigma))]
 pred[,`:=`(name = paste0("obs", name))]
 
@@ -61,11 +62,11 @@ pe_me <- petab_measurementData(observableId = pred$name,
                                simulationConditionId = "C1",
                                measurement = pred$value,
                                time = pred$time,
-                               observableParameters = NA,
+                               observableParameters = NA_character_,
                                noiseParameters = pred$sigma,
                                datasetId = "data1",
-                               replicateId = NA,
-                               preequilibrationConditionId = NA)
+                               replicateId = rep(1:3, each = nrow(pred)/3),
+                               preequilibrationConditionId = NA_character_)
 pe_me[observableId == "obsE",`:=`(observableParameters = "offset_E")]
 pe_mo <- petab_model(el,events = NULL,parInfo = parInfo, speciesInfo = speciesInfo)
 
@@ -78,9 +79,35 @@ petab <- petab_init(pe_mo,
 # debugonce(writePetab)
 filename <- "petab/enzymeKinetics.petab"
 writePetab(petab, filename)
-
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)
 # sbml_exportEquationList(el, filename, parInfo = parInfo)
+
+# ..  -----
+# create_parameter_df <- function(model, experimentalCondition, measurementData, observables) {
+#   
+# }
+
+create_parameter_df <- function(model, measurementData) {
+  speciesInfo <- model$speciesInfo
+  parInfo <- model$parInfo
+  par_sp <- petab_parameters(parameterId =   speciesInfo$speciesName, 
+                            parameterName = speciesInfo$speciesName,
+                            nominalValue =  speciesInfo$initialAmount,
+                            estimate = as.numeric(speciesInfo$initialAmount > 0))
+  par_pa <- petab_parameters(parameterId =   parInfo$parName, 
+                            parameterName = parInfo$parName,
+                            nominalValue =  parInfo$parValue)
+  par_ob <- petab_parameters(parameterId =  getSymbols(measurementData$observableParameters), 
+                            parameterName = getSymbols(measurementData$observableParameters),
+                            parameterScale = "lin")
+  par_meErr <- NULL
+  if (length(getSymbols(measurementData$noiseParameters))) 
+    petab_parameters(parameterId =   getSymbols(measurementData$noiseParameters), 
+                     parameterName = getSymbols(measurementData$noiseParameters),
+                     nominalValue = 0.1)
+  
+  par <- rbindlist(list(par_sp, par_pa, par_ob, par_meErr))
+}
 
 # -------------------------------------------------------------------------#
 # Create Parameter_df ----

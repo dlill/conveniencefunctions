@@ -157,8 +157,11 @@ petab_parameters <- function(
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab_model <- function(equationList, events = NA, parInfo = getParInfo(equationList), ...) {
-  list(equationList = equationList, events = events, parInfo = parInfo, ...)
+petab_model <- function(equationList, events = NA, 
+                        parInfo = getParInfo(equationList), 
+                        speciesInfo = getSpeciesInfo(equationList)) {
+  list(equationList = equationList, events = events, 
+       parInfo = parInfo, speciesInfo = speciesInfo, ...)
 }
 
 
