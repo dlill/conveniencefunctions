@@ -1,6 +1,10 @@
 # library(conveniencefunctions)
 devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
 try(setwd(dirname(rstudioapi::getSourceEditorContext()$path)))
+
+# -------------------------------------------------------------------------#
+# Create enzyme kinetics model and data ----
+# -------------------------------------------------------------------------#
 # .. Eqnlist and objects -----
 modelname <- "enzymeKinetics"
 
@@ -11,22 +15,23 @@ el <- addReaction(el, from = "ES", to = "E + S", rate = "koff*ES",
                   description = "decay of complex")
 el <- addReaction(el, from = "ES", to = "E + P", rate = "kcat*ES",
                   description = "production of product")
-el <- eqnlist_addDefaultCompartment(el, "cytoplasm")
+el <- eqnlist_addDefaultCompartment(el, "cytoplasm") # Need compartment information for SBML
 
 parInfo <- data.table(tibble::tribble(
   ~parName, ~parValue, ~parUnit,
-  "kon"   ,     1,"litre_per_mole_per_second" ,
-  "koff"  ,     0.1,"per_second" ,
+  "kon"   ,     1  ,"litre_per_mole_per_second" ,    # Because of compartment, all dMod-fluxes are multiplied with cytoplasm volume
+  "koff"  ,     0.1,"per_second" , 
   "kcat"  ,     0.1,"per_second" ))
 
 speciesInfo <- data.table(tibble::tribble(
   ~speciesName, ~compName, ~initialAmount,
-  "E"         ,"cytoplasm" ,             1,
+  "E"         ,"cytoplasm" ,             1,          # Amount, not concentration
   "S"         ,"cytoplasm" ,             100,
   "ES"        ,"cytoplasm" ,             0,
   "P"         ,"cytoplasm" ,             0))
 
-
+# compartmentInfo is left as the default getCompartmentInfo(el)
+# unitInfo is left as the default getUnitInfo(): If you need other units, you need to add them
 
 # .. Simulate Data -----
 compiled <- odemodel(f = el,modelname = modelname)
@@ -41,6 +46,9 @@ pred[,`:=`(sigma = value * 0.1)]
 pred[,`:=`(value = value + rnorm(length(value), sd = sigma))]
 pred[,`:=`(name = paste0("obs", name))]
 
+# -------------------------------------------------------------------------#
+# Export Petab ----
+# -------------------------------------------------------------------------#
 # .. Create petab tables -----
 pe_ex <- petab_experimentalCondition("C1", "C1")
 pe_ob <- petab_observables(observableId = c("obsE","obsS","obsES","obsP"),
@@ -66,7 +74,7 @@ petab <- petab_init(pe_mo,
                     pe_me,
                     pe_ob)
 
-# debugonce(writePetab)
+debugonce(writePetab)
 writePetab(petab, "petab/enzymeKinetics.petab")
 
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)

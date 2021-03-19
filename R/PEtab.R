@@ -218,21 +218,26 @@ petab_modelname_path <- function(filename) {
   if (tools::file_ext(basename(filename)) != "petab") 
     stop("File ending should be .petab (is ", tools::file_ext(filename), ")")
   modelname <- gsub(".petab$", "", basename(filename))
-  path <- dirname(filename)
+  path <- gsub(".petab$", "", filename)
   list(modelname = modelname, path = path)
 }
 
 
 #' List petab files
-#' @param modelname 
-#' @param path 
-#' @param FLAGTestCase 
-#' modelname <- "Boehm_JProteomeRes2014"
-#' path <- "../../Software/dMod/BenchmarkModels/Boehm_JProteomeRes2014/"
-#' FLAGTestCase <- FALSE
-#' path <- "../../Software/dMod/PEtabTests/0001"
-#' FLAGTestCase <- TRUE
-petab_files <- function(filename, FLAGTestCase = FALSE) {
+#'
+#' @param FLAGTestCase generate TestCases filename
+#' @param filename "path/to/modelname.petab". Will generate filenames like 
+#'        "path/to/modelname/model_modelname.xml"
+#' @param FLAGreturnList return list or vector?
+#' 
+#' @return list or character vector of file paths
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#' 
+#' @examples
+#' petab_files("Models/Example.petab") 
+petab_files <- function(filename, FLAGTestCase = FALSE, FLAGreturnList = FALSE) {
   
   modelname <- petab_modelname_path(filename)$modelname
   path <- petab_modelname_path(filename)$path
@@ -265,7 +270,9 @@ petab_files <- function(filename, FLAGTestCase = FALSE) {
       visualizationSpecification = paste0("visualizationSpecification_", modelname, ".tsv"))
   }
   nm <- names(out)
-  setNames(file.path(path, out), nm)
+  out <- setNames(file.path(path, out), nm)
+  if (FLAGreturnList) out <- as.list(out)
+  out
 }
 
 
@@ -276,6 +283,8 @@ petab_files <- function(filename, FLAGTestCase = FALSE) {
 #' @param FLAGTestCase 
 #'
 #' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
 #'
 #' @examples
