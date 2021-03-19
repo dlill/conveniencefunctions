@@ -2,7 +2,7 @@
 #include <R.h> 
  #include <math.h> 
 
-static double parms[5];
+static double parms[7];
 static double forc[0];
 static double cons[0];
 static double range[2];
@@ -11,17 +11,19 @@ static double range[2];
 #define nSplines 0 
 #define precision 1e-05 
 
-#define cytoplasm parms[0] 
- #define y0_0 parms[1] 
- #define y1_0 parms[2] 
- #define y2_0 parms[3] 
- #define y3_0 parms[4] 
+#define kon parms[0] 
+ #define koff parms[1] 
+ #define kcat parms[2] 
+ #define y0_0 parms[3] 
+ #define y1_0 parms[4] 
+ #define y2_0 parms[5] 
+ #define y3_0 parms[6] 
 #define tmin range[0]
 #define tmax range[1]
 
 
 void odemodel_enzymeKinetics_initmod(void (* odeparms)(int *, double *)) {
-	 int N=5;
+	 int N=7;
 	 odeparms(&N, parms);
 }
 
@@ -35,10 +37,10 @@ void odemodel_enzymeKinetics_derivs (int *n, double *t, double *y, double *ydot,
 
 	 double time = *t;
 
-	 ydot[0] = -1.0*(y[0]*y[1]*cytoplasm)+1.0*(y[2]*cytoplasm)+1.0*(y[2]*cytoplasm);
- 	 ydot[1] = -1.0*(y[0]*y[1]*cytoplasm)+1.0*(y[2]*cytoplasm);
- 	 ydot[2] = 1.0*(y[0]*y[1]*cytoplasm)-1.0*(y[2]*cytoplasm)-1.0*(y[2]*cytoplasm);
- 	 ydot[3] = 1.0*(y[2]*cytoplasm);
+	 ydot[0] = -1.0*(kon*y[0]*y[1]*1.0)+1.0*(koff*y[2]*1.0)+1.0*(kcat*y[2]*1.0);
+ 	 ydot[1] = -1.0*(kon*y[0]*y[1]*1.0)+1.0*(koff*y[2]*1.0);
+ 	 ydot[2] = 1.0*(kon*y[0]*y[1]*1.0)-1.0*(koff*y[2]*1.0)-1.0*(kcat*y[2]*1.0);
+ 	 ydot[3] = 1.0*(kcat*y[2]*1.0);
 
 }
 

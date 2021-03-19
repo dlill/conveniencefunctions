@@ -55,7 +55,7 @@ pred[,`:=`(name = paste0("obs", name))]
 pe_ex <- petab_experimentalCondition("C1", "C1")
 pe_ob <- petab_observables(observableId = c("obsE","obsS","obsES","obsP"),
                            observableName = c("obsE","obsS","obsES","obsP"),
-                           observableFormula = c("observableParameter1_obsE + E","S","ES","P"), 
+                           observableFormula = c("E","S","ES","P"), 
                            observableTransformation = "log",
                            noiseFormula = c("0.1"),
                            noiseDistribution = c("normal"))

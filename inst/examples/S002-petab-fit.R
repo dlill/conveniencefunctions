@@ -9,6 +9,8 @@ warning("absolute file path")
 # Create enzyme kinetics model and data ----
 # -------------------------------------------------------------------------#
 # debugonce(getReactionsSBML)
+# pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
+# ..  -----
 # debugonce(getParametersSBML)
 # debugonce(sensitivitiesSymb)
 
@@ -17,7 +19,13 @@ pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
 # debugonce(importPEtabSBML)
 # pd <- importPEtabSBML("enzymeKinetics","petab/")
 
+# ..  -----
 pd$prd(seq(0,100), pd$pars)
+pd$obj_data(pd$pars)
+
+myfit <- trust(pd$obj_data, pd$pars,1,10,iterlim = 1000)
+plotCombined(pd$prd(seq(0,100), pd$pars), pd$data)
+plotCombined(pd$prd(seq(0,100), myfit$argument), pd$data)
 
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)
 # sbml_exportEquationList(el, filename, parInfo = parInfo)
