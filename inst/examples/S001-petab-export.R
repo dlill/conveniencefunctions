@@ -53,7 +53,7 @@ pred[,`:=`(name = paste0("obs", name))]
 pe_ex <- petab_experimentalCondition("C1", "C1")
 pe_ob <- petab_observables(observableId = c("obsE","obsS","obsES","obsP"),
                            observableName = c("obsE","obsS","obsES","obsP"),
-                           observableFormula = c("E","S","ES","P"), 
+                           observableFormula = c("observableParameter1_E + E","S","ES","P"), 
                            observableTransformation = "log",
                            noiseFormula = c("0.1*obsE"),
                            noiseDistribution = c("normal"))
@@ -66,6 +66,7 @@ pe_me <- petab_measurementData(observableId = pred$name,
                                datasetId = "data1",
                                replicateId = NA,
                                preequilibrationConditionId = NA)
+pe_me[observableId == "obsE",`:=`(observableParameters = "offset_E")]
 pe_mo <- petab_model(el,events = NULL,parInfo = parInfo, speciesInfo = speciesInfo)
 
 # .. Create petab -----
@@ -74,8 +75,43 @@ petab <- petab_init(pe_mo,
                     pe_me,
                     pe_ob)
 
-debugonce(writePetab)
-writePetab(petab, "petab/enzymeKinetics.petab")
+# debugonce(writePetab)
+filename <- "petab/enzymeKinetics.petab"
+writePetab(petab, filename)
 
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)
 # sbml_exportEquationList(el, filename, parInfo = parInfo)
+
+# -------------------------------------------------------------------------#
+# Create Parameter_df ----
+# -------------------------------------------------------------------------#
+
+library(reticulate)
+files <- petab_files(filename, FLAGreturnList = TRUE)
+
+
+pepy <- petab_python_setup()
+sbmlmodel <- pepy$get_sbml_model(files$modelXML)
+pepy$create_parameter_df(sbml_model     = r_to_py(pepy$load_sbml_from_file(files$modelXML)),
+                         condition_df   = r_to_py(pepy$get_condition_df(files$experimentalCondition)),
+                         observable_df  = r_to_py(pepy$get_observable_df(files$observables)),
+                         measurement_df = r_to_py(pepy$get_measurement_df(files$measurementData)))
+
+#python code
+# import petab
+# petab.create_parameter_df(sbml_model    = petab.get_sbml_model("petab/enzymeKinetics/model_enzymeKinetics.xml"),
+#                          condition_df   = petab.get_condition_df("petab/enzymeKinetics/experimentalCondition_enzymeKinetics.tsv"),
+#                          observable_df  = petab.get_observable_df("petab/enzymeKinetics/observables_enzymeKinetics.tsv"),
+#                          measurement_df = petab.get_measurement_df("petab/enzymeKinetics/measurementData_enzymeKinetics.tsv"))
+# 
+# import petab
+# petab.create_parameter_df(sbml_model    = petab.get_sbml_model("petab/Boehm_JProteomeRes2014/model_Boehm_JProteomeRes2014.xml"),
+#                          condition_df   = petab.get_condition_df("petab/Boehm_JProteomeRes2014/experimentalCondition_Boehm_JProteomeRes2014.tsv"),
+#                          observable_df  = petab.get_observable_df("petab/Boehm_JProteomeRes2014/observables_Boehm_JProteomeRes2014.tsv"),
+#                          measurement_df = petab.get_measurement_df("petab/Boehm_JProteomeRes2014/measurementData_Boehm_JProteomeRes2014.tsv"))
+
+#
+pepy$create_parameter_df(sbml_model = r_to_py(sbmlmodel))
+
+
+# Exit ----

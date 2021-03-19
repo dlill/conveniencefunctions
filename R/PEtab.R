@@ -401,6 +401,10 @@ petab_lint <- function(petab) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
+#' 
+#' @examples 
+#' pepy <- petab_python_setup
+#' pepy$lint
 petab_python_setup <- function() {
   if (!"petab" %in% reticulate::virtualenv_list()){
     reticulate::virtualenv_install("petab", "petab")
