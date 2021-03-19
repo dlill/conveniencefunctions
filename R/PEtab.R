@@ -1,5 +1,41 @@
 # -------------------------------------------------------------------------#
-# Tables ----
+# Convenience functions ----
+# -------------------------------------------------------------------------#
+
+#' Original petab function didn't work
+#'
+#' @param model 
+#' @param measurementData 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_parameter_df <- function(model, measurementData) {
+  speciesInfo <- model$speciesInfo
+  parInfo <- model$parInfo
+  par_sp <- petab_parameters(parameterId =   speciesInfo$speciesName, 
+                             parameterName = speciesInfo$speciesName,
+                             nominalValue =  speciesInfo$initialAmount,
+                             estimate = as.numeric(speciesInfo$initialAmount > 0))
+  par_pa <- petab_parameters(parameterId =   parInfo$parName, 
+                             parameterName = parInfo$parName,
+                             nominalValue =  parInfo$parValue)
+  par_ob <- petab_parameters(parameterId =  getSymbols(measurementData$observableParameters), 
+                             parameterName = getSymbols(measurementData$observableParameters),
+                             parameterScale = "lin")
+  par_meErr <- NULL
+  if (length(getSymbols(measurementData$noiseParameters))) 
+    petab_parameters(parameterId =   getSymbols(measurementData$noiseParameters), 
+                     parameterName = getSymbols(measurementData$noiseParameters),
+                     nominalValue = 0.1)
+  
+  par <- rbindlist(list(par_sp, par_pa, par_ob, par_meErr))
+}
+
+
+# -------------------------------------------------------------------------#
+# Initializers ----
 # -------------------------------------------------------------------------#
 
 #' Constructor for Conditions
@@ -142,10 +178,6 @@ petab_parameters <- function(
   )
 }
 
-# -------------------------------------------------------------------------#
-# Model ----
-# -------------------------------------------------------------------------#
-
 #' PEtab structural model without sbml
 #'
 #' @param equationList eqnlist
@@ -159,7 +191,7 @@ petab_parameters <- function(
 #' @export
 petab_model <- function(equationList, events = NA, 
                         parInfo = getParInfo(equationList), 
-                        speciesInfo = getSpeciesInfo(equationList)) {
+                        speciesInfo = getSpeciesInfo(equationList),...) {
   list(equationList = equationList, events = events, 
        parInfo = parInfo, speciesInfo = speciesInfo, ...)
 }

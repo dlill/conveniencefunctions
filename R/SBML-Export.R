@@ -460,6 +460,10 @@ sbml_exportEquationList <- function(equationList,
   for (x in reactionInfoList)    do.call(sbml_addOneReaction,    c(list(model = model),x))
   
   # Validate and write to file
+  props = ConversionProperties();
+  ConversionProperties_addOption(props, "promoteLocalParameters", TRUE, 
+                                 "Promotes all Local Parameters to Global ones");
+  
   sbml_validateSBML(sbmlDoc) 
   writeSBML(sbmlDoc, filename = filename)
   invisible(NULL)
