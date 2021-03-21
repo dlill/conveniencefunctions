@@ -1,0 +1,189 @@
+# library(conveniencefunctions)
+devtools::load_all("~/Promotion/Promotion/Software/dMod")
+devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
+try(setwd(dirname(rstudioapi::getSourceEditorContext()$path)))
+
+setwd("/home/daniel/Promotion/Promotion/Projects/conveniencefunctions/inst/examples")
+warning("absolute file path")
+# -------------------------------------------------------------------------#
+# Fix getConditions ----
+# -------------------------------------------------------------------------#
+f <- petab_files("petab/BenchmarkModels/Fujita_SciSignal2010.petab", F,T)
+
+conditions <- f$experimentalCondition
+data       <- f$measurementData
+pe_observables <- fread(f$observables)
+
+# # .. getConditionsSBML <- function(conditions,data, observables_file){ -----
+#   condition.grid_orig <- read.csv(file = conditions, sep = "\t")
+#   mydata <- read.csv(file = data, sep = "\t")
+#   myobservables <- read.csv(file = observables_file, sep = "\t")
+#   
+#   # handle preequilibration conditions
+#   myCons <- condition.grid_orig$conditionId
+#   mypreeqCons <- NULL
+#   for (con in myCons){if(paste0("preeq_", con)%in%myCons) mypreeqCons <- c(mypreeqCons, con)}
+#   condition.grid_orig <- dplyr::filter(condition.grid_orig, !conditionId%in%mypreeqCons)
+#   condition.grid_orig$conditionId <- sub("preeq_", "", condition.grid_orig$conditionId)
+#   
+#   # check which conditions are observed
+#   condis_obs <- mydata$simulationConditionId %>% unique()
+#   # check which observables exist
+#   observables <- mydata$observableId %>% unique()
+#   
+#   # replace "" by NA
+#   if(!is.null(mydata$observableParameters)){
+#     mydata$observableParameters <- mydata$observableParameters %>% as.character()
+#     mydata <- mydata %>% dplyr::mutate(observableParameters = ifelse(observableParameters == "",NA,observableParameters))
+#   }
+#   if(!is.null(mydata$noiseParameters)){
+#     mydata$noiseParameters <- mydata$noiseParameters %>% as.character()
+#     mydata <- mydata %>% dplyr::mutate(noiseParameters = ifelse(noiseParameters == "",NA,noiseParameters))
+#   }
+#   # generate columns for observableParameters
+#   if(!is.numeric(mydata$observableParameters) & !is.null(mydata$observableParameters)){
+#     condition.grid_obs <- data.frame(conditionId = condis_obs)
+#     for (obs in observables){
+#       data_obs <- subset(mydata, observableId == obs)
+#       for (condition in condis_obs){
+#         if(condition %in% data_obs$simulationConditionId){
+#           row_pars <- NULL
+#           obs_par <- subset(data_obs, simulationConditionId == condition)$observableParameters %>% unique() %>% as.character()
+#           if(length(obs_par)==1){
+#             if(!is.na(obs_par)){
+#               # one or more observable parameters?
+#               if(str_detect(obs_par,";")){
+#                 myobspars <- strsplit(obs_par,";")[[1]]
+#                 for(i in 1:length(myobspars)) {
+#                   row_pars <- c(row_pars, myobspars[i])
+#                 }
+#               } else row_pars <- c(row_pars, obs_par)
+#             }
+#             if(!is.null(row_pars)) for (par in 1:length(row_pars)) {
+#               col_name <- paste0("observableParameter",par,"_",obs)
+#               condition.grid_obs[which(condition.grid_obs$conditionId==condition),col_name] <- row_pars[par]
+#             }
+#           } else {
+#             col_name <- paste0("observableParameter1_",obs)
+#             add <- NULL
+#             for(j in 2:length(obs_par)){
+#               add <- rbind(add, subset(condition.grid_obs, conditionId==condition))
+#             }
+#             condition.grid_obs <- rbind(condition.grid_obs, add)
+#             condition.grid_obs[which(condition.grid_obs$conditionId==condition),col_name] <- obs_par
+#             condition.grid_obs$conditionId <- as.character(condition.grid_obs$conditionId)
+#             condition.grid_obs$conditionId[which(condition.grid_obs$conditionId==condition)] <- paste0(condition,"_", obs_par)
+#             
+#             condition.grid_orig <- rbind(condition.grid_orig, add)
+#             condition.grid_orig$conditionId <- as.character(condition.grid_orig$conditionId)
+#             condition.grid_orig$conditionId[which(condition.grid_orig$conditionId==condition)] <- paste0(condition,"_", obs_par)
+#           }
+#         }
+#       } 
+#     }
+#     mycondition.grid <- suppressWarnings(dplyr::inner_join(condition.grid_orig,condition.grid_obs, by = "conditionId"))
+#     # avoid warning if not all conditions are observed
+#   } else mycondition.grid <- condition.grid_orig
+#   
+#   # Check if noise parameters need to be generated or the error model is simply "sigma"
+#   err_simple <- myobservables$noiseFormula == paste0("noiseParameter1_", myobservables$observableId)
+#   # Check if there are any symbolic error parameters
+#   err_symbols <- getSymbols(mydata$noiseParameters)
+#   # This covers all cases: 
+#   # 1. err = noiseParameter1_obs, noiseParameter1_obs = c(1)              => No columns in condition.grid
+#   # 2. err = noiseParameter1_obs, noiseParameter1_obs = c("sigma1")       => Need Column in condition.grid
+#   # 3. err = noiseParameter1_obs * obs, noiseParameter1_obs = c(1)        => Need Column in condition.grid
+#   # 4. err = noiseParameter1_obs * obs, noiseParameter1_obs = c("sigma1") => Need Column in condition.grid
+#   
+#   # generate columns for noiseParameters
+#   if((any(!err_simple) | length(err_symbols) > 0) & !is.null(mydata$noiseParameters))
+#   {
+#     if(exists("mycondition.grid")) {condition.grid_orig <- mycondition.grid}
+#     condition.grid_noise <- data.frame(conditionId = condis_obs)
+#     for (obs in observables[!err_simple]) 
+#     {
+#       data_obs <- subset(mydata, observableId == obs)
+#       for (condition in condis_obs) 
+#       {
+#         if(condition %in% data_obs$simulationConditionId){
+#           row_pars <- NULL
+#           noise_par <- subset(data_obs, simulationConditionId == condition)$noiseParameters %>% unique() %>% as.character()
+#           if(!is.na(noise_par)){
+#             # one or more observable parameters?
+#             if(str_detect(noise_par,";")){
+#               myobspars <- strsplit(noise_par,";")[[1]]
+#               for(i in 1:length(myobspars)) {
+#                 row_pars <- c(row_pars, myobspars[i])
+#               }
+#             } else row_pars <- c(row_pars, noise_par)
+#           }
+#           if(!is.null(row_pars)) for (par in 1:length(row_pars)) {
+#             col_name <- paste0("noiseParameter",par,"_",obs)
+#             condition.grid_noise[which(condition.grid_noise$conditionId==condition),col_name] <- row_pars[par]
+#           }
+#         }
+#       } 
+#       
+#     }
+#     mycondition.grid <- suppressWarnings(dplyr::inner_join(condition.grid_orig,condition.grid_noise, by = "conditionId"))
+#     # avoid warning if not all conditions are observed
+#   }
+#   
+#   if(!exists("mycondition.grid")) mycondition.grid <- condition.grid_orig
+#   rownames(mycondition.grid) <- mycondition.grid$conditionId
+#   # mycondition.grid$conditionId <- NULL ## we need this column in cases with just one condition!
+#   
+#   # check if all conditions are observed
+#   if(nrow(mycondition.grid) < nrow(condition.grid_orig)) print("There exist non-observed conditions!")
+#   
+#   for(i in 1:nrow(mycondition.grid)){
+#     for(j in 1:ncol(mycondition.grid)){
+#       if(is.na(mycondition.grid[i,j])) mycondition.grid[i,j] <- "1"
+#     }
+#   }
+#   
+#   return(list(condition_grid=mycondition.grid, preeqCons=mypreeqCons))
+# # .. } -----
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------------------#
+# Create enzyme kinetics model and data ----
+# -------------------------------------------------------------------------#
+
+
+# debugonce(getReactionsSBML)
+# debugonce(getConditionsSBML)
+pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
+# ..  -----
+# debugonce(getParametersSBML)
+# debugonce(sensitivitiesSymb)
+# ..  -----
+
+# debugonce(importPEtabSBML_indiv)
+# debugonce(getConditionsSBML)
+# pd <- importPEtabSBML_indiv("petab/BenchmarkModels/Fujita_SciSignal2010.petab")
+
+# ..  -----
+
+# pd <- importPEtabSBML_indiv("petab/BenchmarkModels/Boehm_JProteomeRes2014.petab")
+# debugonce(importPEtabSBML)
+# pd <- importPEtabSBML("enzymeKinetics","petab/")
+
+# ..  -----
+pd$prd(seq(0,100), pd$pars)
+pd$obj_data(pd$pars)
+
+myfit <- trust(pd$obj_data, pd$pars,1,10,iterlim = 1000)
+plotCombined(pd$prd(seq(0,100), pd$pars), pd$data)
+plotCombined(pd$prd(seq(0,100), myfit$argument), pd$data)
+
+# cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)
+# sbml_exportEquationList(el, filename, parInfo = parInfo)
+
+# Exit ----

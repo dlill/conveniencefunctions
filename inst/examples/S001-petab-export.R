@@ -74,7 +74,7 @@ pe_pa <- create_parameter_df(pe_mo, pe_me)
 
 
 # .. Create petab -----
-petab <- petab_init(model = pe_mo,
+petab <- petab(model = pe_mo,
                     experimentalCondition = pe_ex,
                     measurementData = pe_me,
                     observables = pe_ob,

@@ -214,7 +214,7 @@ petab_model <- function(equationList, events = NA,
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab_init <- function(
+petab <- function(
   model = NULL,
   experimentalCondition = NULL,
   measurementData = NULL,
@@ -336,9 +336,20 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
   files_model <- grep("rds", files, value = TRUE)
   files_model <- lapply(files_model, readRDS)
   
-  do.call(petab_init, c(files_model, files_tsv))
+  do.call(petab, c(files_model, files_tsv))
 }
 
+#' Title
+#'
+#' @param petab 
+#' @param filename 
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
 writePetab <- function(petab, filename = "petab/model.petab") {
 
   # Create folder, load petab
@@ -393,7 +404,18 @@ writePetab <- function(petab, filename = "petab/model.petab") {
 # Interface to useful PEtab functions ----
 # -------------------------------------------------------------------------#
 
+#' Title
+#'
+#' @param petab 
+#'
+#' @return list of errors
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
 petab_lint <- function(petab) {
+  
   # [ ] Implement access to petab.lint
   errlist <- list()
   
