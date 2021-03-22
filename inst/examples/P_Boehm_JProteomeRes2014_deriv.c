@@ -1,6 +1,6 @@
 #include <R.h>
  #include <math.h>
- void P_Boehm_JProteomeRes2014_deriv_z10aon21 ( double * x, double * y, double * p, int * n, int * k, int * l ) {
+ void P_Boehm_JProteomeRes2014_deriv_bkspv8rw ( double * x, double * y, double * p, int * n, int * k, int * l ) {
  for(int i = 0; i< *n; i++) {
  y[0+i**l] = 207.6 ;
 y[2+i**l] = -207.6 ;
@@ -19,8 +19,8 @@ y[253+i**l] = pow(10.0,(p[12]))*log(10.0) ;
 y[274+i**l] = 1.0 ;
 y[295+i**l] = 1.0 ;
 y[316+i**l] = 1.0 ;
-y[337+i**l] = pow(10.0,(p[16]))*log(10.0) ;
-y[358+i**l] = pow(10.0,(p[17]))*log(10.0) ;
-y[379+i**l] = pow(10.0,(p[18]))*log(10.0) ; 
+y[337+i**l] = 1.0 ;
+y[358+i**l] = 1.0 ;
+y[379+i**l] = 1.0 ; 
 }
 }

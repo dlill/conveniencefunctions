@@ -46,14 +46,14 @@ void odemodel_Boehm_JProteomeRes2014_derivs (int *n, double *t, double *y, doubl
 
 	 double time = *t;
 
-	 ydot[0] = -2.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[0],2.00e+00))*k_phos)-1.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*y[0]*y[2]*k_phos)+2.00e+00*(1.00e+00*k_exp_homo*y[5])*(nuc/cyt)+1.00e+00*(1.00e+00*k_exp_hetero*y[6])*(nuc/cyt);
- 	 ydot[1] = 1.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[0],2.00e+00))*k_phos)-1.00e+00*(1.00e+00*k_imp_homo*y[1]);
- 	 ydot[2] = -1.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*y[0]*y[2]*k_phos)-2.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[2],2.00e+00))*k_phos)+1.00e+00*(1.00e+00*k_exp_hetero*y[6])*(nuc/cyt)+2.00e+00*(1.00e+00*k_exp_homo*y[7])*(nuc/cyt);
- 	 ydot[3] = 1.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*y[0]*y[2]*k_phos)-1.00e+00*(1.00e+00*k_imp_hetero*y[3]);
- 	 ydot[4] = 1.00e+00*(1.00e+00*(1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[2],2.00e+00))*k_phos)-1.00e+00*(1.00e+00*k_imp_homo*y[4]);
- 	 ydot[5] = 1.00e+00*(1.00e+00*k_imp_homo*y[1])*(cyt/nuc)-1.00e+00*(1.00e+00*k_exp_homo*y[5]);
- 	 ydot[6] = 1.00e+00*(1.00e+00*k_imp_hetero*y[3])*(cyt/nuc)-1.00e+00*(1.00e+00*k_exp_hetero*y[6]);
- 	 ydot[7] = 1.00e+00*(1.00e+00*k_imp_homo*y[4])*(cyt/nuc)-1.00e+00*(1.00e+00*k_exp_homo*y[7]);
+	 ydot[0] = -2.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[0],2.00e+00))*k_phos)-1.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*y[0]*y[2]*k_phos)+2.00e+00*(k_exp_homo*y[5])*(nuc/cyt)+1.00e+00*(k_exp_hetero*y[6])*(nuc/cyt);
+ 	 ydot[1] = 1.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[0],2.00e+00))*k_phos)-1.00e+00*(k_imp_homo*y[1]);
+ 	 ydot[2] = -1.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*y[0]*y[2]*k_phos)-2.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[2],2.00e+00))*k_phos)+1.00e+00*(k_exp_hetero*y[6])*(nuc/cyt)+2.00e+00*(k_exp_homo*y[7])*(nuc/cyt);
+ 	 ydot[3] = 1.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*y[0]*y[2]*k_phos)-1.00e+00*(k_imp_hetero*y[3]);
+ 	 ydot[4] = 1.00e+00*((1.25e-07*exp(-1.00e+00*Epo_degradation_BaF3*time))*(pow(y[2],2.00e+00))*k_phos)-1.00e+00*(k_imp_homo*y[4]);
+ 	 ydot[5] = 1.00e+00*(k_imp_homo*y[1])*(cyt/nuc)-1.00e+00*(k_exp_homo*y[5]);
+ 	 ydot[6] = 1.00e+00*(k_imp_hetero*y[3])*(cyt/nuc)-1.00e+00*(k_exp_hetero*y[6]);
+ 	 ydot[7] = 1.00e+00*(k_imp_homo*y[4])*(cyt/nuc)-1.00e+00*(k_exp_homo*y[7]);
 
 }
 

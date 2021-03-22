@@ -473,6 +473,52 @@ petab_python_setup <- function() {
 
 
 # -------------------------------------------------------------------------#
+# PEtab import ----
+# -------------------------------------------------------------------------#
+#' Parse the parameters columns in measurementData
+#'
+#' @param observableId measurementData$observableId
+#' @param noiseParameters measurementData$noiseParameters or measurementData$observableParameters
+#'
+#' @return data.table(INNERPARAMETER, OUTERPARAMETER)
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#' 
+#' @examples 
+#' observableId = c("obsE")
+#' simulationConditionID = c("C1")
+#' petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs")
+#' petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;1")
+#' petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;sigmaRel")
+#' petab_getMeasurementParsMapping(observableId, simulationConditionId, NULL, "1;offsE")
+#' petab_getMeasurementParsMapping(rep("obsE", 2), c("C1","C2"), NULL, c("1;offsE", "2;offsE_C2"))
+petab_getMeasurementParsMapping <- function(observableId, simulationConditionId, noiseParameters = NULL, obsParameters = NULL) {
+  
+  if (!is.null(noiseParameters) && !is.null(obsParameters)) stop("noiseParameters and obsParameters cant both be supplied")
+  if ( is.null(noiseParameters) &&  is.null(obsParameters)) stop("noiseParameters and obsParameters cant both be null")
+  
+  # Select column and name
+  parameters <- if(!is.null(obsParameters)) obsParameters else noiseParameters
+  parameterString <- ifelse(!is.null(obsParameters), "observableParameter", "noiseParameter")
+  
+  # Pipeline of death
+  np <- strsplit(parameters, ";")
+  np <- lapply(np, function(x) {if(length(x)) return(as.data.table(as.list(x))) else data.table(NA)})
+  np <- rbindlist(np, fill = TRUE)
+  setnames(np, paste0(parameterString, 1:length(np), "_"))
+  np <- data.table(observableId = observableId, condition = simulationConditionId, np)
+  np <- melt(np, id.vars = c("observableId", "condition"), variable.name = "INNERPARAMETER", variable.factor = FALSE, value.name = "OUTERPARAMETER")
+  np <- unique(np)
+  np <- np[!is.na(OUTERPARAMETER)]
+  np[,`:=`(INNERPARAMETER = paste0(INNERPARAMETER, observableId))]
+  np <- np[,list(condition, INNERPARAMETER, OUTERPARAMETER)]
+  np <- dcast(np, condition ~ INNERPARAMETER, value.var = "OUTERPARAMETER")
+  np
+}
+
+
+# -------------------------------------------------------------------------#
 # Todolist ----
 # -------------------------------------------------------------------------#
 # * Sample from prior, ...

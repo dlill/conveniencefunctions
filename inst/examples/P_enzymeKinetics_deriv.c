@@ -1,6 +1,6 @@
 #include <R.h>
  #include <math.h>
- void P_enzymeKinetics_deriv_22fgeqn8 ( double * x, double * y, double * p, int * n, int * k, int * l ) {
+ void P_enzymeKinetics_deriv_je2i4z03 ( double * x, double * y, double * p, int * n, int * k, int * l ) {
  for(int i = 0; i< *n; i++) {
  y[0+i**l] = exp(p[0]) ;
 y[13+i**l] = exp(p[1]) ;

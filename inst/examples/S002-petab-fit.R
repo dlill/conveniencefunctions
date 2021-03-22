@@ -8,15 +8,31 @@ warning("absolute file path")
 # -------------------------------------------------------------------------#
 # Create enzyme kinetics model and data ----
 # -------------------------------------------------------------------------#
+pe <- readPetab("petab/enzymeKinetics.petab")
+# ..  -----
+me <- copy(pe$measurementData)
+simulationConditionId <- me$simulationConditionId
+observableId          <- me$observableId
+noiseParameters       <- me$noiseParameters
+
+
+
+
+# getNoiseParMapping <- function(measurementData) {
+#   
+# }
+
+
 # debugonce(getReactionsSBML)
 # pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
 # ..  -----
 # debugonce(getParametersSBML)
 # debugonce(sensitivitiesSymb)
-
+# ..  -----
 # debugonce(importPEtabSBML_indiv)
-pe <- readPetab("petab/enzymeKinetics.petab")
+debugonce(petab_getMeasurementParsMapping)
 pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
+# ..  -----
 # debugonce(importPEtabSBML)
 # pd <- importPEtabSBML("enzymeKinetics","petab/")
 

@@ -31,6 +31,7 @@ pe_observables <- fread(f$observables)
 # ..  -----
 
 # pd <- importPEtabSBML_indiv("petab/BenchmarkModels/Boehm_JProteomeRes2014.petab")
+pd <- importPEtabSBML("Boehm_JProteomeRes2014", "petab/BenchmarkModels/")
 # debugonce(importPEtabSBML)
 # pd <- importPEtabSBML("enzymeKinetics","petab/")
 
