@@ -30,7 +30,7 @@ noiseParameters       <- me$noiseParameters
 # debugonce(sensitivitiesSymb)
 # ..  -----
 # debugonce(importPEtabSBML_indiv)
-debugonce(petab_getMeasurementParsMapping)
+# debugonce(petab_getMeasurementParsMapping)
 pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
 # ..  -----
 # debugonce(importPEtabSBML)

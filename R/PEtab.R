@@ -477,8 +477,9 @@ petab_python_setup <- function() {
 # -------------------------------------------------------------------------#
 #' Parse the parameters columns in measurementData
 #'
-#' @param observableId measurementData$observableId
-#' @param noiseParameters measurementData$noiseParameters or measurementData$observableParameters
+#'
+#' @param measurementData petab$measurementData. Uses only columns observableId,simulationConditionId and "column"
+#' @param column character(1L). one of c("observableParameters", "noiseParameters")
 #'
 #' @return data.table(INNERPARAMETER, OUTERPARAMETER)
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
@@ -486,36 +487,50 @@ petab_python_setup <- function() {
 #' @export
 #' 
 #' @examples 
-#' observableId = c("obsE")
-#' simulationConditionID = c("C1")
-#' petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs")
-#' petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;1")
-#' petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;sigmaRel")
-#' petab_getMeasurementParsMapping(observableId, simulationConditionId, NULL, "1;offsE")
-#' petab_getMeasurementParsMapping(rep("obsE", 2), c("C1","C2"), NULL, c("1;offsE", "2;offsE_C2"))
-petab_getMeasurementParsMapping <- function(observableId, simulationConditionId, noiseParameters = NULL, obsParameters = NULL) {
-  
-  if (!is.null(noiseParameters) && !is.null(obsParameters)) stop("noiseParameters and obsParameters cant both be supplied")
-  if ( is.null(noiseParameters) &&  is.null(obsParameters)) stop("noiseParameters and obsParameters cant both be null")
+#' measurementData <- data.table(
+#' observableId = c("obsE"),
+#' simulationConditionID = c("C1"),
+#' noiseParameters = "sigmaAbs"
+#' )
+#' 
+#' petab_getMeasurementParsMapping(measurementData, "noiseParameters")
+#' 
+#' # Old examples. Need to adapt
+#' # petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;1")
+#' # petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;sigmaRel")
+#' # petab_getMeasurementParsMapping(observableId, simulationConditionId, NULL, "1;offsE")
+#' # petab_getMeasurementParsMapping(rep("obsE", 2), c("C1","C2"), NULL, c("1;offsE", "2;offsE_C2"))
+petab_getMeasurementParsMapping <- function(measurementData, column = c("observableParameters", "noiseParameters")[1]) {
   
   # Select column and name
-  parameters <- if(!is.null(obsParameters)) obsParameters else noiseParameters
-  parameterString <- ifelse(!is.null(obsParameters), "observableParameter", "noiseParameter")
+  parameters <- measurementData[[column]]
+  parameterString <- gsub("Parameters", "Parameter", column)
   
   # Pipeline of death
-  np <- strsplit(parameters, ";")
-  np <- lapply(np, function(x) {if(length(x)) return(as.data.table(as.list(x))) else data.table(NA)})
-  np <- rbindlist(np, fill = TRUE)
-  setnames(np, paste0(parameterString, 1:length(np), "_"))
-  np <- data.table(observableId = observableId, condition = simulationConditionId, np)
-  np <- melt(np, id.vars = c("observableId", "condition"), variable.name = "INNERPARAMETER", variable.factor = FALSE, value.name = "OUTERPARAMETER")
-  np <- unique(np)
-  np <- np[!is.na(OUTERPARAMETER)]
-  np[,`:=`(INNERPARAMETER = paste0(INNERPARAMETER, observableId))]
-  np <- np[,list(condition, INNERPARAMETER, OUTERPARAMETER)]
-  np <- dcast(np, condition ~ INNERPARAMETER, value.var = "OUTERPARAMETER")
-  np
+  mp <- strsplit(parameters, ";")
+  mp <- lapply(mp, function(x) {if(length(x)) return(as.data.table(as.list(x))) else data.table(NA)})
+  mp <- rbindlist(mp, fill = TRUE)
+  setnames(mp, paste0(parameterString, 1:length(mp), "_"))
+  mp <- data.table(observableId = measurementData$observableId, condition = measurementData$simulationConditionId, mp)
+  mp <- melt(mp, id.vars = c("observableId", "condition"), variable.name = "INNERPARAMETER", variable.factor = FALSE, value.name = "OUTERPARAMETER")
+  mp <- unique(mp)
+  mp <- mp[!is.na(OUTERPARAMETER)]
+  mp[,`:=`(INNERPARAMETER = paste0(INNERPARAMETER, observableId))]
+  mp <- mp[,list(condition, INNERPARAMETER, OUTERPARAMETER)]
+  mp <- dcast(mp, condition ~ INNERPARAMETER, value.var = "OUTERPARAMETER")
+  mp
 }
+
+
+petab_getMeasurementParsScales <- function(measurementData,parameters) {
+  
+  # [ ] Implement this.
+  # Output like this: c(noiseParameter1_obsE = "log")
+  
+}
+
+
+
 
 
 # -------------------------------------------------------------------------#
