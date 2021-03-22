@@ -26,7 +26,7 @@ create_parameter_df <- function(model, measurementData) {
                              parameterScale = "lin")
   par_meErr <- NULL
   if (length(getSymbols(measurementData$noiseParameters))) 
-    petab_parameters(parameterId =   getSymbols(measurementData$noiseParameters), 
+    par_meErr <- petab_parameters(parameterId =   getSymbols(measurementData$noiseParameters), 
                      parameterName = getSymbols(measurementData$noiseParameters),
                      nominalValue = 0.1)
   

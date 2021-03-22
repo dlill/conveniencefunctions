@@ -15,6 +15,7 @@ warning("absolute file path")
 # debugonce(sensitivitiesSymb)
 
 # debugonce(importPEtabSBML_indiv)
+pe <- readPetab("petab/enzymeKinetics.petab")
 pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
 # debugonce(importPEtabSBML)
 # pd <- importPEtabSBML("enzymeKinetics","petab/")

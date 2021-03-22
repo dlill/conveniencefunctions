@@ -7,3 +7,7 @@ kon	kon	log	1e-04	1000	1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
 koff	koff	log	1e-04	1000	0.1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
 kcat	kcat	log	1e-04	1000	0.1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
 offset_E	offset_E	lin	1e-04	1000	1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
+sigma_obsE	sigma_obsE	log	1e-04	1000	0.1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
+sigma_obsS	sigma_obsS	log	1e-04	1000	0.1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
+sigma_obsES	sigma_obsES	log	1e-04	1000	0.1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
+sigma_obsP	sigma_obsP	log	1e-04	1000	0.1	1	parameterScaleUniform	-1;1	parameterScaleNormal	-1;1
