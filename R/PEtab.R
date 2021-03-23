@@ -524,9 +524,32 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
 
 petab_getMeasurementParsScales <- function(measurementData,parameters) {
   
-  # [ ] Implement this.
-  # Output like this: c(noiseParameter1_obsE = "log")
+  # >>>>>>> obsolete function, functionality covered currently by dMod::updateParscalesToBaseTrafo <<<<<<<<
   
+  parameters <- pe$parameters
+  measurementData <- pe$measurementData
+  
+  # measurementPars
+  mp <- lapply(c("observableParameters", "noiseParameters"), function(column) {
+    petab_getMeasurementParsMapping(measurementData, column)})
+  mp <- merge(mp[[1]],mp[[2]])
+  mp <- melt(mp, id.vars = "condition", 
+             variable.name = "INNERPARAMETER", 
+             variable.factor = FALSE, value.name = "parameterId")
+  
+  # parScales
+  ps <- parameters[mp, on = c("parameterId") ]
+  ps <- ps[,list(INNERPARAMETER, parameterScale)]
+  ps <- unique(ps)
+  
+  # check that trafo is the same in all conditions
+  dupeScale <- duplicated(ps$INNERPARAMETER)
+  if (any(dupeScale)) 
+    stop("Model parameter has two different scales mapped to it in different conditions: ", 
+         ps$INNERPARAMETER[dupeScale])
+  
+  list(parScales = setNames(ps$parameterScale, ps$INNERPARAMETER), 
+       coveredPars = unique(mp$parameterId))
 }
 
 

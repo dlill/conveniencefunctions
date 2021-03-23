@@ -27,8 +27,8 @@
     <listOfSpecies>
       <species id="E" name="E" compartment="cytoplasm" initialAmount="1"/>
       <species id="S" name="S" compartment="cytoplasm" initialAmount="100"/>
-      <species id="ES" name="ES" compartment="cytoplasm" initialAmount="0"/>
-      <species id="P" name="P" compartment="cytoplasm" initialAmount="0"/>
+      <species id="ES" name="ES" compartment="cytoplasm" initialAmount="1e-12"/>
+      <species id="P" name="P" compartment="cytoplasm" initialAmount="1e-12"/>
     </listOfSpecies>
     <listOfReactions>
       <reaction id="productionofcomplex" reversible="false">

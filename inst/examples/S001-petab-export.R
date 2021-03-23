@@ -27,8 +27,8 @@ speciesInfo <- data.table(tibble::tribble(
   ~speciesName, ~compName, ~initialAmount,
   "E"         ,"cytoplasm" ,             1,          # Amount, not concentration
   "S"         ,"cytoplasm" ,             100,
-  "ES"        ,"cytoplasm" ,             0,
-  "P"         ,"cytoplasm" ,             0))
+  "ES"        ,"cytoplasm" ,             1e-12,
+  "P"         ,"cytoplasm" ,             1e-12))
 
 # compartmentInfo is left as the default getCompartmentInfo(el)
 # unitInfo is left as the default getUnitInfo(): If you need other units, you need to add them
