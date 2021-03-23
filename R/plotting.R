@@ -240,10 +240,15 @@ cfcolorsFULL <- list(
 )
 
 #' Colors
+#' @examples 
+#' ggplot(data.frame(x = 1:30,color = factor(cfcolors[1:30], unique(cfcolors[1:30])))) + 
+#'   geom_tile(aes(x=x, y = 1, fill = color)) + 
+#'   scale_color_manual(values= setNames(nm = cfcolors),
+#'   aesthetics = c("color", "fill"))
 #' @export
 cfcolors <- c("#000000", "#C5000B", "#0084D1", "#579D1C", "#FF950E", 
                   "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513",
-                  "magenta", "salmon", "slateblue1", "chocolate3", "firebrick", "firebrick1", 
-                  "cyan3", "chartreuse4", "gold", "ivory4", "seagreen2", "dodgerblue",
+                  "salmon", "slateblue1", "chocolate3", "firebrick", 
+                  "cyan3", "chartreuse4", "gold", "ivory4", "seagreen3", "dodgerblue",
                   rep("gray", 100))
 
