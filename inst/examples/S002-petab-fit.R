@@ -15,29 +15,8 @@ simulationConditionId <- me$simulationConditionId
 observableId          <- me$observableId
 noiseParameters       <- me$noiseParameters
 
-
-
-
-# getNoiseParMapping <- function(measurementData) {
-#   
-# }
-
-
-# debugonce(getReactionsSBML)
-# pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
-# ..  -----
-# debugonce(getParametersSBML)
-# debugonce(sensitivitiesSymb)
-# ..  -----
-# debugonce(importPEtabSBML_indiv)
-# debugonce(petab_getMeasurementParsMapping)
 pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
-# ..  -----
-# debugonce(importPEtabSBML)
-# debugonce(getConditionsSBML)
-# pd <- importPEtabSBML("enzymeKinetics","petab/")
 
-# ..  -----
 pred <- pd$prd(seq(0,100), pd$pars)
 pd$obj_data(pd$pars)
 
