@@ -9,7 +9,8 @@ License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 Depends:
-  data.table  
+  data.table,
+  ggplot2
 Imports:
   dMod,
   tidyverse,

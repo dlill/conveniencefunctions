@@ -14,7 +14,7 @@ cf_rename_script <- function(from, to) {
 #' @param from,to as in file.rename 
 #'
 #' @export
-cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
+cf_copy_script <- function(from, to, FLAGremoveOld = FALSE, FLAGrenameOutputFolder = FLAGremoveOld) {
   from_stripped <- stringr::str_replace_all(from, c("\\.R$" = "", "^SCRIPT_" = ""))
   to_stripped   <- stringr::str_replace_all(to,   c("\\.R$" = "", "^SCRIPT_" = ""))
   
@@ -29,6 +29,14 @@ cf_copy_script <- function(from, to, FLAGremoveOld = FALSE) {
   writeLines(ln, to)
   
   if (FLAGremoveOld) unlink(from)
+  
+  if (FLAGrenameOutputFolder) {
+    if (from != basename(from)) stop("Renaming output folder only works if getwd() = scriptdir")
+    fromOut <- file.path("../04-Output", gsub(".R$", "", from))
+    toOut <- file.path("../04-Output", gsub(".R$", "", to))
+    file.rename(fromOut, toOut)
+    cat("Output Folder renamed \n")
+  }
   
   inspire()
 }
@@ -61,7 +69,8 @@ inspire <- function() {
       "  * Step back and think: How much time is the data really worth investing? Is it better to draw a line?",
       "* Coding",
       "  * Separate data programming and modeling", 
-      "  * When fitting, collect all information about the fitting in a list first",
+      "  * Collect all information for a problem in a list",
+      "  * Functions should not be longer than 40-50 lines",
       "  * If you develop a modeling script along with data programming, that's fine, but the script should be split afterwards.",
       "  * Don't handle more than 3 data.tables at once. If more, go back and think, is it necessary?",
       "  * Use check()",
