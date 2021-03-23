@@ -1131,17 +1131,6 @@ extract_derivs <- function(prediction, which_states = NULL, which_pars = NULL) {
 
 
 
-# Update package versions: dMod, cOde, conveniencefunctions, MRAr----
-#' Update versions
-#'
-#' @param cOde,dMod,cf,MRAr Logicals which packages are updated
-#' @export
-update_version <- function(cOde = T, dMod = T, cf = T, MRAr = F, upgrade_dependencies = FALSE) {
-  if(cOde) devtools::install_github("dkaschek/cOde", upgrade_dependencies = upgrade_dependencies, force = TRUE)
-  if(dMod) devtools::install_github("dkaschek/dMod", upgrade_dependencies = upgrade_dependencies, force = TRUE)
-  if(cf)  devtools::install_github("dlill/conveniencefunctions", upgrade_dependencies = upgrade_dependencies, force = TRUE)
-  if(MRAr) devtools::install_github("dlill/MRAr", upgrade_dependencies = upgrade_dependencies, force = TRUE)
-}
 
 
 

@@ -396,17 +396,6 @@ open_in_calc <- function(.x) {
 #' @export
 tpaste0 <- function(...) {paste0(format(Sys.time(), "%y%d%m_%H%M%S-"), ...)}
 
-# -------------------------------------------------------------------------#
-# Install ----
-# -------------------------------------------------------------------------#
-#' @export
-cf_update <- function() {
-  devtools::install_github("dkaschek/cOde", dependencies = FALSE)
-  devtools::install_github("dkaschek/dMod", dependencies = FALSE)
-  devtools::install_github("dlill/conveniencefunctions", dependencies = FALSE)
-}
-
-
 
 
 

@@ -23,6 +23,10 @@ python module, see \code{\link[reticulate:import]{reticulate::import()}}
 \details{
 use as pe <- petab_python_setup()
 }
+\examples{
+pepy <- petab_python_setup
+pepy$lint
+}
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

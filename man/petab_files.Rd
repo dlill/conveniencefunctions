@@ -4,19 +4,25 @@
 \alias{petab_files}
 \title{List petab files}
 \usage{
-petab_files(filename, FLAGTestCase = FALSE)
+petab_files(filename, FLAGTestCase = FALSE, FLAGreturnList = FALSE)
 }
 \arguments{
-\item{FLAGTestCase}{modelname <- "Boehm_JProteomeRes2014"
-path <- "../../Software/dMod/BenchmarkModels/Boehm_JProteomeRes2014/"
-FLAGTestCase <- FALSE
-path <- "../../Software/dMod/PEtabTests/0001"
-FLAGTestCase <- TRUE}
+\item{filename}{"path/to/modelname.petab". Will generate filenames like
+"path/to/modelname/model_modelname.xml"}
 
-\item{modelname}{}
+\item{FLAGTestCase}{generate TestCases filename}
 
-\item{path}{}
+\item{FLAGreturnList}{return list or vector?}
+}
+\value{
+list or character vector of file paths
 }
 \description{
 List petab files
+}
+\examples{
+petab_files("Models/Example.petab") 
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

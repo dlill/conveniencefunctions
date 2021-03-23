@@ -24,12 +24,12 @@
 cf_build_pargrids <- function(parameters_df, parameters_estimate, condition.grid, condition.grid_parcolumns = NULL) {
   fixed.grid <- parameters_df %>%
     filter(!name0 %in% c(parameters_estimate, intersect(name0, names(condition.grid)))) %>%
-    reshape2::dcast(. ~ name, value.var = "value") %>% .[-1] %>% 
+    data.table::dcast(. ~ name, value.var = "value") %>% .[-1] %>% 
     cbind(condition.grid[c("ID", "condition", condition.grid_parcolumns)], .)
   
   est.grid <- parameters_df %>%
     filter(name0 %in% parameters_estimate) %>%
-    reshape2::dcast(. ~ name0, value.var = "name") %>%
+    data.table::dcast(. ~ name0, value.var = "name") %>%
     select(-1) %>%
     cbind(condition.grid[c("ID", "condition")], .)
   est.vec_df <- parameters_df %>% filter(name0 %in% parameters_estimate)

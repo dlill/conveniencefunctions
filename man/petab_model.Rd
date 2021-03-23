@@ -4,7 +4,13 @@
 \alias{petab_model}
 \title{PEtab structural model without sbml}
 \usage{
-petab_model(equationList, events = NA, parInfo = getParInfo(equationList), ...)
+petab_model(
+  equationList,
+  events = NA,
+  parInfo = getParInfo(equationList),
+  speciesInfo = getSpeciesInfo(equationList),
+  ...
+)
 }
 \arguments{
 \item{equationList}{eqnlist}

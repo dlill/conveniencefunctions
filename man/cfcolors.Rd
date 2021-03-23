@@ -13,4 +13,10 @@ cfcolors
 \description{
 Colors
 }
+\examples{
+ggplot(data.frame(x = 1:30,color = factor(cfcolors[1:30], unique(cfcolors[1:30])))) + 
+  geom_tile(aes(x=x, y = 1, fill = color)) + 
+  scale_color_manual(values= setNames(nm = cfcolors),
+  aesthetics = c("color", "fill"))
+}
 \keyword{datasets}
