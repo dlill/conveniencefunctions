@@ -242,6 +242,9 @@ cfcolorsFULL <- list(
 #' Colors
 #' @export
 cfcolors <- c(rep(c("#000000", "#C5000B", "#0084D1", "#579D1C", "#FF950E", 
-                  "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513"),2), 
+                  "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513",
+                  "magenta", "salmon", "slateblue1", "chocolate3", "firebrick", "firebrick1", 
+                  "cyan3", "chartreuse4", "gold", "ivory4", "seagreen2", "dodgerblue"
+                  ),2), 
                   rep("gray", 100))
 
