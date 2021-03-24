@@ -657,7 +657,6 @@ petab_plotData <- function(petab,
   # Create plot
   pl <- cfggplot() 
   pl <- pl + {do.call(facet_paginate, paginateInfo0)}
-  message("Plot has ", ggforce::n_pages(pl), " pages\n")
   
   if (FLAGmeanLine) {
     aesmean0 <- list(linetype = ~conditionId, group = ~conditionId)
@@ -666,6 +665,9 @@ petab_plotData <- function(petab,
   }
   pl <- pl + geom_point(do.call(aes_q, aeslist), data = dplot)
   pl <- pl + ggCallback
+  
+  # Print paginate message so user doesnt forget about additional pages
+  message("Plot has ", ggforce::n_pages(pl), " pages\n")
   
   # output
   if (!is.null(filename)){
