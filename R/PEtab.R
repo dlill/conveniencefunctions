@@ -51,7 +51,20 @@ petab_dput <- function(petab, variable) {
 }
 
 
-
+#' Create one big table containing measurementData, observables and experimentalCondition
+#'
+#' @param petab [petab]
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_joinDataCondObs <- function(petab) {
+  dx <- copy(petab$measurementData)
+  dx <- petab$experimentalCondition[dx, on = c("conditionId" = "simulationConditionId")]
+  dx <- petab$observables[dx, on = c("observableId")]
+  dx
+}
 
 
 # -------------------------------------------------------------------------#
@@ -613,9 +626,7 @@ petab_plotData <- function(petab,
 ) {
   
   # create plotting data.table
-  dplot <- copy(pe$measurementData)
-  dplot <- pe$experimentalCondition[dplot, on = c("conditionId" = "simulationConditionId")]
-  dplot <- pe$observables[dplot, on = c("observableId")]
+  dplot <- petab_joinDataCondObs(petab)
   if (length(conditionId)) {rowsub <- dplot[,conditionId %in% ..conditionId]; dplot <- dplot[rowsub]}
   if (length(observableId)) {rowsub <- dplot[,observableId %in% ..observableId]; dplot <- dplot[rowsub]}
   # apply log transformation to data when applicable
@@ -668,7 +679,28 @@ petab_plotData <- function(petab,
   pl
 }
 
+# -------------------------------------------------------------------------#
+# Overview tables ----
+# -------------------------------------------------------------------------#
 
+#' Generate overview table which observables are in which condition
+#'
+#' @param pe [petab()] object
+#' @param Ntruncate truncate pasted observables at this many characters
+#' @param ... 
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
+  dx <- petab_joinDataCondObs(pe)
+  if ("conditionName" %in% names(dx)) dx[,`:=`(conditionName = conditionId)]
+  dx <- dx[,list(observableId = paste0(sort(unique(observableId)), collapse = ",")), 
+           by = c("conditionId", "conditionName")]
+  dx <- dx[,`:=`(observableId = substr(observableId, 1, Ntruncate))]
+  cfoutput_MdTable(dx, ...)
+}
 
 
 # -------------------------------------------------------------------------#
