@@ -615,6 +615,7 @@ petab_plotData <- function(petab,
                            observableId = NULL, 
                            datasetId = NULL,
                            aeslist = NULL,
+                           FLAGUseObservableTransformation = TRUE,
                            FLAGmeanLine = TRUE,
                            paginateInfo=cf_paginateInfo(facets = ~observableId,nrow = 4,ncol = 4,scales = "free", type = "wrap"),
                            
@@ -630,9 +631,10 @@ petab_plotData <- function(petab,
   if (length(conditionId)) {rowsub <- dplot[,conditionId %in% ..conditionId]; dplot <- dplot[rowsub]}
   if (length(observableId)) {rowsub <- dplot[,observableId %in% ..observableId]; dplot <- dplot[rowsub]}
   # apply log transformation to data when applicable
-  dplot[observableTransformation != "lin",
-        `:=`(value = eval(parse(text = paste0(observableTransformation, "(measurement)"))),
-             observableId = paste0(observableTransformation, " ", observableId))]
+  if (FLAGUseObservableTransformation) 
+    dplot[observableTransformation != "lin",
+          `:=`(measurement = eval(parse(text = paste0(observableTransformation, "(measurement)"))),
+               observableId = paste0(observableTransformation, " ", observableId))]
   
   # mean values to draw lines
   if (FLAGmeanLine){
@@ -655,10 +657,12 @@ petab_plotData <- function(petab,
   # Create plot
   pl <- cfggplot() 
   pl <- pl + {do.call(facet_paginate, paginateInfo0)}
+  message("Plot has ", ggforce::n_pages(pl), " pages\n")
+  
   if (FLAGmeanLine) {
     aesmean0 <- list(linetype = ~conditionId, group = ~conditionId)
     aesmeanlist <- c(aeslist, aesmean0[setdiff(names(aesmean0), names(aeslist))])
-    pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean)
+    suppressMessages(pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean))
   }
   pl <- pl + geom_point(do.call(aes_q, aeslist), data = dplot)
   pl <- pl + ggCallback
@@ -672,7 +676,7 @@ petab_plotData <- function(petab,
     future::`%<-%`(wup,cf_outputFigure(pl = pl, filename = filename,
                              width = width, height = height, scale = scale, units = units, 
                              paginateInfo = paginateInfo))
-    assign(".dummy", wup, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
+    assign(paste0(".dummy", round(runif(1),4)), wup, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
     
     return(invisible(pl))
   }

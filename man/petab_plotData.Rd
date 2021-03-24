@@ -10,6 +10,7 @@ petab_plotData(
   observableId = NULL,
   datasetId = NULL,
   aeslist = NULL,
+  FLAGUseObservableTransformation = TRUE,
   FLAGmeanLine = TRUE,
   paginateInfo = cf_paginateInfo(facets = ~observableId, nrow = 4, ncol = 4, scales =
     "free", type = "wrap"),
