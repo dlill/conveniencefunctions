@@ -34,6 +34,26 @@ create_parameter_df <- function(model, measurementData) {
 }
 
 
+#' dput for petab variables
+#'
+#' @param petab 
+#' @param variable (single) character denoting a column, e.g. "observableId"
+#'
+#' @return dput output
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' 
+petab_dput <- function(petab, variable) {
+  dx <- copy(pe$measurementData)
+  dx <- pe$experimentalCondition[dx, on = c("conditionId" = "simulationConditionId")]
+  dx <- pe$observables[dx, on = c("observableId")]
+  dput(unique(dx[[variable]]))
+}
+
+
+
+
+
 # -------------------------------------------------------------------------#
 # Initializers ----
 # -------------------------------------------------------------------------#
@@ -401,7 +421,7 @@ writePetab <- function(petab, filename = "petab/model.petab") {
 
 
 # -------------------------------------------------------------------------#
-# Interface to useful PEtab functions ----
+# Interface to useful PEtab.py functions ----
 # -------------------------------------------------------------------------#
 
 #' Title
@@ -552,6 +572,101 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
        coveredPars = unique(mp$parameterId))
 }
 
+
+# -------------------------------------------------------------------------#
+# Plotting ----
+# -------------------------------------------------------------------------#
+
+#' Plot Petab data
+#'
+#' Automatic multipage export in the background with the future package and ggforce::facet_wrap_paginate
+#'
+#' @param petab A [petab] object
+#' @param conditionId,observableId,datasetId Subset data to plot. Find out suitable values with [petab_dput()]
+#' @param aeslist list of formulas used to call [ggplot2::aes_q()]. 
+#'  Default aesthetics are list(x = ~time, y = ~measurement, color = ~conditionId). 
+#'  Can be overriden by aeslist
+#' @param ggCallback additional stuff to add to the ggplot, such as a call to [ggplots2::labs()] or scales
+#' @param FLAGmeanLine draw line connecting the means
+#' @param paginateInfo see [conveniencefunctions::cf_paginateInfo()]
+#' @param FLAGfuture export asynchronously with the future package
+#' @param filename,width,height,scale,units see [ggplot2::ggsave()]
+#'
+#' @return ggplot
+#' 
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_plotData <- function(petab, 
+                           conditionId = NULL, 
+                           observableId = NULL, 
+                           datasetId = NULL,
+                           aeslist = NULL,
+                           FLAGmeanLine = TRUE,
+                           paginateInfo=cf_paginateInfo(facets = ~observableId,nrow = 4,ncol = 4,scales = "free", type = "wrap"),
+                           
+                           ggCallback = geom_blank(),
+                           
+                           filename = NULL, 
+                           FLAGfuture = TRUE,
+                           width = 21, height = 29.7, scale = 1, units = "cm"
+) {
+  
+  # create plotting data.table
+  dplot <- copy(pe$measurementData)
+  dplot <- pe$experimentalCondition[dplot, on = c("conditionId" = "simulationConditionId")]
+  dplot <- pe$observables[dplot, on = c("observableId")]
+  if (length(conditionId)) {rowsub <- dplot[,conditionId %in% ..conditionId]; dplot <- dplot[rowsub]}
+  if (length(observableId)) {rowsub <- dplot[,observableId %in% ..observableId]; dplot <- dplot[rowsub]}
+  # apply log transformation to data when applicable
+  dplot[observableTransformation != "lin",
+        `:=`(value = eval(parse(text = paste0(observableTransformation, "(measurement)"))),
+             observableId = paste0(observableTransformation, " ", observableId))]
+  
+  # mean values to draw lines
+  if (FLAGmeanLine){
+    byvars <- lapply(aeslist, function(x) cOde::getSymbols(as.character(x)))
+    byvars <- do.call(c, byvars)
+    byvars <- unique(c("observableId", "time", "conditionId", byvars))
+    dmean <- copy(dplot)
+    dmean <- dmean[,list(measurement = mean(measurement)), by = byvars]
+  }
+  
+  # handle aesthetics
+  aes0 <- list(x = ~time, y = ~measurement, color = ~conditionId)
+  aeslist <- c(aeslist, aes0[setdiff(names(aes0), names(aeslist))])
+  
+  # handle facets
+  facet_paginate <- utils::getFromNamespace(paginateInfo$type, "ggforce")
+  paginateInfo0 <- paginateInfo[setdiff(names(paginateInfo), "type")]
+  
+  
+  # Create plot
+  pl <- cfggplot() 
+  pl <- pl + {do.call(facet_paginate, paginateInfo0)}
+  if (FLAGmeanLine) {
+    aesmean0 <- list(linetype = ~conditionId, group = ~conditionId)
+    aesmeanlist <- c(aeslist, aesmean0[setdiff(names(aesmean0), names(aeslist))])
+    pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean)
+  }
+  pl <- pl + geom_point(do.call(aes_q, aeslist), data = dplot)
+  pl <- pl + ggCallback
+  
+  # output
+  if (!is.null(filename)){
+    "%<-%" <- `<-`
+    if(FLAGfuture) {
+      rm(list = "%<-%") # use future's thing instead
+      library(future); if (!"multisession" %in% class(plan())) plan("multisession")
+    }
+    wup %<-% cf_outputFigure(pl = pl, filename = filename,
+                             width = width, height = height, scale = scale, units = units, 
+                             paginateInfo = paginateInfo)
+    return(invisible(pl))
+  }
+  
+  pl
+}
 
 
 
