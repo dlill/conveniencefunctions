@@ -77,7 +77,7 @@ cf_paginateInfo <- function(facets, nrow = 2, ncol = 3, scales = "fixed", type =
 #' plotlist[[5]]
 cf_applyPaginate <- function(pl, paginateInfo) {
   facet_paginate <- utils::getFromNamespace(paginateInfo$type, "ggforce")
-  paginateInfo <- paginateInfo[setdiff(names(paginateInfo), "type")]
+  paginateInfo <- paginateInfo[setdiff(names(paginateInfo), c("page","type"))]
   px <- pl + {do.call(facet_paginate, paginateInfo)}
   n <- ggforce::n_pages(px)
   lapply(1:n, function(i) {

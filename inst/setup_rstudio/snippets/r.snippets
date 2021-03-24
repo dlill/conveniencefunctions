@@ -158,7 +158,7 @@ snippet widthDiss
 
 snippet futureEval
 	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
-	wup %<-% 
+	future::`%<-% `(wup,$0)
 
 snippet futurePlanSequential
 	future::plan("sequential")
