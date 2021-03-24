@@ -160,6 +160,12 @@ snippet futureEval
 	library(future); if (!"multisession" %in% class(plan())) plan("multisession")
 	wup %<-% 
 
+snippet futurePlanSequential
+	plan("sequential")
+
+snippet planSequential
+	plan("sequential")
+
 snippet factorUnique
 	factor($0, unique($0))
 

@@ -665,14 +665,15 @@ petab_plotData <- function(petab,
   
   # output
   if (!is.null(filename)){
-    "%<-%" <- `<-`
     if(FLAGfuture) {
-      rm(list = "%<-%") # use future's thing instead
       library(future); if (!"multisession" %in% class(plan())) plan("multisession")
+      assign(".Last", function() plan("sequential"), .GlobalEnv)
     }
-    wup %<-% cf_outputFigure(pl = pl, filename = filename,
+    future::`%<-%`(wup,cf_outputFigure(pl = pl, filename = filename,
                              width = width, height = height, scale = scale, units = units, 
-                             paginateInfo = paginateInfo)
+                             paginateInfo = paginateInfo))
+    assign(".dummy", wup, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
+    
     return(invisible(pl))
   }
   
