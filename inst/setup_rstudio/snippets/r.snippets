@@ -157,14 +157,14 @@ snippet widthDiss
 	width = 15.5, height = 15.5*(10/16), scale = 1, units = "cm"
 
 snippet futureEval
-	library(future); if (!"multisession" %in% class(plan())) plan("multisession")
+	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
 	wup %<-% 
 
 snippet futurePlanSequential
-	plan("sequential")
+	future::plan("sequential")
 
 snippet planSequential
-	plan("sequential")
+	future::plan("sequential")
 
 snippet factorUnique
 	factor($0, unique($0))

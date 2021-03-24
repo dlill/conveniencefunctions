@@ -666,8 +666,8 @@ petab_plotData <- function(petab,
   # output
   if (!is.null(filename)){
     if(FLAGfuture) {
-      library(future); if (!"multisession" %in% class(plan())) plan("multisession")
-      assign(".Last", function() plan("sequential"), .GlobalEnv)
+      if (!"multisession" %in% class(future::plan())) future::plan("multisession")
+      # assign(".Last", function() plan("sequential"), .GlobalEnv)
     }
     future::`%<-%`(wup,cf_outputFigure(pl = pl, filename = filename,
                              width = width, height = height, scale = scale, units = units, 
