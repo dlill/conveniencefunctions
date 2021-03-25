@@ -15,7 +15,8 @@ petab_getMeasurementParsMapping(
 \item{column}{character(1L). one of c("observableParameters", "noiseParameters")}
 }
 \value{
-data.table(INNERPARAMETER, OUTERPARAMETER)
+data.table(condition, Innerpars... = Outerpars...) of local parameters.
+Can be added to a gridlist with \code{\link[dMod:indiv_addLocalParsToGridlist]{dMod::indiv_addLocalParsToGridlist()}}
 }
 \description{
 Parse the parameters columns in measurementData
@@ -23,17 +24,14 @@ Parse the parameters columns in measurementData
 \examples{
 measurementData <- data.table(
 observableId = c("obsE"),
-simulationConditionID = c("C1"),
+simulationConditionId = c("C1", "C2"),
+observableParameters = c("scale;offset", "1;offset"),
 noiseParameters = "sigmaAbs"
 )
 
 petab_getMeasurementParsMapping(measurementData, "noiseParameters")
-
-# Old examples. Need to adapt
-# petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;1")
-# petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;sigmaRel")
-# petab_getMeasurementParsMapping(observableId, simulationConditionId, NULL, "1;offsE")
-# petab_getMeasurementParsMapping(rep("obsE", 2), c("C1","C2"), NULL, c("1;offsE", "2;offsE_C2"))
+petab_getMeasurementParsMapping(measurementData, "observableParameters")
+# suggested use: indiv_addLocalParsToGridlist ... 
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)

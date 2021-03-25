@@ -4,10 +4,10 @@
 \alias{petab_dput}
 \title{dput for petab variables}
 \usage{
-petab_dput(petab, variable)
+petab_dput(pe, variable)
 }
 \arguments{
-\item{petab}{}
+\item{pe}{\code{\link[=petab]{petab()}}}
 
 \item{variable}{(single) character denoting a column, e.g. "observableId"}
 }

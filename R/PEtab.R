@@ -144,7 +144,43 @@ petab_unjoinDCO <- function(DCO, pe = NULL) {
 }
 
 
-
+#' Consistently mutate the dco
+#'
+#' If j is supplied, the full dco is always returned!
+#' So, subsetting might need two steps
+#' 
+#' @param pe [petab()]
+#' @param i expression to subset the dco
+#' @param j Must be a call of the form `:=`(hsdhfgjs)
+#' 
+#' @return
+#' @export
+#'
+#' @examples
+petab_mutateDCO <- function(pe, i, j) {
+  
+  mi <- missing(i)
+  mj <- missing(j)
+  if ( mi &&  mj) return(pe)
+  
+  # Catch the arguments
+  si <- substitute(i)
+  sj <- substitute(j)
+  
+  pj <- getParseData(parse(text=deparse(sj)))
+  is_set <- "`:=`" %in% pj[,"text"] # is the command a "set_*" command in the data.table sense?
+  if (is_set) stop("j should be called with `:=`")
+  
+  # Perform the data transformation on the DCO
+  dco <- petab_joinDCO(pe)
+  if (!mi &&  mj) {dco <- dco[eval(si)];   cat("subsetted dco\n")}       # filter
+  if ( mi && !mj) {dco[,eval(sj)];         cat("mutated dco\n")}         # mutate
+  if (!mi && !mj) {dco[eval(si),eval(sj)]; cat("mutated dco in rows\n")} # mutate_in_row
+  
+  # Return modified petab
+  pe_out <- petab_unjoinDCO(dco, pe)
+  pe_out
+}
 
 # -------------------------------------------------------------------------#
 # Initializers ----
