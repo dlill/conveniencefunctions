@@ -607,6 +607,8 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
 #'
 #' @return ggplot
 #' 
+#' @importFrom future plan "%<-%"
+#' 
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export

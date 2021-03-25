@@ -139,11 +139,11 @@ snippet ggsavBASE
 	ggsave(file.path(.outputFolder, $0), pl, width = 15.5, height = 10, scale = 1, units = "cm")
 
 snippet ggsavcfoutputFigureFUTURE
-	library(future); if (!"multisession" %in% class(plan())) plan("multisession")
-	wup %<-% cf_outputFigure(
+	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
+	`%<-%`(wup,cf_outputFigure(
 	  pl = pl, filename = file.path(.outputFolder, $0), width = 21, height = 29.7, scale = 1, units = "cm"
 	  # , paginateInfo = cf_paginateInfo(facets = ~cellline+name, scales = "free", nrow = 2, ncol = 2, type = "wrap")
-	  )
+	  ))
 
 snippet ggsavPAGINATE
 	cf_outputFigure(file.path(.outputFolder, $0), pl, width = 15.5, height = 10, scale = 1, units = "cm",

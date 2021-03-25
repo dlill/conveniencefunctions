@@ -15,6 +15,7 @@ Imports:
   dMod,
   tidyverse,
   stats,
+  future,
   stringr,
   dplyr,
   officer,

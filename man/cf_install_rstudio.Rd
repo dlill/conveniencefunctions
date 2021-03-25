@@ -5,6 +5,7 @@
 \title{Quick setup of RStudio on a new machine}
 \usage{
 cf_install_rstudio(
+  FLAGtheme = FALSE,
   FLAGoverwrite = TRUE,
   FLAGThunarShortcuts = FALSE,
   FLAGIQRreservedWords = FALSE
