@@ -101,29 +101,30 @@ petab_joinDCO <- function(pe) {
 #' @param DCO A dco: a DataConditionObs data.table, from petab_joinDCO
 #' @param pe [petab()] object
 #'
-#' @return
+#' @return pe with measurementData,experimentalCondition,Observables replaced by the columns created from DCO
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
 petab_unjoinDCO <- function(DCO, pe = NULL) {
+  # Get standard column names
   pc <- petab_columns(pe = pe)
   
   # Extract the tables
-  experimentalCondition = do.call(
-    petab_experimentalCondition, 
-    # A bit overcautious with the names, when there is the potential to pass a petab to pe, but let's keep it for now.
-    DCO[,.SD,.SDcols = c(intersect(names(DCO), pc$experimentalCondition),
-                         setdiff(names(DCO), c(pc$measurementData, pc$observables)))])
+  # Excols: A bit overcautious with the names, when there is the potential to 
+  #   pass a petab to pe it should be able to get the names 
+  #   from that, but let's keep it for now.
+  excols <- unique(c(intersect(names(DCO), pc$experimentalCondition), 
+                     setdiff(names(DCO), c(pc$measurementData, pc$observables))))
+  experimentalCondition = do.call(petab_experimentalCondition, DCO[,..excols])
   experimentalCondition <- unique(experimentalCondition)
   
-  measurementData = do.call(
-    petab_measurementData, 
-    DCO[,.SD,.SDcols = intersect(names(DCO), c("conditionId", pc$measurementData))])
-  setnames(measurementData, "conditionId", "simulationConditionId")
+  mecols <- intersect(names(DCO), c("conditionId", pc$measurementData))
+  measurementData <- DCO[,..mecols]
+  setnames(measurementData, "conditionId", "simulationConditionId") # need to name back
+  measurementData = do.call(petab_measurementData, measurementData)
   
-  observables = do.call(
-    petab_observables, 
-    DCO[,.SD,.SDcols = intersect(names(DCO), pc$observables)])
+  obcols <- intersect(names(DCO), pc$observables)
+  observables = do.call(petab_observables, DCO[,..obcols])
   observables <- unique(observables)
   
   # Do some sanity checks
@@ -167,9 +168,10 @@ petab_mutateDCO <- function(pe, i, j) {
   si <- substitute(i)
   sj <- substitute(j)
   
+  # Probably unnecessary check that j is supplied properly
   pj <- getParseData(parse(text=deparse(sj)))
   is_set <- "`:=`" %in% pj[,"text"] # is the command a "set_*" command in the data.table sense?
-  if (is_set) stop("j should be called with `:=`")
+  if (!is_set) stop("j should be called with `:=`")
   
   # Perform the data transformation on the DCO
   dco <- petab_joinDCO(pe)
