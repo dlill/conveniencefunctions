@@ -36,20 +36,46 @@ create_parameter_df <- function(model, measurementData) {
 
 #' dput for petab variables
 #'
-#' @param petab 
+#' @param pe [petab()]
 #' @param variable (single) character denoting a column, e.g. "observableId"
 #'
 #' @return dput output
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' 
-petab_dput <- function(petab, variable) {
+petab_dput <- function(pe, variable) {
   dx <- copy(pe$measurementData)
   dx <- pe$experimentalCondition[dx, on = c("conditionId" = "simulationConditionId")]
   dx <- pe$observables[dx, on = c("observableId")]
   dput(unique(dx[[variable]]))
 }
 
+
+#' Title
+#'
+#' @param pe NULL: Default names, [petab()] Actual names in petab
+#'
+#' @return list of column names
+#' @export
+#'
+#' @examples
+petab_columns <- function(pe = NULL) {
+  if(!is.null(pe))
+      return(lapply(pe[c("experimentalCondition", 
+                 "measurementData", 
+                 "observables", 
+                 "parameters")], names))
+  
+  m <- c("observableId","simulationConditionId","measurement","time","observableParameters","noiseParameters","datasetId","replicateId","preequilibrationConditionId")
+  o <- c("observableId","observableName","observableFormula","observableTransformation","noiseFormula","noiseDistribution")
+  e <- c("conditionId","conditionName")
+  p <- c("parameterId","parameterName","parameterScale","lowerBound","upperBound","nominalValue","estimate","initializationPriorType","initializationPriorParameters","objectivePriorType","objectivePriorParameters")
+
+  list(experimentalCondition = e, 
+                measurementData = m, 
+                observables = o, 
+                parameters = p)
+}
 
 #' Create one big table containing measurementData, observables and experimentalCondition
 #'
@@ -59,12 +85,54 @@ petab_dput <- function(petab, variable) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab_joinDataCondObs <- function(petab) {
+petab_joinDCO <- function(petab) {
   dx <- copy(petab$measurementData)
   dx <- petab$experimentalCondition[dx, on = c("conditionId" = "simulationConditionId")]
   dx <- petab$observables[dx, on = c("observableId")]
   dx
 }
+
+#' Unjoin DataConditonObs
+#'
+#' @param DCO A dco: a DataConditionObs data.table, from petab_joinDCO
+#' @param pe [petab()] object
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+petab_unjoinDCO <- function(DCO, pe = NULL) {
+  pc <- petab_columns(pe = pe)
+  
+  # Extract the tables
+  experimentalCondition = do.call(
+    petab_experimentalCondition, 
+    # A bit overcautious with the names, when there is the potential to pass a petab to pe, but let's keep it for now.
+    DCO[,.SD,.SDcols = c(intersect(names(DCO), pc$experimentalCondition),
+                         setdiff(names(DCO), c(pc$measurementData, pc$observables)))])
+  experimentalCondition <- unique(experimentalCondition)
+  
+  measurementData = do.call(
+    petab_measurementData, 
+    DCO[,.SD,.SDcols = intersect(names(DCO), pc$measurementData)])
+  
+  observables = do.call(
+    petab_observables, 
+    DCO[,.SD,.SDcols = intersect(names(DCO), pc$observables)])
+  observables <- unique(observables)
+  
+  # Return petab
+  petab(
+    model = pe$model,
+    experimentalCondition = experimentalCondition,
+    measurementData = measurementData,
+    observables = observables,
+    parameters = pe$parameters
+    )
+
+}
+
+
 
 
 # -------------------------------------------------------------------------#
@@ -629,7 +697,7 @@ petab_plotData <- function(petab,
 ) {
   
   # create plotting data.table
-  dplot <- petab_joinDataCondObs(petab)
+  dplot <- petab_joinDCO(petab)
   if (length(conditionId)) {rowsub <- dplot[,conditionId %in% ..conditionId]; dplot <- dplot[rowsub]}
   if (length(observableId)) {rowsub <- dplot[,observableId %in% ..observableId]; dplot <- dplot[rowsub]}
   # apply log transformation to data when applicable
@@ -703,7 +771,7 @@ petab_plotData <- function(petab,
 #' @md
 #' @export
 petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
-  dx <- petab_joinDataCondObs(pe)
+  dx <- petab_joinDCO(pe)
   if ("conditionName" %in% names(dx)) dx[,`:=`(conditionName = conditionId)]
   dx <- dx[,list(observableId = paste0(sort(unique(observableId)), collapse = ",")), 
            by = c("conditionId", "conditionName")]
