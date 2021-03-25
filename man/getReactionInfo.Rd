@@ -17,6 +17,34 @@ list of reactions
 \description{
 Title
 }
+\examples{
+
+# simple
+el <- NULL
+el <- addReaction(el, from = "E + S", to = "ES", rate = "(kon)*E*S",
+                  description = "production of complex")
+el <- addReaction(el, from = "ES", to = "E + S", rate = "koff*ES",
+                  description = "decay of complex")
+el <- addReaction(el, from = "ES", to = "E + P", rate = "kcat*ES",
+                  description = "production of product")
+el <- eqnlist_addDefaultCompartment(el, "cytoplasm") # Need compartment information for SBML
+equationList <- el
+parInfo = getParInfo(equationList)
+
+# complex stoichiometries, modifier in production of complex
+el <- NULL
+el <- addReaction(el, from = "2*E + S", to = "ES", rate = "(kon)*E*S * 1/(1+kinh*P)",
+                  description = "production of complex")
+el <- addReaction(el, from = "ES", to = "2*E + S", rate = "koff*ES",
+                  description = "decay of complex")
+el <- addReaction(el, from = "ES", to = "E + P", rate = "kcat*ES",
+                  description = "production of product")
+el <- eqnlist_addDefaultCompartment(el, "cytoplasm") # Need compartment information for SBML
+equationList <- el
+parInfo = getParInfo(equationList)
+
+getReactionInfo(equationList,parInfo)
+}
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

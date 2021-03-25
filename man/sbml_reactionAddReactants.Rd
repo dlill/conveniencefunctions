@@ -4,7 +4,7 @@
 \alias{sbml_reactionAddReactants}
 \title{Title}
 \usage{
-sbml_reactionAddReactants(reaction, speciesName)
+sbml_reactionAddReactants(reaction, reactants)
 }
 \arguments{
 \item{reaction}{}

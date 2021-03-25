@@ -13,7 +13,8 @@ sbml_addOneReaction(
   equation,
   parName,
   parValue,
-  parUnit
+  parUnit,
+  modifiers
 )
 }
 \arguments{

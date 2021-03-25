@@ -12,7 +12,7 @@ petab_unjoinDCO(DCO, pe = NULL)
 \item{pe}{\code{\link[=petab]{petab()}} object}
 }
 \value{
-
+pe with measurementData,experimentalCondition,Observables replaced by the columns created from DCO
 }
 \description{
 Unjoin DataConditonObs
