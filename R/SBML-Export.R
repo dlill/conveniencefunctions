@@ -114,9 +114,13 @@ getUnitInfo <- function(unitName = NULL, unitKind = NULL, exponent = NULL) {
   # Default list of units
   unitInfo <- data.table(tibble::tribble(
     ~unitName, ~unitKind, ~exponent,
-    "per_second"          ,c("UNIT_KIND_SECOND")               ,c(-1)        ,
-    "per_mole_per_second" ,c("UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND") ,c(-1, -1),
-    "litre_per_mole_per_second" ,c("UNIT_KIND_LITRE",  "UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND") ,c(1,-1, -1)))
+    "per_second"                      ,c("UNIT_KIND_SECOND")                                           ,c(-1)     ,
+    "per_mole"                        ,c("UNIT_KIND_MOLE")                                             ,c(-1)     ,
+    "per_mole_per_second"             ,c("UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND")                       ,c(-1,-1) ,
+    "litre_per_mole_per_second"       ,c("UNIT_KIND_LITRE",  "UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND")   ,c(1,-1,-1),
+    "litre2_per_mole2_per_second"     ,c("UNIT_KIND_LITRE",  "UNIT_KIND_MOLE"  , "UNIT_KIND_SECOND")   ,c(2,-2,-1),
+    "mole_per_litre_per_second"       ,c("UNIT_KIND_MOLE",  "UNIT_KIND_LITRE"  , "UNIT_KIND_SECOND")   ,c(1,-1,-1)
+  ))
   
   # Add custom
   unitInfo <- rbindlist(list(
