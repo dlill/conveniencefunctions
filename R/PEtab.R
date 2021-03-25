@@ -661,7 +661,7 @@ petab_plotData <- function(petab,
   if (FLAGmeanLine) {
     aesmean0 <- list(linetype = ~conditionId, group = ~conditionId)
     aesmeanlist <- c(aeslist, aesmean0[setdiff(names(aesmean0), names(aeslist))])
-    suppressMessages(pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean))
+    pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean)
   }
   pl <- pl + geom_point(do.call(aes_q, aeslist), data = dplot)
   pl <- pl + ggCallback

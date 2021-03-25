@@ -5,11 +5,15 @@
 #' @md
 #' @return called for side-effect
 #' @export
-cf_install_rstudio <- function(FLAGoverwrite = TRUE, 
-                               FLAGThunarShortcuts = FALSE,
-                               FLAGIQRreservedWords = FALSE) {
+cf_install_rstudio <- function(
+  FLAGtheme = FALSE,
+  FLAGoverwrite = TRUE, 
+  FLAGThunarShortcuts = FALSE,
+  FLAGIQRreservedWords = FALSE
+  ) {
+  
   # 1. Theme 
-  try(rstudioapi::applyTheme("pastel on dark"))
+  if (FLAGtheme) try(rstudioapi::applyTheme("pastel on dark"))
   # 2. Keybindings
   install_cfkeybindings(FLAGoverwrite = FLAGoverwrite)
   # 3. Snippets

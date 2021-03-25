@@ -14,6 +14,18 @@ snippet IQRcodeReview
 	# -------------------------------------------------------------------------#
 
 
+snippet loaddMod
+	devtools::load_all("~/Promotion/Promotion/Software/dMod")
+
+snippet loadOmicsTools
+	devtools::load_all("~/Promotion/Promotion/Projects/OmicsTools")
+
+snippet load_all
+	devtools::load_all()
+
+snippet loadcf
+	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
+
 snippet IQDsetwdIsobolePublication
 	setwd("/IQDESKTOP/Promotion/Projects/IntiQuan/SafeCopies/IsobolePublication")
 
@@ -39,7 +51,7 @@ snippet openIsobolePublication
 	rstudioapi::openProject("/IQDESKTOP/Promotion/Projects/IntiQuan/SafeCopies/IsobolePublication" $0)
 
 snippet cf_installSnippetsPowerInstall
-	system("cd && cd PROJTOOLS && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
+	system("cd && cd Promotion/Promotion/Projects && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
 	system("Rscript -e 'conveniencefunctions::install_cfsnippets(T)'")
 
 snippet pkill_f_rstudio
@@ -47,6 +59,7 @@ snippet pkill_f_rstudio
 
 snippet Rscript
 	system(paste0("Rscript ", $0), wait = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE)
+
 
 snippet gpush
 	system("git push", wait = FALSE)
@@ -99,6 +112,7 @@ snippet gitnam
 snippet gitlog
 	system("git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short", wait = FALSE)
 
+
 snippet code 
 	system("printf 'y' | code $0.", wait = FALSE)
 
@@ -111,16 +125,14 @@ snippet codeParent3Dir
 snippet codeProjectDir 
 	system("printf 'y' | code `r rstudioapi::getActiveProject()`", wait = FALSE)
 
+
+
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
 
 snippet whiledevlistDEVICE
 	devlist <- dev.list()
 	for(dev in devlist[names(devlist) == "$0png"]) dev.off(dev)
-
-snippet authormduni
-	#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
-	#' @md
 
 snippet ggsavBASE
 	pl = cfgrab()
@@ -159,6 +171,7 @@ snippet widthDiss
 snippet futureEval
 	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
 	future::`%<-% `(wup,$0)
+
 
 snippet futurePlanSequential
 	future::plan("sequential")
@@ -244,12 +257,15 @@ snippet inpllace
 snippet inplace
 	,`:=`($0)
 
-
 snippet aestheticsfillcolor
 	aesthetics = c("fill", "color")
 
 snippet formatMb
 	format(units = "Mb")
+
+snippet authormduni
+	#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+	#' @md
 
 snippet cfhead
 	# -------------------------------------------------------------------------#
@@ -287,6 +303,7 @@ snippet cfhead
 	
 	
 	# Exit ----
+	future::plan("sequential")
 	
 
 
@@ -295,7 +312,6 @@ snippet assign_folder_output_data
 	.dataFolder <- paste0("../01-Data/", `r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`)
 	for(folder in c(.outputFolder, .dataFolder)) 
 	if(!dir.exists(folder)) dir.create(folder)
-
 
 snippet assign_folder_output
 	.outputFolder <- paste0("../04-Output/", "`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`")
@@ -309,13 +325,10 @@ snippet Sys.date_cf
 	`r format(Sys.time(), "%a %b %d %Y")`
 
 
-
-
 snippet IQRsection
 	# -------------------------------------------------------------------------#
 	# $0 ----
 	# -------------------------------------------------------------------------#
-
 
 snippet clist
 	# * ${0}
@@ -390,15 +403,6 @@ snippet catsep_comman
 
 snippet catsep_comma
 	 cat(sep = ', ')
-
-snippet loadcf
-	devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
-
-snippet loadOmicsTools
-	devtools::load_all("~/Promotion/Promotion/Projects/OmicsTools")
-
-snippet load_all
-	devtools::load_all()
 
 snippet thunarHERE
 	system("thunar .", wait = FALSE)
