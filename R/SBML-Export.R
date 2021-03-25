@@ -74,11 +74,51 @@ getCompartmentInfo <- function(equationList) {
 #' @md
 #' @export
 #' @importFrom cOde getSymbols
+#' 
+#' @examples 
+#' 
+#' # simple
+#' el <- NULL
+#' el <- addReaction(el, from = "E + S", to = "ES", rate = "(kon)*E*S",
+#'                   description = "production of complex")
+#' el <- addReaction(el, from = "ES", to = "E + S", rate = "koff*ES",
+#'                   description = "decay of complex")
+#' el <- addReaction(el, from = "ES", to = "E + P", rate = "kcat*ES",
+#'                   description = "production of product")
+#' el <- eqnlist_addDefaultCompartment(el, "cytoplasm") # Need compartment information for SBML
+#' equationList <- el
+#' parInfo = getParInfo(equationList)
+#' 
+#' # complex stoichiometries, modifier in production of complex
+#' el <- NULL
+#' el <- addReaction(el, from = "2*E + S", to = "ES", rate = "(kon)*E*S * 1/(1+kinh*P)",
+#'                   description = "production of complex")
+#' el <- addReaction(el, from = "ES", to = "2*E + S", rate = "koff*ES",
+#'                   description = "decay of complex")
+#' el <- addReaction(el, from = "ES", to = "E + P", rate = "kcat*ES",
+#'                   description = "production of product")
+#' el <- eqnlist_addDefaultCompartment(el, "cytoplasm") # Need compartment information for SBML
+#' equationList <- el
+#' parInfo = getParInfo(equationList)
+#' 
+#' getReactionInfo(equationList,parInfo)
 getReactionInfo <- function(equationList, parInfo = getParInfo(equationList)) {
   re <- getReactions(equationList)
+  
+  s <- equationList$smatrix
+  rp <- lapply(1:nrow(s), function(i) {
+    si <- s[i,,drop = TRUE]
+    si <- si[!is.na(si)]
+    reactants <- abs(si[si<0])
+    products  <- abs(si[si>0])
+    list(reactants = list(name = names(reactants), stoichiometry = reactants), 
+         products = list(name  = names(products), stoichiometry = products))
+  })
+  rp <- purrr::transpose(rp)
+  
   re <- data.table(re)
-  re[,`:=`(reactants = lapply(Educt,   cOde::getSymbols))]
-  re[,`:=`(product   = lapply(Product, cOde::getSymbols))]
+  re[,`:=`(reactants = rp$reactants)] # reactants is a list
+  re[,`:=`(product  = rp$products)]
   
   fl <- getFluxes(equationList, type = "amount")
   fl <- rbindlist(lapply(fl, function(f) data.table(Description = names(f), Flux = f)), idcol = "Species")
@@ -94,8 +134,15 @@ getReactionInfo <- function(equationList, parInfo = getParInfo(equationList)) {
   re[,`:=`(parUnit  = lapply(parName, function(pn) parInfo[parName %in% pn, parUnit]))]
   re[,`:=`(reversible = 0)]
   re[,`:=`(equation = copy(Flux))]
+  re[,`:=`(modifiers = lapply(seq_along(Flux), function(i) {
+    modifiers <- intersect(equationList$states, cOde::getSymbols(Flux[i]))
+    modifiers <- setdiff(modifiers, reactants[[i]]$name)
+    modifiers <- setdiff(modifiers, product[[i]]$name) # questionable if products are not modifiers?
+    modifiers
+  }))]
   
-  re <- re[,list(reactants,product,reactionName,parName,parValue,parUnit,reversible,equation)] 
+  
+  re <- re[,list(reactants,product,reactionName,parName,parValue,parUnit,reversible,equation,modifiers)] 
   re
 }
 
@@ -221,26 +268,45 @@ sbml_addOneSpecies <- function(model, speciesName, compName, initialAmount) {
 #' @export
 #'
 #' @examples
-sbml_reactionAddReactants <- function(reaction, speciesName) {
-  for (nm in speciesName){
+sbml_reactionAddReactants <- function(reaction, reactants) {
+  reactants <- purrr::transpose(reactants)
+  for (x in reactants){
     spr = Reaction_createReactant(reaction)
-    SimpleSpeciesReference_setSpecies(spr,nm)
+    SimpleSpeciesReference_setSpecies(spr, x$name)
+    SpeciesReference_setStoichiometry(spr, x$stoichometry)
   }
 }
 
 #' Title
 #'
 #' @param reaction 
-#' @param speciesNames 
+#' @param products list(name = c("a", "b"), stoichiometry = c(1,2))
 #'
 #' @return
 #' @export
 #'
 #' @examples
-sbml_reactionAddProducts <- function(reaction, speciesNames) {
-  for (nm in speciesNames){
+sbml_reactionAddProducts <- function(reaction, products) {
+  products <- purrr::transpose(products)
+  for (x in products){
     spr = Reaction_createProduct(reaction)
-    SimpleSpeciesReference_setSpecies(spr,nm)
+    SimpleSpeciesReference_setSpecies(spr, x$name)
+    SpeciesReference_setStoichiometry(spr, x$stoichometry)
+  }
+}
+#' Title
+#'
+#' @param reaction 
+#' @param products list(name = c("a", "b"), stoichiometry = c(1,2))
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_reactionAddModifiers <- function(reaction, modifiers) {
+  for (x in modifiers){
+    spr = Reaction_createModifier(reaction)
+    SimpleSpeciesReference_setSpecies(spr, x)
   }
 }
 
@@ -300,13 +366,15 @@ sbml_reactionAddKineticLaw <- function(reaction, equation, parName, parValue, pa
 #' @examples
 sbml_addOneReaction <- function(model, reactionName,
                                 reversible = 1, reactants, products,
-                                equation, parName, parValue, parUnit
+                                equation, parName, parValue, parUnit,
+                                modifiers
 ) {
   reaction = Model_createReaction(model)
   Reaction_setId(reaction,reactionName)
   if (reversible==0) Reaction_setReversible(reaction, reversible)
   sbml_reactionAddReactants(reaction, reactants)
   sbml_reactionAddProducts(reaction, products)
+  sbml_reactionAddModifiers(reaction, modifiers)
   sbml_reactionAddKineticLaw(reaction, equation, parName, parValue, parUnit)
 }
 
