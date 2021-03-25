@@ -118,7 +118,8 @@ petab_unjoinDCO <- function(DCO, pe = NULL) {
   
   measurementData = do.call(
     petab_measurementData, 
-    DCO[,.SD,.SDcols = intersect(names(DCO), pc$measurementData)])
+    DCO[,.SD,.SDcols = intersect(names(DCO), c("conditionId", pc$measurementData))])
+  setnames(measurementData, "conditionId", "simulationConditionId")
   
   observables = do.call(
     petab_observables, 
