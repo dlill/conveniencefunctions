@@ -510,6 +510,7 @@ writePetab <- function(petab, filename = "petab/model.petab") {
   
   # Get filenames
   files <- petab_files(filename = filename)
+  modelname <- gsub(".petab$","", basename(filename))
   
   # Write yaml
   pe$create_problem_yaml(sbml_files        = basename(files["modelXML"]),
