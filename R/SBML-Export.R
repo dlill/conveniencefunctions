@@ -83,7 +83,7 @@ getReactionInfo <- function(equationList, parInfo = getParInfo(equationList)) {
   fl <- getFluxes(equationList, type = "amount")
   fl <- rbindlist(lapply(fl, function(f) data.table(Description = names(f), Flux = f)), idcol = "Species")
   fl <- fl[,list(Description, Flux)]
-  fl[,`:=`(Flux = gsub("^[+-]?1\\*", "", Flux))]
+  fl[,`:=`(Flux = gsub("^[+-]?\\d+\\*", "", Flux))]
   fl <- unique(fl)
   if (nrow(fl) != nrow(re)) stop("fluxes and reactionlist don't match")
   re <- fl[re, on = c("Description")]
