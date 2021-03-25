@@ -85,10 +85,14 @@ petab_columns <- function(pe = NULL) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-petab_joinDCO <- function(petab) {
-  dx <- copy(petab$measurementData)
-  dx <- petab$experimentalCondition[dx, on = c("conditionId" = "simulationConditionId")]
-  dx <- petab$observables[dx, on = c("observableId")]
+petab_joinDCO <- function(pe) {
+  if (length(pe$measurementData$preequilibrationConditionId) && 
+      any(!is.na(pe$preequilibrationConditionId)))
+    warning("DCO might not be able to handle preequilibrationConditionId")
+  
+  dx <- copy(pe$measurementData)
+  dx <- pe$experimentalCondition[dx, on = c("conditionId" = "simulationConditionId")]
+  dx <- pe$observables[dx, on = c("observableId")]
   dx
 }
 
@@ -120,6 +124,12 @@ petab_unjoinDCO <- function(DCO, pe = NULL) {
     petab_observables, 
     DCO[,.SD,.SDcols = intersect(names(DCO), pc$observables)])
   observables <- unique(observables)
+  
+  # Do some sanity checks
+  lostConditions <- setdiff(unique(pe$experimentalCondition$conditionId), 
+                            unique(experimentalCondition$conditionId))
+  if (length(lostConditions))
+    warning("Conditions got lost in the transformation: ", paste0(lostConditions, collapse = ", "))
   
   # Return petab
   petab(
@@ -582,7 +592,8 @@ petab_python_setup <- function() {
 #' @param measurementData petab$measurementData. Uses only columns observableId,simulationConditionId and "column"
 #' @param column character(1L). one of c("observableParameters", "noiseParameters")
 #'
-#' @return data.table(INNERPARAMETER, OUTERPARAMETER)
+#' @return data.table(condition, Innerpars... = Outerpars...) of local parameters.
+#'   Can be added to a gridlist with [dMod::indiv_addLocalParsToGridlist()]
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
@@ -590,17 +601,14 @@ petab_python_setup <- function() {
 #' @examples 
 #' measurementData <- data.table(
 #' observableId = c("obsE"),
-#' simulationConditionID = c("C1"),
+#' simulationConditionId = c("C1", "C2"),
+#' observableParameters = c("scale;offset", "1;offset"),
 #' noiseParameters = "sigmaAbs"
 #' )
 #' 
 #' petab_getMeasurementParsMapping(measurementData, "noiseParameters")
-#' 
-#' # Old examples. Need to adapt
-#' # petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;1")
-#' # petab_getMeasurementParsMapping(observableId, simulationConditionId, "sigmaAbs;sigmaRel")
-#' # petab_getMeasurementParsMapping(observableId, simulationConditionId, NULL, "1;offsE")
-#' # petab_getMeasurementParsMapping(rep("obsE", 2), c("C1","C2"), NULL, c("1;offsE", "2;offsE_C2"))
+#' petab_getMeasurementParsMapping(measurementData, "observableParameters")
+#' # suggested use: indiv_addLocalParsToGridlist ... 
 petab_getMeasurementParsMapping <- function(measurementData, column = c("observableParameters", "noiseParameters")[1]) {
   
   # Select column and name
@@ -625,7 +633,9 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
 
 petab_getMeasurementParsScales <- function(measurementData,parameters) {
   
-  # >>>>>>> obsolete function, functionality covered currently by dMod::updateParscalesToBaseTrafo <<<<<<<<
+  # >>>>>>> obsolete function!
+  # >>>>>>> functionality covered currently by 
+  # >>>>>>> dMod::updateParscalesToBaseTrafo <<<<<<<<
   
   parameters <- pe$parameters
   measurementData <- pe$measurementData
