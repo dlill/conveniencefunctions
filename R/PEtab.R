@@ -147,17 +147,19 @@ petab_unjoinDCO <- function(DCO, pe = NULL) {
 
 #' Consistently mutate the dco
 #'
-#' If j is supplied, the full dco is always returned!
-#' So, subsetting might need two steps
+#' If j is supplied, the full dco is always returned and no subsetting is done!
 #' 
 #' @param pe [petab()]
-#' @param i expression to subset the dco
-#' @param j Must be a call of the form `:=`(hsdhfgjs)
+#' @param i expression to subset the dco, can be missing
+#' @param j Must be a call of the form `:=`(hsdhfgjs). If missing, pe is subsetted by i
 #' 
-#' @return
+#' @return pe with modified DCO
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
-#'
-#' @examples
+#' 
+#' @examples 
+#' # todo!!
 petab_mutateDCO <- function(pe, i, j) {
   
   mi <- missing(i)
