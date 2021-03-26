@@ -261,6 +261,24 @@ sbml_addOneSpecies <- function(model, speciesName, compName, initialAmount) {
 
 #' Title
 #'
+#' @param model 
+#' @param speciesName 
+#' @param compName 
+#' @param speciesInitialAmount 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+sbml_addOneParameter <- function(model, parName, parValue, parUnit) {
+  parm = Model_createParameter(model)  
+  Parameter_setId(parm, parName)
+  Parameter_setValue(parm, parValue)
+  Parameter_setUnits(parm, parUnit)
+}
+
+#' Title
+#'
 #' @param reaction 
 #' @param speciesNames 
 #'
@@ -345,7 +363,7 @@ sbml_reactionAddKineticLaw <- function(reaction, equation, parName, parValue, pa
   kl = Reaction_createKineticLaw(reaction)
   astMath <- parseFormula(equation)
   KineticLaw_setMath( kl, astMath)  
-  sbml_kineticLawAddParameters(kl, parName, parValue, parUnit)
+  # sbml_kineticLawAddParameters(kl, parName, parValue, parUnit) # solved by global parameters?
 }
 
 #' Title
@@ -529,6 +547,7 @@ sbml_exportEquationList <- function(equationList,
   for (x in unitInfoList)        do.call(sbml_addOneUnit,        c(list(model = model),x))
   for (x in compartmentInfoList) do.call(sbml_addOneCompartment, c(list(model = model),x))
   for (x in speciesInfoList)     do.call(sbml_addOneSpecies,     c(list(model = model),x))
+  for (x in parInfoList)         do.call(sbml_addOneParameter,   c(list(model = model),x))
   for (x in reactionInfoList)    do.call(sbml_addOneReaction,    c(list(model = model),x))
   
   # Validate and write to file
