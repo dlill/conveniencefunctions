@@ -207,8 +207,8 @@ petab_experimentalCondition <- function(
   conditionId,
   conditionName = NA,
   ...) {
-  data.table(conditionId = conditionId, 
-             conditionName = conditionName, 
+  data.table(conditionId =   as.character(conditionId), 
+             conditionName = as.character(conditionName), 
              as.data.table(list(...)))
 }
 
@@ -241,15 +241,16 @@ petab_measurementData <- function(
   preequilibrationConditionId = NA
 ) {
   data.table(
-    observableId                = observableId,
-    preequilibrationConditionId = preequilibrationConditionId,
-    simulationConditionId       = simulationConditionId,
+    observableId                = as.character(observableId),
+    preequilibrationConditionId = as.character(preequilibrationConditionId),
+    simulationConditionId       = as.character(simulationConditionId),
     measurement                 = measurement,
     time                        = time,
-    observableParameters        = observableParameters,
-    noiseParameters             = noiseParameters,
-    datasetId                   = datasetId,
-    replicateId                 = replicateId)
+    observableParameters        = as.character(observableParameters),
+    noiseParameters             = as.character(noiseParameters),
+    datasetId                   = as.character(datasetId),
+    replicateId                 = as.character(replicateId)
+    )
 }
 
 #' Constructor for Observables
@@ -274,12 +275,12 @@ petab_observables <- function(
   noiseFormula             = c(1, "noiseParameter${n}_${observableId} + noiseParameter${n}_${observableId}*${observableId}")[[1]], # aka errormodel
   noiseDistribution        = c("normal", "laplace")[[1]]) {
   data.table(
-    observableId             = observableId,
-    observableName           = observableName,
-    observableFormula        = observableFormula,
-    observableTransformation = observableTransformation,
-    noiseFormula             = noiseFormula,
-    noiseDistribution        = noiseDistribution
+    observableId             = as.character(observableId),
+    observableName           = as.character(observableName),
+    observableFormula        = as.character(observableFormula),
+    observableTransformation = as.character(observableTransformation),
+    noiseFormula             = as.character(noiseFormula),
+    noiseDistribution        = as.character(noiseDistribution)
   )
 }
 
@@ -316,17 +317,17 @@ petab_parameters <- function(
   objectivePriorParameters      = "-1;1") {
   
   data.table(
-    parameterId                   = parameterId,
-    parameterName                 = parameterName,
-    parameterScale                = parameterScale,
+    parameterId                   = as.character(parameterId),
+    parameterName                 = as.character(parameterName),
+    parameterScale                = as.character(parameterScale),
     lowerBound                    = lowerBound,
     upperBound                    = upperBound,
     nominalValue                  = nominalValue,
     estimate                      = estimate,
-    initializationPriorType       = initializationPriorType,
-    initializationPriorParameters = initializationPriorParameters,
-    objectivePriorType            = objectivePriorType,
-    objectivePriorParameters      = objectivePriorParameters
+    initializationPriorType       = as.character(initializationPriorType),
+    initializationPriorParameters = as.character(initializationPriorParameters),
+    objectivePriorType            = as.character(objectivePriorType),
+    objectivePriorParameters      = as.character(objectivePriorParameters)
   )
 }
 
@@ -380,11 +381,19 @@ petab <- function(
   # or sparse specification without parameters
   # or sparse specification with parameters
   
-  petab <- list(model = model,
-       experimentalCondition = experimentalCondition,
-       measurementData = measurementData,
-       observables = observables,
-       parameters = parameters)
+  # Do type coercion and initialize list
+  if(!is.null(model))                 model                 = do.call(petab_model, model)
+  if(!is.null(experimentalCondition)) experimentalCondition = do.call(petab_experimentalCondition, experimentalCondition)
+  if(!is.null(measurementData))       measurementData       = do.call(petab_measurementData, measurementData)
+  if(!is.null(observables))           observables           = do.call(petab_observables, observables)
+  if(!is.null(parameters))            parameters            = do.call(petab_parameters, parameters)
+  petab <- list(
+    model                 = model,
+    experimentalCondition = experimentalCondition,
+    measurementData       = measurementData,
+    observables           = observables,
+    parameters            = parameters
+  )
   
   petab_lint(petab)
   
@@ -657,6 +666,8 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
   parameters <- measurementData[[column]]
   parameterString <- gsub("Parameters", "Parameter", column)
   
+  if (all(is.na(parameters))) return(data.table(condition = unique(measurementData$simulationConditionId)))
+  
   # Pipeline of death
   mp <- strsplit(parameters, ";")
   mp <- lapply(mp, function(x) {if(length(x)) return(as.data.table(as.list(x))) else data.table(NA)})
@@ -669,6 +680,15 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
   mp[,`:=`(INNERPARAMETER = paste0(INNERPARAMETER, observableId))]
   mp <- mp[,list(condition, INNERPARAMETER, OUTERPARAMETER)]
   mp <- dcast(mp, condition ~ INNERPARAMETER, value.var = "OUTERPARAMETER")
+  
+  colsWithNa <- vapply(mp, function(x) any(is.na(x)), FALSE)
+  colsWithNa <- names(colsWithNa)[colsWithNa]
+  if (length(colsWithNa)) {
+    warning("The following parameters are not specified in all conditions. They are set to 1 (should not make a difference): ",
+            paste0(colsWithNa, collapse = ","))
+    mp[,(colsWithNa):=lapply(.SD, function(x) replace(x, is.na(x),1)), .SDcols = colsWithNa]
+  }
+  
   mp
 }
 
