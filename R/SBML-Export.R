@@ -273,7 +273,7 @@ sbml_reactionAddReactants <- function(reaction, reactants) {
   for (x in reactants){
     spr = Reaction_createReactant(reaction)
     SimpleSpeciesReference_setSpecies(spr, x$name)
-    SpeciesReference_setStoichiometry(spr, x$stoichometry)
+    SpeciesReference_setStoichiometry(spr, x$stoichiometry)
   }
 }
 
@@ -291,7 +291,7 @@ sbml_reactionAddProducts <- function(reaction, products) {
   for (x in products){
     spr = Reaction_createProduct(reaction)
     SimpleSpeciesReference_setSpecies(spr, x$name)
-    SpeciesReference_setStoichiometry(spr, x$stoichometry)
+    SpeciesReference_setStoichiometry(spr, x$stoichiometry)
   }
 }
 #' Title
@@ -533,8 +533,7 @@ sbml_exportEquationList <- function(equationList,
   
   # Validate and write to file
   props = ConversionProperties();
-  ConversionProperties_addOption(props, "promoteLocalParameters", TRUE, 
-                                 "Promotes all Local Parameters to Global ones");
+  ConversionProperties_addOption(props, "promoteLocalParameters", TRUE, "Promotes all Local Parameters to Global ones");
   
   sbml_validateSBML(sbmlDoc) 
   writeSBML(sbmlDoc, filename = filename)
