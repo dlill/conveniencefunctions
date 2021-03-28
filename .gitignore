@@ -5,3 +5,5 @@
 Port_Models/
 *.so
 .here
+*.c
+*.o
