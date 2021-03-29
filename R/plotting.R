@@ -195,12 +195,13 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
       if (old_dev > 1) grDevices::dev.set(old_dev)
     }))
     for (p in pl) print(p)
+    "done"
   }
   
   if (FLAGFuture && !"multisession" %in% class(future::plan())) 
     future::plan("multisession")
   future::`%<-%`(.dummy, {doPlot()})
-  assign(paste0(".dummyplot", round(runif(1),4)), .dummy, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
+  # assign(paste0(".dummyplot", round(runif(1),4)), .dummy, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
   
   invisible()
 }
