@@ -139,9 +139,9 @@ cf_applyPaginate <- function(pl) {
   
   pi <- getPaginateInfo(pl)
   
-  if (is.na(pi)) return(list(pl))
+  if (!is.list(pi)) return(list(pl))
   
-  facet_paginate <- pi$facetPaginate
+  facet_paginate <- pi$facet_paginate
   paginateInfo <- pi$paginateInfo
   n <- ggforce::n_pages(pl)
   lapply(1:n, function(i) {
@@ -171,9 +171,10 @@ cf_applyPaginate <- function(pl) {
 #' 
 cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
                             width = 14, height = 10, scale = 0.6, 
-                            FLAGaddScriptname = TRUE,
                             units = c("in", "cm", "mm"), 
-                            dpi = 300, limitsize = TRUE, ...) {
+                            dpi = 300, limitsize = TRUE, 
+                            FLAGFuture = TRUE,
+                            ...) {
   
   
   # Handle paginate: Wraps plot in list of length n_pages. 

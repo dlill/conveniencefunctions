@@ -4,7 +4,7 @@
 \alias{cf_applyPaginate}
 \title{Get list of paginated plots}
 \usage{
-cf_applyPaginate(pl, paginateInfo)
+cf_applyPaginate(pl)
 }
 \arguments{
 \item{pl}{(not yet facetted) ggplot}
@@ -19,8 +19,10 @@ use ggforce
 }
 \examples{
 # adapted from ggforce examples
-paginateInfo <- cf_paginateInfo(~cut:clarity)
-plotlist <- cf_applyPaginate(pl, paginateInfo)
+pl <- ggplot(diamonds) +
+  geom_point(aes(carat, price), alpha = 0.1) +
+  facet_grid_paginate(color ~ cut:clarity, ncol = 3, nrow = 3, page = 4)
+plotlist <- cf_applyPaginate(pl)
 plotlist[[1]]
 plotlist[[5]]
 }

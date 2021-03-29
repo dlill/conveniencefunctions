@@ -12,9 +12,8 @@ petab_plotData(
   aeslist = NULL,
   FLAGUseObservableTransformation = TRUE,
   FLAGmeanLine = TRUE,
-  paginateInfo = cf_paginateInfo(facets = ~observableId, nrow = 4, ncol = 4, scales =
-    "free", type = "wrap"),
-  ggCallback = geom_blank(),
+  ggCallback = facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales = "free")
+    + geom_blank(),
   filename = NULL,
   FLAGfuture = TRUE,
   width = 21,
@@ -34,13 +33,13 @@ Can be overriden by aeslist}
 
 \item{FLAGmeanLine}{draw line connecting the means}
 
-\item{paginateInfo}{see \code{\link[=cf_paginateInfo]{cf_paginateInfo()}}}
-
 \item{ggCallback}{additional stuff to add to the ggplot, such as a call to \code{\link[ggplots2:labs]{ggplots2::labs()}} or scales}
 
 \item{filename, width, height, scale, units}{see \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}}
 
 \item{FLAGfuture}{export asynchronously with the future package}
+
+\item{paginateInfo}{see \code{\link[=cf_paginateInfo]{cf_paginateInfo()}}}
 }
 \value{
 ggplot
