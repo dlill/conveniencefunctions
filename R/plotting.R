@@ -162,7 +162,7 @@ cf_applyPaginate <- function(pl) {
 #' @export
 #'
 #' @examples
-#' 
+#' inst/examples/S101-plotting.R
 cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
                             width = 14, height = 10, scale = 0.6, 
                             units = c("in", "cm", "mm"), 

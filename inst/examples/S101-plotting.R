@@ -49,4 +49,5 @@ cf_outputFigure(pl, filename = "wupwup.pdf")
 try(system("nautilus .", wait = FALSE))
 
 # Exit ----
+setwd(.currentdir)
 future::plan("sequential")

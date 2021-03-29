@@ -11,10 +11,10 @@ cf_outputFigure(
   width = 14,
   height = 10,
   scale = 0.6,
-  FLAGaddScriptname = TRUE,
   units = c("in", "cm", "mm"),
   dpi = 300,
   limitsize = TRUE,
+  FLAGFuture = TRUE,
   ...
 )
 }
@@ -31,9 +31,9 @@ cf_outputFigure(
 
 \item{scale}{}
 
-\item{FLAGaddScriptname}{}
-
 \item{...}{}
+
+\item{FLAGaddScriptname}{}
 }
 \value{
 
@@ -43,5 +43,5 @@ current features
 * Add scriptname to plot as small caption
 }
 \examples{
-
+inst/examples/S101-plotting.R
 }
