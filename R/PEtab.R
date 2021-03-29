@@ -688,7 +688,8 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
   colsWithNa <- vapply(mp, function(x) any(is.na(x)), FALSE)
   colsWithNa <- names(colsWithNa)[colsWithNa]
   if (length(colsWithNa)) {
-    warning("The following parameters are not specified in all conditions. They are set to 1 (should not make a difference): ",
+    warning("The following parameters are not specified in all conditions. ", 
+            "In the unspecified conditions, they are set to 1 (should not make a difference):\n",
             paste0(colsWithNa, collapse = ","))
     mp[,(colsWithNa):=lapply(.SD, function(x) replace(x, is.na(x),1)), .SDcols = colsWithNa]
   }
@@ -758,10 +759,8 @@ petab_plotData <- function(petab,
                            aeslist = NULL,
                            FLAGUseObservableTransformation = TRUE,
                            FLAGmeanLine = TRUE,
-                           ggCallback = 
-                             facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales = "free") + 
-                             geom_blank(),
-                           
+                           ggCallback = list(
+                             facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales = "free")),
                            filename = NULL, 
                            FLAGfuture = TRUE,
                            width = 21, height = 29.7, scale = 1, units = "cm"
@@ -796,7 +795,7 @@ petab_plotData <- function(petab,
     pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean)
   }
   pl <- pl + geom_point(do.call(aes_q, aeslist), data = dplot)
-  pl <- pl + ggCallback
+  for (plx in ggCallback) pl <- pl + plx
   
   # Print paginate message so user doesnt forget about additional pages
   message("Plot has ", ggforce::n_pages(pl), " pages\n")
