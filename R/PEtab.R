@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-create_parameter_df <- function(model, measurementData) {
+petab_create_parameter_df <- function(model, measurementData) {
   speciesInfo <- model$speciesInfo
   parInfo <- model$parInfo
   par_sp <- petab_parameters(parameterId =   speciesInfo$speciesName, 
@@ -375,12 +375,6 @@ petab <- function(
   parameters = NULL, 
   ...
 ) {
-  
-  # Think of valid combinations of NAs
-  # either full specification without parameters
-  # or sparse specification without parameters
-  # or sparse specification with parameters
-  
   # Do type coercion and initialize list
   if(!is.null(model))                 model                 = do.call(petab_model, model)
   if(!is.null(experimentalCondition)) experimentalCondition = do.call(petab_experimentalCondition, experimentalCondition)
@@ -740,7 +734,7 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
 #'  Default aesthetics are list(x = ~time, y = ~measurement, color = ~conditionId). 
 #'  Can be overriden by aeslist
 #' @param ggCallback additional stuff to add to the ggplot, such as a call to [ggplots2::labs()] or scales
-#' @param FLAGmeanLine draw line connecting the means
+#' @param FLAGmeanLine draw line connecting the means of groups defined by c("observableId", "time", "conditionId", names(aeslist)=
 #' @param paginateInfo see [conveniencefunctions::cf_paginateInfo()]
 #' @param FLAGfuture export asynchronously with the future package
 #' @param filename,width,height,scale,units see [ggplot2::ggsave()]
@@ -753,9 +747,6 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
 #' @md
 #' @export
 petab_plotData <- function(petab, 
-                           conditionId = NULL, 
-                           observableId = NULL, 
-                           datasetId = NULL,
                            aeslist = NULL,
                            FLAGUseObservableTransformation = TRUE,
                            FLAGmeanLine = TRUE,
@@ -770,8 +761,6 @@ petab_plotData <- function(petab,
   
   # create plotting data.table
   dplot <- petab_joinDCO(petab)
-  if (length(conditionId)) {rowsub <- dplot[,conditionId %in% ..conditionId]; dplot <- dplot[rowsub]}
-  if (length(observableId)) {rowsub <- dplot[,observableId %in% ..observableId]; dplot <- dplot[rowsub]}
   # apply log transformation to data when applicable
   if (FLAGUseObservableTransformation) 
     dplot[observableTransformation != "lin",

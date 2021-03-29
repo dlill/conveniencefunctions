@@ -75,7 +75,7 @@ pe_me[,`:=`(noiseParameters = paste0("sigma_", observableId))]
 # ..  -----
 pe_me[observableId == "obsE",`:=`(observableParameters = "offset_E")]
 pe_mo <- petab_model(el,events = NULL,parInfo = parInfo, speciesInfo = speciesInfo)
-pe_pa <- create_parameter_df(pe_mo, pe_me)
+pe_pa <- petab_create_parameter_df(pe_mo, pe_me)
 
 
 # .. Create petab -----
@@ -102,26 +102,26 @@ writePetab(pe, filename)
 # 
 # pepy <- petab_python_setup()
 # sbmlmodel <- pepy$get_sbml_model(files$modelXML)
-# pepy$create_parameter_df(sbml_model     = r_to_py(pepy$load_sbml_from_file(files$modelXML)),
+# pepy$petab_create_parameter_df(sbml_model     = r_to_py(pepy$load_sbml_from_file(files$modelXML)),
 #                          condition_df   = r_to_py(pepy$get_condition_df(files$experimentalCondition)),
 #                          observable_df  = r_to_py(pepy$get_observable_df(files$observables)),
 #                          measurement_df = r_to_py(pepy$get_measurement_df(files$measurementData)))
 # 
 # #python code
 # # import petab
-# # petab.create_parameter_df(sbml_model    = petab.get_sbml_model("petab/enzymeKinetics/model_enzymeKinetics.xml"),
+# # petab.petab_create_parameter_df(sbml_model    = petab.get_sbml_model("petab/enzymeKinetics/model_enzymeKinetics.xml"),
 # #                          condition_df   = petab.get_condition_df("petab/enzymeKinetics/experimentalCondition_enzymeKinetics.tsv"),
 # #                          observable_df  = petab.get_observable_df("petab/enzymeKinetics/observables_enzymeKinetics.tsv"),
 # #                          measurement_df = petab.get_measurement_df("petab/enzymeKinetics/measurementData_enzymeKinetics.tsv"))
 # # 
 # # import petab
-# # petab.create_parameter_df(sbml_model    = petab.get_sbml_model("petab/Boehm_JProteomeRes2014/model_Boehm_JProteomeRes2014.xml"),
+# # petab.petab_create_parameter_df(sbml_model    = petab.get_sbml_model("petab/Boehm_JProteomeRes2014/model_Boehm_JProteomeRes2014.xml"),
 # #                          condition_df   = petab.get_condition_df("petab/Boehm_JProteomeRes2014/experimentalCondition_Boehm_JProteomeRes2014.tsv"),
 # #                          observable_df  = petab.get_observable_df("petab/Boehm_JProteomeRes2014/observables_Boehm_JProteomeRes2014.tsv"),
 # #                          measurement_df = petab.get_measurement_df("petab/Boehm_JProteomeRes2014/measurementData_Boehm_JProteomeRes2014.tsv"))
 # 
 # #
-# pepy$create_parameter_df(sbml_model = r_to_py(sbmlmodel))
+# pepy$petab_create_parameter_df(sbml_model = r_to_py(sbmlmodel))
 
 
 # Exit ----
