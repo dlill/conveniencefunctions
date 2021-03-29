@@ -33,8 +33,6 @@ Can be overriden by aeslist}
 \item{filename, width, height, scale, units}{see \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}}
 
 \item{FLAGfuture}{export asynchronously with the future package}
-
-\item{paginateInfo}{see \code{\link[=cf_paginateInfo]{cf_paginateInfo()}}}
 }
 \value{
 ggplot
