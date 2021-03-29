@@ -1,31 +1,8 @@
-# -------------------------------------------------------------------------#
-# 0 Header ----
-# -------------------------------------------------------------------------#
-#
-# S101-plotting.R
-#
-# [PURPOSE]
-# 
-# Try and demonstrate plotting with cfoutputFigure
-#
-#
-# [AUTHOR]
-# Daniel Lill
-#
-# [Date]
-# Mon Mar 29 10:24:05 2021
-#
 .tempdir = tempdir()
 .currentdir <- getwd()
 setwd(.tempdir)
 
-# library(conveniencefunctions)
-devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
-rm(list = ls(all.names = TRUE))
-
-.outputFolder <- paste0("../04-Output/", "S101-plotting")
-for(folder in c(.outputFolder)) 
-if(!dir.exists(folder)) dir.create(folder, recursive = TRUE)
+library(conveniencefunctions)
 
 # -------------------------------------------------------------------------#
 # 1 Paginate ----
