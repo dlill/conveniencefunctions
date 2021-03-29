@@ -860,7 +860,9 @@ petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
 # [ ] petab_fit(FLAGrunbg,FLAGslurm)
 # [ ] petab_updateParameters Incorporate fit values
 # [ ] petab_addFitResults
+#   * Elegant way to deal with waterfalls needed
 # [ ] petab_profile(opt.runbg = NULL or runbg_list())
+#   * petab_addProfileResults Elegant way to deal with profiles needed
 # [ ] runbg_list()
 #   * Machine: c("knecht1", "knecht2") or "cluster"
 #   * nodes
@@ -870,8 +872,6 @@ petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
 # [ ] sbml - initialAssignments
 # [ ] sbml - assignmentRules
 # [ ] petab_import: append original petab
-# [ ] 
-
 
 # * Sample from prior, ...
 # * petablint ...
