@@ -6,9 +6,6 @@
 \usage{
 petab_plotData(
   petab,
-  conditionId = NULL,
-  observableId = NULL,
-  datasetId = NULL,
   aeslist = NULL,
   FLAGUseObservableTransformation = TRUE,
   FLAGmeanLine = TRUE,
@@ -25,19 +22,19 @@ petab_plotData(
 \arguments{
 \item{petab}{A \link{petab} object}
 
-\item{conditionId, observableId, datasetId}{Subset data to plot. Find out suitable values with \code{\link[=petab_dput]{petab_dput()}}}
-
 \item{aeslist}{list of formulas used to call \code{\link[ggplot2:aes_]{ggplot2::aes_q()}}.
 Default aesthetics are list(x = ~time, y = ~measurement, color = ~conditionId).
 Can be overriden by aeslist}
 
-\item{FLAGmeanLine}{draw line connecting the means}
+\item{FLAGmeanLine}{draw line connecting the means of groups defined by c("observableId", "time", "conditionId", names(aeslist)=}
 
-\item{ggCallback}{additional stuff to add to the ggplot, such as a call to \code{\link[ggplots2:labs]{ggplots2::labs()}} or scales}
+\item{ggCallback}{additional stuff to add to the ggplot, such as a call to \code{\link[ggplots:labs]{ggplots::labs()}} or scales}
 
 \item{filename, width, height, scale, units}{see \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}}
 
 \item{FLAGfuture}{export asynchronously with the future package}
+
+\item{conditionId, observableId, datasetId}{Subset data to plot. Find out suitable values with \code{\link[=petab_dput]{petab_dput()}}}
 
 \item{paginateInfo}{see \code{\link[=cf_paginateInfo]{cf_paginateInfo()}}}
 }

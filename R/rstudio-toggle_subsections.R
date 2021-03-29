@@ -258,8 +258,6 @@ insert_loopdebugger <- function() {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 insert_arguments <- function() {
   e <- rstudioapi::getSourceEditorContext()
   rstudioapi::documentSave(id = e$id)

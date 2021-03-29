@@ -3,7 +3,7 @@
 \docType{data}
 \name{cfcolorsFULL}
 \alias{cfcolorsFULL}
-\title{Colors}
+\title{Colors Copied from dMod}
 \format{
 An object of class \code{list} of length 3.
 }
@@ -11,6 +11,6 @@ An object of class \code{list} of length 3.
 cfcolorsFULL
 }
 \description{
-Colors
+Colors Copied from dMod
 }
 \keyword{datasets}

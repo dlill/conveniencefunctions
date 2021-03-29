@@ -49,8 +49,6 @@ cf_install_rstudio <- function(
 #'
 #' @return
 #' @export
-#'
-#' @examples
 install_cfreservedWords <- function(){
   file.copy(system.file("setup_IQDesktop/Setup/Resources/setup_options_IQRtools.R"), "~/setup_options_IQRtools.R")
 }
@@ -60,8 +58,6 @@ install_cfreservedWords <- function(){
 #'
 #' @return
 #' @export
-#'
-#' @examples
 install_thunarshortcuts <- function(FLAGoverwrite) {
   if (!dir.exists("~/.config/gtk-3.0")) dir.create("~/.config/gtk-3.0")
   wup <- file.copy(system.file("setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks", package = "conveniencefunctions"), 
@@ -74,8 +70,6 @@ install_thunarshortcuts <- function(FLAGoverwrite) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 update_thunarshortcuts_in_cf <- function(append=FALSE) {
   thunarfile_new <- "~/.config/gtk-3.0/bookmarks"
   thunarfile_old <- "~/PROJTOOLS/conveniencefunctions/inst/setup_IQDesktop/Setup/Resources/thunar_shortcuts/bookmarks"
@@ -113,8 +107,6 @@ install_cfkeybindings <- function(FLAGoverwrite = FALSE){
 #'
 #' @return
 #' @export
-#'
-#' @examples
 install_cfsnippets <- function(FLAGoverwrite = FALSE){
   if(!dir.exists("~/.R/snippets/")) dir.create("~/.R/snippets/", recursive = TRUE)
   wup <- file.copy(system.file("setup_rstudio/snippets/r.snippets", package = "conveniencefunctions"), file.path("~/.R/snippets/r.snippets"), overwrite = FLAGoverwrite)

@@ -7,7 +7,6 @@
 cf_outputFigure(
   pl,
   filename,
-  scriptname = basename(dirname(filename)),
   width = 14,
   height = 10,
   scale = 0.6,
@@ -21,56 +20,25 @@ cf_outputFigure(
 \arguments{
 \item{pl}{plot like ggplot}
 
-\item{filename}{}
+\item{filename, width, height, scale, units, dpi, limitsize, ...}{see [ggplot2::ggsave()]}
 
-\item{scriptname}{}
-
-\item{width}{}
-
-\item{height}{}
-
-\item{scale}{}
-
-\item{...}{}
-
-\item{FLAGaddScriptname}{}
+\item{FLAGFuture}{Export asynchronously with the future-package}
 }
 \value{
-
+nothing
 }
 \description{
-current features
-* Add scriptname to plot as small caption
+Handle paginate automatically, save asynchronously with future
+}
+\details{
+# importFrom ggplot2 plot_dev parse_dpi plot_dim
 }
 \examples{
-# -------------------------------------------------------------------------#
-# 0 Header ----
-# -------------------------------------------------------------------------#
-#
-# S101-plotting.R
-#
-# [PURPOSE]
-# 
-# Try and demonstrate plotting with cfoutputFigure
-#
-#
-# [AUTHOR]
-# Daniel Lill
-#
-# [Date]
-# Mon Mar 29 10:24:05 2021
-#
 .tempdir = tempdir()
 .currentdir <- getwd()
 setwd(.tempdir)
 
-# library(conveniencefunctions)
-devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
-rm(list = ls(all.names = TRUE))
-
-.outputFolder <- paste0("../04-Output/", "S101-plotting")
-for(folder in c(.outputFolder)) 
-if(!dir.exists(folder)) dir.create(folder, recursive = TRUE)
+library(conveniencefunctions)
 
 # -------------------------------------------------------------------------#
 # 1 Paginate ----

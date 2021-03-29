@@ -360,8 +360,6 @@ gitam <- function(string) {
 #' @export
 #' @author Daniel Lill (daniel.lill@intiquan.com)
 #' @md
-#'
-#' @examples
 pullJobs <- function() {
   setwd("~")
   f <- c(list.files("PROJTOOLS/", full.names = TRUE),

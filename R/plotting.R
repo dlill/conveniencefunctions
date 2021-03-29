@@ -1,46 +1,17 @@
 
 #' Title
 #'
-#' @param filename 
-#' @param width,height,scale In inches
-#' @param ... Arguments going to either [grDevices::pdf()] or [grDevices::png()]
-#'
-#' @return nothing, called for side effect
-#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
-#' @md
-#' @export
-#'
-#' @examples
-cf_startDev <- function(filename, width = 14, height = 10, scale = 0.6, units = "cm", ...) {
-  width <- width * scale
-  height <- height * scale
-  if (grepl("png$", filename)) {
-    png(filename, width = width, height = height, ...)
-  } else if (grepl("pdf$", filename)) {
-    pdf(filename, width = width, height = height, ...)
-  }
-  NULL
-}
-
-#' @xport
-#' @rdname cf_startDev
-cf_stopDev <- function(filename) {
-  ending <- substr(filename, nchar(filename)-2, nchar(filename))
-  devs <- dev.list()
-  for (dev in devs[names(devs) == ending]) dev.off(dev)
-  NULL
-}
-
-
-
-#' Title
-#'
 #' @param fp,type see code of [getPaginateInfo()]
 #'
 #' @return
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @examples
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1) +
+#'   facet_grid_paginate(color ~ cut:clarity, ncol = 3, nrow = 3, page = 4)
+#' fp <- pl$facet$params
+#' getFacets(fp, "facet_grid_paginate")
 getFacets <- function(fp, type) {
   facets <- NULL
   if (type == "facet_grid_paginate"){
@@ -129,6 +100,8 @@ getPaginateInfo <- function(pl) {
 #' plotlist <- cf_applyPaginate(pl)
 #' plotlist[[1]]
 #' plotlist[[5]]
+#' n_pages(pl)
+#' length(plotlist)
 cf_applyPaginate <- function(pl) {
   
   pi <- getPaginateInfo(pl)
@@ -146,23 +119,23 @@ cf_applyPaginate <- function(pl) {
 
 #' Output figures
 #' 
-#' current features
-#' * Add scriptname to plot as small caption
+#' Handle paginate automatically, save asynchronously with future
 #'
 #' @param pl plot like ggplot
-#' @param filename 
-#' @param scriptname 
-#' @param width 
-#' @param height 
-#' @param scale 
-#' @param FLAGaddScriptname 
-#' @param ... 
+#' @param filename,width,height,scale,units,dpi,limitsize,... see [ggplot2::ggsave()]
+#' @param FLAGFuture Export asynchronously with the future-package
 #'
-#' @return
+#' @return nothing
 #' @export
-#'
+#' 
+#' @importFrom future plan "%<-%"
+#' @importFrom grDevices dev.off dev.cur dev.set
+#' @importFrom utils capture.output
+#' 
+#' @details # importFrom ggplot2 plot_dev parse_dpi plot_dim
+#' 
 #' @example inst/examples/S101-plotting.R
-cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
+cf_outputFigure <- function(pl, filename, 
                             width = 14, height = 10, scale = 0.6, 
                             units = c("in", "cm", "mm"), 
                             dpi = 300, limitsize = TRUE, 
@@ -177,7 +150,6 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
     if(!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
       filename <- gsub(".png", "%03d.png", filename)
     }
-    FLAGaddScriptname <- FALSE
   } 
   
   # device wrestling
@@ -200,7 +172,6 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
   if (FLAGFuture && !"multisession" %in% class(future::plan())) 
     future::plan("multisession")
   future::`%<-%`(.dummy, {doPlot()})
-  # assign(paste0(".dummyplot", round(runif(1),4)), .dummy, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
   
   invisible()
 }
@@ -208,7 +179,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
 
 #' Grab a base plot into grid object
 #'
-#' @return gtree
+#' @return gtree, can be exported with [ggplot2::ggsave()]
 #' @export
 #' @importFrom grid grid.grab
 #' @importFrom gridGraphics grid.echo
@@ -225,7 +196,6 @@ cfgrab <- function() {
 #' @param base_size,base_family see ?theme_bw
 #' @param FLAGbold Make text bold faced
 #'
-#' @return
 #' @export
 theme_cf <- function(base_size = 11, base_family = "", FLAGbold = TRUE) {
   colors <- list(
@@ -265,8 +235,6 @@ theme_cf <- function(base_size = 11, base_family = "", FLAGbold = TRUE) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
-#'
-#' @examples
 cfggplot <- function(data = NULL, mapping = aes(), FLAGbold = TRUE) {
   ggplot(data,mapping) + 
     theme_cf(FLAGbold = FLAGbold)
@@ -284,7 +252,7 @@ scale_color_cf <- function(...) {
   scale_color_manual(..., values = cfcolors)
 }
 
-#' Colors
+#' Colors Copied from dMod
 #' @export
 cfcolorsFULL <- list(
   medium = c(black = '#010202', gray = '#737373', red = '#F15A60', green = '#7AC36A', blue = '#5A9BD4', orange = '#FAA75B', purple = '#9E67AB', maroon = '#CE7058', magenta = '#D77FB4'),
@@ -293,6 +261,7 @@ cfcolorsFULL <- list(
 )
 
 #' Colors
+#' copied and adapted from dMod
 #' @examples 
 #' ggplot(data.frame(x = 1:30,color = factor(cfcolors[1:30], unique(cfcolors[1:30])))) + 
 #'   geom_tile(aes(x=x, y = 1, fill = color)) + 

@@ -7,7 +7,7 @@
 cfgrab()
 }
 \value{
-gtree
+gtree, can be exported with [ggplot2::ggsave()]
 }
 \description{
 Grab a base plot into grid object

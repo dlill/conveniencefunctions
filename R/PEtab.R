@@ -733,7 +733,7 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
 #' @param aeslist list of formulas used to call [ggplot2::aes_q()]. 
 #'  Default aesthetics are list(x = ~time, y = ~measurement, color = ~conditionId). 
 #'  Can be overriden by aeslist
-#' @param ggCallback additional stuff to add to the ggplot, such as a call to [ggplots2::labs()] or scales
+#' @param ggCallback additional stuff to add to the ggplot, such as a call to [ggplots::labs()] or scales
 #' @param FLAGmeanLine draw line connecting the means of groups defined by c("observableId", "time", "conditionId", names(aeslist)=
 #' @param paginateInfo see [conveniencefunctions::cf_paginateInfo()]
 #' @param FLAGfuture export asynchronously with the future package

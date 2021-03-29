@@ -15,6 +15,13 @@ getFacets(fp, type)
 \description{
 Title
 }
+\examples{
+pl <- ggplot(diamonds) +
+  geom_point(aes(carat, price), alpha = 0.1) +
+  facet_grid_paginate(color ~ cut:clarity, ncol = 3, nrow = 3, page = 4)
+fp <- pl$facet$params
+getFacets(fp, "facet_grid_paginate")
+}
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

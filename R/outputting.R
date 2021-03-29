@@ -1,15 +1,3 @@
-#' Title
-#'
-#' @param dirnm 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cf_dir.create <- function(dirnm) {
-  if (!dir.exists(dirnm)) dir.create(dirnm, recursive = TRUE)
-  dirnm
-}
 
 
 #' Output table as markdown
@@ -91,32 +79,3 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
 }
 
 
-
-#' Title
-#'
-#' @param x 
-#' @param filename 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cfwriteLines <- function(x, filename) {
-  cf_dir.create(dirname(filename))
-  writeLines(x, filename)
-}
-
-#' Title
-#'
-#' @param object 
-#' @param filename 
-#' @param ... 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cfoutput_RDS <- function(object, filename, ...) {
-  cf_dir.create(dirname(filename))
-  saveRDS(object, file = filename, ...)
-}

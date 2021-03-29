@@ -11,9 +11,6 @@ theme_cf(base_size = 11, base_family = "", FLAGbold = TRUE)
 
 \item{FLAGbold}{Make text bold faced}
 }
-\value{
-
-}
 \description{
 Taken from dMod
 }

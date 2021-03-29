@@ -3,7 +3,8 @@
 \docType{data}
 \name{cfcolors}
 \alias{cfcolors}
-\title{Colors}
+\title{Colors
+copied and adapted from dMod}
 \format{
 An object of class \code{character} of length 120.
 }
@@ -12,6 +13,7 @@ cfcolors
 }
 \description{
 Colors
+copied and adapted from dMod
 }
 \examples{
 ggplot(data.frame(x = 1:30,color = factor(cfcolors[1:30], unique(cfcolors[1:30])))) + 

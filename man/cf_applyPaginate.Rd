@@ -25,6 +25,8 @@ pl <- ggplot(diamonds) +
 plotlist <- cf_applyPaginate(pl)
 plotlist[[1]]
 plotlist[[5]]
+n_pages(pl)
+length(plotlist)
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
