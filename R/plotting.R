@@ -168,6 +168,7 @@ cf_applyPaginate <- function(pl) {
 #' @export
 #'
 #' @examples
+#' 
 cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
                             width = 14, height = 10, scale = 0.6, 
                             FLAGaddScriptname = TRUE,
@@ -191,24 +192,21 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
   dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
                             limitsize = limitsize)
   
-  old_dev <- grDevices::dev.cur()
+  if (FLAGfuture && !"multisession" %in% class(future::plan())) 
+    future::plan("multisession")
   
-  dev(filename = filename, width = dim[1], height = dim[2], ...)
-  on.exit(utils::capture.output({
-    grDevices::dev.off()
-    if (old_dev > 1) grDevices::dev.set(old_dev)
-  }))
-  
-  
-  # Print plots
-  for (p in pl) print(p)
-  
-  if (FLAGaddScriptname)
-    grid::grid.text(basename(filename), x = unit(0.02, "npc"), 
-                    y = unit(0.03, "npc"), hjust = 0, 
-                    gp = gridgpar(fontsize = eval(parse(
-                      text = paste0(0.8 * width * scale , " * ", 
-                                    pl$theme$legend.text$size,pl$theme$text$size)))))
+  future::`%<-%`(.dummy, {
+    old_dev <- grDevices::dev.cur()
+    dev(filename = filename, width = dim[1], height = dim[2], ...)
+    
+    for (p in pl) print(p)
+    
+    utils::capture.output({
+      grDevices::dev.off()
+      if (old_dev > 1) grDevices::dev.set(old_dev)
+    })
+  })
+  assign(paste0(".dummyplot", round(runif(1),4)), .dummy, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
   
   invisible()
 }

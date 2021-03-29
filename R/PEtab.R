@@ -759,9 +759,9 @@ petab_plotData <- function(petab,
                            aeslist = NULL,
                            FLAGUseObservableTransformation = TRUE,
                            FLAGmeanLine = TRUE,
-                           paginateInfo=cf_paginateInfo(facets = ~observableId,nrow = 4,ncol = 4,scales = "free", type = "wrap"),
-                           
-                           ggCallback = geom_blank(),
+                           ggCallback = 
+                             facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales = "free") + 
+                             geom_blank(),
                            
                            filename = NULL, 
                            FLAGfuture = TRUE,
@@ -791,14 +791,8 @@ petab_plotData <- function(petab,
   aes0 <- list(x = ~time, y = ~measurement, color = ~conditionId)
   aeslist <- c(aeslist, aes0[setdiff(names(aes0), names(aeslist))])
   
-  # handle facets
-  facet_paginate <- utils::getFromNamespace(paginateInfo$type, "ggforce")
-  paginateInfo0 <- paginateInfo[setdiff(names(paginateInfo), "type")]
-  
-  
   # Create plot
   pl <- cfggplot() 
-  pl <- pl + {do.call(facet_paginate, paginateInfo0)}
   
   if (FLAGmeanLine) {
     aesmean0 <- list(linetype = ~conditionId, group = ~conditionId)
