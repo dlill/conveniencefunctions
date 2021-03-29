@@ -21,7 +21,7 @@ list or character vector of file paths
 List petab files
 }
 \examples{
-petab_files("Models/Example.petab") 
+petab_files("Models/Example") 
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)

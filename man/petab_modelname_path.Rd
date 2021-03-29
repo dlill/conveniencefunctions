@@ -2,18 +2,23 @@
 % Please edit documentation in R/PEtab.R
 \name{petab_modelname_path}
 \alias{petab_modelname_path}
-\title{Title}
+\title{Consistent file names}
 \usage{
 petab_modelname_path(filename)
 }
 \arguments{
-\item{filename}{path ending in .petab}
+\item{filename}{path, potentially ending in .petab for backwards compatibility}
 }
 \value{
 list(modelname, path)
 }
 \description{
-Title
+Consistent file names
+}
+\examples{
+# same:
+petab_modelname_path("Models/Example") 
+petab_modelname_path("Models/Example.petab") 
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
