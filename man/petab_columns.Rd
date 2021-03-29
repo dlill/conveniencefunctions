@@ -7,11 +7,14 @@
 petab_columns(pe = NULL)
 }
 \arguments{
-\item{pe}{NULL: Default names, [petab()] Actual names in petab}
+\item{pe}{NULL: Default names, \code{\link[=petab]{petab()}} Actual names in petab}
 }
 \value{
 list of column names
 }
 \description{
 Title
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }

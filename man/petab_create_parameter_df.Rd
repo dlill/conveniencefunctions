@@ -17,3 +17,6 @@ petab_create_parameter_df(model, measurementData)
 \description{
 Original petab function didn't work
 }
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+}

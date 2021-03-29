@@ -34,8 +34,6 @@ Can be overriden by aeslist}
 
 \item{FLAGfuture}{export asynchronously with the future package}
 
-\item{conditionId, observableId, datasetId}{Subset data to plot. Find out suitable values with \code{\link[=petab_dput]{petab_dput()}}}
-
 \item{paginateInfo}{see \code{\link[=cf_paginateInfo]{cf_paginateInfo()}}}
 }
 \value{

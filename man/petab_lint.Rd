@@ -2,7 +2,7 @@
 % Please edit documentation in R/PEtab.R
 \name{petab_lint}
 \alias{petab_lint}
-\title{Title}
+\title{Own little linter until petab.py lint is stable}
 \usage{
 petab_lint(petab)
 }
@@ -13,7 +13,7 @@ petab_lint(petab)
 list of errors
 }
 \description{
-Title
+Own little linter until petab.py lint is stable
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
