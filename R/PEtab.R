@@ -398,21 +398,25 @@ petab <- function(
   petab
 }
 
-#' Title
+#' Consistent file names
 #'
-#' @param filename path ending in .petab
+#' @param filename path, potentially ending in .petab for backwards compatibility
 #'
 #' @return list(modelname, path)
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
+#' @importFrom tools file_ext
 #'
 #' @examples
+#' # same:
+#' petab_modelname_path("Models/Example") 
+#' petab_modelname_path("Models/Example.petab") 
 petab_modelname_path <- function(filename) {
-  if (tools::file_ext(basename(filename)) != "petab") 
-    stop("File ending should be .petab (is ", tools::file_ext(filename), ")")
-  modelname <- gsub(".petab$", "", basename(filename))
-  path <- gsub(".petab$", "", filename)
+  if (tools::file_ext(filename) == "petab") 
+    filename <- gsub(".petab$", "", filename)
+  modelname <- basename(filename)
+  path <- filename
   list(modelname = modelname, path = path)
 }
 
@@ -430,7 +434,7 @@ petab_modelname_path <- function(filename) {
 #' @export
 #' 
 #' @examples
-#' petab_files("Models/Example.petab") 
+#' petab_files("Models/Example") 
 petab_files <- function(filename, FLAGTestCase = FALSE, FLAGreturnList = FALSE) {
   
   modelname <- petab_modelname_path(filename)$modelname
@@ -509,7 +513,7 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
 #' @export
 #'
 #' @examples
-writePetab <- function(petab, filename = "petab/model.petab") {
+writePetab <- function(petab, filename = "petab/model") {
 
   # Create folder, load petab
   dir.create(petab_modelname_path(filename)$path, FALSE, TRUE)
