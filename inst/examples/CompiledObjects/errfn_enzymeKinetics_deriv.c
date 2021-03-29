@@ -1,6 +1,6 @@
 #include <R.h>
  #include <math.h>
- void errfn_enzymeKinetics_deriv_q1migv5z ( double * x, double * y, double * p, int * n, int * k, int * l ) {
+ void errfn_enzymeKinetics_deriv_itq7h3i9 ( double * x, double * y, double * p, int * n, int * k, int * l ) {
  for(int i = 0; i< *n; i++) {
  y[16+i**l] = 1.0 ;
 y[21+i**l] = 1.0 ;

@@ -9,13 +9,7 @@ warning("absolute file path")
 # Create enzyme kinetics model and data ----
 # -------------------------------------------------------------------------#
 pe <- readPetab("petab/enzymeKinetics.petab")
-# ..  -----
-me <- copy(pe$measurementData)
-simulationConditionId <- me$simulationConditionId
-observableId          <- me$observableId
-noiseParameters       <- me$noiseParameters
-
-pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab")
+pd <- importPEtabSBML_indiv("petab/enzymeKinetics.petab", NFLAGcompile = 0)
 
 pred <- pd$prd(seq(0,100), pd$pars)
 pd$obj_data(pd$pars)

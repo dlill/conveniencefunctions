@@ -71,6 +71,7 @@ pe_me <- petab_measurementData(observableId = pred$name,
 # .. error model -----
 pe_ob[,`:=`(noiseFormula = paste0("noiseParameter1_", observableId))]
 pe_me[,`:=`(noiseParameters = paste0("sigma_", observableId))]
+
 # ..  -----
 pe_me[observableId == "obsE",`:=`(observableParameters = "offset_E")]
 pe_mo <- petab_model(el,events = NULL,parInfo = parInfo, speciesInfo = speciesInfo)
@@ -84,9 +85,9 @@ pe <- petab(model = pe_mo,
                     observables = pe_ob,
                     parameters = pe_pa)
 
-# debugonce(writePetab)
 filename <- "petab/enzymeKinetics.petab"
 writePetab(pe, filename)
+
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)
 # sbml_exportEquationList(el, filename, parInfo = parInfo)
 

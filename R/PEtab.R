@@ -187,7 +187,7 @@ petab_mutateDCO <- function(pe, i, j) {
 }
 
 # -------------------------------------------------------------------------#
-# Initializers ----
+# Initializers of core objects ----
 # -------------------------------------------------------------------------#
 
 #' Constructor for Conditions
@@ -853,14 +853,35 @@ petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
 
 
 # -------------------------------------------------------------------------#
-# Todolist ----
+# Todolist/Wishlist ----
 # -------------------------------------------------------------------------#
+
+# [ ] petab_meta = list(meta_measurementData, meta_observables, 
+#                       meta_experimentalConditions, meta_parameters)
+#   * Tables contain e.g. units, other annotations etc
+#   * Could be used for programming on the DCO, 
+#     e.g. with meta_measurementData$cellline, it's easy to parameterize by cell line
+# [ ] petab_simulate,
+# [ ] petab_createObj_prior: Can be called either in petab_fit or in importPetab*
+# [ ] petab_fit(FLAGrunbg,FLAGslurm)
+# [ ] petab_updateParameters Incorporate fit values
+# [ ] petab_addFitResults
+# [ ] petab_profile(opt.runbg = NULL or runbg_list())
+# [ ] runbg_list()
+#   * Machine: c("knecht1", "knecht2") or "cluster"
+#   * nodes
+#   * cores
+#   * jobname
+# [ ] sbml - getSpeciesInfo: speciesUnit
+# [ ] sbml - initialAssignments
+# [ ] sbml - assignmentRules
+# [ ] petab_import: append original petab
+# [ ] 
+
+
 # * Sample from prior, ...
 # * petablint ...
-# Next steps
-# [ ] Construct measurement data from old data
-# [ ] Construct experimentalCondition for model
-# [ ] Construct observables: Think about specific functions to generate the observables "on the fly" for different model specifications
-# [ ] Construct model
-# [ ] Construct parameters: From rest of petab file
+
+
+
 

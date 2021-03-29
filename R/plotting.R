@@ -31,6 +31,8 @@ cf_stopDev <- function(filename) {
   NULL
 }
 
+
+
 #' Collector function for arguments to call paginate
 #'
 #' @param facets 
@@ -54,6 +56,62 @@ cf_paginateInfo <- function(facets, nrow = 2, ncol = 3, scales = "fixed", type =
   c(list(type = type, facets = facets, nrow = nrow, ncol = ncol, scales = scales), dots)
 }
 
+# getPaginateInfo <- function(pl)
+
+#' get the pagination info from a plot
+#'
+#' @param pl ggplot
+#'
+#' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @export
+#'
+#' @examples
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1) +
+#'   facet_grid_paginate(color ~ cut:clarity, ncol = 3, nrow = 3, page = 4)
+#' getPaginateInfo(pl)
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1) +
+#'   facet_grid_paginate(color ~ ., nrow = 2, ncol = 2, page = 1)
+#' getPaginateInfo(pl)
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1) +
+#'   facet_grid_paginate( ~ color, nrow = 2, ncol = 2, page = 1)
+#' getPaginateInfo(pl)
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1) +
+#'   facet_wrap_paginate( ~ color, nrow = 2, ncol = 2, page = 1)
+#' getPaginateInfo(pl)
+getPaginateInfo <- function(pl) {
+  
+  type <- switch(class(pl$facet)[1], FacetGridPaginate = "facet_grid_paginate", 
+                 FacetWrapPaginate = "facet_wrap_paginate", NA)
+  if (is.na(type)) return(NA)
+  
+  facet_paginate <- utils::getFromNamespace(type, "ggforce")
+  
+  fp <- pl$facet$params
+  # recover arguments "facets", "scales", "space"
+  nmr <- ifelse(length(names(fp$rows)), names(fp$rows), "")
+  nmc <- ifelse(length(names(fp$cols)), names(fp$cols), "")
+  facets <- as.formula(paste0(nmr, " ~ ", nmc))
+  scales <- switch(as.character(fp$free$x + 2*fp$free$y), "0" = "fixed", "1" = "free_x", "3" = "free_y", "4" = "free")
+  space <- NULL
+  if ("space_free" %in% names(fp))
+    space  <- switch(as.character(fp$space_free$x + 2*fp$space_free$y), "0" = "fixed", "1" = "free_x", "3" = "free_y", "4" = "free")
+  
+  # Assemble final arglist
+  paginateInfo <- c(list(facets = facets, scales = scales, space = space), fp)
+  paginateInfo <- paginateInfo[intersect(names(paginateInfo), names(formals(facet_paginate)))]
+  paginateInfo <- paginateInfo[setdiff(names(paginateInfo), "page")]
+  # "shrink" is not supported for grid
+  # "shrink" and switch is not supported for wrap
+  # conveniencefunctions::compare(names(formals(facet_paginate)), names(paginateInfo))
+  list(facet_paginate = facet_paginate, paginateInfo = paginateInfo)
+}
+
 #' Get list of paginated plots
 #' 
 #' use ggforce
@@ -71,20 +129,25 @@ cf_paginateInfo <- function(facets, nrow = 2, ncol = 3, scales = "fixed", type =
 #'
 #' @examples
 #' # adapted from ggforce examples
-#' paginateInfo <- cf_paginateInfo(~cut:clarity)
-#' plotlist <- cf_applyPaginate(pl, paginateInfo)
+#' pl <- ggplot(diamonds) +
+#'   geom_point(aes(carat, price), alpha = 0.1) +
+#'   facet_grid_paginate(color ~ cut:clarity, ncol = 3, nrow = 3, page = 4)
+#' plotlist <- cf_applyPaginate(pl)
 #' plotlist[[1]]
 #' plotlist[[5]]
-cf_applyPaginate <- function(pl, paginateInfo) {
-  facet_paginate <- utils::getFromNamespace(paginateInfo$type, "ggforce")
-  paginateInfo <- paginateInfo[setdiff(names(paginateInfo), c("page","type"))]
-  px <- pl + {do.call(facet_paginate, paginateInfo)}
-  n <- ggforce::n_pages(px)
+cf_applyPaginate <- function(pl) {
+  
+  pi <- getPaginateInfo(pl)
+  
+  if (is.na(pi)) return(list(pl))
+  
+  facet_paginate <- pi$facetPaginate
+  paginateInfo <- pi$paginateInfo
+  n <- ggforce::n_pages(pl)
   lapply(1:n, function(i) {
     pl + {do.call(facet_paginate, c(paginateInfo,list(page = i)))}
   })
 }
-
 
 
 #' Output figures
@@ -107,28 +170,26 @@ cf_applyPaginate <- function(pl, paginateInfo) {
 #' @examples
 cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename)), 
                             width = 14, height = 10, scale = 0.6, 
-                            paginateInfo = NULL,
                             FLAGaddScriptname = TRUE,
                             units = c("in", "cm", "mm"), 
                             dpi = 300, limitsize = TRUE, ...) {
   
   
-  # Handle paginate
-  if (is.null(paginateInfo))  {
-    pl <- list(pl)
-  } else {
-    pl <- cf_applyPaginate(pl, paginateInfo)
-    if (!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
+  # Handle paginate: Wraps plot in list of length n_pages. 
+  # For unpaginated plots, length(pl)=1
+  pl <- cf_applyPaginate(pl) 
+  if (length(pl)>1) {
+    if(!grepl("pdf$", filename) && !grepl("%03d.png$", filename)) {
       filename <- gsub(".png", "%03d.png", filename)
     }
     FLAGaddScriptname <- FALSE
-  }
+  } 
   
   # device wrestling
   dpi <- ggplot2:::parse_dpi(dpi)
   dev <- ggplot2:::plot_dev(NULL, filename, dpi = dpi)
   dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
-                  limitsize = limitsize)
+                            limitsize = limitsize)
   
   old_dev <- grDevices::dev.cur()
   
@@ -137,7 +198,7 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
     grDevices::dev.off()
     if (old_dev > 1) grDevices::dev.set(old_dev)
   }))
-
+  
   
   # Print plots
   for (p in pl) print(p)
@@ -197,7 +258,7 @@ theme_cf <- function(base_size = 11, base_family = "", FLAGbold = TRUE) {
           panel.grid = element_blank(),
           strip.background = element_rect(fill = "white", colour = NA),
           strip.text = element_text(size = rel(1.0))
-          ) 
+    ) 
   if (FLAGbold) out <- out + theme(text = element_text(face = "bold"))
   out
 }
@@ -247,8 +308,8 @@ cfcolorsFULL <- list(
 #'   aesthetics = c("color", "fill"))
 #' @export
 cfcolors <- c("#000000", "#C5000B", "#0084D1", "#579D1C", "#FF950E", 
-                  "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513",
-                  "salmon", "slateblue1", "chocolate3", "firebrick", 
-                  "cyan3", "chartreuse4", "gold", "ivory4", "seagreen3", "dodgerblue",
-                  rep("gray", 100))
+              "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513",
+              "salmon", "slateblue1", "chocolate3", "firebrick", 
+              "cyan3", "chartreuse4", "gold", "ivory4", "seagreen3", "dodgerblue",
+              rep("gray", 100))
 
