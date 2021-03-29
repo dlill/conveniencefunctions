@@ -64,10 +64,10 @@ getPaginateInfo <- function(pl) {
   fp <- pl$facet$params
   # recover arguments "facets", "scales", "space"
   facets <- getFacets(fp = fp, type = type)
-  scales <- switch(as.character(fp$free$x + 2*fp$free$y), "0" = "fixed", "1" = "free_x", "3" = "free_y", "4" = "free")
+  scales <- switch(as.character(as.numeric(fp$free$x + 2*fp$free$y)), "0" = "fixed", "1" = "free_x", "2" = "free_y", "3" = "free")
   space <- NULL
   if ("space_free" %in% names(fp))
-    space  <- switch(as.character(fp$space_free$x + 2*fp$space_free$y), "0" = "fixed", "1" = "free_x", "3" = "free_y", "4" = "free")
+    space  <- switch(as.character(as.numeric(fp$space_free$x + 2*fp$space_free$y)), "0" = "fixed", "1" = "free_x", "2" = "free_y", "3" = "free")
   
   # Assemble final arglist
   paginateInfo <- c(list(facets = facets, scales = scales, space = space), fp)
