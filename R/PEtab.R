@@ -742,13 +742,12 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
 #'  Can be overriden by aeslist
 #' @param ggCallback additional stuff to add to the ggplot, such as a call to [ggplots::labs()] or scales
 #' @param FLAGmeanLine draw line connecting the means of groups defined by c("observableId", "time", "conditionId", names(aeslist)=
-#' @param paginateInfo see [conveniencefunctions::cf_paginateInfo()]
 #' @param FLAGfuture export asynchronously with the future package
 #' @param filename,width,height,scale,units see [ggplot2::ggsave()]
 #'
 #' @return ggplot
 #' 
-#' @importFrom future plan "%<-%"
+#' @importFrom ggforce n_pages
 #' 
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
@@ -789,8 +788,7 @@ petab_plotData <- function(petab,
   
   # Create plot
   pl <- cfggplot() 
-  
-  if (FLAGmeanLine) {
+  if (FLAGmeanLine) { # Add first so te lines don't mask the points
     aesmean0 <- list(linetype = ~conditionId, group = ~conditionId)
     aesmeanlist <- c(aeslist, aesmean0[setdiff(names(aesmean0), names(aeslist))])
     pl <- pl + geom_line(do.call(aes_q, aesmeanlist), data = dmean)
@@ -803,18 +801,12 @@ petab_plotData <- function(petab,
   
   # output
   if (!is.null(filename)){
-    if(FLAGfuture) {
-      if (!"multisession" %in% class(future::plan())) future::plan("multisession")
-      # assign(".Last", function() plan("sequential"), .GlobalEnv)
-    }
-    future::`%<-%`(wup,cf_outputFigure(pl = pl, filename = filename,
-                             width = width, height = height, scale = scale, units = units, 
-                             paginateInfo = paginateInfo))
-    assign(paste0(".dummy", round(runif(1),4)), wup, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
-    
-    return(invisible(pl))
+    cf_outputFigure(pl = pl, filename = filename,
+                    width = width, height = height, 
+                    scale = scale, units = units, 
+                    FLAGFuture = FLAGfuture)
+    return(invisible())
   }
-  
   pl
 }
 
