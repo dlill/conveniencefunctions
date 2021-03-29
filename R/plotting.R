@@ -33,30 +33,26 @@ cf_stopDev <- function(filename) {
 
 
 
-#' Collector function for arguments to call paginate
+#' Title
 #'
-#' @param facets 
-#' @param nrow 
-#' @param ncol 
-#' @param scales 
-#' @param type 
-#' @param ... see [ggforce::facet_wrap_paginate()] and [ggforce::facet_grid_paginate()]
+#' @param fp,type see code of [getPaginateInfo()]
 #'
+#' @return
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
-#' @return
-#' 
-#' @export
-#'
 #' @examples
-#' # see ?cf_applyPaginate
-cf_paginateInfo <- function(facets, nrow = 2, ncol = 3, scales = "fixed", type = c("wrap", "grid"), ...) {
-  dots <- list(...)
-  type <- paste0("facet_", type, "_paginate")[1]
-  c(list(type = type, facets = facets, nrow = nrow, ncol = ncol, scales = scales), dots)
+getFacets <- function(fp, type) {
+  facets <- NULL
+  if (type == "facet_grid_paginate"){
+    nmr <- ifelse(length(names(fp$rows)), names(fp$rows), ".")
+    nmc <- ifelse(length(names(fp$cols)), names(fp$cols), ".")
+    facets <- as.formula(paste0(nmr, " ~ ", nmc))
+  } else {
+    facets <- as.formula(paste0(". ~ ", paste0(names(fp$facets), collapse = " + ")))
+  }
+  facets
 }
 
-# getPaginateInfo <- function(pl)
 
 #' get the pagination info from a plot
 #'
@@ -94,9 +90,7 @@ getPaginateInfo <- function(pl) {
   
   fp <- pl$facet$params
   # recover arguments "facets", "scales", "space"
-  nmr <- ifelse(length(names(fp$rows)), names(fp$rows), "")
-  nmc <- ifelse(length(names(fp$cols)), names(fp$cols), "")
-  facets <- as.formula(paste0(nmr, " ~ ", nmc))
+  facets <- getFacets(fp = fp, type = type)
   scales <- switch(as.character(fp$free$x + 2*fp$free$y), "0" = "fixed", "1" = "free_x", "3" = "free_y", "4" = "free")
   space <- NULL
   if ("space_free" %in% names(fp))
@@ -193,20 +187,19 @@ cf_outputFigure <- function(pl, filename, scriptname = basename(dirname(filename
   dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
                             limitsize = limitsize)
   
-  if (FLAGfuture && !"multisession" %in% class(future::plan())) 
-    future::plan("multisession")
-  
-  future::`%<-%`(.dummy, {
+  doPlot <- function() {
     old_dev <- grDevices::dev.cur()
     dev(filename = filename, width = dim[1], height = dim[2], ...)
-    
-    for (p in pl) print(p)
-    
-    utils::capture.output({
+    on.exit(utils::capture.output({
       grDevices::dev.off()
       if (old_dev > 1) grDevices::dev.set(old_dev)
-    })
-  })
+    }))
+    for (p in pl) print(p)
+  }
+  
+  if (FLAGFuture && !"multisession" %in% class(future::plan())) 
+    future::plan("multisession")
+  future::`%<-%`(.dummy, {doPlot()})
   assign(paste0(".dummyplot", round(runif(1),4)), .dummy, .GlobalEnv) # so that the reference is not deleted and future evaluates until the end
   
   invisible()
