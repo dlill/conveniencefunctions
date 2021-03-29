@@ -29,8 +29,8 @@ petab_create_parameter_df <- function(model, measurementData) {
   par_meErr <- NULL
   if (length(getSymbols(measurementData$noiseParameters))) 
     par_meErr <- petab_parameters(parameterId =   getSymbols(measurementData$noiseParameters), 
-                     parameterName = getSymbols(measurementData$noiseParameters),
-                     nominalValue = 0.1)
+                                  parameterName = getSymbols(measurementData$noiseParameters),
+                                  nominalValue = 0.1)
   
   par <- rbindlist(list(par_sp, par_pa, par_ob, par_meErr))
 }
@@ -65,20 +65,20 @@ petab_dput <- function(pe, variable) {
 #' @examples
 petab_columns <- function(pe = NULL) {
   if(!is.null(pe))
-      return(lapply(pe[c("experimentalCondition", 
-                 "measurementData", 
-                 "observables", 
-                 "parameters")], names))
+    return(lapply(pe[c("experimentalCondition", 
+                       "measurementData", 
+                       "observables", 
+                       "parameters")], names))
   
   m <- c("observableId","simulationConditionId","measurement","time","observableParameters","noiseParameters","datasetId","replicateId","preequilibrationConditionId")
   o <- c("observableId","observableName","observableFormula","observableTransformation","noiseFormula","noiseDistribution")
   e <- c("conditionId","conditionName")
   p <- c("parameterId","parameterName","parameterScale","lowerBound","upperBound","nominalValue","estimate","initializationPriorType","initializationPriorParameters","objectivePriorType","objectivePriorParameters")
-
+  
   list(experimentalCondition = e, 
-                measurementData = m, 
-                observables = o, 
-                parameters = p)
+       measurementData = m, 
+       observables = o, 
+       parameters = p)
 }
 
 #' Create one big table containing measurementData, observables and experimentalCondition
@@ -144,8 +144,8 @@ petab_unjoinDCO <- function(DCO, pe = NULL) {
     measurementData = measurementData,
     observables = observables,
     parameters = pe$parameters
-    )
-
+  )
+  
 }
 
 
@@ -175,9 +175,11 @@ petab_mutateDCO <- function(pe, i, j) {
   sj <- substitute(j)
   
   # Probably unnecessary check that j is supplied properly
-  pj <- getParseData(parse(text=deparse(sj)))
-  is_set <- "`:=`" %in% pj[,"text"] # is the command a "set_*" command in the data.table sense?
-  if (!is_set) stop("j should be called with `:=`")
+  if (!mj){
+    pj <- getParseData(parse(text=deparse(sj)))
+    is_set <- "`:=`" %in% pj[,"text"] # is the command a "set_*" command in the data.table sense?
+    if (!is_set) stop("j should be called with `:=`")
+  }
   
   # Perform the data transformation on the DCO
   dco <- petab_joinDCO(pe)
@@ -254,7 +256,7 @@ petab_measurementData <- function(
     noiseParameters             = as.character(noiseParameters),
     datasetId                   = as.character(datasetId),
     replicateId                 = as.character(replicateId)
-    )
+  )
 }
 
 #' Constructor for Observables
@@ -495,7 +497,7 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
   files_tsv <- lapply(files_tsv, fread)
   # model
   files_model <- grep("xml", files, value = TRUE) # Do nothing, read rds
-
+  
   files_model <- grep("rds", files, value = TRUE)
   files_model <- lapply(files_model, readRDS)
   
@@ -514,7 +516,7 @@ readPetab <- function(filename, FLAGTestCase = FALSE) {
 #'
 #' @examples
 writePetab <- function(petab, filename = "petab/model") {
-
+  
   # Create folder, load petab
   dir.create(petab_modelname_path(filename)$path, FALSE, TRUE)
   pe <- petab_python_setup()
@@ -593,7 +595,7 @@ petab_lint <- function(petab) {
   if(length(dupes)) {
     warning("These rows are duplicates in observableId: ", paste0(head(dupes,10), collapse = ","), "...")
     errlist <- c(errlist, observableIdDupes = dupes)}
-
+  
   dupes <- which(duplicated(petab$experimentalCondition$conditionId))
   if(length(dupes)) {
     warning("These rows are duplicates in conditionId :", paste0(head(dupes,10), collapse = ","), "...")
