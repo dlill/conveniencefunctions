@@ -8,6 +8,8 @@
 #' @param measurementData 
 #'
 #' @return
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
 #'
 #' @examples
@@ -56,6 +58,8 @@ petab_dput <- function(pe, variable) {
 #' @param pe NULL: Default names, [petab()] Actual names in petab
 #'
 #' @return list of column names
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
 #'
 #' @examples
@@ -560,7 +564,7 @@ writePetab <- function(petab, filename = "petab/model.petab") {
 # Interface to useful PEtab.py functions ----
 # -------------------------------------------------------------------------#
 
-#' Title
+#' Own little linter until petab.py lint is stable
 #'
 #' @param petab 
 #'
@@ -729,7 +733,6 @@ petab_getMeasurementParsScales <- function(measurementData,parameters) {
 #' Automatic multipage export in the background with the future package and ggforce::facet_wrap_paginate
 #'
 #' @param petab A [petab] object
-#' @param conditionId,observableId,datasetId Subset data to plot. Find out suitable values with [petab_dput()]
 #' @param aeslist list of formulas used to call [ggplot2::aes_q()]. 
 #'  Default aesthetics are list(x = ~time, y = ~measurement, color = ~conditionId). 
 #'  Can be overriden by aeslist
@@ -860,11 +863,9 @@ petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
 # [ ] sbml - getSpeciesInfo: speciesUnit
 # [ ] sbml - initialAssignments
 # [ ] sbml - assignmentRules
-# [ ] petab_import: append original petab
+# [x] petab_import: append original petab
 
 # * Sample from prior, ...
 # * petablint ...
-
-
 
 

@@ -1,3 +1,6 @@
+
+# >>>> The most recent version is in the LisymSlides package <<<<<<<<<<< ----
+
 #' Title
 #'
 #' @param template 
@@ -5,7 +8,6 @@
 #' @return
 #' @export
 #'
-#' @examples
 #' @importFrom officer read_pptx
 cf_slides <- function(template = 1, templatelist = system.file("templates/Uni_Praesentation_E1_RGB_16_9.potx", package = "conveniencefunctions")) {
   read_pptx(templatelist[template])
@@ -27,8 +29,6 @@ cf_slides <- function(template = 1, templatelist = system.file("templates/Uni_Pr
 #' @export
 #' 
 #' @importFrom officer add_slide ph_with ph_location_type
-#'
-#' @examples
 cf_slide_twocontent <- function(.slides, title, content1, content2, footer = "", slide_num = "") {
   .slides <- officer::add_slide(.slides, "Two Content")
   .slides <- officer::ph_with(.slides, value = title, location = officer::ph_location_type(type = "title"))
@@ -50,8 +50,6 @@ cf_slide_twocontent <- function(.slides, title, content1, content2, footer = "",
 #'
 #' @return
 #' @export
-#'
-#' @examples
 cf_slide_titlecontent <- function(.slides, title, content, footer = "", slide_num = "") {
   .slides <- officer::add_slide(.slides)
   .slides <- officer::ph_with(.slides, value = title, location = officer::ph_location_type(type = "title"))
@@ -71,8 +69,6 @@ cf_slide_titlecontent <- function(.slides, title, content, footer = "", slide_nu
 #'
 #' @return
 #' @export
-#'
-#' @examples
 cf_slide_section <- function(.slides, title, footer = "", slide_num = "") {
   .slides <- officer::add_slide(.slides, "Section Header")
   .slides <- officer::ph_with(.slides, value = title, location = officer::ph_location_type(type = "title"))

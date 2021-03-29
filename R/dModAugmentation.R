@@ -34,12 +34,10 @@ cf_parf_parNames <- function(x) {
 #'
 #' @param pars 
 #'
-#' @return
+#' @return data.frame of meta columns
 #' @export
-#'
-#' @examples
 cf_parf_getMeta <- function(pars){
-  pars <- as.data.frame(pars)[setdiff(names(pars), attr(pars, "parameters"))]
+  pars <- as.data.frame(pars)[cf_parf_metaNames(pars)]
   if (length(pars) == 0)
     return(NULL)
   pars <- cbind(pars, parframe_rowid = 1:nrow(pars))
@@ -52,8 +50,6 @@ cf_parf_getMeta <- function(pars){
 #'
 #' @return
 #' @export
-#'
-#' @examples
 cf_parf_metaNames <- function(pars){
   setdiff(names(pars), attr(pars, "parameters"))
 }
@@ -80,8 +76,6 @@ cf_parf_getPars <- function(parf) {
 #'
 #' @return
 #' @export
-#'
-#' @examples
 cf_as.parframe <- function (x, sort.by = "value", ...) {
   m_stat <- dMod:::stat.parlist(x)
   m_metanames <- c("index", "value", "converged", "iterations")

@@ -10,7 +10,7 @@ cf_parf_getMeta(pars)
 \item{pars}{}
 }
 \value{
-
+data.frame of meta columns
 }
 \description{
 Title
