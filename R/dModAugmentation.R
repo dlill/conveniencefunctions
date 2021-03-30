@@ -1,3 +1,57 @@
+# -------------------------------------------------------------------------#
+# Files ----
+# -------------------------------------------------------------------------#
+#' Consistent dMod filenames
+#'
+#' @param path 
+#' @param identifier 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+dMod_files <- function(path, identifier = "") {
+  list(
+    mstrustListRDS = file.path(path, paste0("mstrustList-",identifier,".rds")),
+    mstrustCSV     = file.path(path, paste0("mstrust-",identifier,".csv")),
+    profilesCSV    = file.path(path, paste0("profiles-",identifier,".csv")),
+    pdRDS    = file.path(path, paste0("pd-",identifier,".rds"))
+  )
+}
+
+
+#' Title
+#'
+#' @param profiles 
+#' @param path 
+#' @param identifier 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+dMod_saveProfiles <- function(profiles, path = .outputFolder, identifier = "") {
+  fwrite(profiles, dMod_files(path, identifier)$profilesCSV)
+}
+
+
+#' Title
+#'
+#' @param profiles 
+#' @param path 
+#' @param identifier 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+dMod_readProfiles <- function(path = .outputFolder, identifier = "") {
+  profiles <- fread(dMod_files(path, identifier)$profilesCSV)
+  as.parframe(profiles)
+}
+
+
+
 # ---------------------------------------------------------- #
 # Parframe-class ----
 # ---------------------------------------------------------- #
@@ -242,6 +296,7 @@ trustAna_getArg <- function(fit, i = 1, whichPath = "argpath") {
 }
 
 # helper functions ----
+
 
 
 #' Construct a parframe with tightly sampled parameters around other parameters stored in a parframe
