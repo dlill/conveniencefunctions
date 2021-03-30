@@ -9,8 +9,8 @@ petab_plotData(
   aeslist = NULL,
   FLAGUseObservableTransformation = TRUE,
   FLAGmeanLine = TRUE,
-  ggCallback = facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales = "free")
-    + geom_blank(),
+  ggCallback = list(facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales =
+    "free")),
   filename = NULL,
   FLAGfuture = TRUE,
   width = 21,

@@ -60,6 +60,8 @@ snippet pkill_f_rstudio
 snippet Rscript
 	system(paste0("Rscript ", $0), wait = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE)
 
+snippet RscriptVanilla
+	system(paste0("Rscript --vanilla ", $0), wait = FALSE, ignore.stdout = FALSE, ignore.stderr = FALSE)
 
 snippet gpush
 	system("git push", wait = FALSE)
@@ -173,7 +175,7 @@ snippet widthDiss
 
 snippet futureEval
 	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
-	future::`%<-% `(wup,$0)
+	future::`%<-%`(wup,$0)
 
 
 snippet futurePlanSequential
