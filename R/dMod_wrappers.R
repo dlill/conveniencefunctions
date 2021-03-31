@@ -63,8 +63,8 @@ dMod_readProfiles <- function(path = .outputFolder) {
 #' @export
 cf_profile <- function(obj, pars, whichPar, alpha = 0.05, 
                        limits = c(lower = -Inf, upper = Inf), 
-                       method = c("integrate", "optimize"),
-                       stepControl = NULL, 
+                       method = c("optimize"),
+                       stepControl = list(limit = 40, min = log10(1.005), stepsize = log10(1.005)), 
                        algoControl = NULL,
                        optControl  = NULL,
                        verbose = FALSE,
@@ -85,12 +85,12 @@ cf_profile <- function(obj, pars, whichPar, alpha = 0.05,
   }
   whichNm <- whichPar[[1]]
   
-  ncores <- 1
+  ncores <- cores
   # parallel::mclapply(X = whichPar, mc.cores = ncores, FUN = function(whichNm) {
   parallel::mclapply(X = whichPar, mc.cores = ncores, FUN = function(whichNm) {
     
     filename <- cf_dModFiles(path, whichNm)$profile
-    dir.create(basename(filename), FALSE, TRUE)
+    dir.create(dirname(filename), FALSE, TRUE)
     
     prof <- try(dMod::profile(obj, pars, whichPar = whichNm, alpha, 
                               limits,method,stepControl,
