@@ -41,14 +41,11 @@ snippet IQDloadIQRmalaria
 snippet opencf
 	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("~/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
 
-snippet openIQRmate
-	rstudioapi::openProject("~/PROJTOOLS/IQRmate/IQRmate" $0)
+snippet openPilot
+	rstudioapi::openProject("/home/daniel/Promotion/Promotion/Projects/LiSyM/Pilot/PilotProteomics/PilotProteomics.Rproj" $0)
 
-snippet openIQRtools
-	rstudioapi::openProject("~/PROJTOOLS/IQRtools/IQRtools" $0)
-
-snippet openIsobolePublication
-	rstudioapi::openProject("/IQDESKTOP/Promotion/Projects/IntiQuan/SafeCopies/IsobolePublication" $0)
+snippet openTGF
+	rstudioapi::openProject("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/TGFb.Rproj")
 
 snippet cf_installSnippetsPowerInstall
 	system("cd && cd Promotion/Promotion/Projects && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
