@@ -1,4 +1,5 @@
 # library(conveniencefunctions)
+devtools::load_all("~/Promotion/Promotion/Software/dMod")
 devtools::load_all("~/Promotion/Promotion/Projects/conveniencefunctions")
 try(setwd(dirname(rstudioapi::getSourceEditorContext()$path)))
 
