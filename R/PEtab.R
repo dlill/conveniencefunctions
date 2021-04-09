@@ -320,7 +320,7 @@ petab_parameters <- function(
   initializationPriorType       = c("parameterScaleUniform","uniform","normal","laplace","logNormal","logLaplace","parameterScaleNormal","parameterScaleLaplace")[[1]],
   initializationPriorParameters = "-1;1",
   objectivePriorType            = c("parameterScaleNormal","parameterScaleUniform","uniform","normal","laplace","logNormal","logLaplace","parameterScaleLaplace")[[1]],
-  objectivePriorParameters      = "-1;1") {
+  objectivePriorParameters      = "0;2") {
   
   data.table(
     parameterId                   = as.character(parameterId),
@@ -373,6 +373,11 @@ petab_model <- function(equationList, events = NA,
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
+#' 
+#' @examples
+#' # [ ] Todo
+#' # filename <- system.file("examples/petab/enyzmeKinetics", package = "conveniencefunctions")
+#' # readPetab(filename)
 petab <- function(
   model = NULL,
   experimentalCondition = NULL,
@@ -605,6 +610,37 @@ petab_lint <- function(petab) {
 }
 
 
+#' Sample parameter start points
+#' 
+#' Uses Petab.py, is based on pe$parameters
+#' 
+#' @param pe 
+#' @param n_starts 
+#' @param seed 
+#'
+#' @return parframe
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+pepy_sample_parameter_startpoints <- function(pe, n_starts = 100L, seed = 1L) {
+  n_starts <- as.integer(n_starts)
+  seed     <- as.integer(seed)
+  
+  pepy <- petab_python_setup()
+  
+  pars <- pepy$sample_parameter_startpoints(
+    parameter_df = pe$parameters, 
+    n_starts = n_starts, 
+    seed = seed)
+  pars <- `colnames<-`(pars, pe$parameters$parameterId[pe$parameters$estimate==1])
+  pars <- parframe(pars,)
+  pars
+}
+
+
+
 
 # -------------------------------------------------------------------------#
 # Python setup ----
@@ -639,7 +675,7 @@ petab_python_setup <- function() {
 
 
 # -------------------------------------------------------------------------#
-# PEtab import ----
+# PEtab import for dMod ----
 # -------------------------------------------------------------------------#
 #' Parse the parameters columns in measurementData
 #'
@@ -696,6 +732,62 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
   
   mp
 }
+
+
+
+#' Create the prior function specified in parameters_df
+#'
+#' @param pe 
+#' @param FLAGuseNominalCenter 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+petab_createObjPrior <- function(pe, FLAGuseNominalCenter) {
+  
+  p <- copy(pe$parameters)
+  p <- p[estimate == 1]
+  
+  
+  notImplemented <- which(p$objectivePriorType != "parameterScaleNormal")
+  if (length(notImplemented))
+    stop("objectivePriorType not implemented: ", paste0(unique(p$objectivePriorType[notImplemented]),collapse = ","))
+  
+  p[,`:=`(mu = as.numeric(gsub(";.*", "", objectivePriorParameters)))]
+  if (FLAGuseNominalCenter) {
+    # Apply transformation before using as center
+    lin <- function(x) x
+    p[,`:=`(pouter = 
+              eval(parse(
+                text = paste0(parameterScale, "(", nominalValue, ")")))), 
+      by = 1:nrow(p)]
+    p[,`:=`(mu = pouter)]
+  }
+  p[,`:=`(sd = as.numeric(gsub(".*;", "", objectivePriorParameters)))]
+  
+  
+  constraintL2(mu = setNames(p$mu, p$parameterId),
+               sigma = setNames(p$sd, p$parameterId))
+  
+}
+
+
+petab_getParameterBoundaries <- function(pe, whichBoundary = c("upper", "lower")[1]) {
+  p <- copy(pe$parameters)
+  p <- p[estimate == 1]
+  lin <- function(x) x
+  p[,`:=`(boundary = 
+            eval(parse(
+              text = paste0(parameterScale, "(", whichBoundary, "Bound", ")")))), 
+    by = 1:nrow(p)]
+  setNames(p$boundary, p$parameterId)
+}
+
+
+
 
 
 petab_getMeasurementParsScales <- function(measurementData,parameters) {

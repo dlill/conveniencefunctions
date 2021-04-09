@@ -42,7 +42,7 @@ cf_parf_getMeta <- function(pars){
   if (length(pars) == 0)
     return(NULL)
   pars <- cbind(pars, parframe_rowid = 1:nrow(pars))
-  rename(pars, objvalue = value)
+  dplyr::rename(pars, objvalue = value)
 }
 
 #' Title

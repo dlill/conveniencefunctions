@@ -17,7 +17,7 @@ petab_parameters(
   initializationPriorParameters = "-1;1",
   objectivePriorType = c("parameterScaleNormal", "parameterScaleUniform", "uniform",
     "normal", "laplace", "logNormal", "logLaplace", "parameterScaleLaplace")[[1]],
-  objectivePriorParameters = "-1;1"
+  objectivePriorParameters = "0;2"
 )
 }
 \arguments{
