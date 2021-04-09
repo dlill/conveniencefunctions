@@ -12,17 +12,44 @@ sbml_addOneUnit(
 )
 }
 \arguments{
-\item{model}{}
+\item{model}{the sbml model}
 
-\item{unitName}{}
+\item{unitName}{string, used as identifier}
 
-\item{unitKind}{}
+\item{unitKind}{vector of involved units}
 
-\item{exponent}{}
+\item{exponent}{vector of exponents associated to units}
 }
 \value{
-
+called for side-effect, but \code{model} is returned invisibly
 }
 \description{
 Add unit
 }
+\seealso{
+Other SBML export: 
+\code{\link{eqnlist_addDefaultCompartment}()},
+\code{\link{getCompartmentInfo}()},
+\code{\link{getParInfo}()},
+\code{\link{getReactionInfo}()},
+\code{\link{getSpeciesInfo}()},
+\code{\link{getUnitInfo}()},
+\code{\link{sbml_addOneCompartment}()},
+\code{\link{sbml_addOneParameter}()},
+\code{\link{sbml_addOneReaction}()},
+\code{\link{sbml_addOneSpecies}()},
+\code{\link{sbml_exportEquationList}()},
+\code{\link{sbml_initialize}()},
+\code{\link{sbml_kineticLawAddParameters}()},
+\code{\link{sbml_reactionAddKineticLaw}()},
+\code{\link{sbml_reactionAddModifiers}()},
+\code{\link{sbml_reactionAddProducts}()},
+\code{\link{sbml_reactionAddReactants}()},
+\code{\link{sbml_validateSBML}()}
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+}
+\concept{SBML export}

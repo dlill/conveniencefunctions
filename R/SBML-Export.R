@@ -10,6 +10,9 @@
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 eqnlist_addDefaultCompartment <- function(equationList, compName) {
@@ -24,6 +27,9 @@ eqnlist_addDefaultCompartment <- function(equationList, compName) {
 #'
 #' @return data.table
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 getParInfo <- function(equationList) {
@@ -42,6 +48,9 @@ getParInfo <- function(equationList) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 getSpeciesInfo <- function(equationList){
@@ -56,6 +65,9 @@ getSpeciesInfo <- function(equationList){
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 getCompartmentInfo <- function(equationList) {
@@ -73,6 +85,9 @@ getCompartmentInfo <- function(equationList) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #' @importFrom cOde getSymbols
 #' 
 #' @examples 
@@ -155,6 +170,9 @@ getReactionInfo <- function(equationList, parInfo = getParInfo(equationList)) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 getUnitInfo <- function(unitName = NULL, unitKind = NULL, exponent = NULL) {
@@ -185,11 +203,14 @@ getUnitInfo <- function(unitName = NULL, unitKind = NULL, exponent = NULL) {
 
 #' Title
 #'
-#' @param modelname 
-#' @param sbmlDoc 
+#' @param modelname String
+#' @param sbmlDoc return value from a call like `SBMLDocument(level = 2, version = 4)`
 #'
-#' @return
+#' @return a libsbml model representation
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
+#' @family SBML export
 #'
 #' @examples
 sbml_initialize <- function(modelname = "EnzymaticReaction", sbmlDoc) {
@@ -202,14 +223,18 @@ sbml_initialize <- function(modelname = "EnzymaticReaction", sbmlDoc) {
 
 #' Add unit
 #'
-#' @param model 
-#' @param unitName 
-#' @param unitKind 
-#' @param exponent 
+#' @param model the sbml model
+#' @param unitName string, used as identifier
+#' @param unitKind vector of involved units
+#' @param exponent vector of exponents associated to units
 #'
-#' @return
+#' @return called for side-effect, but `model` is returned invisibly
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 #' @export
-#'
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 sbml_addOneUnit <- function(model, unitName = "litre_per_mole_per_second", 
                             unitKind =c("UNIT_KIND_LITRE", "UNIT_KIND_MOLE", "UNIT_KIND_SECOND"),
                             exponent = c(1,-1,-1)) {
@@ -225,17 +250,21 @@ sbml_addOneUnit <- function(model, unitName = "litre_per_mole_per_second",
 
 
 
-#' Title
+#' Add compartment
 #'
-#' @param model 
-#' @param compName 
+#' @param model  the sbml model
+#' @param compName string, e.g. "cytoplasm"
 #' @param compsize 
 #'
-#' @return
+#' @return called for side-effect
 #' @export
-#'
-#' @examples
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
 sbml_addOneCompartment <- function(model, compName, compSize) {
+  # [ ] Compartment units?
   comp = Model_createCompartment(model)
   Compartment_setId(comp,compName)
   Compartment_setSize(comp,compSize)
@@ -251,6 +280,9 @@ sbml_addOneCompartment <- function(model, compName, compSize) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_addOneSpecies <- function(model, speciesName, compName, initialAmount) {
@@ -270,6 +302,9 @@ sbml_addOneSpecies <- function(model, speciesName, compName, initialAmount) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_addOneParameter <- function(model, parName, parValue, parUnit) {
@@ -286,6 +321,9 @@ sbml_addOneParameter <- function(model, parName, parValue, parUnit) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_reactionAddReactants <- function(reaction, reactants) {
@@ -304,6 +342,9 @@ sbml_reactionAddReactants <- function(reaction, reactants) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_reactionAddProducts <- function(reaction, products) {
@@ -321,6 +362,9 @@ sbml_reactionAddProducts <- function(reaction, products) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_reactionAddModifiers <- function(reaction, modifiers) {
@@ -339,6 +383,9 @@ sbml_reactionAddModifiers <- function(reaction, modifiers) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_kineticLawAddParameters <- function(kl, parName, parValue, unitName) {
@@ -359,6 +406,9 @@ sbml_kineticLawAddParameters <- function(kl, parName, parValue, unitName) {
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_reactionAddKineticLaw <- function(reaction, equation, parName, parValue, parUnit) {
@@ -382,6 +432,9 @@ sbml_reactionAddKineticLaw <- function(reaction, equation, parName, parValue, pa
 #'
 #' @return
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_addOneReaction <- function(model, reactionName,
@@ -407,6 +460,8 @@ sbml_addOneReaction <- function(model, reactionName,
 #'
 #' @return
 #' @export
+#' @md
+#' @family SBML export
 #'
 #' @examples
 sbml_validateSBML <- function(sbmlDoc)
@@ -501,9 +556,11 @@ sbml_validateSBML <- function(sbmlDoc)
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family SBML export
 #'
 #' @examples
-#' 
 #' library(conveniencefunctions)
 #' .. Eqnlist and objects -----
 #' el <- NULL

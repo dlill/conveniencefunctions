@@ -7,13 +7,38 @@
 sbml_initialize(modelname = "EnzymaticReaction", sbmlDoc)
 }
 \arguments{
-\item{modelname}{}
+\item{modelname}{String}
 
-\item{sbmlDoc}{}
+\item{sbmlDoc}{return value from a call like \code{SBMLDocument(level = 2, version = 4)}}
 }
 \value{
-
+a libsbml model representation
 }
 \description{
 Title
 }
+\seealso{
+Other SBML export: 
+\code{\link{eqnlist_addDefaultCompartment}()},
+\code{\link{getCompartmentInfo}()},
+\code{\link{getParInfo}()},
+\code{\link{getReactionInfo}()},
+\code{\link{getSpeciesInfo}()},
+\code{\link{getUnitInfo}()},
+\code{\link{sbml_addOneCompartment}()},
+\code{\link{sbml_addOneParameter}()},
+\code{\link{sbml_addOneReaction}()},
+\code{\link{sbml_addOneSpecies}()},
+\code{\link{sbml_addOneUnit}()},
+\code{\link{sbml_exportEquationList}()},
+\code{\link{sbml_kineticLawAddParameters}()},
+\code{\link{sbml_reactionAddKineticLaw}()},
+\code{\link{sbml_reactionAddModifiers}()},
+\code{\link{sbml_reactionAddProducts}()},
+\code{\link{sbml_reactionAddReactants}()},
+\code{\link{sbml_validateSBML}()}
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+}
+\concept{SBML export}

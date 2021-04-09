@@ -2,20 +2,47 @@
 % Please edit documentation in R/SBML-Export.R
 \name{sbml_addOneCompartment}
 \alias{sbml_addOneCompartment}
-\title{Title}
+\title{Add compartment}
 \usage{
 sbml_addOneCompartment(model, compName, compSize)
 }
 \arguments{
-\item{model}{}
+\item{model}{the sbml model}
 
-\item{compName}{}
+\item{compName}{string, e.g. "cytoplasm"}
 
 \item{compsize}{}
 }
 \value{
-
+called for side-effect
 }
 \description{
-Title
+Add compartment
 }
+\seealso{
+Other SBML export: 
+\code{\link{eqnlist_addDefaultCompartment}()},
+\code{\link{getCompartmentInfo}()},
+\code{\link{getParInfo}()},
+\code{\link{getReactionInfo}()},
+\code{\link{getSpeciesInfo}()},
+\code{\link{getUnitInfo}()},
+\code{\link{sbml_addOneParameter}()},
+\code{\link{sbml_addOneReaction}()},
+\code{\link{sbml_addOneSpecies}()},
+\code{\link{sbml_addOneUnit}()},
+\code{\link{sbml_exportEquationList}()},
+\code{\link{sbml_initialize}()},
+\code{\link{sbml_kineticLawAddParameters}()},
+\code{\link{sbml_reactionAddKineticLaw}()},
+\code{\link{sbml_reactionAddModifiers}()},
+\code{\link{sbml_reactionAddProducts}()},
+\code{\link{sbml_reactionAddReactants}()},
+\code{\link{sbml_validateSBML}()}
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+}
+\concept{SBML export}

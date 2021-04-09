@@ -11,14 +11,38 @@
 #' @export
 #'
 #' @examples
-cf_dModFiles <- function(path, identifier = "") {
+dMod_files <- function(path, identifier = "") {
   list(
-    mstrust = file.path(path, "Results", "mstrust", paste0("mstrustList-",identifier,".rds")),
-    profile    = file.path(path, "Results", "profile", paste0("profiles-",identifier,".rds")),
-    petabdMod    = file.path(path, paste0("pd-",identifier,".rds"))
+    mstrust   = file.path(path, "Results", "mstrust", paste0("mstrustList-",identifier,".rds")),
+    profile   = file.path(path, "Results", "profile", paste0("profiles-",identifier,".rds")),
+    petabdMod = file.path(path, paste0("pd",".rds"))
   )
 }
 
+
+
+#' Consistently save profiles
+#'
+#' @param profiles 
+#' @param path 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+dMod_saveProfiles <- function(profs, path) {
+  profsplit <- split(profs, profs$whichPar)
+  lapply(profsplit, function(prof) {
+    whichNm <- as.character(unique(prof$whichPar))
+    filename <- dMod_files(path, whichNm)$profile
+    dir.create(dirname(filename), FALSE, TRUE)
+    saveRDS(prof, filename)
+    prof
+  })
+  invisible()
+}
 
 #' Title
 #'
@@ -44,9 +68,53 @@ dMod_readProfiles <- function(path = .outputFolder) {
 }
 
 
+#' Title
+#'
+#' @param fit 
+#' @param path 
+#' @param identifier 
+#' @param FLAGoverwrite 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+dMod_saveMstrust <- function(fit, path, identifier = "1", FLAGoverwrite = FALSE) {
+  if (!is.parframe(fit)) fit <- cf_as.parframe(fit)
+  
+  filename <- dMod_files(path, identifier)$mstrust
+  if (!FLAGoverwrite && file.exists(filename)) 
+    stop("FLAGoverwrite is FALSE and file.exists: ", filename)
+  dir.create(dirname(filename))
+  saveRDS(fit, filename)
+}
+
+
+#' Title
+#'
+#' @param path 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+dMod_readMstrust <- function(path) {
+  filename <- dMod_files(path)$mstrust
+  fits <- list.files(dirname(filename), "rds$", full.names = TRUE)
+  fits <- lapply(fits, readRDS)
+  fits <- do.call(rbind, fits)
+  fits
+}
+
+
+
 
 # -------------------------------------------------------------------------#
-#  ----
+# Profiles ----
 # -------------------------------------------------------------------------#
 
 #' Better wrapper around dMod::profile
@@ -77,7 +145,7 @@ cf_profile <- function(obj, pars, whichPar, alpha = 0.05,
   if (is.numeric(whichPar)) whichPar <- names(pars)[whichPar %in% names(pars)]
   
   if (!FLAGoverwrite) {
-    files <- vapply(whichPar, function(id) cf_dModFiles(path, id)$profile, "path/to/file")
+    files <- vapply(whichPar, function(id) dMod_files(path, id)$profile, "path/to/file")
     parExists <- whichPar[file.exists(files)]
     if (length(parExists)) cat("The following profiles exist and are not calculated: \n", 
                                capture.output(dput(parExists)))
@@ -89,7 +157,7 @@ cf_profile <- function(obj, pars, whichPar, alpha = 0.05,
   # parallel::mclapply(X = whichPar, mc.cores = ncores, FUN = function(whichNm) {
   parallel::mclapply(X = whichPar, mc.cores = ncores, FUN = function(whichNm) {
     
-    filename <- cf_dModFiles(path, whichNm)$profile
+    filename <- dMod_files(path, whichNm)$profile
     dir.create(dirname(filename), FALSE, TRUE)
     
     prof <- try(dMod::profile(obj, pars, whichPar = whichNm, alpha, 
