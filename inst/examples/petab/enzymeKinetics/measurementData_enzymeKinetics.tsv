@@ -1,121 +1,121 @@
 observableId	preequilibrationConditionId	simulationConditionId	measurement	time	observableParameters	noiseParameters	datasetId	replicateId
-obsE		C1	0.00196374645835177	10	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00198535963819174	20	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00231596222067314	30	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00238632980781032	40	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00222559808669597	50	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00233301827610178	60	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00230009194078682	70	offset_E	sigma_obsE	data1	1
-obsE		C1	0.0021156792612657	80	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00217911487034647	90	offset_E	sigma_obsE	data1	1
-obsE		C1	0.00245278269979139	100	offset_E	sigma_obsE	data1	1
-obsS		C1	110.274131174664	10		sigma_obsS	data1	1
-obsS		C1	91.2994459859027	20		sigma_obsS	data1	1
-obsS		C1	105.796216927079	30		sigma_obsS	data1	1
-obsS		C1	108.891888496013	40		sigma_obsS	data1	1
-obsS		C1	96.8471922780789	50		sigma_obsS	data1	1
-obsS		C1	94.2005591978706	60		sigma_obsS	data1	1
-obsS		C1	80.7747737433348	70		sigma_obsS	data1	1
-obsS		C1	77.1919116416453	80		sigma_obsS	data1	1
-obsS		C1	76.8304574372151	90		sigma_obsS	data1	1
-obsS		C1	96.4000160613064	100		sigma_obsS	data1	1
-obsES		C1	1.00266873541596	10		sigma_obsES	data1	1
-obsES		C1	1.05315700216595	20		sigma_obsES	data1	1
-obsES		C1	1.09277696776843	30		sigma_obsES	data1	1
-obsES		C1	1.08264710236827	40		sigma_obsES	data1	1
-obsES		C1	0.921885937820969	50		sigma_obsES	data1	1
-obsES		C1	1.03502261303773	60		sigma_obsES	data1	1
-obsES		C1	0.902013333990509	70		sigma_obsES	data1	1
-obsES		C1	0.991448433795192	80		sigma_obsES	data1	1
-obsES		C1	0.958619751340203	90		sigma_obsES	data1	1
-obsES		C1	1.00717028143925	100		sigma_obsES	data1	1
-obsP		C1	1.02908622952705	10		sigma_obsP	data1	1
-obsP		C1	2.13891852309017	20		sigma_obsP	data1	1
-obsP		C1	2.944116641262	30		sigma_obsP	data1	1
-obsP		C1	3.60637667813995	40		sigma_obsP	data1	1
-obsP		C1	4.60047735519355	50		sigma_obsP	data1	1
-obsP		C1	6.05044294907281	60		sigma_obsP	data1	1
-obsP		C1	6.9262501533498	70		sigma_obsP	data1	1
-obsP		C1	7.74212183499314	80		sigma_obsP	data1	1
-obsP		C1	9.616220350352	90		sigma_obsP	data1	1
-obsP		C1	9.84950443677607	100		sigma_obsP	data1	1
-obsE		C1	0.00204204480819508	10	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00181207806464016	20	offset_E	sigma_obsE	data1	2
-obsE		C1	0.002059965828074	30	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00225738619870122	40	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00227547309976181	50	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00207953342334048	60	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00190325986902005	70	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00175022652320612	80	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00234746855656726	90	offset_E	sigma_obsE	data1	2
-obsE		C1	0.00233094375186598	100	offset_E	sigma_obsE	data1	2
-obsS		C1	108.312168289838	10		sigma_obsS	data1	2
-obsS		C1	103.33023641206	20		sigma_obsS	data1	2
-obsS		C1	79.6783291880886	30		sigma_obsS	data1	2
-obsS		C1	86.0057403803657	40		sigma_obsS	data1	2
-obsS		C1	97.4654623809898	50		sigma_obsS	data1	2
-obsS		C1	88.8971989436936	60		sigma_obsS	data1	2
-obsS		C1	87.8157810629751	70		sigma_obsS	data1	2
-obsS		C1	98.1847532304548	80		sigma_obsS	data1	2
-obsS		C1	109.551336434894	90		sigma_obsS	data1	2
-obsS		C1	91.6381394116118	100		sigma_obsS	data1	2
-obsES		C1	0.967378008946652	10		sigma_obsES	data1	2
-obsES		C1	0.852486426349438	20		sigma_obsES	data1	2
-obsES		C1	0.94048534555776	30		sigma_obsES	data1	2
-obsES		C1	0.993812531094028	40		sigma_obsES	data1	2
-obsES		C1	0.870603751183625	50		sigma_obsES	data1	2
-obsES		C1	0.917948011279699	60		sigma_obsES	data1	2
-obsES		C1	1.07345583976107	70		sigma_obsES	data1	2
-obsES		C1	0.996988474344603	80		sigma_obsES	data1	2
-obsES		C1	0.96609680523376	90		sigma_obsES	data1	2
-obsES		C1	1.03543109217247	100		sigma_obsES	data1	2
-obsP		C1	0.87268854103464	10		sigma_obsP	data1	2
-obsP		C1	1.91109732585418	20		sigma_obsP	data1	2
-obsP		C1	3.18576261490406	30		sigma_obsP	data1	2
-obsP		C1	3.4798494861586	40		sigma_obsP	data1	2
-obsP		C1	5.61503869403859	50		sigma_obsP	data1	2
-obsP		C1	7.68582112833684	60		sigma_obsP	data1	2
-obsP		C1	7.43278497692792	70		sigma_obsP	data1	2
-obsP		C1	8.16303000952125	80		sigma_obsP	data1	2
-obsP		C1	8.40684444855489	90		sigma_obsP	data1	2
-obsP		C1	10.1608068036602	100		sigma_obsP	data1	2
-obsE		C1	0.00200563132100917	10	offset_E	sigma_obsE	data1	3
-obsE		C1	0.00221858330713531	20	offset_E	sigma_obsE	data1	3
-obsE		C1	0.00192844258684661	30	offset_E	sigma_obsE	data1	3
-obsE		C1	0.0015991104950571	40	offset_E	sigma_obsE	data1	3
-obsE		C1	0.00214804100364325	50	offset_E	sigma_obsE	data1	3
-obsE		C1	0.00203855744225098	60	offset_E	sigma_obsE	data1	3
-obsE		C1	0.0021417917958294	70	offset_E	sigma_obsE	data1	3
-obsE		C1	0.0020946475040801	80	offset_E	sigma_obsE	data1	3
-obsE		C1	0.00205589086094661	90	offset_E	sigma_obsE	data1	3
-obsE		C1	0.00196538465418241	100	offset_E	sigma_obsE	data1	3
-obsS		C1	114.915460046769	10		sigma_obsS	data1	3
-obsS		C1	105.854479974161	20		sigma_obsS	data1	3
-obsS		C1	102.023351443986	30		sigma_obsS	data1	3
-obsS		C1	89.3609911596255	40		sigma_obsS	data1	3
-obsS		C1	90.2323095193268	50		sigma_obsS	data1	3
-obsS		C1	91.3181897841572	60		sigma_obsS	data1	3
-obsS		C1	91.7994831176966	70		sigma_obsS	data1	3
-obsS		C1	108.395703817569	80		sigma_obsS	data1	3
-obsS		C1	92.6837416108232	90		sigma_obsS	data1	3
-obsS		C1	95.8283276997586	100		sigma_obsS	data1	3
-obsES		C1	0.956388666052217	10		sigma_obsES	data1	3
-obsES		C1	1.1492085336368	20		sigma_obsES	data1	3
-obsES		C1	1.28495975557787	30		sigma_obsES	data1	3
-obsES		C1	1.08540140001162	40		sigma_obsES	data1	3
-obsES		C1	0.934393674726377	50		sigma_obsES	data1	3
-obsES		C1	0.996825833679064	60		sigma_obsES	data1	3
-obsES		C1	1.02095591068566	70		sigma_obsES	data1	3
-obsES		C1	0.946237628763229	80		sigma_obsES	data1	3
-obsES		C1	1.04540484266043	90		sigma_obsES	data1	3
-obsES		C1	0.981421557654818	100		sigma_obsES	data1	3
-obsP		C1	0.995486823121795	10		sigma_obsP	data1	3
-obsP		C1	1.99255982610793	20		sigma_obsP	data1	3
-obsP		C1	2.81138444874014	30		sigma_obsP	data1	3
-obsP		C1	3.71396601114596	40		sigma_obsP	data1	3
-obsP		C1	5.51281732595318	50		sigma_obsP	data1	3
-obsP		C1	5.97314109111077	60		sigma_obsP	data1	3
-obsP		C1	7.80524323010935	70		sigma_obsP	data1	3
-obsP		C1	6.33041067810188	80		sigma_obsP	data1	3
-obsP		C1	9.24312154039591	90		sigma_obsP	data1	3
-obsP		C1	9.43316718271788	100		sigma_obsP	data1	3
+obsE		C1	0.00189544729125252	10	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00202605724107351	20	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00204789363617858	30	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00199649890161695	40	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00194837320205598	50	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00227658115598125	60	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00241659377971982	70	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00215702961442163	80	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00187613379693975	90	offset_E	sigma_obsE	data1	1
+obsE		C1	0.00218555700207256	100	offset_E	sigma_obsE	data1	1
+obsS		C1	88.1615665472817	10		sigma_obsS	data1	1
+obsS		C1	80.9205424829183	20		sigma_obsS	data1	1
+obsS		C1	91.3075156670755	30		sigma_obsS	data1	1
+obsS		C1	87.206223204582	40		sigma_obsS	data1	1
+obsS		C1	97.2464818032256	50		sigma_obsS	data1	1
+obsS		C1	90.023156889277	60		sigma_obsS	data1	1
+obsS		C1	99.8835371104481	70		sigma_obsS	data1	1
+obsS		C1	92.7825075590721	80		sigma_obsS	data1	1
+obsS		C1	108.238171249117	90		sigma_obsS	data1	1
+obsS		C1	83.7911935979301	100		sigma_obsS	data1	1
+obsES		C1	1.10749007768576	10		sigma_obsES	data1	1
+obsES		C1	0.970311214431321	20		sigma_obsES	data1	1
+obsES		C1	0.853002108290409	30		sigma_obsES	data1	1
+obsES		C1	0.970310084388998	40		sigma_obsES	data1	1
+obsES		C1	0.994353270332596	50		sigma_obsES	data1	1
+obsES		C1	1.13387446892016	60		sigma_obsES	data1	1
+obsES		C1	1.02736077949129	70		sigma_obsES	data1	1
+obsES		C1	1.04517886473673	80		sigma_obsES	data1	1
+obsES		C1	1.08696013213592	90		sigma_obsES	data1	1
+obsES		C1	0.873256559579408	100		sigma_obsES	data1	1
+obsP		C1	0.939547289314378	10		sigma_obsP	data1	1
+obsP		C1	1.9610250440604	20		sigma_obsP	data1	1
+obsP		C1	2.96475187621765	30		sigma_obsP	data1	1
+obsP		C1	3.57522928671874	40		sigma_obsP	data1	1
+obsP		C1	5.99665867953573	50		sigma_obsP	data1	1
+obsP		C1	5.23611303879127	60		sigma_obsP	data1	1
+obsP		C1	5.74857311137876	70		sigma_obsP	data1	1
+obsP		C1	7.57817733003657	80		sigma_obsP	data1	1
+obsP		C1	8.6450632740699	90		sigma_obsP	data1	1
+obsP		C1	7.19212486470445	100		sigma_obsP	data1	1
+obsE		C1	0.00191608794810959	10	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00187336607993815	20	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00167058567122486	30	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00234338622664054	40	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00228598355082598	50	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00210860081799646	60	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00195052466080437	70	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00192562529184721	80	offset_E	sigma_obsE	data1	2
+obsE		C1	0.00196487755069072	90	offset_E	sigma_obsE	data1	2
+obsE		C1	0.0024097567955055	100	offset_E	sigma_obsE	data1	2
+obsS		C1	97.7364573593424	10		sigma_obsS	data1	2
+obsS		C1	102.024169819571	20		sigma_obsS	data1	2
+obsS		C1	94.9040463791859	30		sigma_obsS	data1	2
+obsS		C1	82.8454318132936	40		sigma_obsS	data1	2
+obsS		C1	89.461122963902	50		sigma_obsS	data1	2
+obsS		C1	100.86662198896	60		sigma_obsS	data1	2
+obsS		C1	83.49538795941	70		sigma_obsS	data1	2
+obsS		C1	82.3458556637566	80		sigma_obsS	data1	2
+obsS		C1	78.8794748789507	90		sigma_obsS	data1	2
+obsS		C1	104.008892815978	100		sigma_obsS	data1	2
+obsES		C1	0.979139497159651	10		sigma_obsES	data1	2
+obsES		C1	1.04537697619005	20		sigma_obsES	data1	2
+obsES		C1	0.996395856786633	30		sigma_obsES	data1	2
+obsES		C1	1.18794632350831	40		sigma_obsES	data1	2
+obsES		C1	1.01176066005766	50		sigma_obsES	data1	2
+obsES		C1	1.26950705417673	60		sigma_obsES	data1	2
+obsES		C1	0.91901121619156	70		sigma_obsES	data1	2
+obsES		C1	1.03084061786054	80		sigma_obsES	data1	2
+obsES		C1	1.09080989987243	90		sigma_obsES	data1	2
+obsES		C1	0.938744660232658	100		sigma_obsES	data1	2
+obsP		C1	0.96416039139064	10		sigma_obsP	data1	2
+obsP		C1	2.21678828964779	20		sigma_obsP	data1	2
+obsP		C1	3.02818695818375	30		sigma_obsP	data1	2
+obsP		C1	4.85096688460294	40		sigma_obsP	data1	2
+obsP		C1	4.19447439558516	50		sigma_obsP	data1	2
+obsP		C1	5.44983400232968	60		sigma_obsP	data1	2
+obsP		C1	5.69890250147713	70		sigma_obsP	data1	2
+obsP		C1	6.22049346581613	80		sigma_obsP	data1	2
+obsP		C1	9.13098978252478	90		sigma_obsP	data1	2
+obsP		C1	8.22864361624973	100		sigma_obsP	data1	2
+obsE		C1	0.00230369019375489	10	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00213874812781413	20	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00207630793874305	30	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00216297852438357	40	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00200677841480505	50	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00221589716478071	60	offset_E	sigma_obsE	data1	3
+obsE		C1	0.0022434485823425	70	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00264575353687384	80	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00238695045519965	90	offset_E	sigma_obsE	data1	3
+obsE		C1	0.00207924639401254	100	offset_E	sigma_obsE	data1	3
+obsS		C1	98.793056504268	10		sigma_obsS	data1	3
+obsS		C1	100.687798944036	20		sigma_obsS	data1	3
+obsS		C1	82.6339263661306	30		sigma_obsS	data1	3
+obsS		C1	106.766031287203	40		sigma_obsS	data1	3
+obsS		C1	88.531421319126	50		sigma_obsS	data1	3
+obsS		C1	104.281065796674	60		sigma_obsS	data1	3
+obsS		C1	94.5764153394194	70		sigma_obsS	data1	3
+obsS		C1	92.9502280314802	80		sigma_obsS	data1	3
+obsS		C1	84.397876050765	90		sigma_obsS	data1	3
+obsS		C1	103.147136937892	100		sigma_obsS	data1	3
+obsES		C1	0.939232634644219	10		sigma_obsES	data1	3
+obsES		C1	1.00711332123463	20		sigma_obsES	data1	3
+obsES		C1	1.13065593961477	30		sigma_obsES	data1	3
+obsES		C1	0.88327859208673	40		sigma_obsES	data1	3
+obsES		C1	1.2192104959762	50		sigma_obsES	data1	3
+obsES		C1	1.07096073840997	60		sigma_obsES	data1	3
+obsES		C1	0.800102350263464	70		sigma_obsES	data1	3
+obsES		C1	1.0505375050467	80		sigma_obsES	data1	3
+obsES		C1	0.905774612823332	90		sigma_obsES	data1	3
+obsES		C1	0.800486938643759	100		sigma_obsES	data1	3
+obsP		C1	0.984558520339754	10		sigma_obsP	data1	3
+obsP		C1	1.95552182611797	20		sigma_obsP	data1	3
+obsP		C1	2.52519614774762	30		sigma_obsP	data1	3
+obsP		C1	4.24096016128155	40		sigma_obsP	data1	3
+obsP		C1	4.97294553415518	50		sigma_obsP	data1	3
+obsP		C1	6.51188390238962	60		sigma_obsP	data1	3
+obsP		C1	6.81726320020002	70		sigma_obsP	data1	3
+obsP		C1	8.44726712921597	80		sigma_obsP	data1	3
+obsP		C1	8.89135012160718	90		sigma_obsP	data1	3
+obsP		C1	10.5363650415723	100		sigma_obsP	data1	3

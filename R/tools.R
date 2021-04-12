@@ -305,6 +305,18 @@ funnames_in_package <- function(package, as_namespace = F) {
     paste0("\\b(", ., ")\\b")
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+update_cf <- function() {
+  devtools::install_github("dkaschek/dMod@hackathon")
+  devtools::install_github("dlill/conveniencefunctions")
+}
+
+
 # -------------------------------------------------------------------------#
 # File interactions ----
 # -------------------------------------------------------------------------#

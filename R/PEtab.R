@@ -662,8 +662,8 @@ pepy_sample_parameter_startpoints <- function(pe, n_starts = 100L, seed = 1L) {
 #' @export
 #' 
 #' @examples 
-#' pepy <- petab_python_setup
-#' pepy$lint
+#' pepy <- petab_python_setup()
+#' # pepy$lint(pe)
 petab_python_setup <- function() {
   if (!"petab" %in% reticulate::virtualenv_list()){
     reticulate::virtualenv_install("petab", "petab")

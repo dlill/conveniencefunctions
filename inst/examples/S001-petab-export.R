@@ -86,7 +86,7 @@ pe <- petab(model = pe_mo,
                     observables = pe_ob,
                     parameters = pe_pa)
 
-filename <- "petab/enzymeKinetics.petab"
+filename <- "petab/enzymeKinetics"
 writePetab(pe, filename)
 
 # cfoutput_MdTable(getSpeciesInfo(el), NFLAGtribble = 2)

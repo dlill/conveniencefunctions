@@ -7,6 +7,11 @@
           <unit kind="second" exponent="-1"/>
         </listOfUnits>
       </unitDefinition>
+      <unitDefinition id="per_mole">
+        <listOfUnits>
+          <unit kind="mole" exponent="-1"/>
+        </listOfUnits>
+      </unitDefinition>
       <unitDefinition id="per_mole_per_second">
         <listOfUnits>
           <unit kind="mole" exponent="-1"/>
@@ -20,6 +25,31 @@
           <unit kind="second" exponent="-1"/>
         </listOfUnits>
       </unitDefinition>
+      <unitDefinition id="litre2_per_mole2_per_second">
+        <listOfUnits>
+          <unit kind="litre" exponent="2"/>
+          <unit kind="mole" exponent="-2"/>
+          <unit kind="second" exponent="-1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mole_per_litre_per_second">
+        <listOfUnits>
+          <unit kind="mole" exponent="1"/>
+          <unit kind="litre" exponent="-1"/>
+          <unit kind="second" exponent="-1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mole_per_litre">
+        <listOfUnits>
+          <unit kind="mole" exponent="1"/>
+          <unit kind="litre" exponent="-1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="identity">
+        <listOfUnits>
+          <unit kind="dimensionless" exponent="1"/>
+        </listOfUnits>
+      </unitDefinition>
     </listOfUnitDefinitions>
     <listOfCompartments>
       <compartment id="cytoplasm" size="1"/>
@@ -30,14 +60,19 @@
       <species id="ES" name="ES" compartment="cytoplasm" initialAmount="1e-12"/>
       <species id="P" name="P" compartment="cytoplasm" initialAmount="1e-12"/>
     </listOfSpecies>
+    <listOfParameters>
+      <parameter id="kon" value="1" units="litre_per_mole_per_second"/>
+      <parameter id="koff" value="0.1" units="per_second"/>
+      <parameter id="kcat" value="0.1" units="per_second"/>
+    </listOfParameters>
     <listOfReactions>
       <reaction id="productionofcomplex" reversible="false">
         <listOfReactants>
-          <speciesReference species="E"/>
-          <speciesReference species="S"/>
+          <speciesReference species="E" stoichiometry="1"/>
+          <speciesReference species="S" stoichiometry="1"/>
         </listOfReactants>
         <listOfProducts>
-          <speciesReference species="ES"/>
+          <speciesReference species="ES" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw>
           <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -49,18 +84,15 @@
               <ci> cytoplasm </ci>
             </apply>
           </math>
-          <listOfParameters>
-            <parameter id="kon" value="1" units="litre_per_mole_per_second"/>
-          </listOfParameters>
         </kineticLaw>
       </reaction>
       <reaction id="decayofcomplex" reversible="false">
         <listOfReactants>
-          <speciesReference species="ES"/>
+          <speciesReference species="ES" stoichiometry="1"/>
         </listOfReactants>
         <listOfProducts>
-          <speciesReference species="E"/>
-          <speciesReference species="S"/>
+          <speciesReference species="E" stoichiometry="1"/>
+          <speciesReference species="S" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw>
           <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -71,18 +103,15 @@
               <ci> cytoplasm </ci>
             </apply>
           </math>
-          <listOfParameters>
-            <parameter id="koff" value="0.1" units="per_second"/>
-          </listOfParameters>
         </kineticLaw>
       </reaction>
       <reaction id="productionofproduct" reversible="false">
         <listOfReactants>
-          <speciesReference species="ES"/>
+          <speciesReference species="ES" stoichiometry="1"/>
         </listOfReactants>
         <listOfProducts>
-          <speciesReference species="E"/>
-          <speciesReference species="P"/>
+          <speciesReference species="E" stoichiometry="1"/>
+          <speciesReference species="P" stoichiometry="1"/>
         </listOfProducts>
         <kineticLaw>
           <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -93,9 +122,6 @@
               <ci> cytoplasm </ci>
             </apply>
           </math>
-          <listOfParameters>
-            <parameter id="kcat" value="0.1" units="per_second"/>
-          </listOfParameters>
         </kineticLaw>
       </reaction>
     </listOfReactions>

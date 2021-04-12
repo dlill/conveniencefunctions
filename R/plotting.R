@@ -174,7 +174,7 @@ cf_outputFigure <- function(pl, filename,
   if (FLAGFuture && !"multisession" %in% class(future::plan())) 
     future::plan("multisession")
   future::`%<-%`(.dummy, {doPlot()})
-  
+
   invisible()
 }
 
