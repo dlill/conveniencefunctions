@@ -7,15 +7,18 @@
 cf_profile_plotPathsAffected(profiles, page = 1, tol = 1e-05)
 }
 \arguments{
-\item{profiles}{}
+\item{profiles}{profiles to plotPaths}
 
-\item{page}{}
+\item{page}{pagination page}
 
 \item{tol}{}
 }
 \value{
-
+paginated ggplot
 }
 \description{
 Title
+}
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 }
