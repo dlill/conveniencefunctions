@@ -33,6 +33,7 @@ petab_create_parameter_df <- function(pe, observableParameterScale = "log10") {
                              nominalValue =  parInfo$parValue)
   # Observable parameters
   par_ob <- NULL
+  message("Scale for all observable parameters: ", observableParameterScale, "\n")
   if (length(getSymbols(measurementData$observableParameters)))
     par_ob <- petab_parameters(parameterId =  getSymbols(measurementData$observableParameters), 
                                parameterName = getSymbols(measurementData$observableParameters),
@@ -45,10 +46,11 @@ petab_create_parameter_df <- function(pe, observableParameterScale = "log10") {
                                   parameterName = getSymbols(measurementData$noiseParameters),
                                   nominalValue = 0.1)
   
+  # Get all base-parameters
   par <- rbindlist(list(par_sp, par_pa, par_ob, par_meErr))
   
   
-  # Parameters from experimentalConditions: 
+  # Parameters from experimentalConditions 
   # More complicated, need also to exclude colnames
   #   from previously collected parameters
   par_ec <- NULL
@@ -60,6 +62,7 @@ petab_create_parameter_df <- function(pe, observableParameterScale = "log10") {
                                parameterScale = "log")
     message("Please check parameter scale of parameter names occuring in experimentalCondition or implement the scale matching in this function: ",
             paste(parnamesOuter, collapse = ", "))
+    # [ ] Note: If you implement the scale-matching, refactor this function. Put all par_ec handling into another function
     
     # Remove base parameters from par
     parnamesInner <- setdiff(colnames(experimentalCondition), c("conditionId", "conditionName"))
