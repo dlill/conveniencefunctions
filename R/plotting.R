@@ -281,5 +281,13 @@ cfcolors <- c("#000000", "#C5000B", "#0084D1", "#579D1C", "#FF950E",
               "#4B1F6F", "#CC79A7","#006400", "#F0E442", "#8B4513",
               "salmon", "slateblue1", "chocolate3", "firebrick", 
               "cyan3", "chartreuse4", "gold", "ivory4", "seagreen3", "dodgerblue",
+              "bisque2", "salmon4", "lemonchiffon2", "lightsteelblue", "darkgray", 
+              "navajowhite2", "mintcream", "floralwhite", "skyblue1", "seagreen1", 
+              "bisque4", "gray19", "gray55", "gray4", "darkorchid1", "mistyrose4", 
+              "green3", "deeppink3", "thistle1", "tan1", "lightgoldenrod1", 
+              "indianred4", "palegreen", "gray71", "lightgoldenrod4", "turquoise", 
+              "springgreen4", "slategray3", "gray65", "orange", "palevioletred3", 
+              "paleturquoise", "peachpuff4", "darkolivegreen", "lemonchiffon3", 
+              "lightskyblue1", "darkolivegreen3", "gray13", "turquoise2", "gray26",
               rep("gray", 100))
 

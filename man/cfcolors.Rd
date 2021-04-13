@@ -6,7 +6,7 @@
 \title{Colors
 copied and adapted from dMod}
 \format{
-An object of class \code{character} of length 120.
+An object of class \code{character} of length 160.
 }
 \usage{
 cfcolors

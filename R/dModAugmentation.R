@@ -131,6 +131,135 @@ cf_parframe <- function(x = NULL, parameters = NULL, metanames = NULL,
   x
 }
 
+
+# -------------------------------------------------------------------------#
+# Profiles ----
+# -------------------------------------------------------------------------#
+
+
+#' getProfiles with optimum below the fit$argument
+#' 
+#' Sometimes, a profile finds a better optimum
+#' Get only profiles of parameters which show this behaviour
+#' 
+#' @param profiles parframe
+#'
+#' @return data.table
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+cf_profile_getProfilesOptimumBelowFit <- function(profiles){
+  dp <- as.data.table(profiles)
+  value0 <- dp[constraint == 0, unique(value)]
+  parsBelow <- dp[value < value0, unique(whichPar)]
+  
+  profiles <- profiles[profiles$whichPar %in% parsBelow]
+  profiles
+}
+
+#' Prepare parameters affected by a profile
+#' 
+#' Its not helpful to plot all paths in plotPaths, 
+#' but only of those parameters which are affected
+#'
+#' @param dp data.table with profiles
+#' @param parnames columns indicating parameter names
+#' @param tol tolerance to measure if a parameter is affected
+#'
+#' @return data.table(value, constraint, PARAMETER1, PARAMETER2, PARVALUE1, PARVALUE2)]
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+cf_profile_prepareAffectedPaths <- function(profiles, tol = 1e-5) {
+  parnames <- cf_parf_parNames(profiles)
+  dp <- data.table(profiles)
+  dp <- split(dp, dp$whichPar)
+  dp <- lapply(dp, function(d) {
+    wP <- unique(d$whichPar)
+    d[,`:=`(PARAMETER1 = whichPar)]
+    d[,`:=`(PARVALUE1  = .SD[[1]]), .SDcols = wP]
+    d <- melt(d, measure.vars = setdiff(parnames, wP), 
+              variable.name = "PARAMETER2", variable.factor = FALSE, 
+              value.name = "PARVALUE2")
+    d <- d[,list(value, constraint, PARAMETER1, PARAMETER2, PARVALUE1, PARVALUE2)]
+    d <- d[,`:=`(AFFECTED = diff(range(PARVALUE2)) > tol), by = c("PARAMETER1", "PARAMETER2")]
+    d <- d[AFFECTED == TRUE]
+    d[,`:=`(AFFECTED = NULL)]
+    d
+  })
+  dp <- rbindlist(dp, use.names = TRUE)
+  dp
+}
+
+#' Title
+#'
+#' @param profiles 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_profile_getStartPar <- function(profiles) {
+  parnames <- cf_parf_parNames(profiles)
+  profopt <- profiles[profiles$constraint == 0, parnames]
+  profopt <- as.data.frame(profopt)
+  profopt <- unique(profopt)
+  profopt <- unlist(profopt)
+  profopt <- data.table(PARAMETEROPT = names(profopt), PARVALUEOPT = profopt)
+  profopt
+}
+
+#' Title
+#'
+#' @param profiles 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_profile_getOptimum <- function(profiles) {
+  parnames <- cf_parf_parNames(profiles)
+  profopt <- profiles[which.min(profiles$value), parnames]
+  profopt <- as.data.frame(profopt)
+  profopt <- unique(profopt)
+  if (nrow(profopt) > 1) {
+    warning("Multiple parameter sets with optimum value. Taking the first one")
+    profopt <- profopt[1,]
+  }
+  profopt <- unlist(profopt)
+  profopt <- data.table(PARAMETEROPT = names(profopt), PARVALUEOPT = profopt)
+  profopt
+}
+
+#' Title
+#'
+#' @param profiles profiles to plotPaths
+#' @param page pagination page
+#' @param tol 
+#'
+#' @return paginated ggplot
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' 
+cf_profile_plotPathsAffected <- function(profiles, page = 1, tol = 1e-5) {
+  dp <- cf_profile_prepareAffectedPaths(profiles, tol = tol)
+  dfit <- dp[cf_profile_getStartPar(profiles), on = c("PARAMETER1" = "PARAMETEROPT", PARVALUE1 = "PARVALUEOPT")]
+  dfit <- dfit[!is.na(PARVALUE2)]
+  dopt <- dp[cf_profile_getOptimum(profiles), on = c("PARAMETER1" = "PARAMETEROPT", PARVALUE1 = "PARVALUEOPT")]
+  dopt <- dopt[!is.na(PARVALUE2)]
+  pl <- cfggplot(dp, aes(PARVALUE1, PARVALUE2, group = PARAMETER2, color = PARAMETER2)) + 
+    facet_wrap_paginate(~PARAMETER1+PARAMETER2, nrow = 3, ncol = 4, scales = "free", page = page) + 
+    geom_line() + 
+    geom_point(data = dfit, size = 2) + 
+    geom_point(data = dopt, shape = 4, size = 2) + 
+    guides(color = FALSE)
+  message("Plot has ", n_pages(pl), " pages.\n")
+  pl 
+}
+
+
+
 # ---------------------------------------------------------- #
 # Data ----
 # ---------------------------------------------------------- #

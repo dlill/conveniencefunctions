@@ -775,6 +775,17 @@ petab_createObjPrior <- function(pe, FLAGuseNominalCenter) {
 }
 
 
+#' Title
+#'
+#' @param pe 
+#' @param whichBoundary 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
 petab_getParameterBoundaries <- function(pe, whichBoundary = c("upper", "lower")[1]) {
   p <- copy(pe$parameters)
   p <- p[estimate == 1]
@@ -926,6 +937,59 @@ petab_overviewObsPerCond <- function(pe, Ntruncate = Inf, ...) {
   cfoutput_MdTable(dx, ...)
 }
 
+# -------------------------------------------------------------------------#
+# Very small helpers ----
+# -------------------------------------------------------------------------#
+
+#' Title
+#'
+#' @param pe 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+petab_getParametersToEstimate <- function(pe) {
+  pe$parameters[estimate==1,parameterId]
+}
+
+
+#' Get parameters on outer scale
+#'
+#' @param pe 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+petab_getParsOuterScale <- function(pe) {
+  p <- copy(pe$parameters)
+  p[,`:=`(pouter = 
+            eval(parse(
+              text = paste0(parameterScale, "(", nominalValue, ")")))), 
+    by = 1:nrow(p)]
+  setNames(p$pouter, p$parameterId)
+}
+
+
+
+#' Identity
+#'
+#' @param x 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+lin <- function(x) {
+  x
+  }
 
 # -------------------------------------------------------------------------#
 # Todolist/Wishlist ----
