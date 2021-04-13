@@ -10,13 +10,14 @@
 #'
 #' @return the parframe with columns fitrank and step
 #' @export
+#' @importFrom purrr map_dbl
 add_stepcolumn <- function(myparframe, tol = 1) {
   steps <- dMod:::stepDetect(myparframe$value, tol)
   bla <- 1:nrow(myparframe)
   stepcol <- cumsum(bla%in%steps)
   
   fitrank <- 1:length(stepcol)
-  stepsize <- map_dbl(stepcol, ~sum(stepcol == .x)) 
+  stepsize <- purrr::map_dbl(stepcol, ~sum(stepcol == .x)) 
   mydf <- as.data.frame(myparframe)
   mydf <- mydf[!names(mydf)%in%c("fitrank", "step", "stepsize")]
   mydf <- cbind(fitrank = fitrank, step  = stepcol, stepsize = stepsize, mydf)

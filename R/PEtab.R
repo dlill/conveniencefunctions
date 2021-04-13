@@ -624,7 +624,10 @@ petab_lint <- function(petab) {
 #' @md
 #'
 #' @examples
-pepy_sample_parameter_startpoints <- function(pe, n_starts = 100L, seed = 1L) {
+#' n_starts = 100L
+#' seed = 1L
+#' FLAGincludeCurrent = TRUE
+pepy_sample_parameter_startpoints <- function(pe, n_starts = 100L, seed = 1L, FLAGincludeCurrent = TRUE) {
   n_starts <- as.integer(n_starts)
   seed     <- as.integer(seed)
   
@@ -634,13 +637,11 @@ pepy_sample_parameter_startpoints <- function(pe, n_starts = 100L, seed = 1L) {
     parameter_df = pe$parameters, 
     n_starts = n_starts, 
     seed = seed)
+  if (FLAGincludeCurrent) pars <- rbind(pd$pars, pars)
   pars <- `colnames<-`(pars, pe$parameters$parameterId[pe$parameters$estimate==1])
-  pars <- parframe(pars,)
+  pars <- parframe(pars)
   pars
 }
-
-
-
 
 # -------------------------------------------------------------------------#
 # Python setup ----

@@ -87,7 +87,7 @@ dMod_saveMstrust <- function(fit, path, identifier = "1", FLAGoverwrite = FALSE)
   filename <- dMod_files(path, identifier)$mstrust
   if (!FLAGoverwrite && file.exists(filename)) 
     stop("FLAGoverwrite is FALSE and file.exists: ", filename)
-  dir.create(dirname(filename))
+  dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
   saveRDS(fit, filename)
 }
 
