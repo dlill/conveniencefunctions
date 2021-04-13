@@ -4,7 +4,7 @@
 \alias{petab_create_parameter_df}
 \title{Original petab function didn't work}
 \usage{
-petab_create_parameter_df(model, measurementData)
+petab_create_parameter_df(pe)
 }
 \arguments{
 \item{model}{}

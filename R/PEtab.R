@@ -13,19 +13,31 @@
 #' @export
 #'
 #' @examples
-petab_create_parameter_df <- function(model, measurementData) {
+petab_create_parameter_df <- function(pe) {
+  
+  model                 <- pe$model
+  measurementData       <- pe$measurementData
+  experimentalCondition <- pe$experimentalCondition
+  
+  # Species
+  message("Do we need to prepend init_ before species?")
   speciesInfo <- model$speciesInfo
-  parInfo <- model$parInfo
   par_sp <- petab_parameters(parameterId =   speciesInfo$speciesName, 
                              parameterName = speciesInfo$speciesName,
                              nominalValue =  speciesInfo$initialAmount,
                              estimate = as.numeric(speciesInfo$initialAmount > 0))
+  # Kinetic parameters in ODEs
+  parInfo <- model$parInfo
   par_pa <- petab_parameters(parameterId =   parInfo$parName, 
                              parameterName = parInfo$parName,
                              nominalValue =  parInfo$parValue)
-  par_ob <- petab_parameters(parameterId =  getSymbols(measurementData$observableParameters), 
-                             parameterName = getSymbols(measurementData$observableParameters),
-                             parameterScale = "lin")
+  # Observable parameters
+  par_ob <- NULL
+  if (length(getSymbols(measurementData$observableParameters)))
+    par_ob <- petab_parameters(parameterId =  getSymbols(measurementData$observableParameters), 
+                               parameterName = getSymbols(measurementData$observableParameters),
+                               parameterScale = "lin")
+  # MeasurementErrors
   par_meErr <- NULL
   if (length(getSymbols(measurementData$noiseParameters))) 
     par_meErr <- petab_parameters(parameterId =   getSymbols(measurementData$noiseParameters), 
@@ -33,6 +45,30 @@ petab_create_parameter_df <- function(model, measurementData) {
                                   nominalValue = 0.1)
   
   par <- rbindlist(list(par_sp, par_pa, par_ob, par_meErr))
+  
+  
+  # Parameters from experimentalConditions: 
+  # More complicated, need also to exclude colnames
+  #   from previously collected parameters
+  par_ec <- NULL
+  parnamesOuter <- petab_getParametersExperimentalCondition(experimentalCondition)
+  if (length(parnamesOuter)){
+    # Collect ec_pars
+    par_ec <- petab_parameters(parameterId = parnamesOuter,
+                               parameterName = parnamesOuter,
+                               parameterScale = "log")
+    message("Please check parameter scale of parameter names occuring in experimentalCondition or implement the scale matching in this function: ",
+            paste(parnamesOuter, collapse = ", "))
+    
+    # Remove base parameters from par
+    parnamesInner <- setdiff(colnames(experimentalCondition), c("conditionId", "conditionName"))
+    par <- par[!parameterId %in% parnamesInner]
+    
+    # Append par_ec
+    par <- rbindlist(list(par, par_ec))
+    }
+  
+  par
 }
 
 
@@ -572,6 +608,104 @@ writePetab <- function(petab, filename = "petab/model") {
 
 
 # -------------------------------------------------------------------------#
+# Combining two petabs ----
+# -------------------------------------------------------------------------#
+#' Title
+#'
+#' @param ec1 
+#' @param ec2 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+petab_combine_experimentalCondition <- function(ec1, ec2) {
+  s12 <- setdiff(names(ec1), names(ec2))
+  if (length(s12)) stop("The following names are in experimentalCondition 1, but not in 2:\n", 
+                        paste0(s12, collapse = ", "), "\n",
+                        "Please fix manually before combining.\n")
+  s21 <- setdiff(names(ec1), names(ec2))
+  if (length(s21)) stop("The following names are in experimentalCondition 1, but not in 2:\n", 
+                        paste0(s21, collapse = ", "), "\n",
+                        "Please fix manually before combining.\n")
+  i12 <- intersect(ec1$conditionId,ec2$conditionId)
+  if (length(i12)) stop("The following conditionId is in both petabs: ", paste0(i12, collapse = ","))
+  
+  rbindlist(list(ec1,ec2), use.names = TRUE)
+}
+
+#' Title
+#'
+#' @param md1 
+#' @param md2 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+petab_combine_measurementData <- function(md1, md2) {
+  rbindlist(list(md1,md2), use.names = TRUE)
+}
+
+#' Title
+#'
+#' @param o1 
+#' @param o2 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+petab_combine_observables <- function(o1,o2) {
+  i12 <- intersect(o1$observableId,o2$observableId)
+  if (length(i12)) stop("The following observableId is in both petabs: ", paste0(i12, collapse = ","))
+  rbindlist(list(o1,o2), use.names = TRUE)
+}
+
+#' Title
+#'
+#' @param p1 
+#' @param p2 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+petab_combine_parameters <- function(p1,p2) {
+  i12 <- intersect(p2$parameterId,p1$parameterId)
+  if (length(i12)) stop("The following parameterId are in both petabs. Using parameters from pe1. \n", 
+                        paste0(i12, collapse = ","))
+  
+  p2 <- p2[!parameterId %in% p1$parameterId]
+  rbindlist(list(p1,p2), use.names = TRUE)
+}
+
+#' Title
+#'
+#' @param pe1 
+#' @param pe2 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+petab_combine <- function(pe1,pe2) {
+  message("Using model from pe1\n")
+  
+  petab(
+    model                 = pe1$model,
+    experimentalCondition = petab_combine_experimentalCondition(pe1$experimentalCondition, pe2$experimentalCondition),
+    measurementData       = petab_combine_measurementData(pe1$measurementData, pe2$measurementData),
+    observables           = petab_combine_observables(pe1$observables, pe2$observables),
+    parameters            = petab_combine_parameters(pe1$parameters, pe2$parameters)
+  )
+  
+}
+
+
+
+
+# -------------------------------------------------------------------------#
 # Interface to useful PEtab.py functions ----
 # -------------------------------------------------------------------------#
 
@@ -976,6 +1110,26 @@ petab_getParsOuterScale <- function(pe) {
   setNames(p$pouter, p$parameterId)
 }
 
+
+
+#' Get parameter names from pe$experimentalCondition
+#'
+#' @param experimentalCondition 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+petab_getParametersExperimentalCondition <- function(experimentalCondition) {
+  ec <- copy(experimentalCondition)
+  ec[,`:=`(conditionId = NULL, conditionName = NULL)]
+  ec <- lapply(ec, getSymbols)
+  ec <- do.call(c,ec)
+  ec <- unique(ec)
+  ec
+}
 
 
 #' Identity

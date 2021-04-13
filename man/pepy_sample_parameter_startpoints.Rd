@@ -4,7 +4,12 @@
 \alias{pepy_sample_parameter_startpoints}
 \title{Sample parameter start points}
 \usage{
-pepy_sample_parameter_startpoints(pe, n_starts = 100L, seed = 1L)
+pepy_sample_parameter_startpoints(
+  pe,
+  n_starts = 100L,
+  seed = 1L,
+  FLAGincludeCurrent = TRUE
+)
 }
 \arguments{
 \item{pe}{}
@@ -18,6 +23,11 @@ parframe
 }
 \description{
 Uses Petab.py, is based on pe$parameters
+}
+\examples{
+n_starts = 100L
+seed = 1L
+FLAGincludeCurrent = TRUE
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
