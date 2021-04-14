@@ -366,6 +366,18 @@ gitam <- function(string) {
   system(cmd, wait = FALSE)
 }
 
+#' Check if everythiing is commmitted
+#'
+#' @return
+#' @export
+#'
+#' @examples
+allCommitted <- function() {
+  gitstat <- system("git status", intern = TRUE)
+  "nothing to commit, working tree clean" %in% gitstat
+}
+
+
 
 #' Git pull all projects in the PROJTOOLS fodler
 #'

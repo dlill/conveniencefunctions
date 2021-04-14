@@ -7,7 +7,7 @@
 petab_parameters(
   parameterId,
   parameterName = NA,
-  parameterScale = c("log", "lin", "log10")[[1]],
+  parameterScale = c("log10", "log", "lin")[[1]],
   lowerBound = 1e-04,
   upperBound = 1000,
   nominalValue = 1,

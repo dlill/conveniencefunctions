@@ -41,6 +41,8 @@ cf_predict <- function (prd, times, pars, keep_names = NULL, ncores = 4, FLAGver
     if (FLAGverbose2) cat("postprocessing", "\n")
   out <- rbindlist(out[!is.null(out)])
 
+  
+  # Make this available as a FLAG
   pars <- cf_parf_getMeta(pars)
   if (!is.null(pars)){
   pars <- data.table(pars)

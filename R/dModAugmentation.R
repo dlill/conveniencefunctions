@@ -133,6 +133,20 @@ cf_parframe <- function(x = NULL, parameters = NULL, metanames = NULL,
 }
 
 
+#' Title
+#'
+#' @param parf 
+#' @param tol 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_parf_getStepRepresentatives <- function(parf, tol = 1) {
+  which(as.logical(c(1, diff(parf$step) != 0)))
+}
+
+
 # -------------------------------------------------------------------------#
 # Profiles ----
 # -------------------------------------------------------------------------#
