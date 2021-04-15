@@ -14,7 +14,7 @@ cf_rename_script <- function(from, to) {
 #' @param from,to as in file.rename 
 #'
 #' @export
-cf_copy_script <- function(from, to, FLAGremoveOld = FALSE, FLAGrenameOutputFolder = FLAGremoveOld) {
+cf_copy_script <- function(from, to, FLAGrename) {
   from_stripped <- stringr::str_replace_all(from, c("\\.R$" = "", "^SCRIPT_" = ""))
   to_stripped   <- stringr::str_replace_all(to,   c("\\.R$" = "", "^SCRIPT_" = ""))
   
@@ -28,14 +28,32 @@ cf_copy_script <- function(from, to, FLAGremoveOld = FALSE, FLAGrenameOutputFold
   
   writeLines(ln, to)
   
-  if (FLAGremoveOld) unlink(from)
-  
-  if (FLAGrenameOutputFolder) {
+  if (FLAGrename) {
+    cat("Removed old file \n")
+    unlink(from)
+    
+    cat("Rename output folder \n")
     if (from != basename(from)) stop("Renaming output folder only works if getwd() = scriptdir")
     fromOut <- file.path("../04-Output", gsub(".R$", "", from))
     toOut <- file.path("../04-Output", gsub(".R$", "", to))
     file.rename(fromOut, toOut)
-    cat("Output Folder renamed \n")
+    
+    cat("Rename file in other scripts\n")
+    cat("===============================")
+    from_noEnding <- gsub("\\.R$","", basename(from))
+    to_noEnding   <- gsub("\\.R$","", basename(to))
+    
+    allscripts <- list.files(".", "\\.R$")
+    allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
+    sapply(setNames(nm = allscripts), function(s) {
+      l <- readLines(s)
+      nref <-   sum(grepl(from_noEnding,l))
+      if(nref==0) return(NULL)
+      cat(s, ":\t", nref, "\n")
+      l <- gsub(from_noEnding, to_noEnding, l)
+      writeLines(l,s)
+    })    
+    
   }
   
   inspire()
@@ -84,17 +102,17 @@ inspire <- function() {
       "  * Think of agile development techniques - sprints and long-term goals.",
       "* Copy these tips into the script to not forget them :)",
       
-    #  "* Principles of data programming",
-    #  "  * Think before you do anything",
-    #  "    * What is the dimensionality of the problem. Name all variables!",
-    #  "    * For which tasks is long/wide data better",
-    #  "    * How can two or more tables be merged",
-    #  "  * First work through the column names",
-    #  "    * Which ones to keep? Drop all the others! ",
-    #  "    * The kept ones: Rename them to the most simple descriptive tag",
-    #  "    * Which information is still missing? add it!",
-    #  "  * Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')",
-    #  "  * Malformed original values can also be replaced manually in the excel sheet (make a copy)",
+      #  "* Principles of data programming",
+      #  "  * Think before you do anything",
+      #  "    * What is the dimensionality of the problem. Name all variables!",
+      #  "    * For which tasks is long/wide data better",
+      #  "    * How can two or more tables be merged",
+      #  "  * First work through the column names",
+      #  "    * Which ones to keep? Drop all the others! ",
+      #  "    * The kept ones: Rename them to the most simple descriptive tag",
+      #  "    * Which information is still missing? add it!",
+      #  "  * Add a ROWID - column, but only if there is not already a uniquely identifying row (e.g. 'Protein ID')",
+      #  "  * Malformed original values can also be replaced manually in the excel sheet (make a copy)",
       
-  sep = "\n")
+      sep = "\n")
 }

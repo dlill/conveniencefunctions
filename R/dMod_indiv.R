@@ -17,14 +17,14 @@
 #' @importFrom dMod as.parvec
 #'
 #' @examples
-cf_predict <- function (prd, times, pars, keep_names = NULL, ncores = 4, FLAGverbose = FALSE, FLAGverbose2 = FALSE, FLAGbrowser = FALSE, ...) {
+cf_predict <- function (prd, times, pars, keep_names = NULL, ncores = 4, FLAGverbose = FALSE, FLAGverbose2 = FALSE, FLAGbrowser = FALSE,deriv = FALSE, ...) {
     if (FLAGverbose2) cat("Simulating", "\n")
   
   out <- parallel::mclapply(X = 1:nrow(pars), mc.cores = ncores, FUN = function(i) {
     if (FLAGverbose) cat("Parameter set", i, "\n")
     if (FLAGbrowser) browser()
     mypar <- dMod::as.parvec(pars, i)
-    prediction <- try(prd(times, mypar, deriv = FALSE, ...))
+    prediction <- try(prd(times, mypar, deriv = deriv, ...))
     if (inherits(prediction, "try-error")) {
       warning("parameter set ", i, " failed\n")
       return(NULL)
