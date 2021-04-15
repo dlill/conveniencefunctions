@@ -13,6 +13,7 @@ cf_predict(
   FLAGverbose = FALSE,
   FLAGverbose2 = FALSE,
   FLAGbrowser = FALSE,
+  deriv = FALSE,
   ...
 )
 }

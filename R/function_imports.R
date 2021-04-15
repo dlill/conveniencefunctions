@@ -13,6 +13,11 @@ ggforce::facet_grid_paginate
 ggforce::facet_wrap_paginate 
 
 
+#' @importFrom magrittr "%>%"
+#' @export
+magrittr::`%>%`
+# `%>%` <- magrittr::`%>%`
+
 # Dummy imports ----
 
 #' @importFrom tidyverse tidyverse_logo

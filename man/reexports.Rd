@@ -6,6 +6,7 @@
 \alias{n_pages}
 \alias{facet_grid_paginate}
 \alias{facet_wrap_paginate}
+\alias{\%>\%}
 \alias{tidyverse_logo}
 \title{Reexports}
 \keyword{internal}
@@ -15,6 +16,8 @@ below to see their documentation.
 
 \describe{
   \item{ggforce}{\code{\link[ggforce]{facet_grid_paginate}}, \code{\link[ggforce]{facet_wrap_paginate}}, \code{\link[ggforce]{n_pages}}}
+
+  \item{magrittr}{\code{\link[magrittr:pipe]{\%>\%}}}
 
   \item{tidyverse}{\code{\link[tidyverse]{tidyverse_logo}}}
 }}
