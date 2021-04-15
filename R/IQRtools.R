@@ -14,7 +14,7 @@ cf_rename_script <- function(from, to) {
 #' @param from,to as in file.rename 
 #'
 #' @export
-cf_copy_script <- function(from, to, FLAGrename) {
+cf_copy_script <- function(from, to, FLAGrename = FALSE) {
   from_stripped <- stringr::str_replace_all(from, c("\\.R$" = "", "^SCRIPT_" = ""))
   to_stripped   <- stringr::str_replace_all(to,   c("\\.R$" = "", "^SCRIPT_" = ""))
   
