@@ -285,9 +285,9 @@ snippet cfhead
 	# [Date]
 	# `r date()`
 	#
+	rm(list = ls(all.names = TRUE))
 	try(setwd(dirname(rstudioapi::getSourceEditorContext()\$path)))
 	library(conveniencefunctions)
-	rm(list = ls(all.names = TRUE))
 	
 	.outputFolder <- paste0("../04-Output/", "`r gsub(".R$", "", basename(rstudioapi::getSourceEditorContext()$path))`")
 	for(folder in c(.outputFolder)) 
