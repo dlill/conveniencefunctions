@@ -5,14 +5,14 @@
 \title{Parse the parameters columns in measurementData}
 \usage{
 petab_getMeasurementParsMapping(
-  measurementData,
+  pe,
   column = c("observableParameters", "noiseParameters")[1]
 )
 }
 \arguments{
-\item{measurementData}{petab$measurementData. Uses only columns observableId,simulationConditionId and "column"}
-
 \item{column}{character(1L). one of c("observableParameters", "noiseParameters")}
+
+\item{measurementData}{petab$measurementData. Uses only columns observableId,simulationConditionId and "column"}
 }
 \value{
 data.table(condition, Innerpars... = Outerpars...) of local parameters.
@@ -28,9 +28,10 @@ simulationConditionId = c("C1", "C2"),
 observableParameters = c("scale;offset", "1;offset"),
 noiseParameters = "sigmaAbs"
 )
-
-petab_getMeasurementParsMapping(measurementData, "noiseParameters")
-petab_getMeasurementParsMapping(measurementData, "observableParameters")
+experimentalCondition <- data.table(conditionId = c("C1", "C2", "C3"))
+pe <- list(measurementData = measurementData, experimentalCondition = experimentalCondition)
+petab_getMeasurementParsMapping(pe, "noiseParameters")
+petab_getMeasurementParsMapping(pe, "observableParameters")
 # suggested use: indiv_addLocalParsToGridlist ... 
 }
 \author{

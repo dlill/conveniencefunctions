@@ -842,11 +842,14 @@ petab_python_setup <- function() {
 #' observableParameters = c("scale;offset", "1;offset"),
 #' noiseParameters = "sigmaAbs"
 #' )
-#' 
-#' petab_getMeasurementParsMapping(measurementData, "noiseParameters")
-#' petab_getMeasurementParsMapping(measurementData, "observableParameters")
+#' experimentalCondition <- data.table(conditionId = c("C1", "C2", "C3"))
+#' pe <- list(measurementData = measurementData, experimentalCondition = experimentalCondition)
+#' petab_getMeasurementParsMapping(pe, "noiseParameters")
+#' petab_getMeasurementParsMapping(pe, "observableParameters")
 #' # suggested use: indiv_addLocalParsToGridlist ... 
-petab_getMeasurementParsMapping <- function(measurementData, column = c("observableParameters", "noiseParameters")[1]) {
+petab_getMeasurementParsMapping <- function(pe, column = c("observableParameters", "noiseParameters")[1]) {
+  
+  measurementData <- copy(pe$measurementData)
   
   # Select column and name
   parameters <- measurementData[[column]]
@@ -867,6 +870,13 @@ petab_getMeasurementParsMapping <- function(measurementData, column = c("observa
   mp <- mp[,list(condition, INNERPARAMETER, OUTERPARAMETER)]
   mp <- dcast(mp, condition ~ INNERPARAMETER, value.var = "OUTERPARAMETER")
   
+  # Check that all conditions are specified, and if not, create empty row
+  experimentalCondition <- copy(pe$experimentalCondition)
+  if (length(setdiff(experimentalCondition$conditionId, mp$condition))) {
+    mp <- mp[data.table(condition = experimentalCondition$conditionId), on = "condition"]
+  }
+  
+  # Replace NAs with dummy value 1
   colsWithNa <- vapply(mp, function(x) any(is.na(x)), FALSE)
   colsWithNa <- names(colsWithNa)[colsWithNa]
   if (length(colsWithNa)) {
