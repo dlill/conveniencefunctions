@@ -47,6 +47,13 @@ snippet openPilot
 snippet openTGF
 	rstudioapi::openProject("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/TGFb.Rproj")
 
+snippet fileeditPETAB
+	file.edit("~/Promotion/Promotion/Projects/conveniencefunctions/R/PEtab.R")
+
+snippet fileeditPETABImport
+	file.edit("~/Promotion/Promotion/Software/dMod/R/PEtab2dMod.R")
+
+
 snippet cf_installSnippetsPowerInstall
 	system("cd && cd Promotion/Promotion/Projects && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
 	system("Rscript -e 'conveniencefunctions::install_cfsnippets(T)'")
@@ -156,17 +163,21 @@ snippet ggsav
 snippet widthWord
 	width = 21-2.5*2, height = 29.7-2.5*2, scale = 1, units = "cm"
 
-snippet widthA4Landscape
-	width = 29.7, height = 21, scale = 1, units = "cm"
-
 snippet widthA4
 	width = 21, height = 29.7, scale = 1, units = "cm"
 
 snippet widthDissFullPage
 	width = 15.5, height = 23.5, scale = 1, units = "cm"
 
-snippet widthDiss
+snippet widthDiss_16.9
+	width = 15.5, height = 15.5*(9/16), scale = 1, units = "cm"
+
+snippet widthDiss_16.10
 	width = 15.5, height = 15.5*(10/16), scale = 1, units = "cm"
+
+
+snippet widthA4Landscape
+	width = 29.7, height = 21, scale = 1, units = "cm"
 
 snippet futureEval
 	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
