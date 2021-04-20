@@ -132,7 +132,7 @@ snippet codeProjectDir
 	system("printf 'y' | code `r rstudioapi::getActiveProject()`", wait = FALSE)
 
 snippet unlinkdMod
-	unlink(list.files(".", "\\\\.o$|\\\\.so$|\\\\.c$",))
+	unlink(list.files(".", "\\\\.o$|\\\\.so$|\\\\.c$"))
 
 snippet whiledevlist
 	while(length(dev.list())) dev.off()
