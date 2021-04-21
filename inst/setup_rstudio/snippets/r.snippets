@@ -17,6 +17,9 @@ snippet IQRcodeReview
 snippet loaddMod
 	devtools::load_all("~/Promotion/Promotion/Software/dMod")
 
+snippet loadpetab
+	devtools::load_all("~/Promotion/Promotion/Projects/petab")
+
 snippet loadOmicsTools
 	devtools::load_all("~/Promotion/Promotion/Projects/OmicsTools")
 
@@ -46,13 +49,6 @@ snippet openPilot
 
 snippet openTGF
 	rstudioapi::openProject("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/TGFb.Rproj")
-
-snippet fileeditPETAB
-	file.edit("~/Promotion/Promotion/Projects/conveniencefunctions/R/PEtab.R")
-
-snippet fileeditPETABImport
-	file.edit("~/Promotion/Promotion/Software/dMod/R/PEtab2dMod.R")
-
 
 snippet cf_installSnippetsPowerInstall
 	system("cd && cd Promotion/Promotion/Projects && R CMD INSTALL --no-multiarch --with-keep.source conveniencefunctions")
