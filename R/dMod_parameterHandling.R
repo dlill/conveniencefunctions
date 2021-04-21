@@ -1,3 +1,151 @@
+# ---------------------------------------------------------- #
+# Parframe-class ----
+# ---------------------------------------------------------- #
+
+#' Add step column and fitrank
+#'
+#' @param myparframe a parframe
+#' @param tol integer for steps.
+#'
+#' @return the parframe with columns fitrank and step
+#' @export
+#' @importFrom purrr map_dbl
+add_stepcolumn <- function(myparframe, tol = 1) {
+  steps <- dMod:::stepDetect(myparframe$value, tol)
+  bla <- 1:nrow(myparframe)
+  stepcol <- cumsum(bla%in%steps)
+  
+  fitrank <- 1:length(stepcol)
+  stepsize <- purrr::map_dbl(stepcol, ~sum(stepcol == .x)) 
+  mydf <- as.data.frame(myparframe)
+  mydf <- mydf[!names(mydf)%in%c("fitrank", "step", "stepsize")]
+  mydf <- cbind(fitrank = fitrank, step  = stepcol, stepsize = stepsize, mydf)
+  
+  return(parframe(mydf, parameters = attr(myparframe, "parameters")))
+}
+
+#' get Parameter names of a parframe
+#' @param x parframe
+#' @export
+cf_parf_parNames <- function(x) {
+  attr(x, "parameters")
+}
+
+#' Title
+#'
+#' @param pars 
+#'
+#' @return data.frame of meta columns
+#' @export
+cf_parf_getMeta <- function(pars){
+  pars <- as.data.frame(pars)[cf_parf_metaNames(pars)]
+  if (length(pars) == 0)
+    return(NULL)
+  pars <- cbind(pars, parframe_rowid = 1:nrow(pars))
+  dplyr::rename(pars, objvalue = value)
+}
+
+#' Title
+#'
+#' @param pars 
+#'
+#' @return
+#' @export
+cf_parf_metaNames <- function(pars){
+  setdiff(names(pars), attr(pars, "parameters"))
+}
+
+#' Select parameter columns of parframe
+#'
+#' @param parf parframe
+#' @param parameters keine ahnung mehr?
+#'
+#' @export
+cf_parf_getPars <- function(parf) {
+  as.data.frame(parf)[attr(pars, "parameters")] 
+}
+
+
+
+#' Better as_parframe
+#' 
+#' Adds AIC and BIC automatically, adds stepcolumn automatically
+#'
+#' @param x 
+#' @param sort.by 
+#' @param ... 
+#'
+#' @return
+#' @export
+cf_as.parframe <- function (x, sort.by = "value", ...) {
+  m_stat <- dMod:::stat.parlist(x)
+  m_metanames <- c("index", "value", "converged", "iterations")
+  m_idx <- which("error" != m_stat)
+  m_parframe <- data.frame(index = m_idx, 
+                           value = vapply(x[m_idx], function(.x) .x$value, 1), 
+                           converged = vapply(x[m_idx], function(.x) .x$converged, TRUE), 
+                           iterations = vapply(x[m_idx], function(.x) as.integer(.x$iterations), 1L))
+  
+  if (!is.null(attr(x[[m_idx[[1]]]], "BIC"))){
+    m_parframe <- cbind(m_parframe, 
+                        AIC = vapply(x[m_idx], function(.x) attr(.x, "AIC"), 1),
+                        BIC = vapply(x[m_idx], function(.x) attr(.x, "BIC"), 1))
+    m_metanames <- c(m_metanames, c("AIC", "BIC"))
+  }
+  
+  m_parframe <- cbind(m_parframe, 
+                      as.data.frame(t(vapply(x[m_idx], function(.x) .x$argument, x[[1]]$argument))))
+  m_parframe <- m_parframe[order(m_parframe[sort.by]), ]
+  
+  cf_parframe(m_parframe, parameters = names(x[[m_idx[1]]]$argument), 
+              metanames = m_metanames)
+}
+
+#' Improved version of parframe
+#' 
+#' Fits coerces to data.frame and guesses metanames. Adds stepcolumn automatically
+#' 
+#' @param x 
+#' @param parameters 
+#' @param metanames 
+#' @param obj.attributes 
+#' @param tol 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_parframe <- function(x = NULL, parameters = NULL, metanames = NULL, 
+                        obj.attributes = NULL, tol = 1) {
+  x <- as.data.frame(x) 
+  if (is.null(metanames))
+    metanames <- intersect(names(x), c("index", "value", "converged", "iterations",
+                                       "fitrank", "step", "stepsize", "AIC", "BIC",
+                                       "constraint", "stepsize", "gamma", "valueData", 
+                                       "valueObj", "whichPar"))
+  if (is.null(parameters))
+    parameters <- setdiff(names(x),metanames)
+  x <- dMod::parframe(x,parameters, metanames, obj.attributes)
+  if ("converged" %in% metanames & !"fitrank" %in% metanames)
+    x <- add_stepcolumn(x, tol)
+  x
+}
+
+
+#' Title
+#'
+#' @param parf 
+#' @param tol 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_parf_getStepRepresentatives <- function(parf, tol = 1) {
+  which(as.logical(c(1, diff(parf$step) != 0)))
+}
+
+
 #' Turn a pars vector into a single-row parframe
 #'
 #' @param obj Objective function like normL2
