@@ -16,7 +16,9 @@ extracted function name
 Guess function name of interest
 }
 \examples{
-textline <- "   rng <- rstudioapi::document_range("
+textline <- "rng <- rstudioapi::document_range("
+textline <- "rstudioapi::document_range("
+textline <- "document_range(kjshdf = bla)"
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)

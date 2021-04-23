@@ -163,6 +163,41 @@ cf_parf_getStepRepresentatives <- function(parf, tol = 1) {
 #' pars2parframe(pars, "base", obj)
 pars2parframe <- function(pars, parameterSetId = "Base", obj = NULL) {
   value <- if (!is.null(obj)) obj(pars)$value else NA
-  parf0 <- data.frame(parameterSetId = parameterSetId, value = value, as.data.frame(as.list(pars)))
-  cf_parframe(parf0, metanames = c("parameterSetId", "value"))
+  parf0 <- data.frame(parameterSetId = parameterSetId, value = value, as.data.frame(as.list(pars)), index = 0, converged = FALSE)
+  cf_parframe(parf0, metanames = c("parameterSetId", "value", "index", "converged"))
+}
+
+
+#' Rbind some parframes
+#'
+#' @param parflist list(parframes)
+#'
+#' @return parframe
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @importFrom data.table rbindlist
+#'
+#' @examples
+#' parflist <- list(cf_parframe(data.frame(value = 1, a = 1, b = 2), metanames = "value"),
+#'                  cf_parframe(data.frame(value = 1, a = 2, parameterSetId = "par2"), metanames = c("value", "parameterSetId")))
+#' parflist <- list(cf_parframe(data.frame(value = 1, a = 1), metanames = "value"),
+#'                  cf_parframe(data.frame(value = 1, a = 2, parameterSetId = "par2"), metanames = c("value", "parameterSetId")))
+#' cf_parf_rbindlist(parflist)
+cf_parf_rbindlist <- function(parflist) {
+  
+  metanames <- lapply(parflist, function(x) attr(x, "metanames"))
+  metanames <- do.call(c, metanames)
+  metanames <- unique(metanames)
+  
+  parnames <- lapply(parflist, function(x) attr(x, "parameters")) # could implement check to see that parameter names are the same
+  parnames <- do.call(c, parnames)
+  parnames <- unique(parnames)
+  
+  mixedCol <- intersect(metanames, parnames)
+  if (length(mixedCol)) stop("The following columns are parameters and metanames: ", paste0(mixedCol, collapse = ", "))
+  
+  parf <- data.table::rbindlist(parflist, use.names = TRUE, fill = TRUE)
+  parf <- cf_parframe(parf, parameters = parnames, metanames = metanames)
+  parf
 }

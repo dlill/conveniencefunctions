@@ -144,6 +144,7 @@ cf_outputFigure <- function(pl, filename,
                             FLAGFuture = TRUE,
                             ...) {
   
+  if (is.null(filename)) return(pl)
   
   # Handle paginate: Wraps plot in list of length n_pages. 
   # For unpaginated plots, length(pl)=1
@@ -182,7 +183,7 @@ cf_outputFigure <- function(pl, filename,
     doPlot()
   }
   
-  invisible()
+  invisible(pl)
 }
 
 
