@@ -398,9 +398,11 @@ toggle_mclapply <- function() {
 #' @export
 #'
 #' @examples
-#' textline <- "   rng <- rstudioapi::document_range("
+#' textline <- "rng <- rstudioapi::document_range("
+#' textline <- "rstudioapi::document_range("
+#' textline <- "document_range(kjshdf = bla)"
 guess_function <- function(textline) {
-  gsub(".* ?<- ?(\\w+:+)?(\\w+)\\(.*", "\\1\\2", textline)
+  gsub("(.*<- *)?(\\w+:+)?(\\w+)\\(.*", "\\2\\3", textline)
 }
 
 #' Insert debugonce(function)
