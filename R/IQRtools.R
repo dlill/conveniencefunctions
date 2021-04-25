@@ -60,6 +60,52 @@ cf_copy_script <- function(from, to, FLAGrename = FALSE) {
 }
 
 
+#' cf_copy_script for multiple scripts at once
+#'
+#' @param filenames data.table(from,to)
+#'
+#' @return nothing, called for side-effect
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+#' data.table(`~from` = list.files(".", "S501"),`~to` = list.files(".", "S501")) %>% cfoutput_MdTable(NFLAGtribble = 2)
+#' filenames <- data.table(tibble::tribble(
+#' ~from, ~to,
+#' "S520-MLPSR-01-DataPreparation.R"     ,"S530-MLCLS-01-DataPreparation.R"     ,
+#' "S520-MLPSR-02-ModelAgnostic.R"       ,"S530-MLCLS-02-ModelAgnostic.R"       ,
+#' "S520-MLPSR-03-FitDataSetVariations.R","S530-MLCLS-03-FitDataSetVariations.R",
+#' "S520-MLPSR-04-CollectModelEnsemble.R","S530-MLCLS-04-CollectModelEnsemble.R",
+#' "S520-MLPSR-06-ExportTopPredictors.R" ,"S530-MLCLS-06-ExportTopPredictors.R" ,
+#' ))
+cf_copy_scripts_multiple <- function(filenames) {
+  # copy scripts
+  for (i in 1:nrow(filenames))
+    conveniencefunctions::cf_copy_script(from = filenames[i,from],
+                                         to = filenames[i,to])
+  
+  # replace "from" by "to" in all copied scripts
+  for (i in 1:nrow(filenames)) {
+    from <- basename(filenames$from[[i]])
+    to   <- basename(filenames$to[[i]])
+    from_noEnding <- gsub("\\.R$","", basename(filenames$from[[i]]))
+    to_noEnding   <- gsub("\\.R$","", basename(filenames$to[[i]]))
+    
+    allscripts <- filenames$to
+    sapply(setNames(nm = allscripts), function(s) {
+      l <- readLines(s)
+      nref <-   sum(grepl(from_noEnding,l))
+      if(nref==0) return(NULL)
+      cat(s, ":\t", nref, "\n")
+      l <- gsub(from_noEnding, to_noEnding, l)
+      writeLines(l,s)
+    })
+  }
+  #
+  invisible()
+}
+
 #' Get some inspiration
 #'
 #' @return

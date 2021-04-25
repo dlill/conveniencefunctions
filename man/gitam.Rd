@@ -9,9 +9,6 @@ gitam(string)
 \arguments{
 \item{string}{commit message}
 }
-\value{
-
-}
 \description{
 gitcom --amend from R command line
 }

@@ -2,13 +2,10 @@
 % Please edit documentation in R/tools.R
 \name{update_cf}
 \alias{update_cf}
-\title{Title}
+\title{Update package via devtools}
 \usage{
 update_cf()
 }
-\value{
-
-}
 \description{
-Title
+Update package via devtools
 }

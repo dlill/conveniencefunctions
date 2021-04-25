@@ -7,7 +7,7 @@
 allCommitted()
 }
 \value{
-
+TRUE or FALSE
 }
 \description{
 Check if everythiing is commmitted

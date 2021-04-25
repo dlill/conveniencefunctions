@@ -305,12 +305,9 @@ funnames_in_package <- function(package, as_namespace = F) {
     paste0("\\b(", ., ")\\b")
 }
 
-#' Title
+#' Update package via devtools
 #'
-#' @return
 #' @export
-#'
-#' @examples
 update_cf <- function() {
   devtools::install_github("dkaschek/dMod@hackathon"   ,dependencies = FALSE)
   devtools::install_github("dlill/conveniencefunctions",dependencies = FALSE)
@@ -325,7 +322,6 @@ update_cf <- function() {
 #'
 #' @param string commit message
 #'
-#' @return
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
@@ -340,7 +336,6 @@ gall <- function(string) {
 #'
 #' @param string commit message
 #'
-#' @return
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
@@ -352,8 +347,7 @@ gitcom <- function(string) {
 #' gitcom --amend from R command line
 #'
 #' @param string commit message
-#'
-#' @return
+#' 
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' @export
@@ -368,10 +362,8 @@ gitam <- function(string) {
 
 #' Check if everythiing is commmitted
 #'
-#' @return
+#' @return TRUE or FALSE
 #' @export
-#'
-#' @examples
 allCommitted <- function() {
   gitstat <- system("git status", intern = TRUE)
   "nothing to commit, working tree clean" %in% gitstat

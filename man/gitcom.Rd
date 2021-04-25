@@ -9,9 +9,6 @@ gitcom(string)
 \arguments{
 \item{string}{commit message}
 }
-\value{
-
-}
 \description{
 gitcom from R command line
 }
