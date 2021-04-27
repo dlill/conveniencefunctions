@@ -73,3 +73,8 @@ Description: Aligns assignment '=' operators within a highlighted area.
 Binding: alignAssignEqual
 Interactive: false
 
+Name: Toggle Blabla
+Description: Toggles blabla
+Binding: toggle_blabla
+Interactive: false
+

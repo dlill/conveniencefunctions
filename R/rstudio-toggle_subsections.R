@@ -433,3 +433,30 @@ insert_debugonce <- function() {
 }
 
 
+# -------------------------------------------------------------------------#
+# BLABLA ----
+# -------------------------------------------------------------------------#
+
+#' Toggle BLABLA so the documentwalker can extract functions
+#'
+#' @return NULL: Modifies document
+#' @export
+toggle_blabla <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  text <- readLines(e$path)
+  
+  if (!any(grepl("BLABLA", text))){
+    text <- gsub("[,", "[BLABLA,", text, fixed = TRUE)
+  } else {
+    text <- gsub("BLABLA", "", text, fixed = TRUE)
+  }
+  
+  text <- paste0(text, collapse = "\n")
+  text <- paset0(text, "\n")
+  
+  rstudioapi::setDocumentContents(text, id = e$id)
+  rstudioapi::documentSave(id = e$id)
+}
+
+

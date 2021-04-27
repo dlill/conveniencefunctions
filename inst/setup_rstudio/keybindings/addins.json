@@ -9,5 +9,6 @@
     "conveniencefunctions::transform_subsection" : "Ctrl+J",
     "conveniencefunctions::initiate_or_delete_subsection" : "Ctrl+Shift+J",
     "conveniencefunctions::renumber_sections" : "Ctrl+Shift+R",
-    "conveniencefunctions::insert_loopdebugger" : "Ctrl+Shift+I"
+    "conveniencefunctions::insert_loopdebugger" : "Ctrl+Shift+I",
+    "conveniencefunctions::toggle_blabla" : "Ctrl+Alt+O"
 }
