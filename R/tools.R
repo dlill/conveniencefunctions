@@ -311,6 +311,7 @@ funnames_in_package <- function(package, as_namespace = F) {
 update_cf <- function() {
   devtools::install_github("dkaschek/dMod@hackathon"   ,dependencies = FALSE)
   devtools::install_github("dlill/conveniencefunctions",dependencies = FALSE)
+  devtools::install_github("dlill/petab",dependencies = FALSE)
 }
 
 
