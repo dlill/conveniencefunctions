@@ -453,7 +453,7 @@ toggle_blabla <- function() {
   }
   
   text <- paste0(text, collapse = "\n")
-  text <- paset0(text, "\n")
+  text <- paste0(text, "\n")
   
   rstudioapi::setDocumentContents(text, id = e$id)
   rstudioapi::documentSave(id = e$id)
