@@ -106,6 +106,28 @@ cf_copy_scripts_multiple <- function(filenames) {
   invisible()
 }
 
+
+
+
+#' Generate filenames
+#'
+#' @param pattern_from 
+#' @param pattern_to 
+#'
+#' @return data.table to use in cf_copy_script_multiple
+#' @export
+#'
+#' @examples
+#' pattern_from <- "S240-0(\\d)-Viktor-Smads"
+#' pattern_to <- "S242-0\\1-SmadsRec-linearTot"
+cf_copy_script_makeFilenames <- function(pattern_from, pattern_to) {
+  filenames <- data.table(from = list.files(pattern = pattern_from))
+  filenames[,`:=`(to = gsub(pattern_from, pattern_to, from)), by = 1:nrow(filenames)]
+  filenames
+}
+
+
+
 #' Get some inspiration
 #'
 #' @return
