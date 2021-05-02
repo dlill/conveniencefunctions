@@ -254,6 +254,48 @@ cor2cov <- function(mycor,mysd = rep(1,dim(mycor)[1])) {
 }
 
 
+#' ALL indices of a vector with duplicates
+#'
+#' @param x vector
+#'
+#' @return like duplicated but include the first elements which have duplicate values
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+#' x <- c(rep(1:10), c(1,3,4,2,1,1,2))
+#' duplicated_includeFirst(x)
+duplicated_includeFirst <- function(x) {
+  cat("better as snippet?")
+  hasDupe <- duplicated(x)
+  allDupes <- rep(FALSE, length(x))
+  for (val in unique(x[hasDupe])) 
+    allDupes[x == val] <- TRUE
+  allDupes
+}
+
+
+#' Values which are duplicated
+#'
+#' @param x vector
+#'
+#' @return vector of duplicated values
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+#' x <- c(rep(1:10), c(1,3,4,2,1,1,2))
+#' duplicated_values(x)
+duplicated_values <- function(x) {
+  cat("better as snippet?")
+  hasDupe <- duplicated(x)
+  unique(x[hasDupe]) 
+}
+
+
+
 
 # Other useful stuff ----
 
