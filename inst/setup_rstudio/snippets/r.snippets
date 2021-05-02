@@ -91,17 +91,11 @@ snippet status
 snippet gstatus
 	system("git status", wait = FALSE)
 
-snippet gall
-	conveniencefunctions::gall("$1")
-
 snippet gcom
 	conveniencefunctions::gitcom("$1")
 
 snippet gam
-	conveniencefunctions::gitam("$1")
-
-snippet gnam
-	conveniencefunctions::gitnam()
+	conveniencefunctions::gitam($1)
 
 snippet gitpullsh
 	system("git pull && git push", wait = FALSE)
@@ -112,17 +106,11 @@ snippet gitpull
 snippet gitstatus
 	system("git status", wait = FALSE)
 
-snippet gitall
-	conveniencefunctions::gall("$1")
-
 snippet gitcom
 	conveniencefunctions::gitcom("$1")
 
 snippet gitam
-	conveniencefunctions::gitam("$1")
-
-snippet gitnam
-	conveniencefunctions::gitnam()
+	conveniencefunctions::gitam($1)
 
 snippet gitlog
 	system("git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short", wait = FALSE)
