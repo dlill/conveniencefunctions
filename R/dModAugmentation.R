@@ -237,6 +237,33 @@ trustAna_getArg <- function(fit, i = 1, whichPath = "argpath") {
   return(out)
 }
 
+
+#' Get blather results in nice data.table
+#'
+#' @param fit return by dMod::trust(...,blather=TRUE)
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+trustBlatherResults <- function(fit){
+  data.table(iteration = 1:length(fit$accept),
+             steptype  = fit$steptype,
+             accept    = fit$accept,
+             valpath   = fit$valpath,
+             valtry    = fit$valtry,
+             preddiff  = fit$preddiff,
+             rho       = fit$rho,
+             r         = fit$r,
+             stepnorm  = fit$stepnorm
+  )
+}
+
+
+
+
 # helper functions ----
 
 
