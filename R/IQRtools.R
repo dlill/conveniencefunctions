@@ -188,14 +188,57 @@ inspire <- function() {
 cf_script_templateVersions <- function() {
   allscripts <- list.files(".", "\\.R$")
   allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
-  sapply(setNames(nm = allscripts), function(s) {
-    l <- readLines(s)
-    nref <-   sum(grepl(from_noEnding,l))
-    if(nref==0) return(NULL)
-    cat(s, ":\t", nref, "\n")
-    l <- gsub(from_noEnding, to_noEnding, l)
-    writeLines(l,s)
-  })    
+  # sapply(setNames(nm = allscripts), function(s) {
+  #   l <- readLines(s)
+  #   nref <-   sum(grepl(from_noEnding,l))
+  #   if(nref==0) return(NULL)
+  #   cat(s, ":\t", nref, "\n")
+  #   l <- gsub(from_noEnding, to_noEnding, l)
+  #   writeLines(l,s)
+  # })    
+}
+
+
+#' Remove scripts AND their output folders
+#'
+#' @param filenames_vector 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+cf_scripts_remove <- function(filenames_vector) {
+  for (from in filenames){
+    if (from != basename(from)) stop("Renaming output folder only works if getwd() = scriptdir")
+    unlink(from)
+    fromOut <- file.path("../04-Output", gsub(".R$", "", from))
+    unlink(fromOut, recursive = TRUE)
+    }
+}
+
+
+#' Title
+#'
+#' @return list of stale scripts and stale folders
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+cf_scripts_identifyStale <- function() {
+  from <- list.files(".", "\\.R")
+  outFolders_Possible <- gsub(".R$", "", from)
+  outFolders_Actual   <- list.dirs("../04-Output", full.names = FALSE, recursive = FALSE)
+  
+  cat("\n======= STALE SCRIPTS: setdiff(possible,actual): ",length(setdiff(outFolders_Possible,outFolders_Actual))," ========== \n")
+  staleScripts <- setdiff(outFolders_Possible,outFolders_Actual)
+  cat(staleScripts, sep = "\n")
+  cat("\n======= STALE FOLDERS: setdiff(actual,possible): ",length(setdiff(outFolders_Actual,outFolders_Possible))," ========== \n")
+  staleFolders <- setdiff(outFolders_Actual,outFolders_Possible)
+  cat(staleFolders, sep = "\n")
+  list(staleFolders = file.path("../04-Output", staleFolders), staleScripts = staleScripts)
 }
 
 
