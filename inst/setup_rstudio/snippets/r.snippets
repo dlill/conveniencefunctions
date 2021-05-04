@@ -292,7 +292,7 @@ snippet cfhead
 	#
 	# [PURPOSE]
 	# 
-	# 
+	# $0
 	#
 	#
 	# [AUTHOR]
@@ -302,12 +302,10 @@ snippet cfhead
 	# `r date()`
 	#
 	# [Template Info]
-	# .. Template name -----
-	# TGFB_PETABEXPORT
-	# TGFB_MSTRUST$0
-	# TGFB_PROFILE
-	# .. Template version -----
-	# 0.0.1
+	# .. Template name TGFB_PETABEXPORT -----
+	# .. Template name TGFB_MSTRUST -----
+	# .. Template name TGFB_PROFILE -----
+	# .. Template version 0.0.1 -----
 	#
 	rm(list = ls(all.names = TRUE))
 	try(setwd(dirname(rstudioapi::getSourceEditorContext()\$path)))
@@ -331,12 +329,12 @@ snippet cfhead
 	
 snippet templateInfo
 	# [Template Info]
-	# .. Template name -----
-	# TGFB_PETABEXPORT
-	# TGFB_MSTRUST$0
-	# TGFB_PROFILE
-	# .. Template version -----
-	# 0.0.1
+	# .. Template name TGFB_PETABEXPORT -----
+	# .. Template name TGFB_MSTRUST -----
+	# .. Template name TGFB_PROFILE -----
+	# .. Template version 0.0.1 -----
+	#
+
 
 
 snippet assign_folder_output_data

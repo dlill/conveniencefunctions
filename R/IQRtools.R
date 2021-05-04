@@ -184,3 +184,19 @@ inspire <- function() {
       
       sep = "\n")
 }
+
+cf_script_templateVersions <- function() {
+  allscripts <- list.files(".", "\\.R$")
+  allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
+  sapply(setNames(nm = allscripts), function(s) {
+    l <- readLines(s)
+    nref <-   sum(grepl(from_noEnding,l))
+    if(nref==0) return(NULL)
+    cat(s, ":\t", nref, "\n")
+    l <- gsub(from_noEnding, to_noEnding, l)
+    writeLines(l,s)
+  })    
+}
+
+
+
