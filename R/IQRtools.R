@@ -185,19 +185,32 @@ inspire <- function() {
       sep = "\n")
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
 cf_script_templateVersions <- function() {
   allscripts <- list.files(".", "\\.R$")
   allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
-  # sapply(setNames(nm = allscripts), function(s) {
-  #   l <- readLines(s)
-  #   nref <-   sum(grepl(from_noEnding,l))
-  #   if(nref==0) return(NULL)
-  #   cat(s, ":\t", nref, "\n")
-  #   l <- gsub(from_noEnding, to_noEnding, l)
-  #   writeLines(l,s)
-  # })    
+  s <- (setNames(nm = allscripts))[[25]]
+  ti <- lapply(setNames(nm = allscripts), function(s) {
+    l <- readLines(s)
+    tn <- grep("Template name",l,value = TRUE)
+    tn <- gsub("# .. Template name | ----- *", "", tn)
+    tv <- grep("Template version",l,value = TRUE)
+    tv <- gsub("# .. Template version | ----- *", "", tv)
+    data.table(templateName = tn, templateVersion = tv)
+  })
+  ti <- rbindlist(ti, idcol = "script")
+  setcolorder(ti, c(2,3,1))
+  setkey(ti, templateName)
+  cfoutput_MdTable(ti, "templateName")
+  invisible(ti)
 }
-
 
 #' Remove scripts AND their output folders
 #'
