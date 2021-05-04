@@ -173,9 +173,11 @@ cf_outputFigure <- function(pl, filename,
   }
   
   if (FLAGFuture) {
-    if (!"multisession" %in% class(future::plan())) 
+    if (!"multisession" %in% class(future::plan())) {
       future::plan("multisession")
-    message("Temporarily affecting Sys.getenv('OMP_NUM_THREADS')\nFuture plan is now 'multisession'\n")
+      cat("Future plan is now 'multisession'\n")
+    }
+    message("Temporarily affecting Sys.getenv('OMP_NUM_THREADS')'\n")
     Sys.setenv(OMP_NUM_THREADS = 2)
     future::`%<-%`(.dummy, {doPlot()})
     Sys.setenv(OMP_NUM_THREADS = 1)
