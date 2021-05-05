@@ -448,6 +448,7 @@ toggle_blabla <- function() {
   
   if (!any(grepl("BLABLA", text))){
     text <- gsub("[,", "[BLABLA,", text, fixed = TRUE)
+    text <- gsub(",]", ",BLABLA]", text, fixed = TRUE)
   } else {
     text <- gsub("BLABLA", "", text, fixed = TRUE)
   }
