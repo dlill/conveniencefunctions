@@ -202,14 +202,14 @@ cf_script_templateVersions <- function() {
   ti <- lapply(setNames(nm = allscripts), function(s) {
     l <- readLines(s)
     tn <- grep("Template name",l,value = TRUE)
-    tn <- gsub("# .. Template name | ----- *", "", tn)
+    tn <- gsub("# ..( \\d)? Template name | ----- *", "", tn)
     tv <- grep("Template version",l,value = TRUE)
-    tv <- gsub("# .. Template version | ----- *", "", tv)
+    tv <- gsub("# ..( \\d)? Template version | ----- *", "", tv)
     data.table(templateName = tn, templateVersion = tv)
   })
   ti <- data.table::rbindlist(ti, idcol = "script")
-  dat.table::setcolorder(ti, c(2,3,1))
-  dat.table::setkey(ti, templateName)
+  data.table::setcolorder(ti, c(2,3,1))
+  data.table::setkey(ti, templateName)
   cfoutput_MdTable(ti, "templateName")
   invisible(ti)
 }
@@ -225,7 +225,7 @@ cf_script_templateVersions <- function() {
 #'
 #' @examples
 cf_scripts_remove <- function(filenames_vector) {
-  for (from in filenames){
+  for (from in filenames_vector){
     if (from != basename(from)) stop("Renaming output folder only works if getwd() = scriptdir")
     unlink(from)
     fromOut <- file.path("../04-Output", gsub(".R$", "", from))
