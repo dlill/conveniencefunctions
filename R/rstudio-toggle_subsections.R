@@ -459,4 +459,36 @@ toggle_blabla <- function() {
   rstudioapi::documentSave(id = e$id)
 }
 
+# -------------------------------------------------------------------------#
+# Toggle ggplot ----
+# -------------------------------------------------------------------------#
+
+# idea turn ggplots into one-liners and back to multiliners
+
+# pl <- cfggplot(dplot1[!Experiment %in% c("81", "81.1")], aes(time, FC)) + 
+#   facet_grid(name ~ cellline + TGFb, scales = "free") + 
+#   geom_line(aes(color = factor(TGFb), linetype = factor(Experiment), group = interaction(Experiment, cellline, TGFb))) + 
+#   geom_hline(yintercept = 0) + 
+#   scale_color_viridis_d() +
+#   scale_y_log10() + 
+#   labs(title = "FC - Genes normalized wrt housekeeper, technical replicates reduced to mean, FC wrt time = 0", 
+#        subtitle = "Experiments show systematic effect: Strong impact of time 0",
+#        x = "Time (hours)", lty = "Experiment") + 
+#   geom_blank()
+# 
+# cf_outputFigure(pl, filename = file.path(.outputFolder, "015-proteins-fc-doseresponse-ExperimentsMingled-no81-perTGFb.png"), width = 29.7, height = 21, scale = 1, units = "cm")
+# 
+# e <- rstudioapi::getSourceEditorContext()
+# rstudioapi::documentSave(id = e$id)
+# text <- readLines(e$path)
+# ln <- grep("(facet_|geom_|scale_|labs|theme)", text)
+# 
+# paste0(text[ln], collapse = "")
+# 
+# 
+
+
+
+
+
 
