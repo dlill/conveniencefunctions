@@ -192,6 +192,8 @@ inspire <- function() {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #'
+#' @importFrom data.table rbindlist setcolorder setkey
+#'
 #' @examples
 cf_script_templateVersions <- function() {
   allscripts <- list.files(".", "\\.R$")
@@ -205,9 +207,9 @@ cf_script_templateVersions <- function() {
     tv <- gsub("# .. Template version | ----- *", "", tv)
     data.table(templateName = tn, templateVersion = tv)
   })
-  ti <- rbindlist(ti, idcol = "script")
-  setcolorder(ti, c(2,3,1))
-  setkey(ti, templateName)
+  ti <- data.table::rbindlist(ti, idcol = "script")
+  dat.table::setcolorder(ti, c(2,3,1))
+  dat.table::setkey(ti, templateName)
   cfoutput_MdTable(ti, "templateName")
   invisible(ti)
 }
