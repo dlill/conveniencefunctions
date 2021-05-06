@@ -4,14 +4,25 @@
 \alias{cf_profile_plotPathsAffected}
 \title{Title}
 \usage{
-cf_profile_plotPathsAffected(profiles, page = 1, tol = 1e-05)
+cf_profile_plotPathsAffected(
+  profiles,
+  tol = 1e-05,
+  ggCallback = list(facet_wrap_paginate(~PARAMETER1 + PARAMETER2, nrow = 3, ncol = 4,
+    scales = "free", page = 1), guides(color = TRUE)),
+  filename = NULL,
+  FLAGfuture = TRUE,
+  width = 29.7,
+  height = 21,
+  scale = 1,
+  units = "cm"
+)
 }
 \arguments{
 \item{profiles}{profiles to plotPaths}
 
-\item{page}{pagination page}
-
 \item{tol}{}
+
+\item{page}{pagination page}
 }
 \value{
 paginated ggplot

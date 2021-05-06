@@ -23,6 +23,29 @@ cf_profile_getProfilesOptimumBelowFit <- function(profiles){
   profiles
 }
 
+
+#' Title
+#'
+#' @param pd
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cf_profile_getOpenProfiles <- function(profiles) {
+  dpr <- as.data.table(profiles)
+  dpr[,`:=`(profileDirection = if(constraint <= 0) "left" else "right"), by = 1:nrow(dpr)]
+  valueOptimum <- dpr[constraint == 0, unique(value)]
+  dpr[,`:=`(valueOptimum = valueOptimum)]
+  dpr[,`:=`(valueDifference = value - valueOptimum)]
+  dprOpen <- dpr[,`.`(isOpen = all(valueDifference < 3.84)), by = c("whichPar", "profileDirection")]
+  dprOpen <- dprOpen[isOpen == TRUE]
+  dprOpen
+  
+}
+
+
+
 #' Prepare parameters affected by a profile
 #' 
 #' Its not helpful to plot all paths in plotPaths, 
@@ -108,20 +131,26 @@ cf_profile_getOptimum <- function(profiles) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' 
-cf_profile_plotPathsAffected <- function(profiles, page = 1, tol = 1e-5) {
+cf_profile_plotPathsAffected <- function(profiles, tol = 1e-5, 
+                                         ggCallback = list(facet_wrap_paginate(~PARAMETER1+PARAMETER2, nrow = 2, ncol = 2, scales = "free", page = 1),
+                                                           guides(color = TRUE)),
+                                         filename = NULL, FLAGfuture = TRUE,
+                                         width = 29.7, height = 21, scale = 1, units = "cm"
+                                         ) {
   dp <- cf_profile_prepareAffectedPaths(profiles, tol = tol)
   dfit <- dp[cf_profile_getStartPar(profiles), on = c("PARAMETER1" = "PARAMETEROPT", PARVALUE1 = "PARVALUEOPT")]
   dfit <- dfit[!is.na(PARVALUE2)]
   dopt <- dp[cf_profile_getOptimum(profiles), on = c("PARAMETER1" = "PARAMETEROPT", PARVALUE1 = "PARVALUEOPT")]
   dopt <- dopt[!is.na(PARVALUE2)]
   pl <- cfggplot(dp, aes(PARVALUE1, PARVALUE2, group = PARAMETER2, color = PARAMETER2)) + 
-    facet_wrap_paginate(~PARAMETER1+PARAMETER2, nrow = 3, ncol = 4, scales = "free", page = page) + 
     geom_line() + 
     geom_point(data = dfit, size = 2) + 
-    geom_point(data = dopt, shape = 4, size = 2) + 
-    guides(color = FALSE)
+    geom_point(data = dopt, shape = 4, size = 2) 
+  for (plx in ggCallback) pl <- pl + plx
+  
   message("Plot has ", n_pages(pl), " pages.\n")
-  pl 
+  
+  cf_outputFigure(pl = pl, filename = filename, width = width, height = height, scale = scale, units = units, FLAGFuture = FLAGfuture)
 }
 
 

@@ -294,3 +294,28 @@ cfcolors <- c("#000000", "#C5000B", "#0084D1", "#579D1C", "#FF950E",
               "lightskyblue1", "darkolivegreen3", "gray13", "turquoise2", "gray26",
               rep("gray", 100))
 
+
+
+#' Get comprehensive list of all aesthetics accepted by each geom
+#'
+#' From Moody_Mudskipper at
+#' https://stackoverflow.com/questions/11657380/is-there-a-table-or-catalog-of-aesthetics-for-ggplot2
+#'
+#' License is "CC BY-SA 4.0" according to https://stackoverflow.com/help/licensing
+#'
+#'
+#' @return list(geom_abline = c("slope", "intercept", ...), ...)
+#' @export
+
+#'
+#' @examples
+cfgg_getAllAesthetics <- function() {
+  env <- asNamespace("ggplot2")
+  all_Geoms <- ls(envir = env, pattern = "^Geom.+")
+  all_Geoms <- mget(all_Geoms, env)
+  all_aes <- lapply(all_Geoms,function(x) x$aesthetics())
+  names(all_aes) <- names(all_aes) %>% substr(5,nchar(.)) %>% tolower() %>% paste0("geom_",.)
+  all_aes[!names(all_aes) %in% ls(envir = env)] <- NULL
+  all_aes
+}
+
