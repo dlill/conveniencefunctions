@@ -20,6 +20,7 @@
 cf_predict <- function (prd, times, pars, keep_names = NULL, ncores = 4, FLAGverbose = FALSE, FLAGverbose2 = FALSE, FLAGbrowser = FALSE,deriv = FALSE, ...) {
     if (FLAGverbose2) cat("Simulating", "\n")
   
+  i <- 1
   out <- parallel::mclapply(X = 1:nrow(pars), mc.cores = ncores, FUN = function(i) {
     if (FLAGverbose) cat("Parameter set", i, "\n")
     if (FLAGbrowser) browser()

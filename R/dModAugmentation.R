@@ -132,7 +132,7 @@ cf_profile_getOptimum <- function(profiles) {
 #' @md
 #' 
 cf_profile_plotPathsAffected <- function(profiles, tol = 1e-5, 
-                                         ggCallback = list(facet_wrap_paginate(~PARAMETER1+PARAMETER2, nrow = 2, ncol = 2, scales = "free", page = 1),
+                                         ggCallback = list(facet_wrap_paginate(~PARAMETER1, nrow = 2, ncol = 2, scales = "free", page = 1),
                                                            guides(color = TRUE)),
                                          filename = NULL, FLAGfuture = TRUE,
                                          width = 29.7, height = 21, scale = 1, units = "cm"

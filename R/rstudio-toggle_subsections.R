@@ -488,8 +488,31 @@ toggle_blabla <- function() {
 # 
 # 
 
+# -------------------------------------------------------------------------#
+# importFrom ----
+# -------------------------------------------------------------------------#
 
-
-
-
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+extract_importFrom <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  
+  
+  text <- e$selection[[1]]$text
+  text <- strsplit(text, "\n", fixed = TRUE)[[1]]
+  text <- stringr::str_extract_all(text, "\\w+::\\w+")
+  text <- unlist(text)
+  text <- strsplit(text, "::", TRUE)
+  text <- lapply(text, function(x) as.data.table(as.list(x)))
+  text <- rbindlist(text)
+  setnames(text, c("pkg", "fun"))
+  text <- text[,list(text = paste0("@importFrom ", unique(pkg), paste0(fun, collapse = " "))), by = "pkg"]
+  cat(text$text, sep = "\n")
+  invisible(text$text)
+}
 

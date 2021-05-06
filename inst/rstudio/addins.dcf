@@ -78,3 +78,10 @@ Description: Toggles blabla
 Binding: toggle_blabla
 Interactive: false
 
+
+Name: extractImportFrom
+Description: Toggles sections in the document outline
+Binding: extract_importFrom
+Interactive: false
+
+

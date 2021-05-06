@@ -316,6 +316,7 @@ cfgg_getAllAesthetics <- function() {
   all_aes <- lapply(all_Geoms,function(x) x$aesthetics())
   names(all_aes) <- names(all_aes) %>% substr(5,nchar(.)) %>% tolower() %>% paste0("geom_",.)
   all_aes[!names(all_aes) %in% ls(envir = env)] <- NULL
+  all_aes <- lapply(all_aes, function(x) {if("colour" %in% x) x <- c(x, "color"); x}) # color / colour thing. ggplot only returns only one version.
   all_aes
 }
 

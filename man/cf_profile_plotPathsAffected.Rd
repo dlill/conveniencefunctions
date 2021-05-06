@@ -7,8 +7,8 @@
 cf_profile_plotPathsAffected(
   profiles,
   tol = 1e-05,
-  ggCallback = list(facet_wrap_paginate(~PARAMETER1 + PARAMETER2, nrow = 3, ncol = 4,
-    scales = "free", page = 1), guides(color = TRUE)),
+  ggCallback = list(facet_wrap_paginate(~PARAMETER1, nrow = 2, ncol = 2, scales =
+    "free", page = 1), guides(color = TRUE)),
   filename = NULL,
   FLAGfuture = TRUE,
   width = 29.7,
