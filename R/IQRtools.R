@@ -120,10 +120,84 @@ cf_copy_scripts_multiple <- function(filenames) {
 #' @examples
 #' pattern_from <- "S240-0(\\d)-Viktor-Smads"
 #' pattern_to <- "S242-0\\1-SmadsRec-linearTot"
-cf_copy_script_makeFilenames <- function(pattern_from, pattern_to) {
+cf_script_makeFilenames <- function(pattern_from, pattern_to) {
   filenames <- data.table(from = list.files(pattern = pattern_from))
   filenames[,`:=`(to = gsub(pattern_from, pattern_to, from)), by = 1:nrow(filenames)]
+  filenames <- copy(filenames) # so that it is printed directly
   filenames
+}
+
+
+
+#' Title
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @importFrom data.table rbindlist setcolorder setkey
+#'
+#' @examples
+cf_script_templateVersions <- function() {
+  allscripts <- list.files(".", "\\.R$")
+  allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
+  s <- (setNames(nm = allscripts))[[25]]
+  ti <- lapply(setNames(nm = allscripts), function(s) {
+    l <- readLines(s)
+    tn <- grep("Template name",l,value = TRUE)
+    tn <- gsub("# ..( \\d)? Template name | ----- *", "", tn)
+    tv <- grep("Template version",l,value = TRUE)
+    tv <- gsub("# ..( \\d)? Template version | ----- *", "", tv)
+    data.table(templateName = tn, templateVersion = tv)
+  })
+  ti <- data.table::rbindlist(ti, idcol = "script")
+  data.table::setcolorder(ti, c(2,3,1))
+  data.table::setkey(ti, templateName)
+  cfoutput_MdTable(ti, "templateName")
+  invisible(ti)
+}
+
+#' Remove scripts AND their output folders
+#'
+#' @param filenames_vector 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+cf_script_remove <- function(filenames_vector) {
+  for (from in filenames_vector){
+    if (from != basename(from)) stop("Renaming output folder only works if getwd() = scriptdir")
+    unlink(from)
+    fromOut <- file.path("../04-Output", gsub(".R$", "", from))
+    unlink(fromOut, recursive = TRUE)
+    }
+}
+
+
+#' Title
+#'
+#' @return list of stale scripts and stale folders
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+cf_script_identifyStale <- function() {
+  from <- list.files(".", "\\.R")
+  outFolders_Possible <- gsub(".R$", "", from)
+  outFolders_Actual   <- list.dirs("../04-Output", full.names = FALSE, recursive = FALSE)
+  
+  cat("\n======= STALE SCRIPTS: setdiff(possible,actual): ",length(setdiff(outFolders_Possible,outFolders_Actual))," ========== \n")
+  staleScripts <- setdiff(outFolders_Possible,outFolders_Actual)
+  cat(staleScripts, sep = "\n")
+  cat("\n======= STALE FOLDERS: setdiff(actual,possible): ",length(setdiff(outFolders_Actual,outFolders_Possible))," ========== \n")
+  staleFolders <- setdiff(outFolders_Actual,outFolders_Possible)
+  cat(staleFolders, sep = "\n")
+  list(staleFolders = file.path("../04-Output", staleFolders), staleScripts = staleScripts)
 }
 
 
@@ -184,77 +258,4 @@ inspire <- function() {
       
       sep = "\n")
 }
-
-#' Title
-#'
-#' @return
-#' @export
-#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
-#' @md
-#'
-#' @importFrom data.table rbindlist setcolorder setkey
-#'
-#' @examples
-cf_script_templateVersions <- function() {
-  allscripts <- list.files(".", "\\.R$")
-  allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
-  s <- (setNames(nm = allscripts))[[25]]
-  ti <- lapply(setNames(nm = allscripts), function(s) {
-    l <- readLines(s)
-    tn <- grep("Template name",l,value = TRUE)
-    tn <- gsub("# ..( \\d)? Template name | ----- *", "", tn)
-    tv <- grep("Template version",l,value = TRUE)
-    tv <- gsub("# ..( \\d)? Template version | ----- *", "", tv)
-    data.table(templateName = tn, templateVersion = tv)
-  })
-  ti <- data.table::rbindlist(ti, idcol = "script")
-  data.table::setcolorder(ti, c(2,3,1))
-  data.table::setkey(ti, templateName)
-  cfoutput_MdTable(ti, "templateName")
-  invisible(ti)
-}
-
-#' Remove scripts AND their output folders
-#'
-#' @param filenames_vector 
-#'
-#' @return
-#' @export
-#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
-#' @md
-#'
-#' @examples
-cf_scripts_remove <- function(filenames_vector) {
-  for (from in filenames_vector){
-    if (from != basename(from)) stop("Renaming output folder only works if getwd() = scriptdir")
-    unlink(from)
-    fromOut <- file.path("../04-Output", gsub(".R$", "", from))
-    unlink(fromOut, recursive = TRUE)
-    }
-}
-
-
-#' Title
-#'
-#' @return list of stale scripts and stale folders
-#' @export
-#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
-#' @md
-#'
-#' @examples
-cf_scripts_identifyStale <- function() {
-  from <- list.files(".", "\\.R")
-  outFolders_Possible <- gsub(".R$", "", from)
-  outFolders_Actual   <- list.dirs("../04-Output", full.names = FALSE, recursive = FALSE)
-  
-  cat("\n======= STALE SCRIPTS: setdiff(possible,actual): ",length(setdiff(outFolders_Possible,outFolders_Actual))," ========== \n")
-  staleScripts <- setdiff(outFolders_Possible,outFolders_Actual)
-  cat(staleScripts, sep = "\n")
-  cat("\n======= STALE FOLDERS: setdiff(actual,possible): ",length(setdiff(outFolders_Actual,outFolders_Possible))," ========== \n")
-  staleFolders <- setdiff(outFolders_Actual,outFolders_Possible)
-  cat(staleFolders, sep = "\n")
-  list(staleFolders = file.path("../04-Output", staleFolders), staleScripts = staleScripts)
-}
-
-
 

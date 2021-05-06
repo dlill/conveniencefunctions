@@ -227,6 +227,8 @@ extract_loopargs <- function(textline) {
 #' 
 #' This is handy for developing and debugging a loop
 #' 
+#' importFrom rstudioapi getSourceEditorContext documentSave insertText document_position
+#' 
 #' @return NULL. Modifies the document
 #' @author Daniel Lill (daniel.lill@intiquan.com)
 #' @md
@@ -438,7 +440,8 @@ insert_debugonce <- function() {
 # -------------------------------------------------------------------------#
 
 #' Toggle BLABLA so the documentwalker can extract functions
-#'
+#' 
+#' importFrom rstudioapi getSourceEditorContext documentSave setDocumentContents 
 #' @return NULL: Modifies document
 #' @export
 toggle_blabla <- function() {
@@ -497,21 +500,24 @@ toggle_blabla <- function() {
 #' @return
 #' @export
 #'
+#' importFrom rstudioapi getSourceEditorContext documentSave
+#' @importFrom stringr str_extract_all
+#' @importFrom table as.data.table rbindlist setnames
+#'
 #' @examples
 extract_importFrom <- function() {
   e <- rstudioapi::getSourceEditorContext()
   rstudioapi::documentSave(id = e$id)
   
-  
   text <- e$selection[[1]]$text
   text <- strsplit(text, "\n", fixed = TRUE)[[1]]
-  text <- stringr::str_extract_all(text, "\\w+::\\w+")
+  text <- stringr::str_extract_all(text, "\\w+::[a-zA-Z._]+")
   text <- unlist(text)
   text <- strsplit(text, "::", TRUE)
-  text <- lapply(text, function(x) as.data.table(as.list(x)))
-  text <- rbindlist(text)
-  setnames(text, c("pkg", "fun"))
-  text <- text[,list(text = paste0("@importFrom ", unique(pkg), paste0(fun, collapse = " "))), by = "pkg"]
+  text <- lapply(text, function(x) data.table::as.data.table(as.list(x)))
+  text <- data.table::rbindlist(text)
+  data.table::setnames(text, c("pkg", "fun"))
+  text <- text[,list(text = paste0("@importFrom ", unique(pkg), " ", paste0(unique(fun), collapse = " "))), by = "pkg"]
   cat(text$text, sep = "\n")
   invisible(text$text)
 }
