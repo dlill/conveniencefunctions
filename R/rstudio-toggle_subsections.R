@@ -101,11 +101,11 @@ initiate_or_delete_subsection <- function(line, text, editor) {
   ws <- nchar(regmatches(linetext, regexpr(" *", linetext)))
   if (grepl(" -{6}$", linetext)) {
     # Remove
-    rstudioapi::modifyRange(c(line, nchar(linetext)-6, line, Inf), "# ")
+    rstudioapi::modifyRange(c(line, nchar(linetext)-6, line, Inf), "")
     rstudioapi::modifyRange(c(line, ws+1, line, ws+8), "")
   } else if (grepl(" -{5}$", linetext)) {
     # Remove
-    rstudioapi::modifyRange(c(line, nchar(linetext)-5, line, Inf), "# ")
+    rstudioapi::modifyRange(c(line, nchar(linetext)-5, line, Inf), "")
     rstudioapi::modifyRange(c(line, ws+1, line, ws+6), "")
   } else if (grepl("^ *# ", linetext)) {
     # Turn comment into subsection
