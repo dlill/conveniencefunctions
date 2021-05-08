@@ -258,8 +258,8 @@ insert_exit <- function(insert_in_script = T){
 #' @param f a function as name
 #' @return called for its side effect
 #' 
+#' 
 #' @export
-#' @importFrom rstudioapi insertText
 insert_function <- function(f) {
   fname <- as.character(substitute(f))
   fbody <- capture.output(print(f))

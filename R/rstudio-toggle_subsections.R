@@ -227,7 +227,6 @@ extract_loopargs <- function(textline) {
 #' 
 #' This is handy for developing and debugging a loop
 #' 
-#' importFrom rstudioapi getSourceEditorContext documentSave insertText document_position
 #' 
 #' @return NULL. Modifies the document
 #' @author Daniel Lill (daniel.lill@intiquan.com)
@@ -441,7 +440,8 @@ insert_debugonce <- function() {
 
 #' Toggle BLABLA so the documentwalker can extract functions
 #' 
-#' importFrom rstudioapi getSourceEditorContext documentSave setDocumentContents 
+#' @details rstudioapi getSourceEditorContext documentSave setDocumentContents 
+#' 
 #' @return NULL: Modifies document
 #' @export
 toggle_blabla <- function() {
@@ -500,9 +500,10 @@ toggle_blabla <- function() {
 #' @return
 #' @export
 #'
-#' importFrom rstudioapi getSourceEditorContext documentSave
+#' @details rstudioapi getSourceEditorContext documentSave
+#' 
 #' @importFrom stringr str_extract_all
-#' @importFrom table as.data.table rbindlist setnames
+#' @importFrom data.table as.data.table rbindlist setnames
 #'
 #' @examples
 extract_importFrom <- function() {
@@ -511,7 +512,7 @@ extract_importFrom <- function() {
   
   text <- e$selection[[1]]$text
   text <- strsplit(text, "\n", fixed = TRUE)[[1]]
-  text <- stringr::str_extract_all(text, "\\w+::[a-zA-Z._]+")
+  text <- stringr::str_extract_all(text, "[a-zA-Z._]++::[a-zA-Z._]+")
   text <- unlist(text)
   text <- strsplit(text, "::", TRUE)
   text <- lapply(text, function(x) data.table::as.data.table(as.list(x)))

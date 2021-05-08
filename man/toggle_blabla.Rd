@@ -12,3 +12,6 @@ NULL: Modifies document
 \description{
 Toggle BLABLA so the documentwalker can extract functions
 }
+\details{
+rstudioapi getSourceEditorContext documentSave setDocumentContents
+}
