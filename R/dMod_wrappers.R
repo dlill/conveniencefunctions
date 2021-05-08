@@ -139,6 +139,7 @@ cf_profile <- function(obj, pars, whichPar, alpha = 0.05,
                        cores = 1,
                        path = tempdir(),
                        FLAGoverwrite = FALSE,
+                       cautiousMode = TRUE,
                        ...) {
   
   # Ensure whichPar is character
@@ -163,7 +164,7 @@ cf_profile <- function(obj, pars, whichPar, alpha = 0.05,
     prof <- try(dMod::profile(obj, pars, whichPar = whichNm, alpha, 
                               limits,method,stepControl,
                               algoControl,optControl,verbose,
-                              cores = 1, ...))
+                              cores = 1, cautiousMode = cautiousMode, ...))
     
     saveRDS(prof, filename)
     prof
