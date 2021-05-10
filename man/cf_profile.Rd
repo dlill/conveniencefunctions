@@ -18,6 +18,7 @@ cf_profile(
   cores = 1,
   path = tempdir(),
   FLAGoverwrite = FALSE,
+  cautiousMode = TRUE,
   ...
 )
 }

@@ -172,3 +172,32 @@ cf_profile <- function(obj, pars, whichPar, alpha = 0.05,
   
 }
 
+
+
+# -------------------------------------------------------------------------#
+# runbg ----
+# -------------------------------------------------------------------------#
+#' Title
+#'
+#' @param FLAGjobPurged 
+#' @param FLAGjobDone 
+#' @param FLAGjobRecover 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+printJobInfo <- function(FLAGjobPurged, FLAGjobDone, FLAGjobRecover) {
+  if (FLAGjobPurged) {
+    msg <- "Job is done and purged"
+  } else if (FLAGjobDone) {
+    msg <- "Job is done but not yet purged"
+  } else if (FLAGjobRecover) {
+    msg <- "Job is probably active"
+  } else msg <- "Job will be created"
+  cat("===============================",msg,
+      paste0("purged :", as.character(FLAGjobPurged)),
+      paste0("done   :", as.character(FLAGjobDone)),
+      paste0("recover:", as.character(FLAGjobRecover)),
+      "===========================\n", sep = "\n")
+}
