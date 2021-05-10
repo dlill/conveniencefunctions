@@ -41,6 +41,9 @@ snippet IQDloadIsoboles
 snippet IQDloadIQRmalaria
 	devtools::load_all("~/PROJTOOLS/IQRmalaria/IQRmalaria")
 
+snippet openpetab
+	rstudioapi::openProject("/home/daniel/Promotion/Promotion/Projects/petab/petab.Rproj" $0)
+
 snippet opencf
 	`r if (Sys.info()["nodename"] == "IQdesktop") 'rstudioapi::openProject("~/PROJTOOLS/conveniencefunctions/conveniencefunctions.Rproj" $0)' else if (Sys.info()["nodename"] == "unilaptop") 'rstudioapi::openProject("~/Promotion/Promotion/Projects/conveniencefunctions/conveniencefunctions.Rproj" $0)'`
 
