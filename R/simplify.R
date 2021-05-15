@@ -31,60 +31,70 @@
 #' 
 #' @export
 #' @importFrom cOde getSymbols replaceSymbols
-#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_replace_all str_split
 #' @importFrom purrr map_chr
 mat_simplify <- function(string) {
-  symbols_old <- getSymbols(string)
-  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
-  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  symbols_old <- cOde::getSymbols(string)
+  symbols_new <- stringr::str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- map_chr(string, ~cOde::replaceSymbols(symbols_old, symbols_new, .x))
   cmd <- paste0("wolframscript -code Simplify[", paste0("{", paste0(.y, collapse = ","), "}") , "]")
-  cmd <- str_replace_all(cmd, "([()])", "\\\\\\1")
+  cmd <- stringr::str_replace_all(cmd, "([()])", "\\\\\\1")
   .y <- system(cmd, intern = TRUE)
-  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
-  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- .y %>% stringr::str_replace_all("[{}]", "") %>% stringr::str_split(",", simplify = TRUE)
+  .y <- purrr::map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
   .y <- setNames(.y, names(string))
 }
 
 #' @rdname mat_simplify
 #' @export
+#' @importFrom cOde getSymbols replaceSymbols
+#' @importFrom stringr str_replace_all str_split
+#' @importFrom purrr map_chr
 mat_denom <- function(string) {
-  symbols_old <- getSymbols(string)
-  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
-  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  symbols_old <- cOde::getSymbols(string)
+  symbols_new <- stringr::str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- purrr::map_chr(string, ~cOde::replaceSymbols(symbols_old, symbols_new, .x))
   cmd <- paste0("wolframscript -code Denominator[", paste0("{", paste0(.y, collapse = ","), "}") , "]")
-  cmd <- str_replace_all(cmd, "([()])", "\\\\\\1")
+  cmd <- stringr::str_replace_all(cmd, "([()])", "\\\\\\1")
   .y <- system(cmd, intern = TRUE)
-  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
-  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- .y %>% stringr::str_replace_all("[{}]", "") %>% stringr::str_split(",", simplify = TRUE)
+  .y <- purrr::map_chr(.y, ~ cOde::replaceSymbols(symbols_new, symbols_old, .x))
   .y <- setNames(.y, names(string))
 }
 
 #' @rdname mat_simplify
 #' @export
+#' @importFrom cOde getSymbols replaceSymbols
+#' @importFrom stringr str_replace_all str_split
+#' @importFrom purrr map_chr
 mat_numer <- function(string) {
-  symbols_old <- getSymbols(string)
-  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
-  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  symbols_old <- cOde::getSymbols(string)
+  symbols_new <- stringr::str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- map_chr(string, ~cOde::replaceSymbols(symbols_old, symbols_new, .x))
   cmd <- paste0("wolframscript -code Numerator[", paste0("{", paste0(.y, collapse = ","), "}") , "]")
-  cmd <- str_replace_all(cmd, "([()])", "\\\\\\1")
+  cmd <- stringr::str_replace_all(cmd, "([()])", "\\\\\\1")
   .y <- system(cmd, intern = TRUE)
-  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
-  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- .y %>% stringr::str_replace_all("[{}]", "") %>% stringr::str_split(",", simplify = TRUE)
+  .y <- purrr::map_chr(.y, ~ cOde::replaceSymbols(symbols_new, symbols_old, .x))
   .y <- setNames(.y, names(string))
 }
 
 #' @rdname mat_simplify
 #' @export
+#' 
+#' @importFrom cOde getSymbols replaceSymbols
+#' @importFrom stringr str_replace_all str_split
+#' @importFrom purrr map_chr imap_chr
 mat_replace <- function(string, replacements) {
-  symbols_old <- getSymbols(string)
-  symbols_new <- str_replace_all(symbols_old, "_", "XXXXXX")
-  .y <- map_chr(string, ~replaceSymbols(symbols_old, symbols_new, .x))
+  symbols_old <- cOde::getSymbols(string)
+  symbols_new <- stringr::str_replace_all(symbols_old, "_", "XXXXXX")
+  .y <- purrr::map_chr(string, ~cOde::replaceSymbols(symbols_old, symbols_new, .x))
   
-  repl_symbols_old <- getSymbols(c(replacements, names(replacements)))
-  repl_symbols_new <- str_replace_all(repl_symbols_old, "_", "XXXXXX")
-  .r <- map_chr(replacements, ~replaceSymbols(repl_symbols_old, repl_symbols_new, .x))
-  names(.r) <- map_chr(names(replacements), ~replaceSymbols(repl_symbols_old, repl_symbols_new, .x))
-  .r <- imap_chr(.r, ~paste0("/.", .y, "->", .x))
+  repl_symbols_old <- cOde::getSymbols(c(replacements, names(replacements)))
+  repl_symbols_new <- stringr::str_replace_all(repl_symbols_old, "_", "XXXXXX")
+  .r <- purrr::map_chr(replacements, ~cOde::replaceSymbols(repl_symbols_old, repl_symbols_new, .x))
+  names(.r) <- purrr::map_chr(names(replacements), ~cOde::replaceSymbols(repl_symbols_old, repl_symbols_new, .x))
+  .r <- purrr::imap_chr(.r, ~paste0("/.", .y, "->", .x))
   .r <- paste0(.r, collapse = "")
   
   cmd <- paste0("Simplify[{", paste0(.y, collapse = ","), "}", .r, "] // Print")
@@ -93,8 +103,8 @@ mat_replace <- function(string, replacements) {
   cmd <- paste0("wolframscript -file ", tf)
   
   .y <- system(cmd, intern = TRUE)
-  .y <- .y %>% str_replace_all("[{}]", "") %>% str_split(",", simplify = TRUE)
-  .y <- map_chr(.y, ~ replaceSymbols(symbols_new, symbols_old, .x))
+  .y <- .y %>% stringr::str_replace_all("[{}]", "") %>% stringr::str_split(",", simplify = TRUE)
+  .y <- purrr::map_chr(.y, ~ cOde::replaceSymbols(symbols_new, symbols_old, .x))
   .y <- setNames(.y, names(string))
 }
 
