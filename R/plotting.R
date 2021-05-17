@@ -137,7 +137,7 @@ cf_applyPaginate <- function(pl) {
 #' @details # importFrom ggplot2 plot_dev parse_dpi plot_dim
 #' 
 #' @example inst/examples/S101-plotting.R
-cf_outputFigure <- function(pl, filename, 
+cf_outputFigure <- function(pl, filename = NULL, 
                             width = 14, height = 10, scale = 0.6, 
                             units = c("in", "cm", "mm"), 
                             dpi = 300, limitsize = TRUE, 

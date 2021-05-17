@@ -6,7 +6,7 @@
 \usage{
 cf_outputFigure(
   pl,
-  filename,
+  filename = NULL,
   width = 14,
   height = 10,
   scale = 0.6,
