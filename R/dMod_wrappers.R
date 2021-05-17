@@ -15,6 +15,7 @@ dMod_files <- function(path, identifier = "") {
   list(
     mstrust   = file.path(path, "Results", "mstrust", paste0("mstrustList-",identifier,".rds")),
     profile   = file.path(path, "Results", "profile", paste0("profiles-",identifier,".rds")),
+    L1        = file.path(path, "Results", "L1", paste0("L1-",identifier,".rds")),
     petabdMod = file.path(path, paste0("pd",".rds"))
   )
 }
@@ -104,6 +105,47 @@ dMod_saveMstrust <- function(fit, path, identifier = "1", FLAGoverwrite = FALSE)
 #' @examples
 dMod_readMstrust <- function(path) {
   filename <- dMod_files(path)$mstrust
+  fits <- list.files(dirname(filename), "rds$", full.names = TRUE)
+  fits <- lapply(fits, readRDS)
+  fits <- do.call(rbind, fits)
+  fits
+}
+
+
+#' Title
+#'
+#' @param fit 
+#' @param path 
+#' @param identifier 
+#' @param FLAGoverwrite 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+dMod_saveL1 <- function(L1, path, identifier = "1", FLAGoverwrite = FALSE) {
+  filename <- dMod_files(path, identifier)$L1
+  if (!FLAGoverwrite && file.exists(filename)) 
+    stop("FLAGoverwrite is FALSE and file.exists: ", filename)
+  dir.create(dirname(filename), showWarnings = FALSE, recursive = TRUE)
+  saveRDS(L1, filename)
+}
+
+
+#' Title
+#'
+#' @param path 
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+dMod_readL1 <- function(path) {
+  filename <- dMod_files(path)$L1
   fits <- list.files(dirname(filename), "rds$", full.names = TRUE)
   fits <- lapply(fits, readRDS)
   fits <- do.call(rbind, fits)

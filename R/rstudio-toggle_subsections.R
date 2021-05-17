@@ -518,8 +518,19 @@ extract_importFrom <- function() {
   text <- lapply(text, function(x) data.table::as.data.table(as.list(x)))
   text <- data.table::rbindlist(text)
   data.table::setnames(text, c("pkg", "fun"))
-  text <- text[,list(text = paste0("@importFrom ", unique(pkg), " ", paste0(unique(fun), collapse = " "))), by = "pkg"]
-  cat(text$text, sep = "\n")
+  text <- text[,list(text = paste0("#' @importFrom ", unique(pkg), " ", paste0(unique(fun), collapse = " "))), by = "pkg"]
+  text <- paste0(paste0(text$text, "\n"), collapse = "")
+  
+  # Add other stuff as well (hacky but can be cleaned in a breeze, just remove this row)
+  text <- paste0("#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)\n",
+                 "#' @md\n", 
+                 "#' @family \n", 
+                 text)
+  
+  # Insert into beginning of selection (preferably select up to @export)
+  position_toInsert <- rstudioapi::as.document_position(c(e$selection[[1]]$range$start[1], 1))
+  rstudioapi::insertText(location = position_toInsert,text = text, id = e$id)
+  
   invisible(text$text)
 }
 

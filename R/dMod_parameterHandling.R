@@ -55,6 +55,17 @@ cf_parf_metaNames <- function(pars){
   setdiff(names(pars), attr(pars, "parameters"))
 }
 
+
+#' @export
+cf_parf_metaNames0 <- list(
+  mstrust = c("index", "value", "converged", "iterations", "fitrank", "step", "stepsize"),
+  other = c("AIC", "BIC",  "valueData", "valueObj"),
+  profile = c("constraint", "stepsize", "gamma", "whichPar", "value"),
+  l1 = c("value", "converged", "iterations", "lambda")
+)
+
+
+
 #' Select parameter columns of parframe
 #'
 #' @param parf parframe
@@ -119,10 +130,7 @@ cf_parframe <- function(x = NULL, parameters = NULL, metanames = NULL,
                         obj.attributes = NULL, tol = 1) {
   x <- as.data.frame(x) 
   if (is.null(metanames))
-    metanames <- intersect(names(x), c("index", "value", "converged", "iterations",
-                                       "fitrank", "step", "stepsize", "AIC", "BIC",
-                                       "constraint", "stepsize", "gamma", "valueData", 
-                                       "valueObj", "whichPar"))
+    metanames <- intersect(names(x), Reduce(union, cf_parf_metaNames0))
   if (is.null(parameters))
     parameters <- setdiff(names(x),metanames)
   x <- dMod::parframe(x,parameters, metanames, obj.attributes)
