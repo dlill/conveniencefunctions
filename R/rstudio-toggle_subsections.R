@@ -531,6 +531,6 @@ extract_importFrom <- function() {
   position_toInsert <- rstudioapi::as.document_position(c(e$selection[[1]]$range$start[1], 1))
   rstudioapi::insertText(location = position_toInsert,text = text, id = e$id)
   
-  invisible(text$text)
+  invisible(text)
 }
 

@@ -454,7 +454,14 @@ open_in_calc <- function(.x) {
 tpaste0 <- function(...) {paste0(format(Sys.time(), "%y%d%m_%H%M%S-"), ...)}
 
 
-
+#' @export
+sanitizeDate <- function() {
+  files <- list.files(".", "^\\d{6}")
+  files_new <- paste0("20", substr(files, 1,2), "-", substr(files, 3,4), "-", substr(files, 5,nchar(files)))
+  for (i in seq_along(files)) {
+    system(paste0("mv ", files[i], " ", files_new[i]))
+  }
+}
 
 
 # -------------------------------------------------------------------------#

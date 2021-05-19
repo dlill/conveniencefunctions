@@ -476,3 +476,10 @@ snippet nautilusOUTPUTFolder
 	system(paste0("nautilus ", .outputFolder), wait = FALSE)
 
 
+
+snippet ggCallback
+	list(facet_wrap_paginate(~observableId, nrow = 4, ncol = 4, scales = "free"), scale_y_continuous(n.breaks = 5))
+
+
+
+

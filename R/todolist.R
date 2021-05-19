@@ -30,7 +30,7 @@ todolist <- function(path = getwd(), FLAGpipes = FALSE, filename = NULL) {
                                             TRUE ~ script),
                          scriptn = as.numeric(str_extract(script, "\\d.*")),
                          task = str_replace_all(gout, "^.*\\[ *\\] (.*)$", "\\1"),
-                         checkbox = str_extract(gout, "\\[x*\\]")
+                         checkbox = str_extract(gout, "\\[[x ]*\\]")
     )
     todo_frame <- arrange(todo_frame, done, scriptn)
     todo_frame <- mutate(todo_frame, todolist = paste0(checkbox, " ", script, ": ", task))
