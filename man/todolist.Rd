@@ -2,17 +2,24 @@
 % Please edit documentation in R/todolist.R
 \name{todolist}
 \alias{todolist}
-\title{Print a todolist to your console or to a file}
+\title{Todolist}
 \usage{
-todolist(path = getwd(), FLAGpipes = FALSE, filename = NULL)
+todolist(path = ".", FLAGrecursive = FALSE, FLAGremoveDone = TRUE)
 }
 \arguments{
-\item{path}{path to directory to grep in}
+\item{path}{path to search through scripts}
 
-\item{FLAGpipes}{Boolean. search for pipe operators?}
+\item{FLAGrecursive}{search subfolders?}
 
-\item{filename}{If provided, write the todolist to this file (recommended ending: *.md)}
+\item{FLAGremoveDone}{remove done bullet points}
+}
+\value{
+markdown table printed to console
 }
 \description{
-Collect all TODO points in the scripts of a project and write them into TODO.md
+Todolist
 }
+\author{
+Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+}
+\concept{}
