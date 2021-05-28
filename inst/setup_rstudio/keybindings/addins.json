@@ -11,5 +11,6 @@
     "conveniencefunctions::renumber_sections" : "Ctrl+Shift+R",
     "conveniencefunctions::insert_loopdebugger" : "Ctrl+Shift+I",
     "conveniencefunctions::toggle_blabla" : "Ctrl+Alt+O",
-    "conveniencefunctions::extract_importFrom" : "Ctrl+Alt+I"
+    "conveniencefunctions::extract_importFrom" : "Ctrl+Alt+I",
+    "conveniencefunctions::refactor_functionCall" : "Ctrl+Alt+U"
 }

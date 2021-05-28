@@ -24,7 +24,8 @@ todolist <- function(path = ".", FLAGrecursive = FALSE, FLAGremoveDone = TRUE) {
   d[,`:=`(scriptn = data.table::copy(script))]
   d[,`:=`(scriptn = stringr::str_extract(scriptn, "S\\d+(-\\d+)?"))]
   d[,`:=`(scriptn = stringr::str_remove(scriptn, "S"))]
-  
+  d[is.na(scriptn),`:=`(scriptn = script)]
+    
   d[,`:=`(done = stringr::str_detect(gout, "\\[x\\]"))]
   d[,`:=`(check = ifelse(done, "[x]", "[ ]"))]
   

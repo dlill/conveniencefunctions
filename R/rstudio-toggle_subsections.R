@@ -517,9 +517,11 @@ extract_importFrom <- function() {
   text <- strsplit(text, "::", TRUE)
   text <- lapply(text, function(x) data.table::as.data.table(as.list(x)))
   text <- data.table::rbindlist(text)
+  if (length(text)){
   data.table::setnames(text, c("pkg", "fun"))
   text <- text[,list(text = paste0("#' @importFrom ", unique(pkg), " ", paste0(unique(fun), collapse = " "))), by = "pkg"]
   text <- paste0(paste0(text$text, "\n"), collapse = "")
+  } else text <- NULL
   
   # Add other stuff as well (hacky but can be cleaned in a breeze, just remove this row)
   text <- paste0("#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)\n",
@@ -533,4 +535,38 @@ extract_importFrom <- function() {
   
   invisible(text)
 }
+
+
+
+
+
+# -------------------------------------------------------------------------#
+# Function call ----
+# -------------------------------------------------------------------------#
+
+#' Title
+#'
+#' @return
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#'
+#' @examples
+refactor_functionCall <- function() {
+  e <- rstudioapi::getSourceEditorContext()
+  rstudioapi::documentSave(id = e$id)
+  current_row <- e$selection[[1]]$range$start[1]
+  text <- readLines(e$path)
+  textline <- text[current_row]
+  nchar_current_row <- nchar(textline)
+  textline <- gsub(" ?<- ?function| ?\\{", "", textline)
+  
+  # Insert into beginning of selection (preferably select up to @export)
+  rng <- rstudioapi::document_range(rstudioapi::document_position(current_row,1), 
+                                    rstudioapi::document_position(current_row,nchar_current_row+1))
+  rstudioapi::modifyRange(location = rng, text= textline, id = e$id)
+  
+  invisible(text)
+}
+
 
