@@ -124,7 +124,7 @@ cf_applyPaginate <- function(pl) {
 #' Handle paginate automatically, save asynchronously with future
 #'
 #' @param pl plot like ggplot
-#' @param filename,width,height,scale,units,dpi,limitsize,... see [ggplot2::ggsave()]
+#' @param filename,width,height,scale,units,dpi,limitsize,device,... see [ggplot2::ggsave()]
 #' @param FLAGFuture Export asynchronously with the future-package
 #'
 #' @return nothing
@@ -138,10 +138,11 @@ cf_applyPaginate <- function(pl) {
 #' 
 #' @example inst/examples/S101-plotting.R
 cf_outputFigure <- function(pl, filename = NULL, 
-                            width = 14, height = 10, scale = 0.6, 
-                            units = c("in", "cm", "mm"), 
+                            width = 16, height = 10, scale = 1, 
+                            units = c("cm", "mm", "in"), 
                             dpi = 300, limitsize = TRUE, 
                             FLAGFuture = TRUE,
+                            device = NULL,
                             ...) {
   
   if (is.null(filename)) return(pl)
@@ -157,7 +158,7 @@ cf_outputFigure <- function(pl, filename = NULL,
   
   # device wrestling
   dpi <- ggplot2:::parse_dpi(dpi)
-  dev <- ggplot2:::plot_dev(NULL, filename, dpi = dpi)
+  dev <- ggplot2:::plot_dev(device, filename, dpi = dpi)
   dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
                             limitsize = limitsize)
   
@@ -319,4 +320,46 @@ cfgg_getAllAesthetics <- function() {
   all_aes <- lapply(all_aes, function(x) {if("colour" %in% x) x <- c(x, "color"); x}) # color / colour thing. ggplot only returns only one version.
   all_aes
 }
+
+
+
+
+# -------------------------------------------------------------------------#
+# theme_msb ----
+# -------------------------------------------------------------------------#
+
+# .. msb_dims  -----
+
+#' @export
+msb_dims <- list(
+  width1col = 8.7,
+  width2col = 18,
+  heightmax = 23,
+  heightlegendmin = 0.7,
+  heightlegend1row = 0.3
+)
+
+# .. msb_dpi -----
+
+#' @export
+msb_dpi <- 1000
+
+
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+theme_msb <- function() {
+  theme_classic(base_size = 7) + 
+    theme(
+      text = element_text(size = 7),
+      panel.grid   = element_blank(),
+          axis.title   = element_text(face = "bold"),
+          panel.border = element_blank()
+    )
+}
+
+
 

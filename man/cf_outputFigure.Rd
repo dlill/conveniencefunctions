@@ -7,20 +7,21 @@
 cf_outputFigure(
   pl,
   filename = NULL,
-  width = 14,
+  width = 16,
   height = 10,
-  scale = 0.6,
-  units = c("in", "cm", "mm"),
+  scale = 1,
+  units = c("cm", "mm", "in"),
   dpi = 300,
   limitsize = TRUE,
   FLAGFuture = TRUE,
+  device = NULL,
   ...
 )
 }
 \arguments{
 \item{pl}{plot like ggplot}
 
-\item{filename, width, height, scale, units, dpi, limitsize, ...}{see [ggplot2::ggsave()]}
+\item{filename, width, height, scale, units, dpi, limitsize, device, ...}{see [ggplot2::ggsave()]}
 
 \item{FLAGFuture}{Export asynchronously with the future-package}
 }
