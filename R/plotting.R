@@ -352,14 +352,22 @@ msb_dpi <- 1000
 #'
 #' @examples
 theme_msb <- function() {
-  theme_classic(base_size = 7) + 
+  theme_classic(base_size = 7, base_family = "Helvetica") + 
     theme(
-      text = element_text(size = 7),
-      panel.grid   = element_blank(),
-          axis.title   = element_text(face = "bold"),
-          panel.border = element_blank()
+      text             = element_text(size = 7),
+      panel.border     = element_blank(),
+      panel.grid       = element_blank(),
+      axis.text        = element_text(colour = "black"),
+      axis.title       = element_text(face = "bold",colour = "black"),
+      strip.background = element_blank(),
+      strip.text       = element_text(face = "bold")
     )
 }
 
+
+# install_msb_fonts <- function() {
+#   # https://forum.ubuntuusers.de/topic/fonts-helvetica-installieren/
+#   cat("sudo apt-get install fonts-larabie-deco fonts-larabie-straight fonts-larabie-uncommon")
+# }
 
 
