@@ -2,15 +2,23 @@
 % Please edit documentation in R/IQRtools.R
 \name{cf_script_templateVersions}
 \alias{cf_script_templateVersions}
-\title{Title}
+\title{Display template versions}
 \usage{
-cf_script_templateVersions()
+cf_script_templateVersions(NfromLast = 3, path = ".")
+}
+\arguments{
+\item{NfromLast}{Number of latest template versions to display}
+
+\item{path}{as in list.files}
 }
 \value{
 
 }
 \description{
-Title
+Display template versions
+}
+\examples{
+path <- "/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/01-DynamicModeling/02-Scripts"
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)

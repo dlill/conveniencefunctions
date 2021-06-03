@@ -219,6 +219,9 @@ snippet compare
 snippet tempfile
 	tempfile(fileext = "$0")
 
+snippet clipr
+	clipr::write_clip()
+
 snippet IQRtools:::
 	IQRtools:::
 
@@ -325,7 +328,7 @@ snippet cfhead
 	# .. Template name TGFB_MSTRUST -----
 	# .. Template name TGFB_PROFILE -----
 	# .. Template version 0.0.1 -----
-	#
+	# .. Template comment Comment -----
 	rm(list = ls(all.names = TRUE))
 	try(setwd(dirname(rstudioapi::getSourceEditorContext()\$path)))
 	library(conveniencefunctions)
@@ -352,7 +355,7 @@ snippet templateInfo
 	# .. Template name TGFB_MSTRUST -----
 	# .. Template name TGFB_PROFILE -----
 	# .. Template version 0.0.1 -----
-	#
+	# .. Template comment Comment$0 -----
 
 
 

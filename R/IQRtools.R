@@ -129,7 +129,10 @@ cf_script_makeFilenames <- function(pattern_from, pattern_to) {
 
 
 
-#' Title
+#' Display template versions
+#'
+#' @param NfromLast Number of latest template versions to display
+#' @param path as in list.files
 #'
 #' @return
 #' @export
@@ -139,21 +142,36 @@ cf_script_makeFilenames <- function(pattern_from, pattern_to) {
 #' @importFrom data.table rbindlist setcolorder setkey
 #'
 #' @examples
-cf_script_templateVersions <- function() {
-  allscripts <- list.files(".", "\\.R$")
+#' path <- "/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/01-DynamicModeling/02-Scripts"
+cf_script_templateVersions <- function(NfromLast = 3, path = ".") {
+  allscripts <- list.files(path, "\\.R$", full.names = TRUE)
   allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
-  s <- (setNames(nm = allscripts))[[25]]
-  ti <- lapply(setNames(nm = allscripts), function(s) {
+  s <- (setNames(nm = allscripts))[[61]]
+  ti <- lapply(setNames(allscripts, basename(allscripts)), function(s) {
     l <- readLines(s)
     tn <- grep("Template name",l,value = TRUE)
     tn <- gsub("# ..( \\d)? Template name | ----- *", "", tn)
     tv <- grep("Template version",l,value = TRUE)
     tv <- gsub("# ..( \\d)? Template version | ----- *", "", tv)
-    data.table(templateName = tn, templateVersion = tv)
+    tc <- grep("Template comment",l,value = TRUE)
+      tc <- gsub("# ..( \\d)? Template comment | ----- *", "", tc)
+      tc <- paste0(tc, collapse = ", ") 
+    data.table(templateName = tn, templateVersion = tv, templateComment = tc)
   })
   ti <- data.table::rbindlist(ti, idcol = "script")
-  data.table::setcolorder(ti, c(2,3,1))
-  data.table::setkey(ti, templateName)
+  ti <- ti[!is.na(templateName)]
+  data.table::setcolorder(ti, c(2,3,1,4))
+  data.table::setkey(ti, templateName, templateVersion)
+  
+  # Remove old templates
+  ti[,`:=`(tvnum = as.numeric(as.factor(templateVersion)))]
+  ti[,`:=`(keep = tvnum > max(tvnum)-NfromLast), by = "templateName"]
+  ti <- ti[keep == TRUE]
+  # Remove reused templates in different scripts
+  ti[,`:=`(keep = !duplicated(.SD)), .SDcols = c("templateName", "templateVersion", "templateComment")]
+  ti <- ti[keep == TRUE]
+  ti[,`:=`(tvnum = NULL, keep = NULL)]
+  
   cfoutput_MdTable(ti, "templateName")
   invisible(ti)
 }
@@ -174,7 +192,7 @@ cf_script_remove <- function(filenames_vector) {
     unlink(from)
     fromOut <- file.path("../04-Output", gsub(".R$", "", from))
     unlink(fromOut, recursive = TRUE)
-    }
+  }
 }
 
 
