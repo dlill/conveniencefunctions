@@ -167,12 +167,10 @@ cf_script_templateVersions <- function(NfromLast = 3, path = ".") {
   ti[,`:=`(tvnum = as.numeric(as.factor(templateVersion)))]
   ti[,`:=`(keep = tvnum > max(tvnum)-NfromLast), by = "templateName"]
   ti <- ti[keep == TRUE]
-  # Remove reused templates in different scripts
-  ti <- ti[rev(order(script))]
-  ti[,`:=`(keep = !duplicated(.SD)), .SDcols = c("templateName", "templateVersion", "templateComment")]
-  ti <- ti[keep == TRUE]
-  ti[,`:=`(tvnum = NULL, keep = NULL)]
-  ti <- ti[order(templateName, templateVersion, script)]
+  
+  # collapse reused templates in different scripts
+  ti[,`:=`(script = gsub("(S(\\d|_|-|\\.)+)-.*", "\\1", script))]
+  ti <- ti[,list(script = paste0(script, collapse = ", ")), by = c("templateName", "templateVersion", "templateComment")]
   
   cfoutput_MdTable(ti, "templateName")
   invisible(ti)
