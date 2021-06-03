@@ -512,7 +512,7 @@ extract_importFrom <- function() {
   
   text <- e$selection[[1]]$text
   text <- strsplit(text, "\n", fixed = TRUE)[[1]]
-  text <- stringr::str_extract_all(text, "[a-zA-Z._]++::[a-zA-Z._]+")
+  text <- stringr::str_extract_all(text, "[a-zA-Z0-9._]++::[a-zA-Z0-9._]+")
   text <- unlist(text)
   text <- strsplit(text, "::", TRUE)
   text <- lapply(text, function(x) data.table::as.data.table(as.list(x)))
