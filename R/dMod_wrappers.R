@@ -103,11 +103,9 @@ dMod_saveMstrust <- function(fit, path, identifier = "1", FLAGoverwrite = FALSE)
 #' @md
 #'
 #' @examples
-dMod_readMstrust <- function(path) {
-  filename <- dMod_files(path)$mstrust
-  fits <- list.files(dirname(filename), "rds$", full.names = TRUE)
-  fits <- lapply(fits, readRDS)
-  fits <- do.call(rbind, fits)
+dMod_readMstrust <- function(path, identifier = NULL) {
+  filename <- dMod_files(path, identifier)$mstrust
+  fits <- readRDS(filename)
   fits
 }
 

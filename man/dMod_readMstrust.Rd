@@ -4,7 +4,7 @@
 \alias{dMod_readMstrust}
 \title{Title}
 \usage{
-dMod_readMstrust(path)
+dMod_readMstrust(path, identifier = NULL)
 }
 \arguments{
 \item{path}{}
