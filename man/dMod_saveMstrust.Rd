@@ -7,16 +7,14 @@
 dMod_saveMstrust(fit, path, identifier = "1", FLAGoverwrite = FALSE)
 }
 \arguments{
-\item{fit}{}
+\item{fit}{parlist or parframe, will be coerced to parframe with \code{\link[=cf_as.parframe]{cf_as.parframe()}}}
 
-\item{path}{}
+\item{path, identifier}{result will be written to \code{\link[=dMod_files]{dMod_files()}}(path, identifier)$mstrust}
 
-\item{identifier}{}
-
-\item{FLAGoverwrite}{}
+\item{FLAGoverwrite}{TRUE or FALSE}
 }
 \value{
-
+fit as parframe, invisibly
 }
 \description{
 Title

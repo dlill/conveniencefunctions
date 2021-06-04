@@ -160,7 +160,6 @@ cf_script_templateVersions <- function(NfromLast = 3, path = ".") {
   })
   ti <- data.table::rbindlist(ti, idcol = "script")
   ti <- ti[!is.na(templateName)]
-  data.table::setcolorder(ti, c(2,3,1,4))
   ti <- ti[order(templateName, templateVersion)]
   
   # Remove old templates
@@ -172,6 +171,7 @@ cf_script_templateVersions <- function(NfromLast = 3, path = ".") {
   ti[,`:=`(script = gsub("(S(\\d|_|-|\\.)+)-.*", "\\1", script))]
   ti <- ti[,list(script = paste0(script, collapse = ", ")), by = c("templateName", "templateVersion", "templateComment")]
   
+  data.table::setcolorder(ti, c("templateName", "templateVersion", "script", "templateComment"))
   cfoutput_MdTable(ti, "templateName")
   invisible(ti)
 }

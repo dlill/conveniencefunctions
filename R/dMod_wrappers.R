@@ -71,12 +71,11 @@ dMod_readProfiles <- function(path = .outputFolder) {
 
 #' Title
 #'
-#' @param fit 
-#' @param path 
-#' @param identifier 
-#' @param FLAGoverwrite 
+#' @param fit parlist or parframe, will be coerced to parframe with [cf_as.parframe()]
+#' @param path,identifier result will be written to [dMod_files()](path, identifier)$mstrust
+#' @param FLAGoverwrite TRUE or FALSE
 #'
-#' @return
+#' @return fit as parframe, invisibly
 #' @export
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
