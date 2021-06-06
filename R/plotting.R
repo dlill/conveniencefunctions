@@ -139,7 +139,7 @@ cf_applyPaginate <- function(pl) {
 #' @example inst/examples/S101-plotting.R
 cf_outputFigure <- function(pl, filename = NULL, 
                             width = 16, height = 10, scale = 1, 
-                            units = c("cm", "mm", "in"), 
+                            units = c("cm", "mm", "in")[1], 
                             dpi = 300, limitsize = TRUE, 
                             FLAGFuture = TRUE,
                             device = NULL,
