@@ -143,9 +143,12 @@ cf_outputFigure <- function(pl, filename = NULL,
                             dpi = 300, limitsize = TRUE, 
                             FLAGFuture = TRUE,
                             device = NULL,
+                            heightrel = NULL,
                             ...) {
   
   if (is.null(filename)) return(pl)
+  
+  if (!is.null(heightrel)) height <- width * heightrel
   
   # Handle paginate: Wraps plot in list of length n_pages. 
   # For unpaginated plots, length(pl)=1
@@ -358,7 +361,8 @@ theme_msb <- function() {
       panel.border     = element_blank(),
       panel.grid       = element_blank(),
       axis.text        = element_text(colour = "black"),
-      axis.title       = element_text(face = "bold",colour = "black"),
+      axis.title       = element_text(face = "plain",colour = "black"),
+      axis.ticks       = element_line(color = "black"),
       strip.background = element_blank(),
       strip.text       = element_text(face = "bold")
     )

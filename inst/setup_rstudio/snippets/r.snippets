@@ -164,10 +164,10 @@ snippet ggsav
 	ggsave(file.path(.outputFolder, $0), pl, width = 15.5, height = 10, scale = 1, units = "cm")
 
 snippet widthmsb1col
-	width = msb_dims\$width1col, height = msb_dims\$width1col * 10/16, scale = 1,units = "cm", device = cairo_pdf, family = "Helvetica"
+	width = msb_dims\$width1col, heightrel = 10/16, scale = 1,units = "cm", device = cairo_pdf, family = "Helvetica"
 
 snippet widthmsb2col
-	width = msb_dims\$width2col, height = msb_dims\$width2col * 10/16, scale = 1,units = "cm", device = cairo_pdf, family = "Helvetica"
+	width = msb_dims\$width2col, heightrel = 10/16, scale = 1,units = "cm", device = cairo_pdf, family = "Helvetica"
 
 snippet widthWitdh
 	width = width, height = height, scale = scale, units = units
@@ -181,8 +181,8 @@ snippet widthA4
 snippet widthDissFullPage
 	width = 15.5, height = 23.5, scale = 1, units = "cm"
 
-snippet widthDiss_16.9
-	width = 15.5, height = 15.5*(9/16), scale = 1, units = "cm"
+snippet widthDiss_heightrel
+	width = 15.5, heightrel = 9/16, scale = 1, units = "cm"
 
 snippet widthDiss_16.10
 	width = 15.5, height = 15.5*(10/16), scale = 1, units = "cm"
@@ -199,7 +199,6 @@ snippet nrow3ncol4
 snippet futureEval
 	if (!"multisession" %in% class(future::plan())) future::plan("multisession")
 	future::`%<-%`(wup,$0)
-
 
 snippet futurePlanSequential
 	future::plan("sequential")

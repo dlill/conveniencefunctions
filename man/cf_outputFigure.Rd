@@ -10,11 +10,12 @@ cf_outputFigure(
   width = 16,
   height = 10,
   scale = 1,
-  units = c("cm", "mm", "in"),
+  units = c("cm", "mm", "in")[1],
   dpi = 300,
   limitsize = TRUE,
   FLAGFuture = TRUE,
   device = NULL,
+  heightrel = NULL,
   ...
 )
 }
