@@ -326,6 +326,57 @@ cfgg_getAllAesthetics <- function() {
 
 
 
+#' Center y axes of different facets around 0 or 1
+#' 
+#' solution adapted from https://stackoverflow.com/questions/31782799/how-to-use-free-scales-but-keep-a-fixed-reference-point-in-ggplot
+#' 
+#' You need to call this function twice, once with min and once with max
+#' 
+#' @param bycols character vector of columns to summarize by. These are typically columns you facet over
+#' @param fun min or max
+#' @param dplot data.table(measurement = nominal values, bycols...). Typically, the data that went into the plot
+#' @param FLAGcenterLog do the centering on log scale
+#' @param ... arguments to geom_blank
+#'
+#' @return geom_blank
+#' @export
+#'
+#' @examples
+#' 
+#' # linear scale
+#' dx <- copy(mtcars)
+#' dx <- data.table(dx)
+#' dx[,`:=`(measurement = wt-mean(wt))]
+#' 
+#' ggplot(dx, aes(mpg, measurement)) + 
+#'   facet_wrap( ~ cyl, scales = "free_y") + 
+#'   geom_point() +
+#'   scale_centerY("cyl", min, dx, FALSE) +
+#'   scale_centerY("cyl", max, dx, FALSE)
+#' 
+#' # log scale
+#' dx <- copy(mtcars)
+#' dx <- data.table(dx)
+#' dx[,`:=`(measurement = wt/mean(wt))]
+#' 
+#' ggplot(dx, aes(mpg, measurement)) + 
+#'   facet_wrap( ~ cyl, scales = "free_y") + 
+#'   geom_point() +
+#'   scale_centerY("cyl", min, dx, TRUE) +
+#'   scale_centerY("cyl", max, dx, TRUE) + 
+#'   scale_y_log10()
+#' 
+scale_centerY <- function(bycols, fun = min, dplot, FLAGcenterLog = TRUE, ...) {
+  dcenter <- data.table(copy(dplot))
+  if (FLAGcenterLog) dcenter[,`:=`(measurement = log(measurement))]
+  dcenter <- dcenter[,list(measurement = -fun(measurement)), by = bycols]
+  if (FLAGcenterLog) dcenter[,`:=`(measurement = exp(measurement))]
+  
+  geom_blank(data=dcenter, mapping = aes(y=measurement, x=Inf),...)
+}
+
+
+
 
 # -------------------------------------------------------------------------#
 # theme_msb ----
