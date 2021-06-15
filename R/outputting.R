@@ -65,7 +65,10 @@ cfoutput_MdTable <- function(dt, split_by = NULL, filename = NULL, format = c("m
   }
   
   if (FLAGsummaryRow) {
-    summaryrow <- vapply(dt, function(x) paste0("N=", length(unique(x))), "N=nunique")
+    summaryrow <- vapply(dt, function(x) {
+      if (is.numeric(x))   return(paste0("Sum=", sum(x)))
+      if (is.character(x)) return(paste0("Lvl=", length(unique(x))))
+      }, FUN.VALUE = "N=nunique")
     summaryrow <- vapply(seq_along(summaryrow), function(i) sprintf(paste0("%",widths[i],"s"), summaryrow[i]), "bla")
     summaryrow <- paste0("|", paste0(summaryrow, collapse = "|"), "|")
     kt <- c(kt, seprow, summaryrow)
