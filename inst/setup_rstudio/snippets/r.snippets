@@ -53,19 +53,19 @@ snippet openPilot
 snippet openTGF
 	rstudioapi::openProject("/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/TGFb.Rproj")
 
-snippet file.editdModImport.R
+snippet fileeditdModImport.R
 	file.edit("~/Promotion/Promotion/Projects/petab/R/dMod-import.R")
 
-snippet file.editnormIndiv.R
+snippet fileeditnormIndiv.R
 	file.edit("~/Promotion/Promotion/Software/dMod/R/normIndiv.R")
 
-snippet file.editdMod-pd.R
+snippet fileeditdMod-pd.R
 	file.edit("~/Promotion/Promotion/Projects/petab/R/dMod-pd.R")
 
-snippet file.editPEtab.R
+snippet fileeditPEtab.R
 	file.edit("~/Promotion/Promotion/Projects/petab/R/PEtab.R")
 
-snippet file.editSnippets
+snippet fileeditSnippets
 	file.edit("~/Promotion/Promotion/Projects/conveniencefunctions/inst/setup_rstudio/snippets/r.snippets")
 
 
@@ -170,25 +170,25 @@ snippet widthmsb2col
 	width = msb_dims\$width2col, heightrel = 10/16, scale = 1,units = "cm", device = cairo_pdf, family = "Helvetica"
 
 snippet widthWitdh
-	width = width, height = height, scale = scale, units = units
+	width = width, height = height, scale = scale, units = units, device = cairo_pdf
 
 snippet widthWord
-	width = 21-2.5*2, height = 29.7-2.5*2, scale = 1, units = "cm"
+	width = 21-2.5*2, height = 29.7-2.5*2, scale = 1, units = "cm", device = cairo_pdf
 
 snippet widthA4
-	width = 21, height = 29.7, scale = 1, units = "cm"
+	width = 21, height = 29.7, scale = 1, units = "cm", device = cairo_pdf
 
 snippet widthDissFullPage
-	width = 15.5, height = 23.5, scale = 1, units = "cm"
+	width = 15.5, height = 23.5, scale = 1, units = "cm", device = cairo_pdf
 
 snippet widthDiss_heightrel
-	width = 15.5, heightrel = 9/16, scale = 1, units = "cm"
+	width = 15.5, heightrel = 9/16, scale = 1, units = "cm", device = cairo_pdf
 
 snippet widthDiss_16.10
-	width = 15.5, height = 15.5*(10/16), scale = 1, units = "cm"
+	width = 15.5, height = 15.5*(10/16), scale = 1, units = "cm", device = cairo_pdf
 
 snippet widthA4Landscape
-	width = 29.7, height = 21, scale = 1, units = "cm"
+	width = 29.7, height = 21, scale = 1, units = "cm", device = cairo_pdf
 
 snippet nrownrowncolncol
 	nrow = nrow, ncol = ncol, scales = scales, page = page
@@ -275,7 +275,7 @@ snippet IQRoutputFig
 snippet opt.pagesize
 	opt.pagesize = opt.pagesize(14,10,0.6)
 
-snippet file.pathoutputFolder
+snippet filepathoutputFolder
 	file.path(.outputFolder, $0)
 
 snippet rstudioapi

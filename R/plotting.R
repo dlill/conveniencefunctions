@@ -147,11 +147,11 @@ cf_outputFigure <- function(pl, filename = NULL,
                             FLAGoverwrite = TRUE,
                             ...) {
   
+  if (is.null(filename)) return(pl)
   if (!FLAGoverwrite & file.exists(filename)) {
     cat("FLAGoverwrite = FALSE. Plot is not written to disk\n")
     return(pl)
     }
-  if (is.null(filename)) return(pl)
   
   
   if (!is.null(heightrel)) height <- width * heightrel
