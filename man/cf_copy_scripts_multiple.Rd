@@ -4,7 +4,7 @@
 \alias{cf_copy_scripts_multiple}
 \title{cf_copy_script for multiple scripts at once}
 \usage{
-cf_copy_scripts_multiple(filenames)
+cf_copy_scripts_multiple(filenames, FLAGrename = FALSE)
 }
 \arguments{
 \item{filenames}{data.table(from,to)}

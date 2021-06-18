@@ -13,9 +13,10 @@ cf_outputFigure(
   units = c("cm", "mm", "in")[1],
   dpi = 300,
   limitsize = TRUE,
-  FLAGFuture = TRUE,
   device = NULL,
   heightrel = NULL,
+  FLAGFuture = TRUE,
+  FLAGoverwrite = TRUE,
   ...
 )
 }
