@@ -79,11 +79,11 @@ cf_copy_script <- function(from, to, FLAGrename = FALSE) {
 #' "S520-MLPSR-04-CollectModelEnsemble.R","S530-MLCLS-04-CollectModelEnsemble.R",
 #' "S520-MLPSR-06-ExportTopPredictors.R" ,"S530-MLCLS-06-ExportTopPredictors.R" ,
 #' ))
-cf_copy_scripts_multiple <- function(filenames) {
+cf_copy_scripts_multiple <- function(filenames, FLAGrename = FALSE) {
   # copy scripts
   for (i in 1:nrow(filenames))
     conveniencefunctions::cf_copy_script(from = filenames[i,from],
-                                         to = filenames[i,to])
+                                         to = filenames[i,to], FLAGrename = FLAGrename)
   
   # replace "from" by "to" in all copied scripts
   for (i in 1:nrow(filenames)) {
