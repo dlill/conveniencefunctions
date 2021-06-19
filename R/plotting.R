@@ -147,13 +147,14 @@ cf_outputFigure <- function(pl, filename = NULL,
                             FLAGoverwrite = TRUE,
                             ...) {
   
+  # Handle overwrite etc
   if (is.null(filename)) return(pl)
   if (!FLAGoverwrite & file.exists(filename)) {
     cat("FLAGoverwrite = FALSE. Plot is not written to disk\n")
     return(pl)
     }
   
-  
+  # Handle heightrel
   if (!is.null(heightrel)) height <- width * heightrel
   
   # Handle paginate: Wraps plot in list of length n_pages. 
@@ -165,7 +166,10 @@ cf_outputFigure <- function(pl, filename = NULL,
     }
   } 
   
-  # device wrestling
+  # handle pdf
+  if (is.null(device) && tools::file_ext(filename) == "pdf") device <- grDevices::cairo_pdf
+  
+  # device wrestling (from ggsave)
   dpi <- ggplot2:::parse_dpi(dpi)
   dev <- ggplot2:::plot_dev(device, filename, dpi = dpi)
   dim <- ggplot2:::plot_dim(c(width, height), scale = scale, units = units, 
