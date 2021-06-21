@@ -168,8 +168,15 @@ cf_outputFigure <- function(pl, filename = NULL,
   
   # handle pdf
   # Was buggy for multipage pdf
-  # if (is.null(device) && tools::file_ext(filename) == "pdf") device <- grDevices::cairo_pdf
-  
+  if (is.null(device) && tools::file_ext(filename) == "pdf") {
+    if (length(pl) == 1) {
+      cat("1 page, using cairo for export\n")
+      device <- grDevices::cairo_pdf
+    } else {
+        cat("Multiple pages, using normal pdf device")
+      }
+    
+  }
   # device wrestling (from ggsave)
   dpi <- ggplot2:::parse_dpi(dpi)
   dev <- ggplot2:::plot_dev(device, filename, dpi = dpi)
