@@ -143,10 +143,11 @@ cf_script_makeFilenames <- function(pattern_from, pattern_to) {
 #'
 #' @examples
 #' path <- "/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/01-DynamicModeling/02-Scripts"
-cf_script_templateVersions <- function(NfromLast = 3, path = ".") {
+#' NfromLast = 3
+#' FLAGshortenIdentical = TRUE
+cf_script_templateVersions <- function(NfromLast = 3, path = ".", FLAGshortenIdentical = TRUE) {
   allscripts <- list.files(path, "\\.R$", full.names = TRUE)
   allscripts <- grep("SXXX-Rename", allscripts, value = T, invert = T)
-  s <- (setNames(nm = allscripts))[[61]]
   ti <- lapply(setNames(allscripts, basename(allscripts)), function(s) {
     l <- readLines(s)
     tn <- grep("Template name",l,value = TRUE)
@@ -169,8 +170,14 @@ cf_script_templateVersions <- function(NfromLast = 3, path = ".") {
   
   # collapse reused templates in different scripts
   ti[,`:=`(script = gsub("(S(\\d|_|-|\\.)+)-.*", "\\1", script))]
+  if (FLAGshortenIdentical) {
+    ti[,`:=`(NIdentical = 1:.N,
+             isMaxIdentical = 1:.N == .N), by = c("templateName", "templateVersion", "templateComment")]
+    ti <- ti[NIdentical <= 3 | isMaxIdentical]
+    ti[NIdentical > 3,`:=`(script = paste0("... ", script))]
+  }
   ti <- ti[,list(script = paste0(script, collapse = ", ")), by = c("templateName", "templateVersion", "templateComment")]
-  
+    
   data.table::setcolorder(ti, c("templateName", "templateVersion", "script", "templateComment"))
   cfoutput_MdTable(ti, "templateName")
   invisible(ti)
