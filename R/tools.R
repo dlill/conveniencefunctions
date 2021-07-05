@@ -501,6 +501,59 @@ sanitizeDate <- function() {
 
 
 # -------------------------------------------------------------------------#
+# Cluster time stamps ----
+# -------------------------------------------------------------------------#
+#' Write the time stamp when you logged into the cluster
+#'
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family Cluster login helpers
+write_clusterTimeStamp <- function() {
+  clusterTimeStampFile <- file.path("~", ".clusterTimeStamp.rds")
+  if (file.exists(clusterTimeStampFile)) {
+    stop("An old clusterTimeStamp file exists. Please run check_clusterTimeStamp()")
+  }
+  saveRDS(Sys.time(), file = clusterTimeStampFile)
+}
+
+#' Check for the time stamp
+#'
+#' If no recent login-stamp is available or if stamp is invalidated (> 1 hour){
+#' if stamp is invalidated: {remove stamp}
+#' stop, force creation of new stamp}
+#'
+#'
+#' @param FLAGforcePurge Force the removal of a time stamp
+#'
+#' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family Cluster login helpers
+check_clusterTimeStamp <- function(FLAGforcePurge = FALSE) {
+  clusterTimeStampFile <- file.path("~", ".clusterTimeStamp.rds")
+  
+  if (file.exists(clusterTimeStampFile)) {
+    clusterTimeStamp <- readRDS(clusterTimeStampFile)
+    dt <- difftime(Sys.time(), clusterTimeStamp, units = "mins")
+    cat("Last login: ", round(dt,2), " minutes ago\n")
+    
+    if (dt >= 59 || FLAGforcePurge) {
+      cat("Removing old time stamp\n")
+      unlink(clusterTimeStampFile)
+    }
+  }
+  
+  if (!file.exists(clusterTimeStampFile)) 
+    stop("Please login again manually via console. Then, in R call write_clusterTimeStamp()")
+  
+  "All good, login is still active :)"
+}
+
+
+
+
+# -------------------------------------------------------------------------#
 # Password generator ----
 # -------------------------------------------------------------------------#
 

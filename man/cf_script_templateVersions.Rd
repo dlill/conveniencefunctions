@@ -4,7 +4,11 @@
 \alias{cf_script_templateVersions}
 \title{Display template versions}
 \usage{
-cf_script_templateVersions(NfromLast = 3, path = ".")
+cf_script_templateVersions(
+  NfromLast = 3,
+  path = ".",
+  FLAGshortenIdentical = TRUE
+)
 }
 \arguments{
 \item{NfromLast}{Number of latest template versions to display}
@@ -19,6 +23,8 @@ Display template versions
 }
 \examples{
 path <- "/home/daniel/Promotion/Promotion/Projects/LiSyM/TGFb/Work/01-DynamicModeling/02-Scripts"
+NfromLast = 3
+FLAGshortenIdentical = TRUE
 }
 \author{
 Daniel Lill (daniel.lill@physik.uni-freiburg.de)
