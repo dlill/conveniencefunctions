@@ -104,8 +104,10 @@ cf_as.parframe <- function (x, sort.by = "value", ...) {
     m_metanames <- c(m_metanames, c("AIC", "BIC"))
   }
   
-  m_parframe <- cbind(m_parframe, 
-                      as.data.frame(t(vapply(x[m_idx], function(.x) .x$argument, x[[1]]$argument))))
+  parameters <- lapply(x[m_idx], function(x) as.data.table(as.list(x$argument)))
+  parameters <- data.table::rbindlist(parameters)
+  
+  m_parframe <- cbind(m_parframe, parameters)
   m_parframe <- m_parframe[order(m_parframe[sort.by]), ]
   
   cf_parframe(m_parframe, parameters = names(x[[m_idx[1]]]$argument), 
