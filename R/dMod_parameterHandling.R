@@ -88,6 +88,8 @@ cf_parf_getPars <- function(parf) {
 #'
 #' @return
 #' @export
+#' @md
+#' @importFrom data.table rbindlist
 cf_as.parframe <- function (x, sort.by = "value", ...) {
   m_stat <- dMod:::stat.parlist(x)
   m_metanames <- c("index", "value", "converged", "iterations")
@@ -106,8 +108,8 @@ cf_as.parframe <- function (x, sort.by = "value", ...) {
   
   parameters <- lapply(x[m_idx], function(x) as.data.table(as.list(x$argument)))
   parameters <- data.table::rbindlist(parameters)
-  
   m_parframe <- cbind(m_parframe, parameters)
+  
   m_parframe <- m_parframe[order(m_parframe[sort.by]), ]
   
   cf_parframe(m_parframe, parameters = names(x[[m_idx[1]]]$argument), 
