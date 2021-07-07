@@ -512,6 +512,7 @@ sanitizeDate <- function() {
 write_clusterTimeStamp <- function() {
   clusterTimeStampFile <- file.path("~", ".clusterTimeStamp.rds")
   if (file.exists(clusterTimeStampFile)) {
+    rstudioapi::insertText(c(1,1), text = "conveniencefunctions::check_clusterTimeStamp()", "#console")
     stop("An old clusterTimeStamp file exists. Please run check_clusterTimeStamp()")
   }
   saveRDS(Sys.time(), file = clusterTimeStampFile)
@@ -544,9 +545,10 @@ check_clusterTimeStamp <- function(FLAGforcePurge = FALSE) {
     }
   }
   
-  if (!file.exists(clusterTimeStampFile)) 
+  if (!file.exists(clusterTimeStampFile)) {
+    rstudioapi::insertText(c(1,1), text = "conveniencefunctions::write_clusterTimeStamp()", "#console")
     stop("Please login again manually via console. Then, in R call write_clusterTimeStamp()")
-  
+  }
   "All good, login is still active :)"
 }
 

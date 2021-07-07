@@ -442,6 +442,9 @@ snippet setwdtempdir
 	setwd(.tempdir)
 	$0
 
+snippet setwdDocumentGETFILEPATH
+	clipr::write_clip(rstudioapi::getSourceEditorContext()\$path)
+
 snippet setwdDocument
 	try(setwd(dirname(rstudioapi::getSourceEditorContext()\$path)))
 

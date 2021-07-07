@@ -107,7 +107,7 @@ cf_as.parframe <- function (x, sort.by = "value", ...) {
   }
   
   parameters <- lapply(x[m_idx], function(x) as.data.table(as.list(x$argument)))
-  parameters <- data.table::rbindlist(parameters)
+  parameters <- data.table::rbindlist(parameters, use.names = TRUE)
   m_parframe <- cbind(m_parframe, parameters)
   
   m_parframe <- m_parframe[order(m_parframe[sort.by]), ]

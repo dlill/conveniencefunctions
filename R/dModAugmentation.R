@@ -26,22 +26,27 @@ cf_profile_getProfilesOptimumBelowFit <- function(profiles){
 
 #' Title
 #'
-#' @param pd
+#' @param profiles dMod::profile
+#' @param value_name Choose from numerical attributes of obj, e.g. "value", "data", "prior" ...
 #'
-#' @return
+#' @return data.table(whichPar, profileDirection, isOpen)
 #' @export
+#' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
+#' @md
+#' @family profiles
 #'
 #' @examples
-cf_profile_getOpenProfiles <- function(profiles) {
-  dpr <- as.data.table(profiles)
-  dpr[,`:=`(profileDirection = if(constraint <= 0) "left" else "right"), by = 1:nrow(dpr)]
-  valueOptimum <- dpr[constraint == 0, unique(value)]
-  dpr[,`:=`(valueOptimum = valueOptimum)]
-  dpr[,`:=`(valueDifference = value - valueOptimum)]
-  dprOpen <- dpr[,`.`(isOpen = all(valueDifference < 3.84)), by = c("whichPar", "profileDirection")]
-  dprOpen <- dprOpen[isOpen == TRUE]
-  dprOpen
+cf_profile_getOpenProfiles <- function(profiles, value_column = "data") {
+  dp <- as.data.table(profiles)
+  dp[,`:=`(profileDirection = if(constraint <= 0) "left" else "right"), by = 1:nrow(dp)]
+  dp[,`:=`(VALUECOLUMN = eval(parse(text = value_column)))]
+  valueOptimum <- dp[constraint == 0, unique(VALUECOLUMN)]
+  dp[,`:=`(valueOptimum = valueOptimum)]
+  dp[,`:=`(valueDifference = VALUECOLUMN - valueOptimum)]
   
+  dpOpen <- dp[,list(isOpen = all(valueDifference < 3.84)), by = c("whichPar", "profileDirection")]
+  dpOpen <- dpOpen[isOpen == TRUE]
+  dpOpen
 }
 
 
@@ -142,6 +147,7 @@ cf_profile_plotPathsAffected <- function(profiles, tol = 1e-5,
   dfit <- dfit[!is.na(PARVALUE2)]
   dopt <- dp[cf_profile_getOptimum(profiles), on = c("PARAMETER1" = "PARAMETEROPT", PARVALUE1 = "PARVALUEOPT")]
   dopt <- dopt[!is.na(PARVALUE2)]
+  
   pl <- cfggplot(dp, aes(PARVALUE1, PARVALUE2, group = PARAMETER2, color = PARAMETER2)) + 
     geom_line() + 
     geom_point(data = dfit, size = 2) + 

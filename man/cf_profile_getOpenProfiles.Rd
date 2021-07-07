@@ -4,10 +4,12 @@
 \alias{cf_profile_getOpenProfiles}
 \title{Title}
 \usage{
-cf_profile_getOpenProfiles(profiles)
+cf_profile_getOpenProfiles(profiles, value_column = "data")
 }
 \arguments{
-\item{pd}{}
+\item{profiles}{dMod::profile}
+
+\item{value_name}{Choose from numerical attributes of obj, e.g. "value", "data", "prior" ...}
 }
 \value{
 
