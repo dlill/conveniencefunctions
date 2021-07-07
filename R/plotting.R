@@ -108,6 +108,7 @@ cf_applyPaginate <- function(pl) {
   
   pi <- getPaginateInfo(pl)
   
+  if (is.na(pi[[1]])) return(pl) # hacky: but for lists of plots, pi is NA
   if (!is.list(pi)) return(list(pl))
   
   facet_paginate <- pi$facet_paginate

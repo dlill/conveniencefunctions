@@ -64,10 +64,11 @@ cf_profile_getOpenProfiles <- function(profiles, value_column = "data") {
 #' @export
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
-cf_profile_prepareAffectedPaths <- function(profiles, tol = 1e-5) {
+cf_profile_prepareAffectedPaths <- function(profiles, tol = 1e-1) {
   parnames <- cf_parf_parNames(profiles)
   dp <- data.table(profiles)
   dp <- split(dp, dp$whichPar)
+d <- (dp)[[1]]
   dp <- lapply(dp, function(d) {
     wP <- unique(d$whichPar)
     d[,`:=`(PARAMETER1 = whichPar)]
@@ -136,12 +137,13 @@ cf_profile_getOptimum <- function(profiles) {
 #' @author Daniel Lill (daniel.lill@physik.uni-freiburg.de)
 #' @md
 #' 
-cf_profile_plotPathsAffected <- function(profiles, tol = 1e-5, 
+cf_profile_plotPathsAffected <- function(profiles, tol = 1e-1, 
                                          ggCallback = list(facet_wrap_paginate(~PARAMETER1, nrow = 2, ncol = 2, scales = "free", page = 1),
                                                            guides(color = TRUE)),
                                          filename = NULL, FLAGfuture = TRUE,
                                          width = 29.7, height = 21, scale = 1, units = "cm"
                                          ) {
+  
   dp <- cf_profile_prepareAffectedPaths(profiles, tol = tol)
   dfit <- dp[cf_profile_getStartPar(profiles), on = c("PARAMETER1" = "PARAMETEROPT", PARVALUE1 = "PARVALUEOPT")]
   dfit <- dfit[!is.na(PARVALUE2)]
